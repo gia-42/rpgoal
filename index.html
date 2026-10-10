@@ -8,6 +8,13 @@
 <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121317" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RPGoal">
 <style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -140,6 +147,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .fields{display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:end}
 @media (max-width:520px){.fields{grid-template-columns:1fr}}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field .btn{white-space:nowrap}
 /* match card */
 .stage{display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;align-items:center}
 @media (max-width:520px){.stage{grid-template-columns:1fr;justify-items:center;text-align:center}.stage .mods,.stage .row{justify-content:center}.evbox{text-align:left}}
@@ -212,6 +220,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .empty{padding:28px 18px;text-align:center;color:var(--ink-2);border:1px dashed var(--rule-2);border-radius:10px}
 </style>
 
+<style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
@@ -364,12 +373,12 @@ const ORDER=[['league',0],['cont',0],['cup',0],['cont',1],['cup',1],['league',1]
 const T={
 en:{
  tag:'A football career in dice',seasonAge:(y,a)=>`Season ${y} · age ${a}`,retired:'Retired',newCareer:'New career',wipe:'Tap again to wipe',
- themeDark:'Dark',themeLight:'Light',
+ themeDark:'Dark',themeLight:'Light',installIOS:'Install: tap Share, then Add to Home Screen',installBtn:'Install app',
  tabGame:'Career',tabHof:n=>`Hall of Fame${n?` (${n})`:''}`,
  attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Decisions',lead:'Leadership'},
  unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 20 · mod ${m}`,
  div2:'2nd division',
- newRoll:'New career · 6d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
+ newRoll:'New career · 8d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
  avgTo:a=>`Average <b class="num">${a}</b>`,firstOffers:'Your first offers',euroOffer:'Straight to Europe',
  startNote:{sa:'You start in your home country. Top flight needs an average of 4.0+, and below that you start in the second division. An average of 8.0+ brings an offer from Europe.',
   mid:'You start in your home country. Top flight needs an average of 5.0+, and below that you start in the second division.',
@@ -451,12 +460,12 @@ en:{
 },
 pt:{
  tag:'Uma carreira no futebol, nos dados',seasonAge:(y,a)=>`Temporada ${y} · ${a} anos`,retired:'Aposentado',newCareer:'Nova carreira',wipe:'Toque de novo para apagar',
- themeDark:'Escuro',themeLight:'Claro',
+ themeDark:'Escuro',themeLight:'Claro',installIOS:'Instalar: toque em Compartilhar e depois em Adicionar à Tela de Início',installBtn:'Instalar app',
  tabGame:'Carreira',tabHof:n=>`Hall da Fama${n?` (${n})`:''}`,
  attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Liderança'},
  unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 20 · mod ${m}`,
  div2:'2ª divisão',
- newRoll:'Nova carreira · 6d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
+ newRoll:'Nova carreira · 8d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
  avgTo:a=>`Média <b class="num">${a}</b>`,firstOffers:'Suas primeiras propostas',euroOffer:'Direto para a Europa',
  startNote:{sa:'Você começa no seu país. A primeira divisão pede média 4,0+, e abaixo disso você começa na segunda divisão. Média 8,0+ traz uma proposta da Europa.',
   mid:'Você começa no seu país. A primeira divisão pede média 5,0+, e abaixo disso você começa na segunda divisão.',
@@ -1124,7 +1133,7 @@ function render(){
   else if(S.phase==='season')body=sheet()+stageCard()+tracker()+careerView();
   else if(S.phase==='offseason')body=sheet()+offseasonView()+careerView();
   else body=retiredView()+sheet()+careerView();
-  app.innerHTML=header+tabs+body;
+  app.innerHTML=header+tabs+body+installRow();
 }
 
 /* ---------- dice animation ---------- */
@@ -1207,7 +1216,8 @@ function onClick(e){
   if(act!=='theme'&&act!=='lang'){clearTimeout(autoT);autoT=null}
   if(act!=='reset'&&resetArm){resetArm=false}
   if(act!=='hofclear'&&hofArm){hofArm=false}
-  if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
+  if(act==='install'){if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;render()})}return}
+  if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',nt==='dark'?'#121317':'#f7f7f5'));try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
   if(act==='lang'){lang=b.dataset.l;t=T[lang];try{localStorage.setItem(LANGKEY,lang)}catch(e){};document.documentElement.lang=lang==='pt'?'pt-BR':'en';render();return}
   if(act==='tab'){view=b.dataset.v;try{localStorage.setItem(VIEWKEY,view)}catch(e){};render();scheduleAuto();window.scrollTo({top:0});return}
   if(act==='hofclear'){if(hofArm){saveHof([]);hofArm=false}else hofArm=true;render();return}
@@ -1236,6 +1246,19 @@ function onClick(e){
     else{resetArm=true;render()}
   }
 }
+/* ---------- installable app ---------- */
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const iOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let installEvt=null;
+function installRow(){
+  if(standalone)return'';
+  if(iOS)return `<footer class="install">${t.installIOS}</footer>`;
+  if(installEvt)return `<footer class="install"><button data-act="install">${t.installBtn}</button></footer>`;
+  return'';
+}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;render()});
+addEventListener('appinstalled',()=>{installEvt=null;render()});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 function start(data){
   S=(data&&data.phase)?fixSave(data):(load()||fresh());
   if(S.phase==='season'&&!S.season)buildSeason();
