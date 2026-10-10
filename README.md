@@ -2,7 +2,7 @@
 
 A football career told with dice. Roll eight attributes, sign your first contract in your home country and play season by season on the d20, from the second division to the Champions League, the World Cup and the Ballon d'Or.
 
-**Play:** https://YOUR-USERNAME.github.io/rpgoal/
+**Play:** https://gia-42.github.io/rpgoal/
 
 ## What's in here
 
