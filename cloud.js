@@ -102,6 +102,8 @@
   .cbox .or::before,.cbox .or::after{content:"";flex:1;height:1px;background:var(--rule)}
   .cbox .gbtn{display:flex;align-items:center;justify-content:center;gap:10px}
   .cbox .gbtn svg{width:18px;height:18px}
+  .cbox .gsi{display:flex;justify-content:center;min-height:44px;color-scheme:light}
+  .cbox .gsi iframe{color-scheme:light;background:transparent}
   .cbox .msg{font-size:14px;color:var(--ink-2)}
   .cbox .msg.err{color:var(--bad)}
   .cbox .linkb{background:none;border:0;color:var(--ink-2);text-decoration:underline;font:inherit;font-size:13px;padding:0;align-self:flex-start;cursor:pointer}`;
@@ -134,10 +136,12 @@
         <button class="linkb" data-c="other">${T.other}</button>
         <button class="linkb" data-c="close">${T.close}</button>`;
     } else {
-      const google = !C.providers || C.providers.google !== false;
-      const gis = google && C.googleClientId && window.google && google.accounts && google.accounts.id;
+      const useGoogle = !C.providers || C.providers.google !== false;
+      // With a Google client ID, only Google's own button is shown, so the popup names this site
+      // (never the Supabase address). The plain redirect button is a fallback for setups without one.
+      const gis = useGoogle && !!C.googleClientId;
       body = `<h2>${T.title}</h2><div class="msg">${T.guest}</div>
-        ${google ? (gis ? `<div id="cgsi" style="display:flex;justify-content:center;min-height:44px"></div>` : `<button class="btn ghost gbtn" data-c="google">${G}${T.google}</button>`) + `<div class="or">${T.or}</div>` : ''}
+        ${useGoogle ? (gis ? `<div id="cgsi" class="gsi"></div>` : `<button class="btn ghost gbtn" data-c="google">${G}${T.google}</button>`) + `<div class="or">${T.or}</div>` : ''}
         <form data-f="email" class="stack" style="gap:10px"><label class="lbl" for="cemail">${T.email}</label>
         <input id="cemail" type="email" inputmode="email" autocomplete="email" required>
         <button class="btn" ${busyPanel ? 'disabled' : ''}>${busyPanel ? T.sending : T.send}</button></form>
@@ -146,14 +150,23 @@
     }
     panel.innerHTML = `<div class="cbox" role="dialog" aria-modal="true" aria-label="${T.title}">${body}</div>`;
     const slot = panel.querySelector('#cgsi');
-    if (slot) {
-      google.accounts.id.initialize({ client_id: C.googleClientId, callback: async r => {
+    if (slot) mountGsi(slot, 0);
+    const f = panel.querySelector('input'); if (f && !slot) f.focus();
+  }
+  let gsiInit = false;
+  function mountGsi(slot, tries) {
+    const g = window.google && window.google.accounts && window.google.accounts.id;
+    if (!slot.isConnected) return;
+    if (!g) { if (tries < 60) setTimeout(() => mountGsi(slot, tries + 1), 150); return; } // Google's script loads async
+    if (!gsiInit) {
+      g.initialize({ client_id: C.googleClientId, callback: async r => {
         const { error } = await sb.auth.signInWithIdToken({ provider: 'google', token: r.credential });
         if (error) drawPanel(error.message, true);
       } });
-      google.accounts.id.renderButton(slot, { theme: effTheme && effTheme() === 'dark' ? 'filled_black' : 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width: 300, locale: typeof lang !== 'undefined' && lang === 'pt' ? 'pt-BR' : 'en' });
+      gsiInit = true;
     }
-    const f = panel.querySelector('input'); if (f && !slot) f.focus();
+    const dark = typeof effTheme === 'function' && effTheme() === 'dark';
+    g.renderButton(slot, { theme: dark ? 'filled_black' : 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width: Math.min(320, slot.clientWidth || 300), locale: typeof lang !== 'undefined' && lang === 'pt' ? 'pt-BR' : 'en' });
   }
   async function onPanelClick(e) {
     if (e.target === panel) { closePanel(); return; }
