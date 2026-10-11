@@ -247,6 +247,9 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .vsline b{color:var(--ink)}
 .vsline .crest{flex:none}
 .clubline{display:flex;align-items:center;gap:7px}
+.agechk{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start;border:1px solid var(--rule-2);border-radius:10px;padding:14px}
+.agechk .dicecol .die{max-width:84px}
+.agechk.ok{border-color:var(--good)} .agechk.bad{border-color:var(--bad)}
 .clubline .crest{flex:none}
 .topp{color:var(--ink-3);font-size:.92em}
 .grec{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -548,6 +551,8 @@ en:{
  seasonComp:(y,c)=>`${y} season · ${c}`,moment:'Moment',momentFor:x=>`Before: ${x}`,
  reunionTag:'Reunion',nBack:c=>`Back at ${c}. The fans remember everything you did here.`,nRivalBack:(c,r)=>`Back at ${c}, but the fans haven’t forgotten your time at ${r}. You’ll have to win them over again.`,
  mvBack:c=>`${c} fans remember you: you’d return with the support you left with, plus a welcome-home boost.`,mvBackRival:(c,r)=>`${c} fans remember you played for ${r}. They’ll doubt you at first.`,mvLast:'This is your one pick of a last club. After it, only your first club and clubs where you’re an idol will call.',
+ ageT:'Keep playing?',ageDesc:a=>`You’re ${a}. Before the transfer window, your body has a say, and it gets harder every year.`,agePass:'Your body holds up. One more season!',ageFail:'Your body says enough. It’s time to hang up your boots.',ageHang:'Hang up your boots',
+ retireT:'Retire now?',retireDesc:'Your career ends here and goes into the Hall of Fame. This can’t be undone.',retireYes:'Retire',retireNo:'Keep playing',fortyChip:'Played until 40',n40:'You played until 40. A true ageless wonder.',
  mvKicker:'Transfer',mvTitle:c=>`Join ${c}?`,mvGo:c=>`Confirm transfer to ${c}`,mvStay:c=>`Stay at ${c}`,
  mvLegend:c=>`You’re a ${c} legend. Your name is on the walls of the stadium. Leaving now would break hearts.`,
  mvGreats:c=>`You’re becoming one of the greats here. ${c} fans already talk about you next to the club’s idols.`,
@@ -604,6 +609,7 @@ en:{
   ['Natural 1','Injury. Roll d10 to heal: 9–10 fine, 5–8 out 1 match, 2–4 out 2, 1 out 3 and −1 Speed.'],
   ['Natural 20','Wins any knockout match, and the focus attribute gets +1 at season’s end.'],
   ['Growth','+1 to everything each year until 22, then +3 spread out until 27. A high average d20 adds bonus points, and a hot season (average 13+) blocks decline. All growth stops after 33.'],
+  ['Retirement','From the summer after your season at 32, roll d20 + a Physical bonus to keep playing (from −3 at Physical 4 up to +5 at 20). It gets harder every year. Reach 40 and you retire a legend of longevity. From 32 you can also retire whenever you like.'],
   ['Transfers','Your rating, titles and form decide who calls. The biggest clubs in the world need a rating well above 17.'],
   ['World Cup','Every 4 years (2030, 2034…), halfway through the season. You’re called up if your rating is high enough for your nation; the favourites are the hardest squads to get into. Three group matches: win one and lose no more than one to reach the knockouts.'],
   ['Position','Your rolls decide it. Strikers score the most, wingers and attacking mids assist the most, and moments lean toward your position’s key stats.']],
@@ -662,6 +668,8 @@ pt:{
  seasonComp:(y,c)=>`Temporada ${y} · ${c}`,moment:'Momento',momentFor:x=>`Antes de: ${x}`,
  reunionTag:'Reencontro',nBack:c=>`De volta ao ${c}. A torcida lembra de tudo o que você fez aqui.`,nRivalBack:(c,r)=>`De volta ao ${c}, mas a torcida não esqueceu sua passagem pelo ${r}. Vai ter que reconquistá-la.`,
  mvBack:c=>`A torcida do ${c} lembra de você: você volta com o apoio que tinha ao sair, mais um bônus de volta para casa.`,mvBackRival:(c,r)=>`A torcida do ${c} lembra que você jogou no ${r}. No começo, vão desconfiar.`,mvLast:'Esta é sua única escolha de último clube. Depois dela, só seu primeiro clube e clubes onde você é ídolo vão te procurar.',
+ ageT:'Continuar jogando?',ageDesc:a=>`Você tem ${a} anos. Antes da janela de transferências, o corpo decide, e fica mais difícil a cada ano.`,agePass:'O corpo aguenta. Mais uma temporada!',ageFail:'O corpo pede para parar. É hora de pendurar as chuteiras.',ageHang:'Pendurar as chuteiras',
+ retireT:'Aposentar agora?',retireDesc:'Sua carreira termina aqui e vai para o Hall da Fama. Não dá para desfazer.',retireYes:'Aposentar',retireNo:'Continuar jogando',fortyChip:'Jogou até os 40',n40:'Você jogou até os 40. Um jogador que não envelhece.',
  mvKicker:'Transferência',mvTitle:c=>`Ir para o ${c}?`,mvGo:c=>`Confirmar ida para o ${c}`,mvStay:c=>`Ficar no ${c}`,
  mvLegend:c=>`Você é lenda do ${c}. Seu nome está nos muros do estádio. Sair agora partiria corações.`,
  mvGreats:c=>`Você está virando um dos grandes daqui. A torcida do ${c} já fala de você ao lado dos ídolos do clube.`,
@@ -718,6 +726,7 @@ pt:{
   ['1 natural','Lesão. Role d10 para se recuperar: 9–10 tudo bem, 5–8 fora por 1 jogo, 2–4 fora por 2, 1 fora por 3 e −1 de Velocidade.'],
   ['20 natural','Vence qualquer mata-mata, e o atributo foco ganha +1 no fim da temporada.'],
   ['Evolução','+1 em tudo por ano até os 22, depois +3 espalhados até os 27. Média alta no d20 dá pontos bônus, e uma fase iluminada (média 13+) segura o declínio. Toda evolução para depois dos 33.'],
+  ['Aposentadoria','A partir do verão depois da temporada aos 32, role d20 + um bônus de Físico para continuar jogando (de −3 com Físico 4 até +5 com 20). Fica mais difícil a cada ano. Quem chega aos 40 se aposenta como lenda da longevidade. A partir dos 32 você também pode se aposentar quando quiser.'],
   ['Transferências','Seu nível, títulos e fase decidem quem liga. Os maiores clubes do mundo pedem nível bem acima de 17.'],
   ['Copa do Mundo','A cada 4 anos (2030, 2034…), no meio da temporada. Você é convocado se seu nível for alto o bastante para a sua seleção; as favoritas são as mais difíceis de entrar. Três jogos no grupo: vença um e perca no máximo um para chegar ao mata-mata.'],
   ['Posição','Seus dados decidem. Centroavantes fazem mais gols, pontas e meias dão mais assistências, e os momentos puxam para os atributos da sua posição.']],
@@ -1063,7 +1072,8 @@ function endSeason(){
   S.history.push(h);
   if(legendReady()){S.legend=S.club.name;h.legend=true;S.legends=(S.legends||[]).concat({club:S.club.name,year:S.year})}
   s.trophies.forEach(x=>S.trophies.push(x));
-  S.growth=g; S.offers=S.age>=36?[]:h.fired?makeFiredOffers(h):makeOffers(h); S.phase='offseason';
+  S.growth=g; S.offers=h.fired?makeFiredOffers(h):makeOffers(h); S.phase='offseason';
+  if(S.age>=40&&!S.endReason){S.reached40=true;retire()}
 }
 function bdoScore(s,pos,L){
   const tp={league:L.div===1?(L.lvl===0?6:12):0,cup:3,cont:-1,wc:30,cwc:8};
@@ -1125,6 +1135,14 @@ function reunionClubs(){
   (S.legends||[]).forEach(l=>add(l.club,'back'));
   return out;
 }
+/* from the season you play at 32, your body gets a say every summer: d20 + (Physical−10)/2 against a rising DC */
+const AGE_DC={32:4,33:5,34:7,35:10,36:16,37:19,38:21,39:23};
+const ageCheckDue=h=>!!h&&S.phase==='offseason'&&S.age>=32&&S.age<=39&&!h.ageCheck;
+const ageBonus=()=>clamp(Math.floor((S.attrs.str-10)/2),-3,5);
+function ageCheck(v){
+  const h=S.history[S.history.length-1], dc=AGE_DC[S.age], bonus=ageBonus();
+  h.ageCheck={nat:v,bonus,dc,ok:v===20||(v!==1&&v+bonus>=dc)};
+}
 function newSeason(club){
   const last=S.history[S.history.length-1], notes=[];
   if(club){
@@ -1184,7 +1202,7 @@ function retire(){
   const hof=loadHof();
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
   hof.push({oneClub,id:Date.now(),name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
-    clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason});
+    forty:!!S.reached40,clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason});
   saveHof(hof); S.hofSaved=true;
 }
 
@@ -1348,7 +1366,7 @@ function tracker(){
 const trophyName=x=>x.kind==='raw'?x.name:compName(x.kind,x.lg);
 function offseasonView(){
   const h=S.history[S.history.length-1], g=S.growth, L=LEAGUES[h.league];
-  const done=S.age>=36, after=clubAfterMove(h);
+  const done=S.age>=40, after=clubAfterMove(h), ac=h.ageCheck, due=ageCheckDue(h), stop=ac&&!ac.ok;
   const offers=(S.offers||[]).map((o,i)=>offerCard(o,i,'sign',false)).join('');
   let wcLine='';
   if(h.wc===-1)wcLine=`<div class="muted">${t.leftOut2(COUNTRY[lang][S.nat])}</div>`;
@@ -1372,10 +1390,15 @@ function offseasonView(){
   <section class="panel stack" style="gap:14px">
     <div class="row between"><h3 style="font-size:22px">${done?t.eor:t.window}</h3>${done?'':`<span class="lbl">${t.nextAge(S.age+1)}</span>`}</div>
     ${h.scout&&!done?`<div class="chip gold" style="align-self:flex-start">${t.scouted}</div>`:''}
-    ${done?`<div class="muted">${t.hangUp}</div>`:`${offers?`<div class="offers">${offers}</div>`:`<div class="muted">${h.fired?t.noClub:t.noOffers}</div>`}
-    ${h.fired?'':`<div class="row"><button class="btn ghost" data-act="stay">${t.stay(esc(S.club.name))} · ${LEAGUES[after.league].name}</button></div>`}`}
-    ${S.age>=30&&!done?finalChapter():''}
-    ${S.age>=30||done||h.fired?`<div class="row"><button class="btn danger" data-act="retire">${retireArm?t.retireSure:t.retire}</button></div>`:''}
+    ${due||ac?`<div class="agechk ${ac?(ac.ok?'ok':'bad'):''}"><div class="dicecol">${dieSVG(20,ac?ac.nat:'',ac?(ac.nat===20?'crit':ac.ok?'':'fumble'):'','agechk')}</div>
+      <div class="stack" style="gap:8px"><span class="lbl">${t.ageT}</span><div>${t.ageDesc(S.age)}</div>
+      <div class="mods"><span class="chip">d20 + ${t.attrs.str} ${sg(ageBonus())}</span><span class="chip">${t.dc} ${AGE_DC[S.age]}</span></div>
+      ${ac?`<div class="sum num">d20 <b>${ac.nat}</b> ${sg(ac.bonus)} = <b>${ac.nat+ac.bonus}</b> ${t.vs} ${t.dc} ${ac.dc}</div><div class="verdict result v-${ac.ok?'good':'bad'}">${ac.ok?t.agePass:t.ageFail}</div>`
+        :`<div class="row"><button class="btn" data-act="agechk">${t.roll(20)}</button></div>`}</div></div>`:''}
+    ${done||due?'':stop?`<div class="row"><button class="btn danger" data-act="hangup">${t.ageHang}</button></div>`:`${offers?`<div class="offers">${offers}</div>`:`<div class="muted">${h.fired?t.noClub:t.noOffers}</div>`}
+    ${h.fired?'':`<div class="row"><button class="btn ghost" data-act="stay">${t.stay(esc(S.club.name))} · ${LEAGUES[after.league].name}</button></div>`}
+    ${S.age>=30?finalChapter():''}`}
+    ${!stop&&(S.age>=32||h.fired)?`<div class="row"><button class="btn danger" data-act="retire">${t.retire}</button></div>`:''}
   </section>`;
 }
 const firstClub=()=>S.history.length?{name:S.history[0].club,league:S.history[0].league,tier:S.history[0].tier}:null;
@@ -1397,6 +1420,7 @@ function retiredView(){
   return `<section class="panel hero stack" style="gap:16px"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2 style="font-size:34px">${esc(S.name||t.unnamed)}</h2>
   <div class="statline"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.length}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
   ${S.endReason?`<div class="banner bad">${t.endedInjury(S.endReason.age)}</div>`:''}
+  ${S.reached40?`<div class="banner goldb">${t.n40}</div>`:''}
   <div class="muted">${t.peak(fmt(peak))}</div>
   ${S.hofSaved?`<div class="chip gold" style="align-self:flex-start">${t.enshrined}</div>`:''}
   <div class="row"><button class="btn" data-act="reset">${t.newCareer}</button><button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="tab" data-v="hof">${t.tabHof(0)}</button></div></section>`;
@@ -1430,7 +1454,7 @@ function hofView(){
       <div class="hpath">${p.clubs.map(esc).join(' → ')}</div>
       <div class="lbl num" style="color:var(--ink)">${p.goals} ${t.goals} · ${p.assists} ${t.assists} · ${p.apps} ${t.apps} · ${t.rating} ${fmt(p.peak)}</div>
       ${cups?`<div class="cabinet">${cups}</div>`:''}
-      ${p.oneClub||(p.milestones||[]).length||p.rivalMoves||p.injury||(p.legends||[]).length?`<div class="cabinet">${p.oneClub?`<span class="chip oneclub">${t.oneClubChip(esc(p.clubs[0]))}</span>`:''}${(p.legends||[]).map(c=>`<span class="chip yel">★ ${t.legendChip(esc(c))}</span>`).join('')}${(p.milestones||[]).map(m=>`<span class="chip fit">${t.msChip(m.years,esc(m.club))}</span>`).join('')}${p.injury?`<span class="chip inj">${t.injuryChip}</span>`:''}${p.rivalMoves?`<span class="chip inj">${t.betrayChip}${p.rivalMoves>1?' ×'+p.rivalMoves:''}</span>`:''}</div>`:''}</div>
+      ${p.forty||p.oneClub||(p.milestones||[]).length||p.rivalMoves||p.injury||(p.legends||[]).length?`<div class="cabinet">${p.forty?`<span class="chip yel">${t.fortyChip}</span>`:''}${p.oneClub?`<span class="chip oneclub">${t.oneClubChip(esc(p.clubs[0]))}</span>`:''}${(p.legends||[]).map(c=>`<span class="chip yel">★ ${t.legendChip(esc(c))}</span>`).join('')}${(p.milestones||[]).map(m=>`<span class="chip fit">${t.msChip(m.years,esc(m.club))}</span>`).join('')}${p.injury?`<span class="chip inj">${t.injuryChip}</span>`:''}${p.rivalMoves?`<span class="chip inj">${t.betrayChip}${p.rivalMoves>1?' ×'+p.rivalMoves:''}</span>`:''}</div>`:''}</div>
       <div class="hscore"><div class="lbl">${t.legacy}</div><div class="n num">${p.score}</div></div></div>`}).join('');
   return `<section class="stack"><div class="stack" style="gap:4px"><h2 style="font-size:30px">${t.hofT}</h2><div class="muted small">${t.hofSub}</div></div><div class="hof">${rows}</div>
   <div class="row"><button class="btn danger sm" data-act="hofclear">${hofArm?t.hofClearSure:t.hofClear}</button></div></section>`;
@@ -1524,6 +1548,8 @@ function ovHTML(o){
   }
   if(o.k==='bdo')return `<div class="ovcard champ gold">${goldBall()}<span class="ov-kicker">${t.bdo} · ${o.year}</span><h2 class="ov-title">${esc(S.name||t.unnamed)}</h2><div class="ov-sub">${t.ovBdoSub(o.year)}</div>${tap}</div>`;
   if(o.k==='career')return recapHTML();
+  if(o.k==='retire')return `<div class="ovcard move"><span class="ov-kicker">${t.retire}</span><h2 class="ov-title" style="font-size:28px">${t.retireT}</h2><div class="ov-sub2">${t.retireDesc}</div>
+      <button class="btn danger" data-ov="go">${t.retireYes}</button><button class="btn ghost" data-ov="close">${t.retireNo}</button></div>`;
   if(o.k==='move'){
     const to=o.to, L=LEAGUES[to.league], big=(S.tenure||0)>=3||fanTier()>=3;
     return `<div class="ovcard move">${crest(kitOf(to.name),48)}<span class="ov-kicker">${t.mvKicker}</span><h2 class="ov-title" style="font-size:28px">${t.mvTitle(esc(to.name))}</h2><div class="ov-sub2">${esc(L.name)} · ${lgCountry(to.league)}</div>
@@ -1546,7 +1572,7 @@ function recapHTML(){
   const ms=(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years));
   const top3=H.filter(h=>h.bdo&&h.bdo>1&&h.bdo<=3).length;
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
-  const hon=[oneClub?`<span class="chip oneclub rc" ${dl()}>${t.oneClubChip(esc(clubs[0]))}</span>`:'',bdo?`<span class="cup wc rc" ${dl()}>${t.bdoN(bdo)}</span>`:'',top3?`<span class="chip rc" ${dl()}>${t.bdoTop3(top3)}</span>`:'',
+  const hon=[S.reached40?`<span class="chip rc" ${dl()}>${t.fortyChip}</span>`:'',oneClub?`<span class="chip oneclub rc" ${dl()}>${t.oneClubChip(esc(clubs[0]))}</span>`:'',bdo?`<span class="cup wc rc" ${dl()}>${t.bdoN(bdo)}</span>`:'',top3?`<span class="chip rc" ${dl()}>${t.bdoTop3(top3)}</span>`:'',
     ...(S.legends||[]).map(l=>`<span class="chip rc" ${dl()}>★ ${t.legendChip(esc(l.club))}</span>`),...ms.map(m=>`<span class="chip rc" ${dl()}>${t.msChip(m.years,esc(m.club))}</span>`)].join('');
   return `<div class="ovcard recap">${head}<span class="lbl rc" ${dl()}>${t.titlesL}</span><div class="cabinet">${cups||`<span class="ov-sub2 rc" ${dl()}>${t.recapNone}</span>`}</div>
     ${hon?`<span class="lbl rc" ${dl()}>${t.honours}</span><div class="cabinet">${hon}</div>`:''}
@@ -1572,11 +1598,13 @@ function closeOv(){
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k; ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo')confetti(ovEl,o);
   if(o.k==='career')countUp(ovEl);
   ovEl.addEventListener('click',e=>{
+    if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
+      if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='move'){const go=e.target.closest('[data-ov="go"]');if(go){const m=pendingMove;closeOv();doMove(m);return}
       if(e.target===ovEl||e.target.closest('[data-ov="close"]')){pendingMove=null;closeOv()}return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
@@ -1699,7 +1727,9 @@ function onClick(e){
   else if(act==='sign'){confirmMove({kind:'sign',i:+b.dataset.i})}
   else if(act==='stay'){newSeason(null);commit();window.scrollTo({top:0})}
   else if(act==='pick'){pickAttr(b.dataset.k);commit()}
-  else if(act==='retire'){if(!retireArm){retireArm=true;render();return}retireArm=false;retire();commit();window.scrollTo({top:0})}
+  else if(act==='retire'){ovQ.unshift({k:'retire'});flushOv()}
+  else if(act==='hangup'){retire();commit();window.scrollTo({top:0})}
+  else if(act==='agechk'){const v=d(20),el=app.querySelector('[data-die="agechk"]');rollDice(el?[el]:[],20,[v],x=>{const ok=x===20||(x!==1&&x+ageBonus()>=AGE_DC[S.age]);return x===20?'crit':ok?'':'fumble'},()=>{ageCheck(v);commit()})}
   else if(act==='home'){confirmMove({kind:'home'})}
   else if(act==='anyclub'){const v=(document.getElementById('anyclub')||{}).value;if(!v)return;const [Li,ti,...n]=v.split('|');confirmMove({kind:'any',club:{name:n.join('|'),league:+Li,tier:+ti,mode:'any'}})}
   else if(act==='reset'){
