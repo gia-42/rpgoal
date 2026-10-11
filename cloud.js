@@ -11,7 +11,8 @@
       sent: e => `We sent a 6-digit code to ${e}. It can take a minute to arrive.`, code: 'Code', verify: 'Log in', checking: 'Checking…',
       badEmail: 'Enter a valid email address.', badCode: 'That code didn’t work. Check it, or ask for a new one.', other: 'Use a different email',
       signedAs: e => `Logged in as ${e}`, synced: 'Saved to your account.', syncing: 'Saving…', offline: 'Couldn’t reach your account. Your game is still saved on this device and will sync later.',
-      syncNow: 'Sync now', logout: 'Log out', close: 'Close', merged: 'Your account save was loaded.'
+      syncNow: 'Sync now', logout: 'Log out', close: 'Close', merged: 'Your account save was loaded.',
+      uname: 'Username', unameHint: 'Shown instead of your email. 3 to 20 letters, numbers, dots, dashes or underscores.', unameSave: 'Save', unameSaving: 'Saving…', unameOk: 'Username saved.', unameBad: 'Use 3 to 20 letters, numbers, dots, dashes or underscores.', unamePick: 'Choose a username to show instead of your email.'
     },
     pt: {
       login: 'Entrar', title: 'Sua conta', guest: 'Entre para guardar sua carreira e seu Hall da Fama em todos os aparelhos em que você jogar.',
@@ -19,18 +20,20 @@
       sent: e => `Enviamos um código de 6 dígitos para ${e}. Pode levar um minuto para chegar.`, code: 'Código', verify: 'Entrar', checking: 'Verificando…',
       badEmail: 'Digite um e-mail válido.', badCode: 'Esse código não funcionou. Confira ou peça um novo.', other: 'Usar outro e-mail',
       signedAs: e => `Conectado como ${e}`, synced: 'Salvo na sua conta.', syncing: 'Salvando…', offline: 'Não foi possível acessar sua conta. O jogo continua salvo neste aparelho e sincroniza depois.',
-      syncNow: 'Sincronizar agora', logout: 'Sair', close: 'Fechar', merged: 'O jogo salvo na sua conta foi carregado.'
+      syncNow: 'Sincronizar agora', logout: 'Sair', close: 'Fechar', merged: 'O jogo salvo na sua conta foi carregado.',
+      uname: 'Nome de usuário', unameHint: 'Aparece no lugar do seu e-mail. De 3 a 20 letras, números, pontos, hífens ou sublinhados.', unameSave: 'Salvar', unameSaving: 'Salvando…', unameOk: 'Nome de usuário salvo.', unameBad: 'Use de 3 a 20 letras, números, pontos, hífens ou sublinhados.', unamePick: 'Escolha um nome de usuário para aparecer no lugar do seu e-mail.'
     }
   };
   const tt = () => L[typeof lang !== 'undefined' && lang === 'pt' ? 'pt' : 'en'];
   const escH = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  const uname = u => (u && u.user_metadata && u.user_metadata.username) || '';
   let sb = null, user = null, syncTimer = null, status = '', pending = null, busyPanel = false, note = '';
 
   // ----- header button -----
   window.cloudBtn = () => {
     if (!ready) return '';
-    const label = user ? escH((user.email || '').split('@')[0] || tt().title) : tt().login;
+    const label = user ? escH(uname(user) || (user.email || '').split('@')[0] || tt().title) : tt().login;
     return `<button class="theme-btn" data-cloud="open" aria-label="${tt().title}"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.6"/><path d="M2.8 14c.8-2.6 2.8-4 5.2-4s4.4 1.4 5.2 4"/></svg>${label}${user ? `<span class="cdot ${status === 'err' ? 'err' : ''}"></span>` : ''}</button>`;
   };
   if (!ready) return;
@@ -106,6 +109,7 @@
   .cbox .gsi iframe{color-scheme:light;background:transparent}
   .cbox .msg{font-size:14px;color:var(--ink-2)}
   .cbox .msg.err{color:var(--bad)}
+  .cbox .msg.small{font-size:12.5px;color:var(--ink-3)}
   .cbox .linkb{background:none;border:0;color:var(--ink-2);text-decoration:underline;font:inherit;font-size:13px;padding:0;align-self:flex-start;cursor:pointer}`;
   document.head.appendChild(css);
 
@@ -121,8 +125,15 @@
     let body;
     if (user) {
       const st = status === 'saving' ? T.syncing : status === 'err' ? T.offline : status === 'ok' ? T.synced : '';
-      body = `<h2>${T.title}</h2><div class="msg">${T.signedAs(escH(user.email || ''))}</div>
+      const un = uname(user);
+      body = `<h2>${un ? escH(un) : T.title}</h2><div class="msg">${T.signedAs(escH(user.email || ''))}</div>
         ${note ? `<div class="banner">${note}</div>` : ''}
+        <form data-f="uname" class="stack" style="gap:8px"><label class="lbl" for="cuname">${T.uname}</label>
+        ${un ? '' : `<div class="msg">${T.unamePick}</div>`}
+        <div class="row" style="gap:8px;flex-wrap:nowrap"><input id="cuname" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" value="${escH(un)}" placeholder="${escH((user.email || '').split('@')[0])}">
+        <button class="btn sm" style="width:auto;flex:none" ${busyPanel ? 'disabled' : ''}>${busyPanel ? T.unameSaving : T.unameSave}</button></div>
+        <div class="msg small">${T.unameHint}</div></form>
+        ${msg ? `<div class="msg ${isErr ? 'err' : ''}">${msg}</div>` : ''}
         ${st ? `<div class="msg ${status === 'err' ? 'err' : ''}">${st}</div>` : ''}
         <button class="btn ghost" data-c="sync">${T.syncNow}</button>
         <button class="btn danger" data-c="logout">${T.logout}</button>
@@ -151,7 +162,7 @@
     panel.innerHTML = `<div class="cbox" role="dialog" aria-modal="true" aria-label="${T.title}">${body}</div>`;
     const slot = panel.querySelector('#cgsi');
     if (slot) mountGsi(slot, 0);
-    const f = panel.querySelector('input'); if (f && !slot) f.focus();
+    const f = panel.querySelector('input'); if (f && !slot && !(user && uname(user))) f.focus();
   }
   let gsiInit = false;
   function mountGsi(slot, tries) {
@@ -182,6 +193,17 @@
   async function onSubmit(e) {
     e.preventDefault(); const T = tt();
     const form = e.target;
+    if (form.dataset.f === 'uname') {
+      const v = (panel.querySelector('#cuname').value || '').trim();
+      if (!/^[\p{L}\p{N}._-]{3,20}$/u.test(v)) { drawPanel(T.unameBad, true); return; }
+      busyPanel = true; drawPanel();
+      const { data, error } = await sb.auth.updateUser({ data: { username: v } });
+      busyPanel = false;
+      if (error) { drawPanel(error.message, true); return; }
+      if (data && data.user) user = data.user;
+      render(); drawPanel(T.unameOk);
+      return;
+    }
     if (form.dataset.f === 'email') {
       const email = (panel.querySelector('#cemail').value || '').trim();
       if (!/^\S+@\S+\.\S+$/.test(email)) { drawPanel(T.badEmail, true); return; }
