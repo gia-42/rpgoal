@@ -672,6 +672,33 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
  .onepage .stage.v .st-act>.btn{height:42px!important}
  .onepage header.top{padding-bottom:4px}
 }
+/* fixed frame for the match card */
+.onepage .wrap>.panel.hero:has(.stage.v){overflow:hidden!important;display:flex;flex-direction:column}
+.onepage .wrap>.panel.hero>.stage.v{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px;margin:0}
+.stage.v>.st-body{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.stage.v>.st-body>.st-head,.stage.v>.st-body>.st-tail,.stage.v>.st-body>.banner{flex:none}
+.stage.v>.st-act{flex:none;margin-top:auto}
+.stage.v>.st-body>.dicecol{flex:1 1 0!important}
+.stage.fit1 .banner.note1{display:none}
+.stage.fit1 .st-rule{font-size:11px!important;line-height:1.3}
+.stage.fit1 .evdesc{font-size:12px!important;line-height:1.3}
+.stage.fit2 .evbox.result>div:not(.fx){display:none}
+.stage.fit2 .evbox{padding:4px 8px!important}
+.stage.fit2 .st-head .banner{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-size:11px!important;padding:3px 8px!important}
+.stage.fit2 .st-rule{display:none}
+.stage.fit3 .mods .chip:not(.odds):not(.help):not(.hot){display:none}
+.stage.fit3 .evdesc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.onepage .stage.v.fit3 .st-body>.dicecol,.onepage .stage.v.fit3 .st-body>.dicecol>.dmain{min-height:54px!important}
+.stage.fit4 .evdesc,.stage.fit4 .st-body .vsline+.nemtag,.stage.fit4 .grec .muted{display:none}
+.stage.fit4 h3{font-size:15px!important}
+.onepage .stage.v.fit4 .st-body>.dicecol,.onepage .stage.v.fit4 .st-body>.dicecol>.dmain{min-height:44px!important}
+.stage.fit5 .st-head>.lbl,.stage.fit5 .evbox,.stage.fit5 .evline,.stage.fit5 .ctline{display:none}
+.onepage .stage.v.fit5 .st-body>.dicecol,.onepage .stage.v.fit5 .st-body>.dicecol>.dmain{min-height:36px!important}
+.stage.fit6 .st-tail .muted.small,.stage.fit6 .st-tail .small,.stage.fit6 .st-head .vsline,.stage.fit6 .nemtag{display:none!important}
+.stage.fit7 .st-tail .sum,.stage.fit7 .st-head .grec .lbl{display:none!important}
+.stage.fit3 .st-head>.banner{display:none!important}
+.stage.fit7 .verdict{font-size:16px!important}
+@media (max-height:650px){.onepage .wrap>.panel:not(.hero) .bars{display:none!important}.onepage .who .row{display:none!important}}
 /* top bar on the match card: inspiration and skip */
 .st-tools{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:26px;flex:none}
 .tool{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--rule-2);background:transparent;color:var(--ink-2);cursor:pointer;white-space:nowrap}
@@ -690,6 +717,13 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .picks.pop .pickbtn{background:#191c22;border:1px solid #2c3038;color:#f3f4f6;border-radius:9px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit}
 .picks.pop .pickbtn .lbl{color:#a9adb7}
 .picks.pop .pickbtn:disabled{opacity:.35}
+/* run-in pop-up */
+.runpop .vsline{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;font-size:14px}
+.runpop .grec{display:flex;gap:6px;align-items:center}
+.runpop .storydie .pair{display:flex;gap:10px;justify-content:center}
+.runpop .storydie .pair .die{width:80px;height:80px}
+.runpop.miracle{border-color:#7a5a1c;box-shadow:0 0 30px rgba(242,193,78,.15)}
+.runpop .mods .chip{background:#22252c;color:#e6e7ea;border-color:#2c3038}
 /* recovery pop-up */
 .ovcard.heal{gap:12px}
 .healdice{display:flex;gap:18px;justify-content:center;align-items:flex-end;margin:6px 0}
@@ -1500,6 +1534,7 @@ function activate(){
   if(s.redNext&&!st.res&&!st.red){st.red=1;s.redNext=0}
   if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;if(st.opp&&canNem(st)&&Math.random()<.4){st.opp=S.nem.club;st.nem=1}}
   if(st.ev!==undefined)return;
+  if(st.comp==='run'){st.ev=null;return}
   if(st.comp==='cwc'&&st.round===1&&!contIsUCL(S.club.league)){st.ev=s.out===0?'cwcgap':null;return}
   const final=st.round===lastRound(st.comp)&&st.comp!=='league';
   const p=st.comp==='league'?.65:final?.6:.3;
@@ -2065,7 +2100,12 @@ function stageCard(){
   const banner=st.comp==='run'&&st.g===0&&!r&&!evPending&&s.run?`<div class="banner">${t.runBanner[s.run.type]}</div>`:st.comp==='wc'&&st.round===0&&(st.g==null||st.g===0)&&!r&&!evPending&&s.wc&&s.wc.called?`<div class="banner">${t.calledUp(COUNTRY[lang][S.nat])}</div>`:'';
   let dice='', body='', act;
   const comp=compName(st.comp,S.club.league);
-  if(chPending){
+  if(st.comp==='run'&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
+    dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
+    body=`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${t.runT}</h3><!--split--><div class="evdesc">${t.runRule(s.run.type,runNeed(s))}</div><div class="grec">${s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}</span>`).join('')}<span class="lbl">${t.runPts(runPts(s),runNeed(s))}</span></div>`;
+    if(r){const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
+    else act=`<button class="btn" data-act="runov">${t.runPlay}</button>`;
+  }else if(chPending){
     const C=t.chx[st.ch];
     dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
     body=`<span class="rk sy">${t.rkStory}</span><span class="lbl">${S.year} · ${esc(comp)}</span><h3>${C[0]}</h3><!--split--><div class="evdesc">${C[1]}</div>`;
@@ -2090,7 +2130,7 @@ function stageCard(){
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(10,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie?`<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div>`:''}</div>`;
-    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
+    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
       body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">★ ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
@@ -2139,7 +2179,7 @@ function stageCard(){
   const nextB=(sim.match(/<button class="btn ghost sm simnext"[\s\S]*?<\/button>/)||[''])[0];
   const rkM=head.match(/^<span class="rk[^"]*">[^<]*<\/span>/), rkS=rkM?rkM[0]:'';
   const tools=`<div class="st-tools"><span class="tl">${inspB.replace('btn ghost sm insp','tool insp')}</span>${rkS||'<span></span>'}<span class="tr">${nextB.replace('btn ghost sm simnext','tool simnext')}</span></div>`;
-  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}">${evPending||chPending?'':notes.replace(/class="banner"/g,'class="banner note1"')}${tools}<div class="st-head">${banner}${head.replace(rkS,'')}</div>${dice}<div class="st-tail">${tail}</div><div class="st-act">${act||'<span class="slot main"></span>'}</div></div></section>`;
+  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}">${tools}<div class="st-body">${evPending||chPending?'':notes.replace(/class="banner"/g,'class="banner note1"')}<div class="st-head">${banner}${head.replace(rkS,'')}</div>${dice}<div class="st-tail">${tail}</div></div><div class="st-act">${act||'<span class="slot main"></span>'}</div></div></section>`;
 }
 function nextRoundName(st){const n={...st,round:st.round+1};return roundName(n)}
 function tracker(){
@@ -2281,6 +2321,14 @@ function cmpView(all){
 function rulesView(){
   return `<section class="panel stack" style="gap:12px"><h3 style="font-size:22px">${t.rulesT}</h3><div class="rules">${t.rules.map(([b,x])=>`<div><b>${b}.</b> ${x}</div>`).join('')}</div></section>`;
 }
+/* the match card never scrolls and its button never moves: if the content is too tall, it tightens step by step */
+function fitStage(){
+  const b=app.querySelector&&app.querySelector('.st-body'); if(!b||!document.body.classList.contains('onepage'))return;
+  const st=b.closest('.stage'); const L=['fit1','fit2','fit3','fit4','fit5','fit6','fit7'];
+  L.forEach(c=>st.classList.remove(c));
+  for(const c of L){if(b.scrollHeight<=b.clientHeight+1)break;st.classList.add(c)}
+}
+try{window.addEventListener('resize',()=>{try{fitStage()}catch(e){}})}catch(e){}
 function render(){
   const n=loadHof().length;
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
@@ -2304,7 +2352,8 @@ function render(){
   app.innerHTML=header+tabs+body+installRow();
   const fixv=(view==='season'&&!!S.season)||(view==='stats'&&S.history.length>0)||view==='ach'||view==='hof';
   const one=view==='game'||fixv;
-  try{document.body.classList.toggle('fixv',fixv)}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
+  try{document.body.classList.toggle('fixv',fixv)}catch(e){}
+  try{fitStage()}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
 }
 let lastKey='';
 
@@ -2752,6 +2801,7 @@ function ovHTML(o){
   if(o.k==='career')return recapHTML();
   if(o.k==='heal')return healHTML();
   if(o.k==='story')return storyHTML();
+  if(o.k==='run')return runHTML();
   if(o.k==='agechk')return ageHTML();
   if(o.k==='feat')return featHTML();
   if(o.k==='pick')return pickHTML();
@@ -2815,7 +2865,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
@@ -2823,6 +2873,7 @@ function flushOv(){
   ovEl.addEventListener('click',e=>{
     if(o.k==='heal'){healClick(e);return}
     if(o.k==='story'){storyClick(e);return}
+    if(o.k==='run'){runClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
     if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
@@ -2844,7 +2895,7 @@ function flushOv(){
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
 }
-document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
+document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick','run'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
   if(S.phase!=='season'||view!=='game'||!S.season)return;
   const s=S.season, st=s.stages[s.idx];
@@ -2957,7 +3008,7 @@ function rollDice(els,sides,finals,clsFn,done){
 }
 
 /* ---------- interaction ---------- */
-function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePick();maybePrep();maybeStory();flushOv();checkAch();scheduleAuto()}
+function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePick();maybePrep();maybeStory();maybeRun();flushOv();checkAch();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -3078,6 +3129,7 @@ function onClick(e){
   else if(act==='share'){const p=loadHof().find(x=>x.id===+b.dataset.id);if(p)shareCard(p)}
   else if(act==='hofcmp'){const id=+b.dataset.id;if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}render()}
   else if(act==='storyov'){maybeStory();flushOv()}
+  else if(act==='runov'){maybeRun();flushOv()}
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
   else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
@@ -3549,7 +3601,7 @@ pt:{
  quests:'Missões',nemesisWon:'Nêmesis derrotado: +1 inspiração, torcida +1',nemesisLost:'Seu nêmesis levou essa'
 }};
 Object.assign(T.en,TX.en);Object.assign(T.pt,TX.pt);
-Object.assign(T.en,{campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (up to your ceiling).`,pickT:'Pick +1 attribute',natural20:'Natural 20',rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='miracle'?`Miracle run: three wins against DC +4, with disadvantage, and the title is yours.`:k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
+Object.assign(T.en,{runNext:'Next game',runTable:'See the final table',runPlay:'Play the final stretch',campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (up to your ceiling).`,pickT:'Pick +1 attribute',natural20:'Natural 20',rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='miracle'?`Miracle run: three wins against DC +4, with disadvantage, and the title is yours.`:k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
  runBanner:{miracle:'A last, impossible chase. Win all three against the odds and the title is yours.',title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
@@ -3558,7 +3610,7 @@ Object.assign(T.en,{campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x}
  achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
  injRoll2nd:'Roll the second d10',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
-Object.assign(T.pt,{campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
+Object.assign(T.pt,{runNext:'Próximo jogo',runTable:'Ver a tabela final',runPlay:'Jogar a reta final',campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
  runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · prepara a rolagem do jogo',rkStory:'História',pS:'J',
@@ -3621,6 +3673,44 @@ function maybePick(){
 function pickHTML(){
   return `<div class="ovcard move prepop"><span class="ov-kicker">${t.natural20}</span><h2 class="ov-title" style="font-size:24px">${t.pickT}</h2><div class="ov-sub2">${t.critPick}</div>
     <div class="picks pop">${AK.map(k=>`<button class="pickbtn" data-ov="pick" data-k="${k}" ${S.attrs[k]>=20?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(20,S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
+}
+function maybeRun(){
+  if(view!=='game'||S.phase!=='season'||!S.season)return;
+  const s=S.season, st=s.stages[s.idx];
+  if(!st||st.comp!=='run'||s.pendingHeal||s.pickAttr||s.out>0||ovHas('run'))return;
+  if(s.last&&s.last.stage!==s.idx)return;
+  ovQ.push({k:'run'});
+}
+function runHTML(){
+  const s=S.season, st=s.stages[s.idx]; if(!st||st.comp!=='run')return'';
+  const r=s.last&&s.last.stage===s.idx?s.last:null, need=runNeed(s), pts=runPts(s), md=r?(r.pair?r.mode:null):effMode(st);
+  const games=s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}</span>`).join('');
+  const vals=r?(r.pair||[r.nat]):[];
+  const kept=r&&r.pair?(md==='adv'?(r.pair[0]>=r.pair[1]?0:1):(r.pair[0]<=r.pair[1]?0:1)):0;
+  const outc=v=>!r?'':v===20?'crit':v===1?'fumble':r.tone==='good'?'win':r.tone==='bad'?'lose':'mid';
+  const dice=md?`<div class="pair">${[0,1].map(i=>dieSVG(20,vals[i]??'',(r?outc(vals[i]):'')+(r&&i!==kept?' dropped':''),'rd'+i)).join('')}</div>`:dieSVG(20,r?r.nat:'',r?outc(r.nat):'','rd0');
+  let body='';
+  if(!r){const od=stageOdds(st);body=`<div class="mods" style="justify-content:center"><span class="chip">${t.dc} ${dcFor(st)}</span><span class="chip odds">${t.odds(od.need,Math.round(chanceOf(od.need,md,true)*100))}</span>${st.red?`<span class="chip inj">${t.redChip}</span>`:''}</div>`}
+  else body=`<div class="sum num">d20 <b>${r.nat}</b> ${sg(r.mods)}${r.hot?` ${sg(r.hot)}`:''} = <b>${r.total}</b> ${t.vs} ${t.dc} ${r.dc} <span class="lbl">(${t.drawAt(r.dc-3)})</span></div><div class="verdict result v-${r.tone}" style="font-size:22px">${t.wdl[r.wdl]}</div>${r.ct?`<div class="small ctline ${r.ct.good?'up':'down'}">${t.critD6(r.ct.v)} · ${r.ct.good?t.ctG[r.ct.v]:r.ct.v<=3?t.nat1:t.ctB[r.ct.v]}</div>`:''}`;
+  const left=s.stages.filter(x=>x.comp==='run'&&!x.res).length;
+  const btn=!r?`<button class="btn" data-ov="rroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`
+    :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
+    :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn" data-ov="rclose">${t.runTable}</button>`;
+  const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
+  return `<div class="ovcard move runpop ${s.run.type}"><span class="ov-kicker">${t.runT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
+    <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
+    <div class="ov-sub2">${t.runRule(s.run.type,need)}</div>
+    <div class="grec" style="justify-content:center">${games}<span class="lbl">${t.runPts(pts,need)}</span></div>
+    <div class="storydie runlie">${dice}</div>${insp}
+    ${body}${btn}</div>`;
+}
+function runClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, st=s.stages[s.idx];
+  if(v==='rinsp'){if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}save();ovEl.innerHTML=runHTML();return}
+  if(v==='rroll'){const v1=d(20),v2=d(20),els=[ovEl.querySelector('[data-die="rd0"]'),ovEl.querySelector('[data-die="rd1"]')].filter(Boolean);
+    rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovEl.innerHTML=runHTML()});return}
+  if(v==='rnext'){nextStage();save();const n=S.season&&S.season.stages[S.season.idx];if(S.phase==='season'&&n&&n.comp==='run'){ovEl.innerHTML=runHTML()}else{closeOv();commit()}return}
+  if(v==='rclose'){closeOv();commit();return}
 }
 function maybeStory(){
   if(view!=='game'||S.phase!=='season'||!S.season)return;
