@@ -546,6 +546,8 @@ en:{
  injOut:n=>`Out for ${n} match${n>1?'es':''}. The next ones play automatically.`,injBack:'Nothing serious. Back for the next match.',injSeason:'Season-ending injury. The rest of the season plays automatically.',injCarry:'Season-ending injury, and you’ll also miss the first third of next season.',
  injCareer:'Double 1. A career-ending injury.',injLucky:'Double 10! You come back stronger: +1 Physical.',endCareer:'End career',autoPlay:'Injured · matches play automatically',seasonOutChip:'Injured · out for the season',stillOut:'Still recovering from last season’s injury.',endedInjury:a=>`Career ended by injury at ${a}.`,injuryChip:'Ended by injury',goNext:x=>`Next: ${x}`,finish:'Finish season',simRest:'Sim rest of season',
  seasonComp:(y,c)=>`${y} season · ${c}`,moment:'Moment',momentFor:x=>`Before: ${x}`,
+ reunionTag:'Reunion',nBack:c=>`Back at ${c}. The fans remember everything you did here.`,nRivalBack:(c,r)=>`Back at ${c}, but the fans haven’t forgotten your time at ${r}. You’ll have to win them over again.`,
+ mvBack:c=>`${c} fans remember you: you’d return with the support you left with, plus a welcome-home boost.`,mvBackRival:(c,r)=>`${c} fans remember you played for ${r}. They’ll doubt you at first.`,mvLast:'This is your one pick of a last club. After it, only your first club and clubs where you’re an idol will call.',
  mvKicker:'Transfer',mvTitle:c=>`Join ${c}?`,mvGo:c=>`Confirm transfer to ${c}`,mvStay:c=>`Stay at ${c}`,
  mvLegend:c=>`You’re a ${c} legend. Your name is on the walls of the stadium. Leaving now would break hearts.`,
  mvGreats:c=>`You’re becoming one of the greats here. ${c} fans already talk about you next to the club’s idols.`,
@@ -577,7 +579,7 @@ en:{
  devHot:', and a hot season kept the decline away',devCap:'. Past 33, rolls no longer add growth',devEnd:'. Changes show on the sheet above.',
  window:'Transfer window',eor:'End of the road',nextAge:a=>`Next: age ${a}`,hangUp:'You’re 36. Time to hang up the boots.',sign:'Sign',noOffers:'No offers this window.',
  stay:c=>`Stay at ${c}`,retire:'Retire',retireSure:'Tap again to confirm retirement',
- finalT:'Final chapter',homeT:'Back where it started',homeDesc:c=>`Return to ${c} for the last years of your career.`,homeBtn:'Go home',anyT:'Pick your last club',anyDesc:'Your career earned it: any club in the world will take you.',anyBtn:'Sign',nHome:c=>`Back home at ${c}. The fans never forgot you.`,nAny:c=>`A final chapter at ${c}.`,scouted:'Scouts watched you this season',
+ finalT:'Final chapter',homeT:'Back where it started',homeDesc:c=>`Return to ${c} for the last years of your career.`,homeBtn:'Go home',anyT:'Pick your last club',anyDesc:'Your career earned it: any club in the world will take you. You can only do this once, and afterwards only your first club and clubs where you’re an idol will call.',anyBtn:'Sign',nHome:c=>`Back home at ${c}. The fans never forgot you.`,nAny:c=>`A final chapter at ${c}.`,scouted:'Scouts watched you this season',
  over:(a,b)=>`Career over · ${a}–${b}`,peak:p=>`Peak rating ${p}.`,enshrined:'Added to the Hall of Fame.',
  career:'Career',th:['Year','Age','Club','League','Pos','Apps','G','A','Rtg','Trophies','World Cup'],
  wc:'World Cup',calledUp:n=>`Called up by ${n} for the World Cup!`,leftOut:(n,need)=>`Left out of the ${n} World Cup squad. The bar was a ${need} rating.`,
@@ -658,6 +660,8 @@ pt:{
  injOut:n=>`Fora por ${n} jogo${n>1?'s':''}. Os próximos são simulados automaticamente.`,injBack:'Nada grave. Volta no próximo jogo.',injSeason:'Lesão que encerra a temporada. O resto da temporada é simulado automaticamente.',injCarry:'Lesão que encerra a temporada, e você ainda perde o primeiro terço da próxima.',
  injCareer:'Dois 1. Uma lesão que encerra a carreira.',injLucky:'Dois 10! Você volta mais forte: +1 de Físico.',endCareer:'Encerrar carreira',autoPlay:'Lesionado · jogos simulados automaticamente',seasonOutChip:'Lesionado · fora da temporada',stillOut:'Ainda se recuperando da lesão da temporada passada.',endedInjury:a=>`Carreira encerrada por lesão aos ${a} anos.`,injuryChip:'Encerrada por lesão',goNext:x=>`Próxima: ${x}`,finish:'Encerrar temporada',simRest:'Simular o resto da temporada',
  seasonComp:(y,c)=>`Temporada ${y} · ${c}`,moment:'Momento',momentFor:x=>`Antes de: ${x}`,
+ reunionTag:'Reencontro',nBack:c=>`De volta ao ${c}. A torcida lembra de tudo o que você fez aqui.`,nRivalBack:(c,r)=>`De volta ao ${c}, mas a torcida não esqueceu sua passagem pelo ${r}. Vai ter que reconquistá-la.`,
+ mvBack:c=>`A torcida do ${c} lembra de você: você volta com o apoio que tinha ao sair, mais um bônus de volta para casa.`,mvBackRival:(c,r)=>`A torcida do ${c} lembra que você jogou no ${r}. No começo, vão desconfiar.`,mvLast:'Esta é sua única escolha de último clube. Depois dela, só seu primeiro clube e clubes onde você é ídolo vão te procurar.',
  mvKicker:'Transferência',mvTitle:c=>`Ir para o ${c}?`,mvGo:c=>`Confirmar ida para o ${c}`,mvStay:c=>`Ficar no ${c}`,
  mvLegend:c=>`Você é lenda do ${c}. Seu nome está nos muros do estádio. Sair agora partiria corações.`,
  mvGreats:c=>`Você está virando um dos grandes daqui. A torcida do ${c} já fala de você ao lado dos ídolos do clube.`,
@@ -689,7 +693,7 @@ pt:{
  devHot:', e a fase iluminada segurou o declínio',devCap:'. Depois dos 33, as rolagens não trazem mais evolução',devEnd:'. As mudanças aparecem na ficha acima.',
  window:'Janela de transferências',eor:'Fim da linha',nextAge:a=>`Próx.: ${a} anos`,hangUp:'Você tem 36 anos. Hora de pendurar as chuteiras.',sign:'Assinar',noOffers:'Nenhuma proposta nesta janela.',
  stay:c=>`Ficar · ${c}`,retire:'Aposentar',retireSure:'Toque de novo para confirmar a aposentadoria',
- finalT:'Último capítulo',homeT:'De volta às origens',homeDesc:c=>`Voltar para ${c} nos últimos anos da carreira.`,homeBtn:'Voltar para casa',anyT:'Escolha seu último clube',anyDesc:'Sua carreira permite: qualquer clube do mundo te recebe.',anyBtn:'Assinar',nHome:c=>`De volta para casa: ${c}. A torcida nunca te esqueceu.`,nAny:c=>`Último capítulo: ${c}.`,scouted:'Olheiros te observaram nesta temporada',
+ finalT:'Último capítulo',homeT:'De volta às origens',homeDesc:c=>`Voltar para ${c} nos últimos anos da carreira.`,homeBtn:'Voltar para casa',anyT:'Escolha seu último clube',anyDesc:'Sua carreira permite: qualquer clube do mundo te recebe. Só dá para fazer isso uma vez, e depois só seu primeiro clube e clubes onde você é ídolo vão te procurar.',anyBtn:'Assinar',nHome:c=>`De volta para casa: ${c}. A torcida nunca te esqueceu.`,nAny:c=>`Último capítulo: ${c}.`,scouted:'Olheiros te observaram nesta temporada',
  over:(a,b)=>`Fim de carreira · ${a}–${b}`,peak:p=>`Nível máximo ${p}.`,enshrined:'Adicionado ao Hall da Fama.',
  career:'Carreira',th:['Ano','Idade','Clube','Liga','Pos','J','G','A','Nív','Títulos','Copa'],
  wc:'Copa do Mundo',calledUp:n=>`Convocado para a Copa do Mundo! (${n})`,leftOut:(n,need)=>`Fora da convocação para a Copa (${n}). Precisava de nível ${need}.`,
@@ -1075,6 +1079,7 @@ function clubAfterMove(h){
   return S.club;
 }
 function makeFiredOffers(h){
+  if(S.lockedIn)return reunionClubs();
   if(S.age>=31&&Math.random()<0.5)return[];
   const eff=rating(S.attrs)-0.5, cur=clubAfterMove(h), curPr=tierOf(cur.league,cur.tier).pr, c=[];
   LEAGUES.forEach((L,Li)=>L.tiers.forEach((tr,ti)=>{if(tr.pr<curPr&&eff>=tr.min)c.push({league:Li,tier:ti,pr:tr.pr})}));
@@ -1083,6 +1088,7 @@ function makeFiredOffers(h){
   return pool.map(o=>({name:pick(LEAGUES[o.league].tiers[o.tier].clubs.filter(n=>n!==S.club.name)),league:o.league,tier:o.tier,pr:o.pr}));
 }
 function makeOffers(h){
+  if(S.lockedIn)return reunionClubs();
   const eff=rating(S.attrs)+(h.pos<=3?0.5:0)+Math.min(1,h.trophies.length*0.25)+(h.goals>=20?0.3:0)+(h.scout?0.75:0);
   const cur=clubAfterMove(h), curPr=tierOf(cur.league,cur.tier).pr;
   const cands=[];
@@ -1102,6 +1108,23 @@ function makeOffers(h){
   if(Math.random()<.35){for(const o of res){const r=LEAGUES[o.league].tiers[o.tier].clubs.find(n=>isRival(S.club.name,n));if(r){o.name=r;break}}}
   return res;
 }
+/* coming back to a former club: its fans keep the support you left with (plus a welcome-home bonus),
+   unless you have played for one of its rivals since */
+function returnInfo(name){
+  const H=S.history; let lastI=-1; H.forEach((h,i)=>{if(h.club===name)lastI=i});
+  if(lastI<0)return null;
+  const later=H.slice(lastI+1).map(h=>h.club), riv=later.find(c=>isRival(name,c));
+  const mem=(S.clubLoy||{})[name];
+  return{rival:riv||null,loy:mem?mem.loy:null};
+}
+/* after the "pick your last club" move, only your first club and clubs where you became an idol call */
+function reunionClubs(){
+  const out=[], seen=new Set([S.club.name]), add=(name,mode)=>{if(seen.has(name))return;let h=null;S.history.forEach(x=>{if(x.club===name)h=x});if(!h)return;seen.add(name);out.push({name,league:h.league,tier:h.tier,pr:tierOf(h.league,h.tier).pr,mode})};
+  const f=firstClub(); if(f)add(f.name,'home');
+  Object.entries(S.clubLoy||{}).forEach(([n,m])=>{if(m.idol)add(n,'back')});
+  (S.legends||[]).forEach(l=>add(l.club,'back'));
+  return out;
+}
 function newSeason(club){
   const last=S.history[S.history.length-1], notes=[];
   if(club){
@@ -1109,10 +1132,17 @@ function newSeason(club){
     let L=0; const mode=club.mode;
     if(!last.fired&&!mode)S.hops=(S.hops||0)+1;
     if(!mode&&S.hops>=3){L-=2*(S.hops-2);notes.push(['nMerc'])}
-    if(mode==='home'){L=6;S.hops=0;notes.push(['nHome',club.name])}
-    if(mode==='any'){S.hops=0;notes.push(['nAny',club.name])}
+    // the fans of the club you leave remember how much they loved you
+    S.clubLoy=S.clubLoy||{}; S.clubLoy[from]={loy:hadL,idol:fanTier()>=5};
+    if(mode==='any'){S.hops=0;S.lockedIn=true;notes.push(['nAny',club.name])}
+    const back=returnInfo(club.name);
+    if(back){
+      S.hops=0;
+      if(back.rival){L=-3;notes.push(['nRivalBack',club.name,back.rival])}
+      else{L=(back.loy!=null?back.loy:3)+3;notes.push([mode==='home'?'nHome':'nBack',club.name])}
+    }else if(mode==='home'){L=6;S.hops=0;notes.push(['nHome',club.name])}
     if(isRival(from,club.name)){L-=4+(hadL>=7?3:0);S.rivalMoves=(S.rivalMoves||0)+1;notes.push(['nRival',from,club.name])}
-    S.loyalty=L; S.tenure=0; S.legend=null;
+    S.loyalty=Math.min(25,L); S.tenure=0; S.legend=(S.legends||[]).some(l=>l.club===club.name)?club.name:null;
     S.club={name:club.name,league:club.league,tier:club.tier};
   }else{
     const curPr=tierOf(S.club.league,S.club.tier).pr, best=(S.offers||[]).reduce((b,o)=>o.pr>(b?b.pr:-99)?o:b,null);
@@ -1196,7 +1226,7 @@ function sheet(){
 }
 function offerCard(o,i,act,euro){
   const riv=act==='sign'&&S.club&&isRival(S.club.name,o.name);
-  return `<div class="offer ${euro?'top':''}"><span class="lbl">${lgCountry(o.league)}${LEAGUES[o.league].div===2?` · ${t.div2}`:''}</span><h3>${esc(o.name)}</h3><span class="muted small">${LEAGUES[o.league].name}</span>${euro?`<span class="chip yel" style="align-self:flex-start">${t.euroOffer}</span>`:''}${riv?`<span class="chip inj" style="align-self:flex-start">${t.rivalTag(esc(S.club.name))}</span>`:''}<button class="btn" data-act="${act}" data-i="${i}">${t.sign}</button></div>`;
+  return `<div class="offer ${euro?'top':''}"><span class="lbl">${lgCountry(o.league)}${LEAGUES[o.league].div===2?` · ${t.div2}`:''}</span><h3>${esc(o.name)}</h3><span class="muted small">${LEAGUES[o.league].name}</span>${euro?`<span class="chip yel" style="align-self:flex-start">${t.euroOffer}</span>`:''}${riv?`<span class="chip inj" style="align-self:flex-start">${t.rivalTag(esc(S.club.name))}</span>`:''}${o.mode?`<span class="chip gold" style="align-self:flex-start">${o.mode==='home'?t.homeT:t.reunionTag}</span>`:''}<button class="btn" data-act="${act}" data-i="${i}">${t.sign}</button></div>`;
 }
 function createView(){
   const a=S.roll||{}, all=AK.every(k=>a[k]), some=AK.some(k=>a[k]);
@@ -1351,6 +1381,7 @@ function offseasonView(){
 const firstClub=()=>S.history.length?{name:S.history[0].club,league:S.history[0].league,tier:S.history[0].tier}:null;
 const greatCareer=()=>S.history.some(h=>h.bdo&&h.bdo<=3)||S.trophies.some(x=>x.kind==='wc');
 function finalChapter(){
+  if(S.lockedIn)return'';
   const f=firstClub(), home=f&&f.name!==S.club.name, any=greatCareer();
   if(!home&&!any)return'';
   const groups=LEAGUES.map((L,Li)=>`<optgroup label="${L.name} · ${lgCountry(Li)}">${L.tiers.map((tr,ti)=>tr.clubs.filter(n=>n!==S.club.name).map(n=>`<option value="${Li}|${ti}|${esc(n)}">${esc(n)}</option>`).join('')).join('')}</optgroup>`).join('');
@@ -1450,6 +1481,8 @@ function moveReasons(to){
   const next=Math.ceil((ten+1)/5)*5;
   if(ten>=3&&next-ten===1)out.push(t.mvMilestone(next));
   if(isRival(from,to.name))out.push(t.mvRival(esc(to.name)));
+  const bk=returnInfo(to.name); if(bk)out.push(bk.rival?t.mvBackRival(esc(to.name),esc(bk.rival)):t.mvBack(esc(to.name)));
+  if(to.mode==='any')out.push(t.mvLast);
   if(ten>=3||ft>=3)out.push(t.mvReset);
   if(!out.length)out.push(t.mvFree(esc(from)));
   return out;
