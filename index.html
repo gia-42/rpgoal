@@ -125,7 +125,7 @@ h1,h2,h3{font-family:var(--f-ui);margin:0;text-wrap:balance;letter-spacing:-.015
 .d10 .face,.dN .face{fill:var(--d10)} .d10 text,.dN text{fill:var(--d10num)}
 .die.evd .face{fill:var(--warn-soft);stroke:var(--warn)} .die.evd text{fill:var(--warn)}
 .die text{font-family:var(--f-num);font-weight:500;text-anchor:middle;dominant-baseline:central}
-.die.crit .face{fill:var(--good);stroke:var(--good)} .die.crit text{fill:#fff} .die.crit .edge{stroke:rgba(255,255,255,.35)}
+.die.crit .face{fill:#e2a93b;stroke:#c98f22} .die.crit text{fill:#1a1405} .die.crit .edge{stroke:rgba(255,255,255,.35)}
 .die.fumble .face{fill:var(--bad);stroke:var(--bad)} .die.fumble text{fill:#fff} .die.fumble .edge{stroke:rgba(255,255,255,.35)}
 .die.dropped{opacity:.25}
 .dbtn{background:none;border:1px solid transparent;padding:8px 2px;color:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:8px;width:100%}
@@ -246,6 +246,8 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .vsline{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2)}
 .vsline b{color:var(--ink)}
 .vsline .crest{flex:none}
+.clubline{display:flex;align-items:center;gap:7px}
+.clubline .crest{flex:none}
 .topp{color:var(--ink-3);font-size:.92em}
 .grec{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .grec .wd{font-family:var(--f-num);font-weight:600;font-size:12px;width:22px;height:22px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--rule-2);color:var(--ink-3)}
@@ -1188,7 +1190,7 @@ function sheet(){
   const r=rating(S.attrs), s=S.season;
   const cond=S.phase==='season'&&s&&s.out>0?`<span class="chip inj">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</span>`:`<span class="chip fit">${t.fit}</span>`;
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:'';
-  return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted">${esc(S.club.name)} · ${leagueLine(S.club.league)}</div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.qualified&&S.phase==='season'?`<span class="chip">${LEAGUES[S.club.league].cont}</span>`:''}${wcChip}</div></div>
+  return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted clubline">${crest(kitOf(S.club.name),14)}<span>${esc(S.club.name)} · ${leagueLine(S.club.league)}</span></div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.qualified&&S.phase==='season'?`<span class="chip">${LEAGUES[S.club.league].cont}</span>`:''}${wcChip}</div></div>
   <div class="rating"><div class="lbl">${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
   ${fanBar()}<div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div></section>`;
 }
@@ -1241,7 +1243,7 @@ function stageCard(){
   const comp=compName(st.comp,S.club.league);
   if(evPending){
     const e=EVMAP[st.ev];
-    dice=`<div class="dicecol kit" style="${kv}">${dieSVG(e.die,'','evd','ev')}</div>`;
+    dice=`<div class="dicecol">${dieSVG(e.die,'','evd','ev')}</div>`;
     body=`<span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><div class="evdesc">${t.ev[st.ev][1]}</div>
       <div class="mods"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>
       <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>${oppLine}`;
@@ -1255,7 +1257,7 @@ function stageCard(){
     const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.ok?'crit':'fumble')+' small','ev')}<span class="lbl">${t.moment}</span></div>`:'';
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(10,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
-    dice=`<div class="dicecol kit" style="${kv}">${main}<div class="row" style="gap:8px;justify-content:center">${evDie}${healDie}</div></div>`;
+    dice=`<div class="dicecol">${main}<div class="row" style="gap:8px;justify-content:center">${evDie}${healDie}</div></div>`;
     body=`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small">${t.groupRule}</div>`:''}`;
     if(st.evr){const e=EVMAP[st.ev];
       body+=`<div class="evbox result ${st.evr.ok?'ok':'bad'}"><span class="lbl">${t.ev[st.ev][0]} · d${e.die} ${st.evr.nat} ${sg(st.evr.bonus)} = ${st.evr.total} ${t.vs} ${st.evr.tgt} · ${st.evr.ok?t.success:t.fail}</span><div>${t.ev[st.ev][st.evr.ok?2:3]}</div>${st.evr.perfect?`<div class="small" style="color:var(--good)">${t.perfect('d'+e.die,t.attrs[e.at[0]])}</div>`:''}${fxLine(fx)}</div>`}
