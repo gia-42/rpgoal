@@ -527,7 +527,10 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .wagent.ok{border-color:var(--good)} .wagent.bad{border-color:#5a3a3a}
 .wagent .lbl{width:100%}
 /* career tab */
-.spark svg{width:100%;height:46px;display:block}
+.spark .sp-box>svg{width:100%;height:46px;display:block}
+.sp-box{position:relative;margin:4px 8px}
+.sp-c{position:absolute;transform:translate(-50%,-50%);line-height:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.sp-c .crest{display:block}
 .sp-l{fill:none;stroke:var(--accent);stroke-width:2;vector-effect:non-scaling-stroke}
 .sp-t{fill:var(--ink-2)} .sp-g{fill:#f2c14e}
 .sp-ax{font-size:10px;color:var(--ink-3);font-family:var(--f-num)}
@@ -598,8 +601,8 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .btn.simnext .tl-l{display:none!important} .btn.simnext .tl-s{display:inline!important}
 /* roll-type banner */
 .rk{align-self:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:999px}
-.rk.mt{background:var(--accent);color:#fff}
-.rk.ck{background:#f2c14e;color:#1b1b1b}
+.rk.mt{background:#f2c14e;color:#1b1b1b}
+.rk.ck{background:var(--accent);color:#fff}
 .rk.sy{background:#c96bd8;color:#fff}
 /* story / age / pre-season pop-ups */
 .storydie{display:flex;justify-content:center;margin:4px 0}
@@ -932,6 +935,20 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 @media (max-width:360px){.invg{grid-template-columns:1fr}}
 .camp .lbl{font-size:9.5px}
 .camp .featw{flex-wrap:wrap!important;gap:4px}
+
+/* penalty shootout */
+.penspop{gap:10px}
+.pkboard{display:flex;flex-direction:column;gap:8px;width:100%}
+.pkrow{display:grid;grid-template-columns:86px minmax(0,1fr) 26px;gap:6px;align-items:center;padding:6px 8px;border:1px solid #2c3038;border-radius:10px;background:#191c22}
+.pkrow.turn{border-color:var(--accent)}
+.pkteam{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.pkteam b{font-size:11.5px;line-height:1.15;color:#f3f4f6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.pkslots{display:flex;flex-wrap:wrap;gap:3px}
+.pk{width:30px;height:30px;display:inline-flex}
+.pk .die{width:30px!important;height:30px!important;max-width:30px!important}
+.pk.e .die{opacity:.35}
+.pk.you{outline:1.5px solid #f2c14e;border-radius:6px}
+.pksc{font-size:22px;font-weight:700;color:#fff;text-align:right}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1218,10 +1235,10 @@ en:{
  perfect:(d,a)=>`Perfect ${d}! +1 ${a}.`,
  heal:(h,m,lost)=>`Recovery d10 <b class="num">${h}</b>: ${m===0?'shake it off, fit for the next match':`out for ${m} match${m>1?'es':''}`}${lost?'. A bad one: −1 Speed for good':''}.`,
  didnt:'Didn’t play.',line:(ap,g,a)=>`${ap} app${ap===1?'':'s'} · ${g} goal${g===1?'':'s'} · ${a} assist${a===1?'':'s'}`,
- rollHeal:'Roll d10 to heal',recovery:'Recovery',
- injT:'Injury report',injD4Hint:'Roll a d4 for the medical report: 1–2 means disadvantage, 3–4 advantage.',injRoll4:'Roll d4',injAdv:'Advantage: the higher d10 counts.',injDis:'Disadvantage: the lower d10 counts.',injRoll10:'Roll 2d10',
+ rollHeal:'Roll 2d12 to recover',recovery:'Recovery',
+ injT:'Injury report',injD4Hint:'Roll a d4 for the medical report: 1–2 means disadvantage, 3–4 advantage.',injRoll4:'Roll d4',injAdv:'Advantage: the higher d12 counts.',injDis:'Disadvantage: the lower d12 counts.',injRoll10:'Roll 2d12',
  injOut:n=>`Out for ${n} match${n>1?'es':''}. The next ones play automatically.`,injBack:'Nothing serious. Back for the next match.',injSeason:'Season-ending injury. The rest of the season plays automatically.',injCarry:'Season-ending injury, and you’ll also miss the first third of next season.',
- injCareer:'Double 1. A career-ending injury.',injLucky:'Double 10! You come back stronger: +1 Physical.',endCareer:'End career',autoPlay:'Injured · matches play automatically',seasonOutChip:'Injured · out for the season',stillOut:'Still recovering from last season’s injury.',endedInjury:a=>`Career ended by injury at ${a}.`,injuryChip:'Ended by injury',goNext:x=>`Next: ${x}`,finish:'Finish season',simRest:'Sim rest of season',
+ injCareer:'Double 1. A career-ending injury.',injLucky:'Double 12! You come back stronger: +1 Physical.',endCareer:'End career',autoPlay:'Injured · matches play automatically',seasonOutChip:'Injured · out for the season',stillOut:'Still recovering from last season’s injury.',endedInjury:a=>`Career ended by injury at ${a}.`,injuryChip:'Ended by injury',goNext:x=>`Next: ${x}`,finish:'Finish season',simRest:'Sim rest of season',
  seasonComp:(y,c)=>`${y} season · ${c}`,moment:'Moment',momentFor:x=>`Before: ${x}`,
  reunionTag:'Reunion',nBack:c=>`Back at ${c}. The fans remember everything you did here.`,nRivalBack:(c,r)=>`Back at ${c}, but the fans haven’t forgotten your time at ${r}. You’ll have to win them over again.`,
  mvBack:c=>`${c} fans remember you: you’d return with the support you left with, plus a welcome-home boost.`,mvBackRival:(c,r)=>`${c} fans remember you played for ${r}. They’ll doubt you at first.`,mvLast:'This is your one pick of a last club. After it, only your first club and clubs where you’re an idol will call.',
@@ -1274,7 +1291,7 @@ en:{
  devLead:'Development: ',devBase:['+1 to every attribute for age','no age growth','−1 to every attribute for age','+4 spread across attributes for age'],devSpd:', −1 Speed',
  devBonus:n=>`, plus ${n} bonus point${n>1?'s':''} for your rolls`,devCrit:n=>`, plus ${n} from perfect rolls`,devTrain:n=>`, plus ${n} from extra training`,
  devHot:', and a hot season kept the decline away',devCap:'. Past 33, rolls no longer add growth',devEnd:'. Changes show on the sheet above.',
- window:'Transfer window',eor:'End of the road',nextAge:a=>`Next: age ${a}`,hangUp:'You’re 36. Time to hang up the boots.',sign:'Sign',noOffers:'No offers this window.',
+ window:'Transfer window',eor:'End of the road',nextAge:a=>`Next: age ${a}`,hangUp:'You’re 36. Time to hang up the boots.',sign:'Sign',noOffers:'No offers this window.',extT:'Under contract',extLocked:'You signed an extension this season, so you stay at the club this window.',
  stay:c=>`Stay at ${c}`,retire:'Retire',retireSure:'Tap again to confirm retirement',
  finalT:'Final chapter',homeT:'Back where it started',homeDesc:c=>`Return to ${c} for the last years of your career.`,homeBtn:'Go home',anyT:'Pick your last club',anyDesc:'Your career earned it: any club in the world will take you. You can only do this once, and afterwards only your first club and clubs where you’re an idol will call.',anyBtn:'Sign',nHome:c=>`Back home at ${c}. The fans never forgot you.`,nAny:c=>`A final chapter at ${c}.`,scouted:'Scouts watched you this season',
  over:(a,b)=>`Career over · ${a}–${b}`,peak:p=>`Peak rating ${p}.`,enshrined:'Added to the Hall of Fame.',
@@ -1299,7 +1316,7 @@ en:{
   ['Each d20','d20 + player mod + club mod + the coach’s focus attribute ÷ 5, against a DC.'],
   ['Promotion','Finish top 4 in a second division and your club goes up. Small clubs that finish in the bottom 3 go down.'],
   ['Continental cups','After your first season, your own finish decides, whatever club you play for (a big first club starts in its continental cup): top 4 means the Champions League or Libertadores, 5th to 8th the Europa League or Sudamericana. Winning the national cup or a continental cup also earns a main-cup spot.'],
-  ['Natural 1','Injury. Roll d10 to heal: 9–10 fine, 5–8 out 1 match, 2–4 out 2, 1 out 3 and −1 Speed.'],
+  ['Natural 1','Injury. Roll 2d12 to recover: 11–12 fine, 8–10 out 1 match, 5–7 out 2, 2–4 out 3, 1 out for the season. Two 1s end your career.'],
   ['Natural 20','Wins any knockout match, and the focus attribute gets +1 at season’s end.'],
   ['Growth','+1 to everything each year until 22, then +3 spread out until 27. A high average d20 adds bonus points, and a hot season (average 13+) blocks decline. All growth stops after 33.'],
   ['Retirement','From the summer after your season at 32, roll d20 + a Physical bonus to keep playing (from −3 at Physical 4 up to +5 at 20). It gets harder every year. Reach 40 and you retire a legend of longevity. From 32 you can also retire whenever you like.'],
@@ -1354,10 +1371,10 @@ pt:{
  perfect:(d,a)=>`${d} perfeito! +1 de ${a}.`,
  heal:(h,m,lost)=>`Recuperação d10 <b class="num">${h}</b>: ${m===0?'nada grave, apto para o próximo jogo':`fora por ${m} jogo${m>1?'s':''}`}${lost?'. Lesão séria: −1 de Velocidade para sempre':''}.`,
  didnt:'Não jogou.',line:(ap,g,a)=>`${ap} jogo${ap===1?'':'s'} · ${g} gol${g===1?'':'s'} · ${a} assistência${a===1?'':'s'}`,
- rollHeal:'Rolar d10 para se recuperar',recovery:'Recuperação',
- injT:'Boletim médico',injD4Hint:'Role um d4 para o laudo: 1–2 dá desvantagem, 3–4 dá vantagem.',injRoll4:'Rolar d4',injAdv:'Vantagem: vale o maior d10.',injDis:'Desvantagem: vale o menor d10.',injRoll10:'Rolar 2d10',
+ rollHeal:'Rolar 2d12 para se recuperar',recovery:'Recuperação',
+ injT:'Boletim médico',injD4Hint:'Role um d4 para o laudo: 1–2 dá desvantagem, 3–4 dá vantagem.',injRoll4:'Rolar d4',injAdv:'Vantagem: vale o maior d12.',injDis:'Desvantagem: vale o menor d12.',injRoll10:'Rolar 2d12',
  injOut:n=>`Fora por ${n} jogo${n>1?'s':''}. Os próximos são simulados automaticamente.`,injBack:'Nada grave. Volta no próximo jogo.',injSeason:'Lesão que encerra a temporada. O resto da temporada é simulado automaticamente.',injCarry:'Lesão que encerra a temporada, e você ainda perde o primeiro terço da próxima.',
- injCareer:'Dois 1. Uma lesão que encerra a carreira.',injLucky:'Dois 10! Você volta mais forte: +1 de Físico.',endCareer:'Encerrar carreira',autoPlay:'Lesionado · jogos simulados automaticamente',seasonOutChip:'Lesionado · fora da temporada',stillOut:'Ainda se recuperando da lesão da temporada passada.',endedInjury:a=>`Carreira encerrada por lesão aos ${a} anos.`,injuryChip:'Encerrada por lesão',goNext:x=>`Próxima: ${x}`,finish:'Encerrar temporada',simRest:'Simular o resto da temporada',
+ injCareer:'Dois 1. Uma lesão que encerra a carreira.',injLucky:'Dois 12! Você volta mais forte: +1 de Físico.',endCareer:'Encerrar carreira',autoPlay:'Lesionado · jogos simulados automaticamente',seasonOutChip:'Lesionado · fora da temporada',stillOut:'Ainda se recuperando da lesão da temporada passada.',endedInjury:a=>`Carreira encerrada por lesão aos ${a} anos.`,injuryChip:'Encerrada por lesão',goNext:x=>`Próxima: ${x}`,finish:'Encerrar temporada',simRest:'Simular o resto da temporada',
  seasonComp:(y,c)=>`Temporada ${y} · ${c}`,moment:'Momento',momentFor:x=>`Antes de: ${x}`,
  reunionTag:'Reencontro',nBack:c=>`De volta ao ${c}. A torcida lembra de tudo o que você fez aqui.`,nRivalBack:(c,r)=>`De volta ao ${c}, mas a torcida não esqueceu sua passagem pelo ${r}. Vai ter que reconquistá-la.`,
  mvBack:c=>`A torcida do ${c} lembra de você: você volta com o apoio que tinha ao sair, mais um bônus de volta para casa.`,mvBackRival:(c,r)=>`A torcida do ${c} lembra que você jogou no ${r}. No começo, vão desconfiar.`,mvLast:'Esta é sua única escolha de último clube. Depois dela, só seu primeiro clube e clubes onde você é ídolo vão te procurar.',
@@ -1410,7 +1427,7 @@ pt:{
  devLead:'Evolução: ',devBase:['+1 em todos os atributos pela idade','sem evolução pela idade','−1 em todos os atributos pela idade','+4 espalhados pelos atributos pela idade'],devSpd:', −1 de Velocidade',
  devBonus:n=>`, mais ${n} ponto${n>1?'s':''} bônus pelas rolagens`,devCrit:n=>`, mais ${n} por rolagens perfeitas`,devTrain:n=>`, mais ${n} do treino extra`,
  devHot:', e a fase iluminada segurou o declínio',devCap:'. Depois dos 33, as rolagens não trazem mais evolução',devEnd:'. As mudanças aparecem na ficha acima.',
- window:'Janela de transferências',eor:'Fim da linha',nextAge:a=>`Próx.: ${a} anos`,hangUp:'Você tem 36 anos. Hora de pendurar as chuteiras.',sign:'Assinar',noOffers:'Nenhuma proposta nesta janela.',
+ window:'Janela de transferências',eor:'Fim da linha',nextAge:a=>`Próx.: ${a} anos`,hangUp:'Você tem 36 anos. Hora de pendurar as chuteiras.',sign:'Assinar',noOffers:'Nenhuma proposta nesta janela.',extT:'Sob contrato',extLocked:'Você renovou o contrato nesta temporada, então fica no clube nesta janela.',
  stay:c=>`Ficar · ${c}`,retire:'Aposentar',retireSure:'Toque de novo para confirmar a aposentadoria',
  finalT:'Último capítulo',homeT:'De volta às origens',homeDesc:c=>`Voltar para ${c} nos últimos anos da carreira.`,homeBtn:'Voltar para casa',anyT:'Escolha seu último clube',anyDesc:'Sua carreira permite: qualquer clube do mundo te recebe. Só dá para fazer isso uma vez, e depois só seu primeiro clube e clubes onde você é ídolo vão te procurar.',anyBtn:'Assinar',nHome:c=>`De volta para casa: ${c}. A torcida nunca te esqueceu.`,nAny:c=>`Último capítulo: ${c}.`,scouted:'Olheiros te observaram nesta temporada',
  over:(a,b)=>`Fim de carreira · ${a}–${b}`,peak:p=>`Nível máximo ${p}.`,enshrined:'Adicionado ao Hall da Fama.',
@@ -1435,7 +1452,7 @@ pt:{
   ['Cada d20','d20 + mod do jogador + mod do clube + o atributo foco do técnico ÷ 5, contra uma CD.'],
   ['Acesso','Termine entre os 4 primeiros na segunda divisão e seu clube sobe. Clubes pequenos que terminam entre os 3 últimos caem.'],
   ['Copas continentais','Depois da primeira temporada, sua própria campanha decide, seja qual for o clube (um clube grande no início já começa no torneio continental): G4 vale Champions League ou Libertadores, do 5º ao 8º vale Europa League ou Sul-Americana. Ganhar a copa nacional ou uma copa continental também garante vaga no torneio principal.'],
-  ['1 natural','Lesão. Role d10 para se recuperar: 9–10 tudo bem, 5–8 fora por 1 jogo, 2–4 fora por 2, 1 fora por 3 e −1 de Velocidade.'],
+  ['1 natural','Lesão. Role 2d12 para se recuperar: 11–12 tudo bem, 8–10 fora por 1 jogo, 5–7 fora por 2, 2–4 fora por 3, 1 fora da temporada. Dois 1 encerram a carreira.'],
   ['20 natural','Vence qualquer mata-mata, e o atributo foco ganha +1 no fim da temporada.'],
   ['Evolução','+1 em tudo por ano até os 22, depois +3 espalhados até os 27. Média alta no d20 dá pontos bônus, e uma fase iluminada (média 13+) segura o declínio. Toda evolução para depois dos 33.'],
   ['Aposentadoria','A partir do verão depois da temporada aos 32, role d20 + um bônus de Físico para continuar jogando (de −3 com Físico 4 até +5 com 20). Fica mais difícil a cada ano. Quem chega aos 40 se aposenta como lenda da longevidade. A partir dos 32 você também pode se aposentar quando quiser.'],
@@ -1520,6 +1537,8 @@ function fixSave(x){
   if(x.season&&(!x.season.v||x.season.v<4))x.season=null;
   if(x.season&&x.season.pendingHeal&&!x.season.inj)x.season.inj={d4:null,d10:null};
   delete x.nem; delete x.mates;
+  if(x.season&&x.season.pendingPens&&!x.season.pens){x.season.pendingPens=false}
+  if(x.season&&x.season.pendingLMC&&x.season.pensStage==null){x.season.pendingLMC=false}
   if(x.phase!=='create'){if(!x.feats)x.feats=[];if(!x.items)x.items=[];if(!x.mates)x.mates=[];if(x.insp==null)x.insp=0;if(x.pot==null)x.pot=1+Math.floor(Math.random()*10);if(x.startAvg==null)x.startAvg=x.roll&&x.roll.spd?AK.reduce((a,k)=>a+(x.roll[k]||5),0)/AK.length:6}
   return x;
 }
@@ -1754,7 +1773,7 @@ function resolveStage(v1,v2){
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
     if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&AK.some(k=>S.attrs[k]<20))s.pickAttr=true}
-    if(nat===1&&critBad(r,st)){r.injury=true;s.injuries++;s.pendingHeal=true;s.inj={d4:null,d10:null}}
+    if(nat===1){r.injury=true;s.injuries++;s.pendingHeal=true;s.inj={d4:null,d10:null}}
   }
   r.dc=dcFor(st);
   const margin=r.total-r.dc; r.margin=margin;
@@ -1778,14 +1797,10 @@ function resolveStage(v1,v2){
     else if(st.g===2)r.groupThrough=true;
     st.res={tone:r.tone,wdl:k,missed:!!r.missed};
   }else{
-    const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
-    r.win=win; r.tone=win?'good':'bad'; r.champ=win&&st.round===lastRound(st.comp);
-    if(r.champ){s.trophies.push(st.comp==='wc'?{kind:'wc',year:S.year,w:isW()?1:undefined}:{kind:st.comp,lg:S.club.league,year:S.year});ovPush({k:'champ',comp:st.comp,lg:S.club.league,year:S.year,opp:st.opp||null})}
-    if(r.champ&&st.comp==='cont')s.cwcDue=1;
-    if(!win)s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp===st.comp&&!x.res)x.res={skipped:true}});
-    if(st.comp==='wc'){if(r.champ)s.wcRes=5;else if(!win)s.wcRes=st.round}
-    st.res={tone:r.tone,win,champ:r.champ,missed:!!r.missed};
-    if(st.round===lastRound(st.comp)&&!r.missed){S.fin=S.fin||{w:0,l:0};win?S.fin.w++:S.fin.l++}
+    const ko=isKO(st), tie=ko&&!r.missed&&!isCrit(nat)&&nat!==1&&(r.total===r.dc||r.total===r.dc-1);
+    if(tie&&r.total===r.dc&&Math.random()<.7){r.pens=1;r.lmc=1;r.tone='mid';s.pendingLMC=true;s.pensStage=s.idx;st.res={tone:'mid',pens:1,pending:1}}
+    else if(tie){r.pens=1;r.tone='mid';s.pendingPens=true;s.pensStage=s.idx;pensStart(st);st.res={tone:'mid',pens:1,pending:1}}
+    else koSettle(st,r,r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc+(ko?1:0))));
   }
   if(!r.missed)addStats(r,gamesFor(st),nat);
   if(r.crit&&!r.missed)critGood(r);
@@ -1800,17 +1815,17 @@ function autoPick(){const w=POS[myPos()].w,ks=AK.filter(k=>S.attrs[k]<20).sort((
 function injD4(v){const s=S.season;s.inj.d4=v;s.inj.adv=v>=3||hasFeat('ironlungs')||!!s.rested;if(s.rested&&!(v>=3))s.inj.restUsed=1;s.rested=0}
 function injD10(a,b){
   const s=S.season, i=s.inj; let kept=i.adv?Math.max(a,b):Math.min(a,b);
-  if(hasItem('tape')&&!(a===1&&b===1)&&kept<10){kept++;i.tape=1}
-  if(a===10&&b===10)giveItem('tape');
+  if(hasItem('tape')&&!(a===1&&b===1)&&kept<12){kept++;i.tape=1}
+  if(a===12&&b===12)giveItem('tape');
   i.d10=[a,b]; i.kept=kept; s.pendingHeal=false;
   if(a===1&&b===1){i.career=true;s.careerOver=true;return}
-  if(a===10&&b===10){i.lucky=true;S.attrs.str=Math.min(20,S.attrs.str+1)}
+  if(a===12&&b===12){i.lucky=true;S.attrs.str=Math.min(20,S.attrs.str+1)}
   if(kept===1){
     const L1=s.stages.find(x=>x.comp==='league'&&x.round===((s.v||4)>=5?2:1));
     const past=!!L1&&(!!L1.res||s.stages.indexOf(L1)<=s.idx);
     i.season=true; s.seasonOut=true; s.out=99; s.tapeDue=1;
     if(past){i.carry=true;S.carryOut=2}
-  }else{i.out=kept>=10?0:kept>=8?1:kept>=5?2:3; s.out=i.out}
+  }else{i.out=kept>=11?0:kept>=8?1:kept>=5?2:3; s.out=i.out}
 }
 function endCareer(){S.endReason={kind:'injury',age:S.age};endSeason();retire()}
 /* the World Cup breaks up the season: it is played before the second half of the league */
@@ -1826,7 +1841,7 @@ function wcCallUp(s){
   s.wc={called:false,need}; S.notes=[s.seasonOut?['nLeftOutInj',S.nat]:['nLeftOut',S.nat]]; return null;
 }
 function nextStage(){
-  const s=S.season; s.last=null;
+  const s=S.season; if(s.pendingLMC)lmcAuto(); if(s.pendingPens)pensAuto(); s.last=null;
   if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
   if(isWCYear(S.year)&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
@@ -1917,7 +1932,7 @@ function endSeason(){
   if(S.tenure%5===0){milestone=S.tenure;S.loyalty=(S.loyalty||0)+3;S.milestones.push({club:S.club.name,years:S.tenure,year:S.year})}
   const g=grow();
   const h={teamRank:cr.rank,teamOf:cr.of,size:L.size,qual,shieldUsed,shieldBack,fired,bdo,milestone,year:S.year,age:S.age,club:S.club.name,league:S.club.league,tier:S.club.tier,pos,move,goals:s.goals,assists:s.assists,apps:s.apps,
-    trophies:s.trophies.slice(),rating:+rating(S.attrs).toFixed(1),injuries:s.injuries,scout:s.scout,
+    trophies:s.trophies.slice(),rating:+rating(S.attrs).toFixed(1),injuries:s.injuries,scout:s.scout,ext:s.ext?1:0,
     wc:s.wc?(s.wc.called?(s.wcRes==null?5:s.wcRes):-1):null,wcNeed:s.wc?s.wc.need:null};
   S.history.push(h);
   afterSeason(h,s);
@@ -1951,6 +1966,7 @@ function makeFiredOffers(h){
 }
 function makeOffers(h){
   if(S.lockedIn)return reunionClubs();
+  if(h.ext)return [];
   const eff=rating(S.attrs)+(h.pos<=3?0.5:0)+Math.min(1,h.trophies.length*0.25)+(h.goals>=20?0.3:0)+(h.scout?0.75:0);
   const cur=clubAfterMove(h), curPr=tierOf(cur.league,cur.tier).pr;
   const cands=[];
@@ -2041,7 +2057,9 @@ function simRest(){
     const s=S.season, st=s.stages[s.idx];
     if(s.careerOver){endCareer();break}
     if(s.pickAttr){autoPick();continue}
-    if(s.pendingHeal){if(s.inj.d4==null)injD4(d(4));else injD10(d(10),d(10));continue}
+    if(s.pendingLMC){lmcAuto();continue}
+    if(s.pendingPens){pensAuto();continue}
+    if(s.pendingHeal){if(s.inj.d4==null)injD4(d(4));else injD10(d(12),d(12));continue}
     if(s.last){nextStage();continue}
     if(st.ch&&!st.chr){resolveChoice(autoChoice(st),d(20));continue}
     if(st.ev&&!st.evr){resolveEvent(d(EVMAP[st.ev].die));continue}
@@ -2104,7 +2122,7 @@ function dieSVG(type,val,cls='',id=''){
 }
 const dieCls=sides=>v=>v===sides?'crit':v===1?'fumble':'';
 const d10cls=dieCls(10);
-const healCls=v=>v>=9?'crit':v===1?'fumble':'';
+const healCls=v=>v>=11?'crit':v===1?'fumble':'';
 function attrBars(a,before){
   return `<div class="abil">${AK.map(k=>{const diff=before?a[k]-before[k]:0;
     return `<div class="ab-cell"><span class="lbl">${aLbl(k)}</span><span class="ab-v num">${a[k]}${diff>0?`<span class="gain">+${diff}</span>`:diff<0?`<span class="loss">${diff}</span>`:''}</span><span class="ab-m num">${sg(keyBonus(a[k]))}</span></div>`}).join('')}</div>`;
@@ -2206,7 +2224,7 @@ function stageCard(){
     const chDie=st.chr&&!st.chr.auto?`<div class="dcell">${dieSVG(20,st.chr.nat,(st.chr.nat===20?'crit':st.chr.nat===1?'fumble':st.chr.ok?'win':'lose')+' small','chd')}<span class="lbl">${t.storyT}</span></div>`:'';
     const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small','ev')}<span class="lbl">${t.moment}</span></div>`:'';
     const I=r&&r.injury&&s.inj?s.inj:null;
-    const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(10,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
+    const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie?`<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div>`:''}</div>`;
     body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
@@ -2228,6 +2246,9 @@ function stageCard(){
       else if(r.champ)verdict=t.winners(comp);
       else if(r.win)verdict=st.round===0&&st.comp!=='cup'?t.throughGroup:t.throughTo(nextRoundName(st));
       else verdict=t.outIn(roundName(st));
+      if(r.lmcGoal)verdict=(r.lmcCounter?t.lmcCounterV:t.lmcV)+(r.champ?' · '+t.winners(comp):'');
+      else if(r.lmcConc)verdict=t.lmcConcV;
+      else if(r.pens)verdict=s.pendingLMC?(lmcDefender()?t.lmcPendD:t.lmcPend):s.pendingPens?t.pensDraw:(r.pensRes&&r.pensRes.won?t.pensWonV(r.pensRes.me,r.pensRes.opp):t.pensLostV(r.pensRes?r.pensRes.me:0,r.pensRes?r.pensRes.opp:0))+(r.champ?' · '+t.winners(comp):'');
       body+=`<div class="sum num">${parts} = <b>${r.total}</b> ${t.vs} ${t.dc} ${r.dc}${r.wdl?` <span class="lbl">(${t.drawAt(r.dc-3)})</span>`:''}</div><div class="verdict result v-${r.tone}">${verdict}</div>`;
       body+=r.missed?`<div class="muted small">${t.didnt}</div>`:`<div class="muted small num">${t.line(r.apps,r.goals,r.assists)}</div>`;
       if(r.crit&&r.picked)body+=`<div class="small" style="color:var(--good)">${t.crit(t.attrs[r.picked])}</div>`;
@@ -2237,13 +2258,15 @@ function stageCard(){
         let ib=`<span class="lbl">${t.injT}</span>`;
         if(I.d4==null)ib+=`<div>${t.injD4Hint}</div>`;
         else{ib+=`<div class="fx ${I.adv?'up':'down'}">d4 ${I.d4} · ${I.adv?t.injAdv:t.injDis}</div>`;
-          if(I.d10){ib+=`<div class="sum num">2d10 ${I.d10[0]} · ${I.d10[1]} → <b>${I.career?'1 · 1':I.kept}</b></div>`;
+          if(I.d10){ib+=`<div class="sum num">2d12 ${I.d10[0]} · ${I.d10[1]} → <b>${I.career?'1 · 1':I.kept}</b></div>`;
             ib+=I.career?`<div class="verdict v-bad">${t.injCareer}</div>`:`<div class="result">${I.season?(I.carry?t.injCarry:t.injSeason):I.out?t.injOut(I.out):t.injBack}</div>`;
             if(I.lucky)ib+=`<div class="fx up">${t.injLucky}</div>`}}
         body+=`<div class="evbox ${I.career?'bad':I.d10?(I.out===0&&!I.season?'ok':'bad'):''}">${ib}</div>`;
       }
       if(s.pickAttr)act=`<button class="btn" data-act="pickov">${t.pickT}</button>`;
       else if(s.careerOver)act=`<button class="btn danger" data-act="endcareer">${t.endCareer}</button>`;
+      else if(s.pendingLMC)act=`<button class="btn" data-act="lmcov">${lmcDefender()?t.lmcTD:t.lmcT}</button>`;
+      else if(s.pendingPens)act=`<button class="btn" data-act="pensov">${t.pensOpen}</button>`;
       else if(s.pendingHeal)act=`<button class="btn danger" data-act="healov">${t.healOpen}</button>`;
       else{const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     }
@@ -2266,7 +2289,7 @@ function tracker(){
     let res='<span class="res p">—</span>';
     if(st.res&&st.res.skipped)res=`<span class="res p">${t.out}</span>`;
     else if(st.res){
-      const word=st.comp==='league'?t.kindShort[st.res.kind]:st.res.wdl?t.wdl[st.res.wdl]:st.res.champ?t.won:st.res.win?t.through:t.out;
+      const word=st.res.pending?t.pensShort:st.comp==='league'?t.kindShort[st.res.kind]:st.res.wdl?t.wdl[st.res.wdl]:st.res.champ?t.won:st.res.win?t.through:t.out;
       res=`<span class="res ${st.res.tone==='good'?'w':st.res.tone==='bad'?'l':'m'}">${st.res.missed?t.inj+' · ':''}${word}</span>`;
     }else if(i===s.idx)res=`<span class="res m">${t.upNext}</span>`;
     const ev=(st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">★ ${t.ev[st.ev][0]}</span>`:'')+(st.ch&&(st.chr||i===s.idx)?`<span class="evtag ${st.chr?(st.chr.ok?'ok':'bad'):''}">${t.chx[st.ch][0]}</span>`:'')+(st.nem&&st.opp?`<span class="evtag nem">${t.nemT}</span>`:'');
@@ -2318,6 +2341,7 @@ const firstClub=()=>S.history.length?{name:S.history[0].club,league:S.history[0]
 const greatCareer=()=>S.history.some(h=>h.bdo&&h.bdo<=3)||S.trophies.some(x=>x.kind==='wc');
 function finalChapter(){
   if(S.lockedIn)return'';
+  {const h=S.history[S.history.length-1];if(h&&h.ext)return''}
   const f=firstClub(), home=f&&f.name!==S.club.name, any=greatCareer();
   if(!home&&!any)return'';
   const groups=LEAGUES.map((L,Li)=>!gOK(L)?'':`<optgroup label="${L.name} · ${lgCountry(Li)}">${L.tiers.map((tr,ti)=>tr.clubs.filter(n=>n!==S.club.name).map(n=>`<option value="${Li}|${ti}|${esc(n)}">${esc(n)}</option>`).join('')).join('')}</optgroup>`).join('');
@@ -2483,7 +2507,7 @@ const ACH=[
  {id:'derby',n:['Derby hero','Herói do clássico'],d:['Win the derby-day moment.','Vença o momento do clássico.'],test:()=>evWon('derby')},
  {id:'penalty',n:['Ice in the veins','Sangue frio'],d:['Score the late penalty moment.','Converta o pênalti no fim do jogo.'],test:()=>evWon('pen')},
  {id:'perfect',n:['Perfection','Perfeição'],d:['Roll the highest number on a moment die.','Tire o número máximo num dado de momento.'],test:()=>!!(S.season&&S.season.stages.some(x=>x.evr&&x.evr.perfect))},
- {id:'luckyten',n:['Built different','Feito de aço'],d:['Roll double 10 on an injury recovery.','Tire dois 10 na recuperação de uma lesão.'],test:()=>!!(S.season&&S.season.inj&&S.season.inj.lucky)},
+ {id:'luckyten',n:['Built different','Feito de aço'],d:['Roll double 12 on an injury recovery.','Tire dois 12 na recuperação de uma lesão.'],test:()=>!!(S.season&&S.season.inj&&S.season.inj.lucky)},
  {id:'ironman',n:['Iron man','Homem de ferro'],d:['Play 750 career matches.','Jogue 750 partidas na carreira.'],test:()=>careerSum('apps')>=750},
  {id:'decade',n:['A decade of devotion','Uma década de devoção'],d:['Play 10 seasons in a row at one club.','Jogue 10 temporadas seguidas num clube.'],test:()=>(S.milestones||[]).some(m=>m.years>=10)},
  {id:'cont3',n:['Continental royalty','Realeza continental'],d:['Win the Champions League or Libertadores three times.','Ganhe a Champions ou a Libertadores três vezes.'],test:()=>allTrophies().filter(x=>x.kind==='cont').length>=3},
@@ -2544,8 +2568,18 @@ const ACH=[
  {id:'torch',n:['Passing the torch','Passando o bastão'],d:['Train an academy kid and earn his shirt.','Treine um garoto da base e ganhe a camisa dele.'],test:()=>hasItem('kidshirt')},
  {id:'items10',n:['Hoarder','Acumulador'],d:['Own ten items in one career.','Tenha dez itens numa carreira.'],test:()=>(S.items||[]).length>=10},
  {id:'ultras',n:['Back on side','De volta ao lado deles'],d:['Win over the ultras face to face.','Conquiste a torcida organizada cara a cara.'],test:()=>!!S.flag_ultras},
+ {id:'icecold',n:['Ice cold','Sangue frio'],d:['Score your penalty in a final shootout and win the trophy.','Marque o seu pênalti numa disputa de final e ganhe a taça.'],test:()=>!!S.flag_icecold},
+ {id:'pens3',n:['Shootout specialists','Especialistas em pênaltis'],d:['Win three penalty shootouts in one career.','Vença três disputas de pênaltis numa carreira.'],test:()=>(S.pensW||0)>=3},
+ {id:'sudden',n:['Sudden death','Morte súbita'],d:['Win a shootout that goes to sudden death.','Vença uma disputa que vai para as alternadas.'],test:()=>!!S.flag_sudden},
+ {id:'perfectpens',n:['Five for five','Cinco de cinco'],d:['Win a shootout scoring all five penalties.','Vença uma disputa convertendo os cinco pênaltis.'],test:()=>!!S.flag_perfectpens},
+ {id:'invincible',n:['Unstoppable','Imparável'],d:['Have four strong league stretches in one season.','Tenha quatro fases fortes na liga numa temporada.'],test:()=>!!S.flag_invincible},
+ {id:'giantkill',n:['Giant killer','Matador de gigantes'],d:['Win the national cup with an underdog team.','Ganhe a copa nacional com um time azarão.'],test:()=>!!S.flag_giant},
+ {id:'globetrot',n:['Champion everywhere','Campeão em todo lugar'],d:['Win league titles in three different countries.','Ganhe ligas em três países diferentes.'],test:()=>new Set(allTrophies().filter(x=>x.kind==='league'&&LEAGUES[x.lg]&&LEAGUES[x.lg].div===1).map(x=>LEAGUES[x.lg].c)).size>=3},
+ {id:'screamer',n:['Screamer','Golaço no fim'],d:['Score a last-minute winner in a final to win the title.','Marque o gol da vitória no último minuto de uma final e ganhe a taça.'],test:()=>!!S.flag_screamer},
  {id:'nat1s',bad:1,n:['Snake eyes','Olho de cobra'],d:['Roll five natural 1s in one career.','Tire cinco 1 naturais numa mesma carreira.'],test:()=>!!(S.rs&&S.rs.n1>=5)},
  {id:'plottwist',bad:1,n:['Plot twist','Reviravolta'],d:['Fail ten story checks in one career.','Falhe em dez testes de história numa carreira.'],test:()=>(S.chFail||0)>=10},
+ {id:'nightmare',bad:1,n:['Nightmare fuel','Pesadelo'],d:['Miss your penalty in a final shootout and lose the final.','Perca o seu pênalti numa disputa de final e perca a taça.'],test:()=>!!S.flag_nightmare},
+ {id:'spotmiss',bad:1,n:['Spot of bother','Marca maldita'],d:['Miss three shootout penalties in one career.','Perca três pênaltis em disputas numa carreira.'],test:()=>(S.pensMiss||0)>=3},
  {id:'cruel',bad:1,n:['Cruel game','Jogo cruel'],d:['Have your career ended by an injury.','Tenha a carreira encerrada por uma lesão.'],test:()=>!!S.endReason}
 ];
 let achMem=null;
@@ -2575,6 +2609,16 @@ function showToast(){
 }
 const storiesSeen=()=>{try{return Object.keys(JSON.parse(localStorage.getItem('rpgoal-stories')||'{}')).length}catch(e){return 0}};
 const ACH_ICON={
+ icecold:'M12 3v18 M5 7l14 10 M19 7L5 17 M9 4l3 2 3-2 M9 20l3-2 3 2',
+ pens3:'M4 18h16 M6 18V8h12v10 M9 18v-5h6v5 M12 4l1 2',
+ sudden:'M13 3L6 13h5l-1 8 7-10h-5z',
+ perfectpens:'M4 6h16v12H4z M8 10l2 2 4-4 M7 15h10',
+ invincible:'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z M9 12l2 2 4-4',
+ giantkill:'M6 20l6-14 6 14 M9 14h6 M4 20h16',
+ globetrot:'M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18',
+ screamer:'M4 18c4-1 7-4 9-9 M13 9l-1 4 4-1 M17 5a2 2 0 1 1 0 4 2 2 0 0 1 0-4z M4 21h16',
+ nightmare:'M12 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12z M9 9l6 6 M15 9l-6 6 M8 20h8',
+ spotmiss:'M12 5a6 6 0 1 1 0 12 6 6 0 0 1 0-12z M4 4l16 16',
  stories10:'M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z M9 9h6 M9 13h6',
  seen20:'M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z',
  silver:'M4 6h16v9H9l-5 4z M8 10h8',
@@ -2668,18 +2712,19 @@ const ACH_ICON={
 };
 const achIcon=(a,on)=>`<svg class="achi ${on?'on':''} ${a.bad?'bad':''}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><g transform="translate(9 9) scale(.917)"><path d="${ACH_ICON[a.id]||ACH_ICON.wc}"/></g></svg>`;
 let achF='all', achSort='std';
-const ACH_GROUP={titles:['firsttitle','wonderkid','promoted','league','double','treble','cont2','ucl','lib','cwc','cwcdavid','cont3','cupking','fairytale','oddswin'],
+const ACH_GROUP={titles:['invincible','giantkill','globetrot','firsttitle','wonderkid','promoted','league','double','treble','cont2','ucl','lib','cwc','cwcdavid','cont3','cupking','fairytale','oddswin'],
  world:['wccall','wc','wc2','wc3','bdo','bdo3','perfectgroup'],
  personal:['goals30','assists20','goals300','ironman','worldclass','goat','stillgotit','forty'],
  clubs:['galactico','barca','abroad3','idol','legend','twohomes','decade','homecoming','oneclub','friends','bigbucks'],
  moments:['nat20','hothand','derby','penalty','perfect','luckyten'],
+ penalties:['screamer','icecold','pens3','sudden','perfectpens','nightmare','spotmiss'],
  campaign:['stories10','seen20','silver','covstar','leadrole','bestteach','torch','items10','ultras','qstreak','items4','quests10','inspfinal','miracle'],
  women:['uwcl','libf','nwsl','wcwc'],
  multi:['g1000','apps5000','t100','careers10','pantheon','bothwc','bothbdo','bothleague']};
-const achGroupOf=a=>a.bad?'bad':(Object.keys(ACH_GROUP).find(g=>ACH_GROUP[g].includes(a.id))||'personal');
+const achGroupOf=a=>a.bad&&!ACH_GROUP.penalties.includes(a.id)?'bad':(Object.keys(ACH_GROUP).find(g=>ACH_GROUP[g].includes(a.id))||'personal');
 /* how many careers unlock each one (simulated, %) */
 const ACH_RATE={"abroad3": 49.7, "apps5000": 3, "assists20": 26.4, "barca": 11.0, "bdo": 21.1, "bdo3": 2.4, "bigbucks": 6.3, "bothbdo": 0.5, "bothleague": 3, "bothwc": 0.5, "careers10": 6, "cont2": 17.4, "cont3": 13.1, "cruel": 3.9, "cupking": 61.4, "cwc": 35.8, "cwcdavid": 8.8, "decade": 55.5, "derby": 84.3, "double": 55.8, "earlyflight": 16.8, "fairytale": 2.4, "fired": 4.8, "firsttitle": 97.8, "forty": 0.4, "friends": 1.9, "g1000": 3, "galactico": 10.6, "goals30": 18.0, "goals300": 18.7, "goat": 2.8, "hated": 4.0, "homecoming": 6, "hothand": 77.7, "idol": 98.7, "inspfinal": 65.0, "ironman": 63.5, "items4": 49.6, "judas": 4.1, "league": 81.3, "legend": 8.6, "lib": 10.2, "libf": 0.8, "longroad": 16.9, "luckyten": 3.5, "merc": 27.9, "nat1s": 84.4, "nat20": 99.4, "nemesis": 28.6, "nwsl": 4.7, "oddswin": 0.9, "oneclub": 3, "ouch": 97.6, "pantheon": 4, "party": 80.4, "penalty": 95.3, "perfect": 99.6, "perfectgroup": 68.2, "promoted": 28.7, "qstreak": 47.7, "quests10": 39.9, "relegated": 11.8, "snub": 47.9, "soclose": 85.5, "stillgotit": 6.7, "t100": 3, "tooshort": 1.5, "treble": 15.6, "twohomes": 0.5, "ucl": 41.0, "unwanted": 0.2, "uwcl": 29.7, "wc": 26.3, "wc2": 3.4, "wc3": 0.1, "wccall": 95.9, "wcfinal": 13.5, "wcwc": 21.7, "wonderkid": 27.9, "worldclass": 27.3};
-Object.assign(ACH_RATE,{stories10:55,seen20:8,silver:41,covstar:21,leadrole:20,bestteach:4,torch:12,items10:9,ultras:7,plottwist:6,items4:56});
+Object.assign(ACH_RATE,{icecold:25,pens3:20,sudden:15,perfectpens:15,invincible:25,giantkill:10,globetrot:6,screamer:10,nightmare:5,spotmiss:8,stories10:55,seen20:8,silver:41,covstar:21,leadrole:20,bestteach:4,torch:12,items10:9,ultras:7,plottwist:6,items4:56});
 const live=()=>S&&S.phase!=='create';
 const bestSeason=k=>Math.max(0,...S.history.map(h=>h[k]||0),S.phase==='season'&&S.season?S.season[k]||0:0);
 const ACH_PROG={
@@ -2692,12 +2737,12 @@ const ACH_PROG={
  abroad3:()=>[new Set(S.history.map(h=>LEAGUES[h.league].c).concat(live()&&S.club?[LEAGUES[S.club.league].c]:[])).size,4],
  decade:()=>[live()?S.tenure||0:0,10], twohomes:()=>[new Set((S.legends||[]).map(l=>l.club)).size,2],
  hothand:()=>[S.season&&S.season.rolls?S.season.rolls.filter(x=>x===20).length:0,2],
- qstreak:()=>[S.qStreak||0,4], stories10:()=>[Object.keys(S.chSeen||{}).length,20], seen20:()=>[storiesSeen(),Object.keys(CHOICES).length], silver:()=>[S.chStreak||0,5], items10:()=>[(S.items||[]).length,10], plottwist:()=>[S.chFail||0,10], items4:()=>[(S.items||[]).length,6], quests10:()=>[S.quests||0,10], inspfinal:()=>[S.inspFinals||0,3],
+ qstreak:()=>[S.qStreak||0,4], pens3:()=>[S.pensW||0,3], spotmiss:()=>[S.pensMiss||0,3], stories10:()=>[Object.keys(S.chSeen||{}).length,20], seen20:()=>[storiesSeen(),Object.keys(CHOICES).length], silver:()=>[S.chStreak||0,5], items10:()=>[(S.items||[]).length,10], plottwist:()=>[S.chFail||0,10], items4:()=>[(S.items||[]).length,6], quests10:()=>[S.quests||0,10], inspfinal:()=>[S.inspFinals||0,3],
  g1000:()=>[sumAll('goals'),1000], apps5000:()=>[sumAll('apps'),5000], t100:()=>[sumAll('titles'),100], careers10:()=>[loadHof().length,10],
  pantheon:()=>[loadHof().filter(p=>p.score>=500).length,5],
  nat1s:()=>[S.rs?S.rs.n1:0,5], unwanted:()=>[S.history.filter(h=>h.fired).length,2]
 };
-const MULTI=new Set(['goals300','ironman','decade','abroad3','twohomes','stories10','seen20','silver','items10','plottwist','qstreak','items4','quests10','inspfinal','bdo3','cont3','wc2','wc3','cupking','g1000','apps5000','t100','careers10','pantheon','nat1s','unwanted']);
+const MULTI=new Set(['goals300','ironman','decade','abroad3','twohomes','pens3','spotmiss','stories10','seen20','silver','items10','plottwist','qstreak','items4','quests10','inspfinal','bdo3','cont3','wc2','wc3','cupking','g1000','apps5000','t100','careers10','pantheon','nat1s','unwanted']);
 const rarity=r=>r==null?4:r>=60?0:r>=25?1:r>=8?2:r>=2?3:4;
 function achView(){
   const got=loadAch(), L=lang==='pt'?1:0, n=ACH.filter(a=>got[a.id]).length;
@@ -2716,7 +2761,7 @@ function achView(){
     const rest=list.filter(a=>!tracked.includes(a)).sort((a,b)=>(ACH_RATE[b.id]??-1)-(ACH_RATE[a.id]??-1));
     body=sec(t.achByDiffH,rest)+sec(t.achTrackedH,tracked);
   }else{
-    body=['titles','world','personal','clubs','moments','campaign','women','multi','bad'].map(g=>sec(t.achGroups[g],list.filter(a=>achGroupOf(a)===g))).join('');
+    body=['titles','world','personal','clubs','moments','penalties','campaign','women','multi','bad'].map(g=>sec(t.achGroups[g],list.filter(a=>achGroupOf(a)===g))).join('');
   }
   const filt=`<div class="subtabs" role="group">${['all','done','todo'].map(k=>`<button data-act="achf" data-v="${k}" aria-pressed="${achF===k}">${t.achFilt[k]}</button>`).join('')}</div><select id="asort" class="hsort" aria-label="${t.sortT}">${['std','recent','diff'].map(k=>`<option value="${k}" ${achSort===k?'selected':''}>${t.sortT}: ${t.achSorts[k]}</option>`).join('')}</select>`;
   return `<div class="phead"><h2 class="ptitle">${t.achPage}</h2><span class="lbl num">${n}/${ACH.length}</span><div class="achbar"><span style="width:${(100*n/ACH.length).toFixed(1)}%"></span></div><div class="pfull hfrow">${filt}</div></div>
@@ -2751,6 +2796,7 @@ function seasonView(){
   const seg=x=>{const i=s.stages.indexOf(x), now=i===s.idx&&S.phase==='season'&&!x.res;let c='p';
     if(x.res&&x.res.skipped)c='x';
     else if(x.res&&x.comp==='league')c=x.res.kind<=1?'g':x.res.kind===2?'m':'b';
+    else if(x.res&&x.res.pending)c='m';
     else if(x.res&&x.res.champ)c='gold';
     else if(x.res&&x.res.wdl)c=x.res.wdl==='W'?'g':x.res.wdl==='D'?'m':'b';
     else if(x.res)c=x.res.win?'g':'b';
@@ -2822,20 +2868,20 @@ function windowHTML(){
   const list=offers.map((o,i)=>`<div class="wcard">${crest(kitOf(o.name),26)}<b>${esc(o.name)}</b><span class="wl">${esc(LEAGUES[o.league].name)}</span><div class="wtags">${tagsFor(o)}</div><button class="btn sm" data-ov="sign" data-i="${i}">${t.sign}</button></div>`).join('');
   const stay=h.fired?'':row('stay',S.club.name,after.league,t.stayDesc,t.stayBtn,'data-ov="stay"');
   let fc='';
-  if(S.age>=30&&!S.lockedIn){
+  if(S.age>=30&&!S.lockedIn&&!h.ext){
     const f=firstClub(), home=f&&f.name!==S.club.name&&!offers.some(o=>o.name===f.name), any=greatCareer();
     if(home)fc+=row('fc',f.name,f.league,t.homeDesc(esc(f.name)),t.homeBtn,'data-ov="home"','',`<span class="wtag">${t.homeT}</span>`);
     if(any){const groups=LEAGUES.map((L,Li)=>!gOK(L)?'':`<optgroup label="${L.name} · ${lgCountry(Li)}">${L.tiers.map((tr,ti)=>tr.clubs.filter(n=>n!==S.club.name).map(n=>`<option value="${Li}|${ti}|${esc(n)}">${esc(n)}</option>`).join('')).join('')}</optgroup>`).join('');
       fc+=`<div class="wopt fc any"><div class="wopt-t"><b>${t.anyT}</b><span class="wsub">${t.anyDesc}</span><select id="anyclubOv" aria-label="${t.anyT}">${groups}</select></div><button class="btn sm" data-ov="anyclub">${t.anyBtn}</button></div>`}
   }
   return `<div class="ovcard window"><span class="ov-kicker">${t.window} · ${t.nextAge(S.age+1)}</span>
-    <h2 class="ov-title" style="font-size:26px">${h.fired?t.firedT:t.offersT}</h2>
+    <h2 class="ov-title" style="font-size:26px">${h.fired?t.firedT:h.ext?t.extT:t.offersT}</h2>
     ${h.fired?`<div class="ov-sub2">${t.fired(esc(h.club))}</div>`:''}${h.scout?`<div class="ov-sub2">${t.scouted}</div>`:''}
     <span class="lbl wsec">${t.leaveT}</span>
-    ${list?`<div class="wcards n${offers.length}">${list}</div>`:`<div class="ov-sub2">${h.fired?t.noClub:t.noOffers}</div>`}
+    ${list?`<div class="wcards n${offers.length}">${list}</div>`:`<div class="ov-sub2">${h.fired?t.noClub:h.ext?t.extLocked:t.noOffers}</div>`}
     ${stay?`<span class="lbl wsec">${t.stayT}</span><div class="wlist">${stay}</div>`:''}
     ${fc?`<span class="lbl" style="align-self:flex-start">${t.finalT}</span><div class="wlist">${fc}</div>`:''}
-    ${h.fired||S.lockedIn?'':h.agent?`<div class="wagent ${h.agent.res==='great'||h.agent.res==='ok'?'ok':'bad'}"><span class="lbl">${t.agentBtn} · ${t.agentLine(h.agent.v,h.agent.b,h.agent.tot)}</span><span>${t.agentRes[h.agent.res]}</span></div>`:`<div class="wagent"><div class="wopt-t"><b>${t.agentBtn}</b><span class="wsub">${t.agentRoll(agentBonus())}</span></div><button class="btn sm ghost" data-ov="agent">${t.roll(20)}</button></div>`}
+    ${h.fired||S.lockedIn||h.ext?'':h.agent?`<div class="wagent ${h.agent.res==='great'||h.agent.res==='ok'?'ok':'bad'}"><span class="lbl">${t.agentBtn} · ${t.agentLine(h.agent.v,h.agent.b,h.agent.tot)}</span><span>${t.agentRes[h.agent.res]}</span></div>`:`<div class="wagent"><div class="wopt-t"><b>${t.agentBtn}</b><span class="wsub">${t.agentRoll(agentBonus())}</span></div><button class="btn sm ghost" data-ov="agent">${t.roll(20)}</button></div>`}
     <button class="linkb" data-ov="close">${t.decideLater}</button></div>`;
 }
 function openWindow(){ovQ.push({k:'window'});flushOv()}
@@ -2913,6 +2959,8 @@ function ovHTML(o){
   if(o.k==='career')return recapHTML();
   if(o.k==='heal')return healHTML();
   if(o.k==='story')return storyHTML();
+  if(o.k==='pens')return pensHTML();
+  if(o.k==='lmc')return lmcHTML();
   if(o.k==='run')return runHTML();
   if(o.k==='agechk')return ageHTML();
   if(o.k==='feat')return featHTML();
@@ -2977,14 +3025,17 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
+  if(o.k==='pens')pensTimer=setTimeout(pensStep,900);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
   if(o.k==='career')countUp(ovEl);
   ovEl.addEventListener('click',e=>{
     if(o.k==='heal'){healClick(e);return}
     if(o.k==='story'){storyClick(e);return}
+    if(o.k==='pens'){pensClick(e);return}
+    if(o.k==='lmc'){lmcClick(e);return}
     if(o.k==='run'){runClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
     if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
@@ -3007,7 +3058,7 @@ function flushOv(){
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
 }
-document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick','run'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
+document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick','run','pens','lmc'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
   if(S.phase!=='season'||view!=='game'||!S.season)return;
   const s=S.season, st=s.stages[s.idx];
@@ -3120,7 +3171,7 @@ function rollDice(els,sides,finals,clsFn,done){
 }
 
 /* ---------- interaction ---------- */
-function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePick();maybePrep();maybeStory();maybeRun();flushOv();checkAch();scheduleAuto()}
+function commit(){save();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeStory();maybeRun();flushOv();checkAch();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -3132,14 +3183,14 @@ function healHTML(){
   const done=!!I.d10, danger=I.first===1&&!I.d10;
   let res='';
   if(I.d4!=null)res+=`<div class="fx ${I.adv?'up':'down'}">d4 ${I.d4} · ${I.adv?t.injAdv:t.injDis}${s.inj.restUsed?' · '+t.camp.rest[0]:''}${hasFeat('ironlungs')?' · '+t.feats.ironlungs[0]:''}</div>`;
-  if(done){res+=`<div class="sum num">2d10 ${I.d10[0]} · ${I.d10[1]} → <b>${I.career?'1 · 1':I.kept}</b></div>`;
+  if(done){res+=`<div class="sum num">2d12 ${I.d10[0]} · ${I.d10[1]} → <b>${I.career?'1 · 1':I.kept}</b></div>`;
     res+=I.career?`<div class="verdict v-bad">${t.injCareer}</div>`:`<div class="result">${I.season?(I.carry?t.injCarry:t.injSeason):I.out?t.injOut(I.out):t.injBack}</div>`;
     if(I.lucky)res+=`<div class="fx up">${t.injLucky}</div>`}
   const btn=I.d4==null?`<button class="btn" data-ov="h4">${t.injRoll4}</button>`:!done?(I.first===1?`<button class="btn danger" data-ov="h10b">${t.injRoll2nd}</button>`:`<button class="btn" data-ov="h10">${t.injRoll10}</button>`):I.career?`<button class="btn danger" data-ov="hend">${t.endCareer}</button>`:`<button class="btn" data-ov="hclose">${t.healBack}</button>`;
   return `<div class="ovcard move heal ${I.career?'over':''} ${danger?'shake':''}"><span class="ov-kicker">${t.injT}</span><h2 class="ov-title" style="font-size:26px">${t.healT}</h2>
     <div class="ov-sub2">${I.d4==null?t.injD4Hint:!done?t.healD10Hint:''}</div>
     <div class="healdice"><div class="hcell">${dieSVG(4,I.d4??'',I.d4!=null?(I.adv?'crit':'fumble'):'','hd4')}<span class="lbl">d4</span></div>
-      <div class="hcell">${dieSVG(10,I.d10?I.d10[0]:I.first??'',I.d10?d10cls(0):I.first===1?'fumble':'','hd10a')}<span class="lbl">d10</span></div><div class="hcell">${dieSVG(10,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d10</span></div></div>
+      <div class="hcell">${dieSVG(12,I.d10?I.d10[0]:I.first??'',I.d10?d10cls(0):I.first===1?'fumble':'','hd10a')}<span class="lbl">d12</span></div><div class="hcell">${dieSVG(12,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d12</span></div></div>
     <div class="hres">${res}</div>${btn}</div>`;
 }
 function ovUpdate(html){
@@ -3151,9 +3202,9 @@ function healRefresh(){ovUpdate(healHTML())}
 function healClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season;
   if(v==='h4'){const x=d(4),el=ovEl.querySelector('[data-die="hd4"]');rollDice(el?[el]:[],4,[x],y=>(y>=3||hasFeat('ironlungs')||s.rested)?'crit':'fumble',()=>{injD4(x);sfx(s.inj.adv?'pass':'fail');save();healRefresh()});return}
-  const second=a=>{const c=d(10),e2=ovEl.querySelector('[data-die="hd10b"]');rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);delete s.inj.first;const I=s.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);haptic(I.career?'heavy':'tap');save();healRefresh()})};
-  if(v==='h10'){const a=d(10),e1=ovEl.querySelector('[data-die="hd10a"]');
-    rollDice(e1?[e1]:[],10,[a],y=>y===1?'fumble':'',()=>{if(a===1){s.inj.first=1;sfx('nat1');haptic('heavy');save();healRefresh()}else setTimeout(()=>second(a),150)});return}
+  const second=a=>{const c=d(12),e2=ovEl.querySelector('[data-die="hd10b"]');rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);delete s.inj.first;const I=s.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);haptic(I.career?'heavy':'tap');save();healRefresh()})};
+  if(v==='h10'){const a=d(12),e1=ovEl.querySelector('[data-die="hd10a"]');
+    rollDice(e1?[e1]:[],12,[a],y=>y===1?'fumble':'',()=>{if(a===1){s.inj.first=1;sfx('nat1');haptic('heavy');save();healRefresh()}else setTimeout(()=>second(a),150)});return}
   if(v==='h10b'){if(s.inj.first!==1)return;second(1);return}
   if(v==='hend'){healOpen=false;closeOv();endCareer();commit();window.scrollTo({top:0});return}
   if(v==='hclose'){healOpen=false;closeOv();commit();return}
@@ -3246,13 +3297,15 @@ function onClick(e){
   else if(act==='share'){const p=loadHof().find(x=>x.id===+b.dataset.id);if(p)shareCard(p)}
   else if(act==='hofcmp'){const id=+b.dataset.id;if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}render()}
   else if(act==='storyov'){maybeStory();flushOv()}
+  else if(act==='pensov'){maybePens();flushOv()}
+  else if(act==='lmcov'){maybeLMC();flushOv()}
   else if(act==='runov'){maybeRun();flushOv()}
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
   else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
-  else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);commit()})})}
+  else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(12),c=d(12);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],12,[a],()=>'',()=>{rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);commit()})})}
   else if(act==='endcareer'){endCareer();commit();window.scrollTo({top:0})}
   else if(act==='go'){nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='simrest'){view='game';simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
@@ -3333,14 +3386,14 @@ const CHOICES={
  party:{opts:[{k:'skip',fx:{}},{k:'go',at:'lead',tgt:12,ok:{insp:1,loy:1},bad:{mode:'dis'}}]},
  charity:{opts:[{k:'go',fx:{loy:1}},{k:'squad',at:'lead',tgt:12,ok:{loy:2,insp:1},bad:{loy:1}}]},
  pundit:{opts:[{k:'ignore',fx:{}},{k:'pitch',at:'key',tgt:13,ok:{buff:2},bad:{buff:-1}},{k:'online',at:'dec',tgt:15,ok:{loy:2,insp:1},bad:{loy:-2,mode:'dis'}}]},
- contract:{opts:[{k:'extend',fx:{loy:2}},{k:'raise',at:'lead',tgt:13,ok:{insp:1,buff:1},bad:{loy:-2}}]}
+ contract:{opts:[{k:'extend',fx:{loy:2,ext:1}},{k:'refuse',fx:{loy:-2,free:1}}]}
 };
 const chBonus=at=>Math.floor((S.attrs[at]-10)/2)+(hasItem('legendsign')?1:0);
 const chAt=(o,st)=>o.at==='key'?st.key:o.at;
 function applyEff(e,st){
   e=e||{}; st.fx={mode:e.mode||null,buff:e.buff||0};
   if(e.loy)addLoy(e.loy); if(e.insp)gainInsp(e.insp); if(e.grow)S.season.train+=e.grow;
-  if(e.scout)S.season.scout=1; if(e.item)giveItem(e.item); if(e.flag)S['flag_'+e.flag]=1;
+  if(e.scout)S.season.scout=1; if(e.ext){S.season.ext=1;S.season.free=0} if(e.free){S.season.free=1;S.season.ext=0} if(e.item)giveItem(e.item); if(e.flag)S['flag_'+e.flag]=1;
 }
 function resolveChoice(i,v){
   const s=S.season, st=s.stages[s.idx], o=CHOICES[st.ch].opts[i]; let eff;
@@ -3352,7 +3405,7 @@ function resolveChoice(i,v){
   try{const k='rpgoal-stories',a=JSON.parse(localStorage.getItem(k)||'{}');a[st.ch]=1;localStorage.setItem(k,JSON.stringify(a))}catch(e){}
 }
 const autoChoice=st=>{const os=CHOICES[st.ch].opts;let best=0,bv=-9;os.forEach((o,i)=>{const v=!o.at?0.5:(21-(o.tgt-chBonus(chAt(o,st))))/20*1.2-.4+Math.random()*.3;if(v>bv){bv=v;best=i}});return best};
-const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mode==='dis')p.push(t.fx.dis);if(e.buff)p.push(t.fx.buff(e.buff));if(e.loy)p.push(t.cx.loy(e.loy));if(e.insp)p.push(t.cx.insp(e.insp));if(e.grow)p.push(t.cx.grow);if(e.scout)p.push(t.cx.scout);if(e.item)p.push(t.cx.item(t.items[e.item][0]));if(e.bond)p.push(t.cx.bond);return p.length?p.join(' · '):t.cx.nothing};
+const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mode==='dis')p.push(t.fx.dis);if(e.buff)p.push(t.fx.buff(e.buff));if(e.loy)p.push(t.cx.loy(e.loy));if(e.insp)p.push(t.cx.insp(e.insp));if(e.grow)p.push(t.cx.grow);if(e.scout)p.push(t.cx.scout);if(e.ext)p.push(t.cx.ext);if(e.free)p.push(t.cx.free);if(e.item)p.push(t.cx.item(t.items[e.item][0]));if(e.bond)p.push(t.cx.bond);return p.length?p.join(' · '):t.cx.nothing};
 
 /* ---- nemesis: one rival who keeps crossing your path ---- */
 function nemNats(){return Object.keys(NATIONS).filter(n=>n!==S.nat&&(S.gender!=='f'||NATIONS[n].firstW))}
@@ -3460,6 +3513,9 @@ const itemName=i=>t.items[i.k][0]+(i.club?` · ${i.club}`:'');
 /* ---- everything that happens to the campaign when a season ends ---- */
 function afterSeason(h,s){
   if(hasItem('cover'))addLoy(1);
+  {const lg=s.stages.filter(x=>x.comp==='league'&&x.res&&!x.res.skipped);if(lg.length===4&&lg.every(x=>x.res.kind<=1))S.flag_invincible=1;
+   if(h.trophies.some(x=>x.kind==='cup')&&teamLevel(clubRank(S.club.name,S.club.league).frac)<=0)S.flag_giant=1;
+   S.clubGoals=S.clubGoals||{};S.clubGoals[S.club.name]=(S.clubGoals[S.club.name]||0)+s.goals}
   h.cs=s.cs||0; h.bench=s.benchStart||0; if(s.tapeDue&&!S.endReason)giveItem('tape',null,h); if(s.run)h.run={...s.run};
   if(s.nemW||s.nemL){h.nemW=s.nemW||0;h.nemL=s.nemL||0}
   if(s.quest){const q={...s.quest},pr=questProg(q,s,h);q.done=!!pr&&pr[0]>=pr[1];if(q.done)questReward(q);S.qStreak=q.done?(S.qStreak||0)+1:0;S.qBest=Math.max(S.qBest||0,S.qStreak);h.quest=q;S.quests=(S.quests||0)+(q.done?1:0)}
@@ -3503,7 +3559,7 @@ function agentOffer(boost){
   const top=c.filter(o=>o.pr>=c[0].pr-(boost>1?0.1:1)); const o=pick(top); return{...o,agent:1};
 }
 function askAgent(v){
-  const h=S.history[S.history.length-1]; if(!h||h.agent)return;
+  const h=S.history[S.history.length-1]; if(!h||h.agent||h.ext)return;
   const b=agentBonus(), tot=v+b; let res;
   if(v===20||tot>=18){const o=agentOffer(2);res=o?'great':'none';if(o)S.offers=(S.offers||[]).concat(o)}
   else if(v!==1&&tot>=12){const o=agentOffer(.5);res=o?'ok':'none';if(o)S.offers=(S.offers||[]).concat(o)}
@@ -3552,7 +3608,7 @@ function simNext(){
   let g=0;
   while(S.phase==='season'&&g++<300){
     const s=S.season, st=s.stages[s.idx];
-    if(s.careerOver||s.pickAttr||s.pendingHeal)break;
+    if(s.careerOver||s.pickAttr||s.pendingHeal||s.pendingPens||s.pendingLMC)break;
     if(s.last){nextStage();const n=S.season&&S.season.stages[S.season.idx];if(S.phase!=='season'||isStop(n)||(n&&n.ev&&!n.evr&&false))break;continue}
     if(st.ch&&!st.chr)break;
     if(st.ev&&!st.evr){resolveEvent(d(EVMAP[st.ev].die));continue}
@@ -3560,14 +3616,14 @@ function simNext(){
   }
 }
 
-/* ---- rating over the years, with title seasons marked ---- */
+/* ---- rating over the years, with a club crest where each spell began ---- */
 function sparkline(){
   const H=S.history; if(H.length<2)return'';
   const W=300,Hh=46,min=Math.min(...H.map(h=>h.rating))-0.5,max=Math.max(...H.map(h=>h.rating))+0.5;
-  const X=i=>(6+i*(W-12)/(H.length-1)).toFixed(1), Y=v=>(Hh-6-(v-min)/(max-min)*(Hh-14)).toFixed(1);
-  const pts=H.map((h,i)=>`${X(i)},${Y(h.rating)}`).join(' ');
-  const dots=H.map((h,i)=>{const big=h.trophies.some(x=>['wc','bdo','cont','cwc'].includes(x.kind)),tit=h.trophies.some(x=>x.kind!=='bdo');return tit||h.bdo===1?`<circle cx="${X(i)}" cy="${Y(h.rating)}" r="${big?3.6:2.6}" class="${big?'sp-g':'sp-t'}"><title>${h.year}</title></circle>`:''}).join('');
-  return `<div class="spark"><div class="row between"><span class="lbl">${t.sparkT}</span><span class="lbl">${t.sparkKey}</span></div><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" class="sp-l"/>${dots}</svg><div class="row between sp-ax"><span>${H[0].age}</span><span>${H[H.length-1].age}</span></div></div>`;
+  const X=i=>6+i*(W-12)/(H.length-1), Y=v=>Hh-6-(v-min)/(max-min)*(Hh-14);
+  const pts=H.map((h,i)=>`${X(i).toFixed(1)},${Y(h.rating).toFixed(1)}`).join(' ');
+  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="sp-c" style="left:${(X(i)/W*100).toFixed(2)}%;top:${(Y(h.rating)/Hh*100).toFixed(2)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:'').join('');
+  return `<div class="spark"><div class="row between"><span class="lbl">${t.sparkT}</span><span class="lbl">${t.sparkKey}</span></div><div class="sp-box"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" class="sp-l"/></svg>${marks}</div><div class="row between sp-ax"><span>${H[0].age}</span><span>${H[H.length-1].age}</span></div></div>`;
 }
 
 /* ---- campaign panel (Career tab) ---- */
@@ -3656,13 +3712,13 @@ function prepView(h){
 
 const TX={
 en:{
- cx:{scout:'a scout takes note',item:n=>`item: ${n}`,loy:n=>`fans ${sg(n)}`,insp:n=>`+${n} inspiration`,grow:'+1 growth',bond:'bond +1',nothing:'nothing changes'},
+ cx:{ext:'you stay through the next window',free:'free to leave at season’s end',scout:'a scout takes note',item:n=>`item: ${n}`,loy:n=>`fans ${sg(n)}`,insp:n=>`+${n} inspiration`,grow:'+1 growth',bond:'bond +1',nothing:'nothing changes'},
  nemT:'Nemesis',h2h:(w,l)=>`H2H ${w}–${l}`,roles:{partner:'Strike partner',mentor:'Mentor',captain:'Captain'},bondT:'bond',
  ceilT:'Ceiling',capLv:['Squad player','Solid pro','International','World class','All-time great'],inspT:'Inspiration',questsN:n=>`${n} quest${n===1?'':'s'} done`,
  qx:{goals:n=>`Score ${n} goals`,assists:n=>`Make ${n} assists`,cs:n=>`Keep ${n} clean sheets`,title:'Win the league',top4:'Finish in the top 4',half:'Finish in the top half',promo:'Win promotion',cupsemi:'Reach the cup semi-final'},
  qRw:{attr:'+1 attribute',fans:'fans +3',insp:'+1 inspiration'},questT:'Quest',questDone:'Quest complete',questFail:'Quest failed',
  items:{boots:['Lucky boots','+1 in every final.','Roll a natural 20 in a final you win.'],armband:['Captain’s armband','+1 in league stretches for this club.','Play eight seasons in a row at one club.'],shirt:['Iconic shirt','+1 in cup matches for this club.','Become a club idol after six seasons there and win a title that year.'],goldboot:['Golden boot','Goals +10%.','Score 30 goals in a season.'],ball:['The golden ball','+1 in World Cup matches.','Win the Ballon d’Or.'],
-  medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win three derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 10 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
+  medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win three derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 12 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
  newItem:n=>`New item: ${n}`,
  feats:{clutch:['Clutch','+2 in finals.'],bigstage:['Big stage','+1 in continental, Club World Cup and World Cup matches.'],workhorse:['Workhorse','+1 in every league stretch.'],poacher:['Poacher','Goals +25%.'],maestro:['Maestro','Assists +25%.'],wall:['The wall','+1 when the focus is Defending or Physical; clean sheets +25%.'],ironlungs:['Iron lungs','Always roll the recovery d10s with advantage.'],ageless:['Ageless','+3 on the age checks.'],lucky:['Lucky','A natural 19 counts as a critical.'],captain:['Born leader','Fans warm to you faster: +1 support every season.'],inspiring:['Inspiring','Start every season with 1 inspiration.'],latebloomer:['Late bloomer','Ceiling +2 and you keep improving until 35.']},
  featT:'Level up! Choose a feat',featSub:a=>`At ${a} you have learned something about your game. Pick one; it lasts the whole career.`,featGot:k=>`New feat: ${k}`,
@@ -3672,14 +3728,14 @@ en:{
  agentLine:(v,b,tot)=>`d20 ${v} ${sg(b)} = ${tot}`,agentTag:'Agent',
  chron:{champ:n=>`champions of the ${n}`,up:'promoted',down:'relegated',won:c=>`won the ${c}`,bdo:'Ballon d’Or',wc:'world champion',and:', ',pos:(p,n)=>`${p} in the ${n}`,goals:n=>`${n} goals`,assists:n=>`${n} assists`,cs:n=>`${n} clean sheets`,nemWin:n=>`Got the better of ${n}.`,nemLose:n=>`${n} had the last word.`,fired:'Shown the door.',inj:'A season of knocks.',quest:'Quest complete.',feat:k=>`Learned: ${k}.`},
  chronT:'Chronicle',chronBtn:'Read the chronicle',
- sparkT:'Rating by age',sparkKey:'● title  ● major',legacyPts:'Legacy points',
+ sparkT:'Rating by age',sparkKey:'crest · joined a club',legacyPts:'Legacy points',
  xm:{iMedal:'Medal',fClutch:'Clutch',fBig:'Big stage',fWork:'Workhorse',fWall:'The wall',iBoots:'Lucky boots',iArm:'Armband',iShirt:'Shirt',iBall:'Golden ball',mate:'Bond',bench:'Bench fight'},
  chx:{eve:['The night before the derby','The city is buzzing and the squad is restless.',{rest:'Early night',dinner:'Team dinner',talk:'A fiery interview'}],
   mentor:['A veteran offers extra sessions','After training, an old pro offers to stay with you.',{extra:'Stay and train',video:'Study the video'}],
   party:['Teammates’ party','The dressing room is celebrating a birthday tonight.',{skip:'Stay home',go:'Go along'}],
   charity:['Hospital visit','The club asks for volunteers for a children’s hospital visit.',{go:'Go yourself',squad:'Bring the whole squad'}],
   pundit:['A pundit goes after you','On live TV, a former star calls you overrated.',{ignore:'Ignore it',pitch:'Answer on the pitch',online:'Clap back online'}],
-  contract:['Contract talks','The board wants to talk about your future.',{extend:'Sign the extension',raise:'Push for more'}]},
+  contract:['Contract talks','The board wants to talk about your future.',{extend:'Sign the extension',refuse:'Turn it down'}]},
  storyT:'Story',chooseT:'Choose',noRoll:'No roll',onOk:'Pass',onBad:'Fail',
  ctG:['','Worldie: +1 goal','Hat-trick: +2 goals','Viral moment: fans +2','On fire: hot streak extended','A scout was watching','Legendary celebration: fans +1, +1 inspiration'],ctGsub:'',
  ctB:['','','','','Red card: disadvantage in the next match','Own goal: fans −1','Blooper goes viral: fans −1'],critD6:v=>`Crit table d6 ${v}`,
@@ -3695,13 +3751,13 @@ en:{
  quests:'Quests',nemesisWon:'Nemesis beaten: +1 inspiration, fans +1',nemesisLost:'Your nemesis wins this one'
 },
 pt:{
- cx:{scout:'um olheiro anota seu nome',item:n=>`item: ${n}`,loy:n=>`torcida ${sg(n)}`,insp:n=>`+${n} inspiração`,grow:'+1 evolução',bond:'laço +1',nothing:'nada muda'},
+ cx:{ext:'você fica na próxima janela',free:'livre para sair no fim da temporada',scout:'um olheiro anota seu nome',item:n=>`item: ${n}`,loy:n=>`torcida ${sg(n)}`,insp:n=>`+${n} inspiração`,grow:'+1 evolução',bond:'laço +1',nothing:'nada muda'},
  nemT:'Nêmesis',h2h:(w,l)=>`Confronto ${w}–${l}`,roles:{partner:'Parceiro de ataque',mentor:'Mentor',captain:'Capitão'},bondT:'laço',
  ceilT:'Teto',capLv:['Jogador de elenco','Profissional sólido','De seleção','Classe mundial','Lenda eterna'],inspT:'Inspiração',questsN:n=>`${n} missõ${n===1?'ão':'es'} cumprida${n===1?'':'s'}`,
  qx:{goals:n=>`Marque ${n} gols`,assists:n=>`Dê ${n} assistências`,cs:n=>`Termine ${n} jogos sem sofrer gol`,title:'Ganhe a liga',top4:'Termine no top 4',half:'Termine na metade de cima',promo:'Conquiste o acesso',cupsemi:'Chegue à semifinal da copa'},
  qRw:{attr:'+1 atributo',fans:'torcida +3',insp:'+1 inspiração'},questT:'Missão',questDone:'Missão cumprida',questFail:'Missão falhou',
  items:{boots:['Chuteira da sorte','+1 em todas as finais.','Tire um 20 natural numa final vencida.'],armband:['Braçadeira de capitão','+1 nas fases da liga por este clube.','Jogue oito temporadas seguidas num clube.'],shirt:['Camisa histórica','+1 nos jogos de copa por este clube.','Vire ídolo de um clube depois de seis temporadas e ganhe um título naquele ano.'],goldboot:['Chuteira de ouro','Gols +10%.','Marque 30 gols numa temporada.'],ball:['A bola dourada','+1 nos jogos de Copa do Mundo.','Ganhe a Bola de Ouro.'],
-  medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença três momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 10 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
+  medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença três momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 12 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
  newItem:n=>`Novo item: ${n}`,
  feats:{clutch:['Decisivo','+2 em finais.'],bigstage:['Palco grande','+1 em jogos continentais, do Mundial e da Copa do Mundo.'],workhorse:['Incansável','+1 em toda fase da liga.'],poacher:['Matador','Gols +25%.'],maestro:['Maestro','Assistências +25%.'],wall:['A muralha','+1 quando o foco é Defesa ou Físico; jogos sem sofrer gol +25%.'],ironlungs:['Pulmão de aço','Sempre rola os d10 de recuperação com vantagem.'],ageless:['Sem idade','+3 nos testes de idade.'],lucky:['Sortudo','Um 19 natural conta como crítico.'],captain:['Líder nato','A torcida te abraça mais rápido: +1 de apoio por temporada.'],inspiring:['Inspirador','Começa toda temporada com 1 inspiração.'],latebloomer:['Tardio','Teto +2 e você continua evoluindo até os 35.']},
  featT:'Subiu de nível! Escolha um talento',featSub:a=>`Aos ${a} você aprendeu algo sobre o seu jogo. Escolha um; ele vale pela carreira toda.`,featGot:k=>`Novo talento: ${k}`,
@@ -3711,14 +3767,14 @@ pt:{
  agentLine:(v,b,tot)=>`d20 ${v} ${sg(b)} = ${tot}`,agentTag:'Empresário',
  chron:{champ:n=>`campeão do ${n}`,up:'acesso',down:'rebaixado',won:c=>`ganhou ${c}`,bdo:'Bola de Ouro',wc:'campeão do mundo',and:', ',pos:(p,n)=>`${p} no ${n}`,goals:n=>`${n} gols`,assists:n=>`${n} assistências`,cs:n=>`${n} jogos sem sofrer gol`,nemWin:n=>`Levou a melhor sobre ${n}.`,nemLose:n=>`${n} deu a última palavra.`,fired:'Mandado embora.',inj:'Uma temporada de pancadas.',quest:'Missão cumprida.',feat:k=>`Aprendeu: ${k}.`},
  chronT:'Crônica',chronBtn:'Ler a crônica',
- sparkT:'Nível por idade',sparkKey:'● título  ● grande',legacyPts:'Pontos de legado',
+ sparkT:'Nível por idade',sparkKey:'escudo · chegada a um clube',legacyPts:'Pontos de legado',
  xm:{iMedal:'Medalha',fClutch:'Decisivo',fBig:'Palco grande',fWork:'Incansável',fWall:'Muralha',iBoots:'Chuteira',iArm:'Braçadeira',iShirt:'Camisa',iBall:'Bola dourada',mate:'Laço',bench:'Briga pela vaga'},
  chx:{eve:['A noite antes do clássico','A cidade está fervendo e o elenco, inquieto.',{rest:'Dormir cedo',dinner:'Jantar do elenco',talk:'Entrevista inflamada'}],
   mentor:['Um veterano oferece treinos extras','Depois do treino, um experiente se oferece para ficar com você.',{extra:'Ficar e treinar',video:'Estudar os vídeos'}],
   party:['Festa do elenco','O vestiário comemora um aniversário hoje à noite.',{skip:'Ficar em casa',go:'Ir junto'}],
   charity:['Visita ao hospital','O clube pede voluntários para visitar um hospital infantil.',{go:'Ir você mesmo',squad:'Levar o elenco todo'}],
   pundit:['Um comentarista te ataca','Ao vivo na TV, um ex-craque diz que você é superestimado.',{ignore:'Ignorar',pitch:'Responder em campo',online:'Rebater nas redes'}],
-  contract:['Conversa de contrato','A diretoria quer falar do seu futuro.',{extend:'Assinar a renovação',raise:'Pedir mais'}]},
+  contract:['Conversa de contrato','A diretoria quer falar do seu futuro.',{extend:'Assinar a renovação',refuse:'Recusar a renovação'}]},
  storyT:'História',chooseT:'Escolha',noRoll:'Sem rolagem',onOk:'Passa',onBad:'Falha',
  ctG:['','Golaço: +1 gol','Hat-trick: +2 gols','Viralizou: torcida +2','Em chamas: fase boa prolongada','Um olheiro estava vendo','Comemoração histórica: torcida +1, +1 inspiração'],ctGsub:'',
  ctB:['','','','','Cartão vermelho: desvantagem no próximo jogo','Gol contra: torcida −1','Lance bizarro viraliza: torcida −1'],critD6:v=>`Tabela crítica d6 ${v}`,
@@ -3739,19 +3795,39 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Numbers',seasons:'Seasons',inv:'Inventory'},invT:'Inventory',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
- extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
- achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
+ pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensNeed:'goal on 4+',pensTake:'Take your penalty',pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
+ lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
+ lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
+  ['A cross floats towards the far post with you arriving.',['Head it in','Volley it','Cushion it back for a teammate']],
+  ['You break clear on the counter with a defender chasing.',['Race clear and shoot','Round the keeper','Square it to the runner']],
+  ['Free kick, 22 metres out, the last kick of the game.',['Curl it over the wall','Blast it','Run the training-ground routine']],
+  ['Chaos in the box after a late corner.',['Poke it in','Muscle through and shoot','Find the unmarked man']]],
+ lmcD:[['Stoppage time. Their striker is through on goal and only you can catch him.',['Slide tackle','Race back and block','Hold your ground and wait']],
+  ['Their last corner. Their giant centre-back has come up.',['Win the header','Man-mark him tight','Organise the box']],
+  ['Two on one, and you are the last defender.',['Jockey and delay','Go for the ball','Step up for offside']],
+  ['Their winger bursts down the line for one final cross.',['Chase him down','Shoulder him off the ball','Block the cross']]],pensOpen:'Go to the penalty shootout',extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
+ achGroups:{penalties:'Penalties',titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
- injRoll2nd:'Roll the second d10',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
+ injRoll2nd:'Roll the second d12',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d12. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
 Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento!',runPromoted:'Acesso!',runCont:'Continuar',runNext:'Próximo jogo',runTable:'Ver a tabela final',runPlay:'Jogar a reta final',campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
  runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números',seasons:'Temporadas',inv:'Inventário'},invT:'Inventário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
- extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
- achGroups:{titles:'Títulos',world:'Palco mundial',personal:'Marcas pessoais',clubs:'Clubes e torcida',moments:'Momentos e dados',campaign:'Campanha',women:'Futebol feminino',multi:'Entre carreiras',bad:'Lições duras'},
+ pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
+ lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
+ lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
+  ['Um cruzamento viaja para a segunda trave e você chega de frente.',['Cabecear','Pegar de voleio','Ajeitar para um companheiro']],
+  ['Você sai livre no contra-ataque com um zagueiro na cola.',['Disparar e chutar','Driblar o goleiro','Rolar para quem vem de trás']],
+  ['Falta a 22 metros, o último lance do jogo.',['Colocar por cima da barreira','Bater forte','Fazer a jogada ensaiada']],
+  ['Bate-rebate na área depois de um escanteio.',['Empurrar de bico','Ganhar no corpo e chutar','Achar o companheiro livre']]],
+ lmcD:[['Acréscimos. O atacante deles sai cara a cara e só você pode alcançá-lo.',['Dar o carrinho','Correr e bloquear','Segurar a posição e esperar']],
+  ['Último escanteio deles. O zagueirão subiu para a área.',['Ganhar pelo alto','Marcar colado','Organizar a área']],
+  ['Dois contra um, e você é o último homem.',['Temporizar','Dar o bote','Subir a linha para o impedimento']],
+  ['O ponta deles dispara pela linha para um último cruzamento.',['Correr atrás dele','Tirar no corpo','Bloquear o cruzamento']]],pensOpen:'Ir para os pênaltis',extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
+ achGroups:{penalties:'Pênaltis',titles:'Títulos',world:'Palco mundial',personal:'Marcas pessoais',clubs:'Clubes e torcida',moments:'Momentos e dados',campaign:'Campanha',women:'Futebol feminino',multi:'Entre carreiras',bad:'Lições duras'},
  achFilt:{all:'Todas',done:'Desbloqueadas',todo:'Bloqueadas'},achSorts:{std:'Por tipo',recent:'Recentes',diff:'Dificuldade'},
- injRoll2nd:'Rolar o segundo d10',healOpen:'Rolar os dados de recuperação',healT:'Rolagem de recuperação',healD10Hint:'Role 2d10. Dois 1 encerram a carreira.',healDanger:'Um 1 no primeiro dado. Mais um 1 e acabou…',healBack:'Voltar à temporada'});
+ injRoll2nd:'Rolar o segundo d12',healOpen:'Rolar os dados de recuperação',healT:'Rolagem de recuperação',healD10Hint:'Role 2d12. Dois 1 encerram a carreira.',healDanger:'Um 1 no primeiro dado. Mais um 1 e acabou…',healBack:'Voltar à temporada'});
 
 
 /* ================= v44: run-in, pop-ups, career radar ================= */
@@ -4030,8 +4106,174 @@ Object.assign(T.en.chx,STORY_TX.en); Object.assign(T.pt.chx,STORY_TX.pt);
 Object.assign(T.en.items,{studs:['Long studs','+1 in matches where the focus is Physical.','Win the long-ball fight in torrential rain.'],kidshirt:['Academy kid’s shirt','You can hold 3 inspiration instead of 2.','Train an academy kid all week and pull it off.'],cover:['Game cover','Fans +1 at your club every season.','Do the video game cover shoot and nail it.'],docu:['Documentary','+3 in the Ballon d’Or vote.','Open up to a documentary crew.'],newboots:['Signature boots','+1 in matches where the focus is Finishing or Skills.','Wear brand-new boots on matchday and shine.'],legendsign:['Legend’s autograph','+1 on every story check.','Beat a club legend in a shootout.']});
 Object.assign(T.pt.items,{studs:['Travas longas','+1 nos jogos com foco em Físico.','Vença a disputa de bola longa na chuva torrencial.'],kidshirt:['Camisa do garoto da base','Você pode guardar 3 inspirações em vez de 2.','Treine um garoto da base a semana toda e dê certo.'],cover:['Capa do jogo','Torcida +1 no seu clube a cada temporada.','Faça as fotos da capa do videogame e mande bem.'],docu:['Documentário','+3 na votação da Bola de Ouro.','Se abra para uma equipe de documentário.'],newboots:['Chuteira assinatura','+1 nos jogos com foco em Finalização ou Habilidade.','Use chuteiras novas no dia do jogo e brilhe.'],legendsign:['Autógrafo da lenda','+1 em todos os testes de história.','Vença uma lenda do clube nos pênaltis.']});
 Object.assign(T.en.xm,{iStuds:'Studs',iSig:'Boots'}); Object.assign(T.pt.xm,{iStuds:'Travas',iSig:'Chuteira'});
-ITEMS.push('studs','kidshirt','cover','docu','newboots','legendsign');
+ITEMS.push('studs','kidshirt','cover','docu','newboots','legendsign','spotball','gkgloves');
+Object.assign(T.en.items,{spotball:['Penalty-spot ball','+1 on your shootout penalty and on last-minute shots.','Score your own penalty in three shootout wins.'],gkgloves:['Keeper’s gloves','In shootouts the other team needs 5+ to score.','Win three penalty shootouts.']});
+Object.assign(T.pt.items,{spotball:['Bola da marca do pênalti','+1 no seu pênalti da disputa e nos chutes do último minuto.','Converta o seu pênalti em três disputas vencidas.'],gkgloves:['Luvas do goleiro','Nas disputas o adversário precisa de 5+ para marcar.','Vença três disputas de pênaltis.']});
+Object.assign(ITEM_ICON,{spotball:'M12 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12z M12 7.5l2 1.5-.8 2.3h-2.4L10 9z M6 20h12 M12 18v2',gkgloves:'M8 20v-7L6 9a1.5 1.5 0 0 1 2.6-1.5L10 10V5a1.5 1.5 0 0 1 3 0v5-6a1.5 1.5 0 0 1 3 0v6-4a1.5 1.5 0 0 1 3 0v8l-3 6z'});
 Object.assign(ITEM_ICON,{studs:'M4 14h12l4-3v4H4z M7 14v3 M11 14v3 M15 14v3',kidshirt:'M8 4l-4 3 2 3 2-1v11h8V9l2 1 2-3-4-3-2 2h-4z M12 12v4',cover:'M5 4h14v16H5z M8 8h8 M8 16h5 M12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4z',docu:'M4 7h11v10H4z M15 10l5-3v10l-5-3',newboots:'M4 15h9l3-3 4 1v4H4z M9 12l2-4 M12 13l2-4',legendsign:'M5 17c3-6 5-9 6-9s-1 7 1 7 3-4 4-4 1 3 3 3 M5 20h14'});
+
+/* ================= penalty shootouts ================= */
+const isKO=st=>!!st&&(st.comp==='cup'||st.comp==='cwc'||((st.comp==='cont'||st.comp==='cont2')&&st.round>=1)||(st.comp==='wc'&&st.round>=1&&st.g==null));
+/* a knockout result once the winner is known (after 90 minutes or after penalties) */
+function koSettle(st,r,win){
+  const s=S.season;
+  r.win=win; r.tone=win?'good':'bad'; r.champ=win&&st.round===lastRound(st.comp);
+  if(r.champ){s.trophies.push(st.comp==='wc'?{kind:'wc',year:S.year,w:isW()?1:undefined}:{kind:st.comp,lg:S.club.league,year:S.year});ovPush({k:'champ',comp:st.comp,lg:S.club.league,year:S.year,opp:st.opp||null})}
+  if(r.champ&&st.comp==='cont')s.cwcDue=1;
+  if(!win)s.stages.forEach((x,i)=>{if(i>s.stages.indexOf(st)&&x.comp===st.comp&&!x.res)x.res={skipped:true}});
+  if(st.comp==='wc'){if(r.champ)s.wcRes=5;else if(!win)s.wcRes=st.round}
+  st.res={tone:r.tone,win,champ:r.champ,missed:!!r.missed,pens:r.pens?1:0};
+  if(st.round===lastRound(st.comp)&&!r.missed){S.fin=S.fin||{w:0,l:0};win?S.fin.w++:S.fin.l++}
+}
+const penBonus=()=>{const a=(S.attrs.fin+S.attrs.dec)/2;return (a>=15?1:a<=8?-1:0)+(hasItem('spotball')?1:0)};
+const penGoal=(v,mine)=>v+(mine?0:0)>=(mine?4:(hasItem('gkgloves')?5:4));
+function pensStart(st){
+  const s=S.season;
+  s.pens={first:Math.random()<.5?'me':'opp',me:[],opp:[],myFirst:null,done:false,won:null,bonus:penBonus()};
+}
+/* whose turn: alternate from the first shooter; regulation 5 each, then sudden death */
+function pensNext(p){
+  const a=p.first, b=a==='me'?'opp':'me';
+  return p[a].length<=p[b].length?a:b;
+}
+function pensCheck(p){
+  const g=k=>p[k].filter(x=>x.goal).length, n=k=>p[k].length, me=g('me'), op=g('opp');
+  if(n('me')<=5&&n('opp')<=5){
+    const lm=5-n('me'), lo=5-n('opp');
+    if(me+lm<op||op+lo<me){p.done=true;p.won=me>op;return}
+    if(n('me')===5&&n('opp')===5&&me!==op){p.done=true;p.won=me>op;return}
+    return;
+  }
+  if(n('me')===n('opp')&&me!==op){p.done=true;p.won=me>op}
+}
+function pensKick(side,v){
+  const p=S.season.pens, mine=side==='me';
+  const total=mine&&!p.me.length?v+p.bonus:v;
+  const goal=v===1?false:total>=(mine?4:(hasItem('gkgloves')?5:4));
+  p[side].push({v,total,goal,you:mine&&!p.me.length});
+  if(mine&&p.me.length===1)p.myFirst=goal;
+  pensCheck(p);
+}
+function pensAuto(){
+  const s=S.season, p=s.pens; let g=0;
+  while(!p.done&&g++<60){const side=pensNext(p);pensKick(side,d(10))}
+  pensFinish();
+}
+function pensFinish(){
+  const s=S.season, p=s.pens, st=s.stages[s.pensStage], r=s.last;
+  r.pensRes={me:p.me.filter(x=>x.goal).length,opp:p.opp.filter(x=>x.goal).length,won:p.won};
+  koSettle(st,r,p.won);
+  if(r.champ&&isCrit(r.nat))s.bootsWon=1;
+  if(r.champ&&st.insp)S.inspFinals=(S.inspFinals||0)+1;
+  // records for achievements and items
+  S.pensW=(S.pensW||0)+(p.won?1:0); S.pensL=(S.pensL||0)+(p.won?0:1);
+  if(p.myFirst===false)S.pensMiss=(S.pensMiss||0)+1;
+  if(p.won&&p.me.length>5)S.flag_sudden=1;
+  if(p.won&&p.me.length>=5&&p.me.slice(0,5).every(x=>x.goal))S.flag_perfectpens=1;
+  if(st.round===lastRound(st.comp)){if(!p.won&&p.myFirst===false)S.flag_nightmare=1;if(p.won&&p.myFirst===true)S.flag_icecold=1}
+  if(p.won&&p.myFirst===true)S.pensScored=(S.pensScored||0)+1;
+  if((S.pensScored||0)>=3)giveItem('spotball');
+  if((S.pensW||0)>=3)giveItem('gkgloves');
+  s.pendingPens=false; s.pensStage=null;
+}
+/* a last-minute chance: a scenario with options that use different skills.
+   attack: success wins the tie, failure goes to penalties.
+   defend: success keeps it level (penalties; a natural 20 springs a winning counter), failure loses the tie. */
+const LMC_ATK=[
+ [['fin',15,1],['pas',14,0],['ski',15,1]],   // edge of the box: shoot / pass to the open man / beat the last defender
+ [['str',14,1],['fin',15,1],['pas',15,0]],   // cross to the far post: header / volley / cushion it back
+ [['spd',15,1],['ski',15,1],['pas',14,0]],   // breakaway: race clear and shoot / round the keeper / square it
+ [['ski',15,1],['str',16,1],['dec',14,0]],   // free kick: curl it / blast it / rehearsed routine
+ [['fin',14,1],['str',14,1],['dec',15,0]]    // scramble after a corner: poke it in / muscle through / find the spare man
+];
+const LMC_DEF=[
+ [['def',11],['spd',12],['dec',12]],         // striker through on goal: slide tackle / race back / hold your ground
+ [['str',11],['def',12],['lead',12]],        // last corner, their big man is up: win the header / man-mark / organise the box
+ [['dec',11],['def',12],['lead',13]],        // two on one: jockey / go for the ball / step up for offside
+ [['spd',11],['str',12],['def',12]]          // winger bursting down the line: chase / shoulder him off / block the cross
+];
+const lmcDefender=()=>['CB','FB','DM'].includes(myPos());
+function lmcScen(){const s=S.season;if(!s.lmc||s.lmc.d!==lmcDefender()){const dd=lmcDefender();s.lmc={d:dd,i:Math.floor(Math.random()*(dd?LMC_DEF:LMC_ATK).length)}}return s.lmc}
+const lmcOpts=()=>{const L=lmcScen();return (L.d?LMC_DEF:LMC_ATK)[L.i]};
+const lmcBon=o=>Math.floor((S.attrs[o[0]]-10)/2)+(o[2]&&hasItem('spotball')?1:0);
+const lmcPct=o=>{const b=lmcBon(o);let c=0;for(let v=1;v<=20;v++)if(v===20||(v!==1&&v+b>=o[1]))c++;return c*5};
+function lmcResolve(i,v){
+  const s=S.season, st=s.stages[s.pensStage], r=s.last, L=lmcScen(), o=lmcOpts()[i], b=lmcBon(o), tot=v+b, ok=v===20||(v!==1&&tot>=o[1]);
+  r.lmcRoll={v,tot,ok,i,b,tgt:o[1],d:L.d,at:o[0],shot:!!o[2],nat20:v===20}; s.pendingLMC=false; s.lmc=null;
+  const win=()=>{r.pens=0;r.lmcGoal=1;koSettle(st,r,true);if(r.champ){if(isCrit(r.nat))s.bootsWon=1;S.flag_screamer=1}S.lmcGoals=(S.lmcGoals||0)+1;s.pensStage=null};
+  if(!L.d){
+    if(ok){if(o[2]){r.goals=(r.goals||0)+1;s.goals++}else{r.assists=(r.assists||0)+1;s.assists++}win()}
+    else{s.pendingPens=true;pensStart(st)}
+  }else{
+    if(v===20){r.lmcCounter=1;win()}
+    else if(ok){s.pendingPens=true;pensStart(st)}
+    else{r.pens=0;r.lmcConc=1;koSettle(st,r,false);s.pensStage=null;S.lmcConc=(S.lmcConc||0)+1}
+  }
+}
+/* sims: take the option with the best odds */
+function lmcAuto(){const os=lmcOpts();let bi=0;os.forEach((o,i)=>{if(lmcPct(o)>lmcPct(os[bi]))bi=i});lmcResolve(bi,d(20))}
+function maybeLMC(){
+  if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingLMC||ovHas('lmc'))return;
+  ovQ.push({k:'lmc'});
+}
+let lmcShown=null;
+function lmcHTML(){
+  const s=S.season, st=s.stages[s.pensStage!=null?s.pensStage:s.idx], R=lmcShown;
+  const L=R?{d:R.d,i:R.si}:lmcScen(), os=(L.d?LMC_DEF:LMC_ATK)[L.i], TX=(L.d?t.lmcD:t.lmcA)[L.i];
+  const opts=os.map((o,i)=>{const b=lmcBon(o);
+    return `<button class="chopt" data-ov="lopt" data-i="${i}"><b>${TX[1][i]}</b><span class="lbl">d20 ${sg(b)} ${t.attrs[o[0]]} · ${t.target} ${o[1]} · ${lmcPct(o)}%</span><span class="fx up">${t.onOk}: ${L.d?t.lmcOkD:t.lmcOkA}</span><span class="fx down">${t.onBad}: ${L.d?t.lmcBadD:t.lmcBadA}</span></button>`}).join('');
+  let res='';
+  if(R){const msg=R.d?(R.nat20?t.lmcCounter:R.ok?t.lmcHeld:t.lmcBeaten):(R.ok?(R.shot?t.lmcGoal:t.lmcAssist):t.lmcMiss), good=R.ok;
+    res=`<div class="sum num">${esc(TX[1][R.i])} · d20 <b>${R.v}</b> ${sg(R.b)} = <b>${R.tot}</b> ${t.vs} ${R.tgt}</div><div class="verdict result v-${good?'good':'bad'}" style="font-size:22px">${msg}</div><button class="btn" data-ov="ldone">${R.ok&&(!R.d||R.nat20)?t.runCont:R.ok?t.pensOpen:t.runCont}</button>`}
+  return `<div class="ovcard move lmcpop story"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${L.d?t.lmcTD:t.lmcT}</h2><div class="ov-sub2">${TX[0]}</div>
+    <div class="storydie">${dieSVG(20,R?R.v:'',R?(R.v===20?'crit':R.v===1?'fumble':R.ok?'win':'lose'):'evd','lmd')}</div>
+    ${R?res:`<div class="chopts">${opts}</div>`}</div>`;
+}
+function lmcClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
+  if(v==='lopt'){const i=+b.dataset.i, L={...lmcScen()}, o=lmcOpts()[i]; if(!o)return; const x=d(20),el=ovEl.querySelector('[data-die="lmd"]'),bb=lmcBon(o);
+    ovEl.querySelectorAll('[data-ov="lopt"]').forEach(q=>{q.disabled=true;if(+q.dataset.i===i)q.classList.add('on')});
+    rollDice(el?[el]:[],20,[x],y=>y===20?'crit':y===1?'fumble':y+bb>=o[1]?'win':'lose',()=>{lmcResolve(i,x);const r=S.season.last;lmcShown={...r.lmcRoll,si:L.i};
+      const big=r.lmcGoal; sfx(big?(r.champ?'title':'nat20'):lmcShown.ok?'pass':'fail');save();ovUpdate(lmcHTML());if(big&&r.champ)confetti(ovEl,{k:'champ'})});return}
+  if(v==='ldone'){lmcShown=null;closeOv();commit();return}
+}
+let pensTimer=null;
+function maybePens(){
+  if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingPens||ovHas('pens'))return;
+  ovQ.push({k:'pens'});
+}
+function pensHTML(){
+  const s=S.season, p=s.pens; if(!p)return'';
+  const st=s.stages[s.pensStage];
+  const slots=side=>{const k=p[side], n=Math.max(5,p.me.length,p.opp.length);let h='';
+    for(let i=0;i<n;i++){const x=k[i];h+=x?`<span class="pk ${x.goal?'g':'m'} ${x.you?'you':''}" data-pk="${side}${i}">${dieSVG(10,x.total!==x.v?x.v:x.v,(x.goal?'win':'lose')+' small','pk'+side+i)}</span>`:`<span class="pk e" data-pk="${side}${i}">${dieSVG(10,'','small','pk'+side+i)}</span>`}
+    return h};
+  const sc=side=>p[side].filter(x=>x.goal).length;
+  const team=side=>side==='me'?{n:st.comp==='wc'?COUNTRY[lang][S.nat]:S.club.name,k:myKit(st)}:{n:oppName(st)||'?',k:st.opp?oppKit(st):['#3a3e47','#22252c']};
+  const row=side=>{const T0=team(side);return `<div class="pkrow ${pensNext(p)===side&&!p.done?'turn':''}"><div class="pkteam">${crest(T0.k,20)}<b>${esc(T0.n)}</b></div><div class="pkslots">${slots(side)}</div><span class="pksc num">${sc(side)}</span></div>`};
+  const order=p.first==='me'?['me','opp']:['opp','me'];
+  const waitMe=!p.done&&pensNext(p)==='me'&&p.me.length===0;
+  let foot='';
+  if(p.done)foot=`<div class="verdict result v-${p.won?'good':'bad'}" style="font-size:22px">${p.won?t.pensWon(sc('me'),sc('opp')):t.pensLost(sc('me'),sc('opp'))}</div><button class="btn" data-ov="pdone">${t.runCont}</button>`;
+  else if(waitMe)foot=`<div class="mods" style="justify-content:center"><span class="chip">${t.pensYou}</span><span class="chip">d10 ${sg(p.bonus)} · ${t.pensNeed}</span><span class="chip odds">${(()=>{let c=0;for(let v=2;v<=10;v++)if(v+p.bonus>=4)c++;return c*10})()}%</span></div><button class="btn" data-ov="pkick">${t.pensTake}</button>`;
+  else foot=`<div class="muted small">${p.me.length+p.opp.length>=10?t.pensSudden:t.pensGoing}</div>`;
+  return `<div class="ovcard move penspop"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${t.pensT}</h2>
+    <div class="pkboard">${order.map(row).join('')}</div>${foot}</div>`;
+}
+function pensStep(){
+  clearTimeout(pensTimer);
+  const s=S.season, p=s&&s.pens; if(!p||p.done||ovKind!=='pens')return;
+  const side=pensNext(p);
+  if(side==='me'&&p.me.length===0){ovUpdate(pensHTML());return}      // your own kick waits for you
+  const i=p[side].length, v=d(10), el=ovEl.querySelector(`[data-die="pk${side}${i}"]`);
+  rollDice(el?[el]:[],10,[v],()=>'',()=>{pensKick(side,v);save();ovUpdate(pensHTML());sfx('click');if(p.done){sfx(p.won?'pass':'fail')}else pensTimer=setTimeout(pensStep,420)});
+}
+function pensClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, p=s.pens;
+  if(v==='pkick'){const x=d(10),el=ovEl.querySelector('[data-die="pkme0"]');ovEl.querySelectorAll('[data-ov="pkick"]').forEach(q=>q.disabled=true);
+    rollDice(el?[el]:[],10,[x],()=>'',()=>{pensKick('me',x);save();ovUpdate(pensHTML());sfx(p.me[0].goal?'pass':'fail');if(!p.done)pensTimer=setTimeout(pensStep,600)});return}
+  if(v==='pdone'){pensFinish();closeOv();commit();return}
+}
 
 let modHelp=false, hofSort='score';
 const hofCmp=new Set();
