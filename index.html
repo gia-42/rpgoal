@@ -15,6 +15,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RPGoal">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="config.js"></script>
 <style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -166,6 +169,12 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .evbox{border:1px solid var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;background:var(--sunk)}
 .evbox.ok{border-color:var(--good)} .evbox.bad{border-color:var(--bad)}
 .fx{font-size:13px;font-weight:600}
+.styles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.styles{grid-template-columns:1fr}}
+.stylebtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--rule-2);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+.stylebtn:hover{border-color:var(--ink)}
+.stylebtn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.stylebtn b{font-weight:600}
 .picks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:6px}
 .pickbtn{min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border:1px solid var(--rule-2);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
 .pickbtn:hover:not(:disabled){border-color:var(--good)}
@@ -351,6 +360,11 @@ const POS={
  FB:{w:{spd:.3,def:.3,pas:.15,str:.15,dec:.1},g:.12,a:.55},
  CB:{w:{def:.4,str:.25,lead:.2,dec:.15},g:.12,a:.15}
 };
+const STYLES={ST:[['target','str'],['finisher','fin'],['cold','dec']],W:[['speedster','spd'],['dribbler','ski'],['insidefwd','fin']],
+ AM:[['playmaker','pas'],['trequartista','ski'],['shadow','fin']],CM:[['b2b','str'],['regista','pas'],['captain','lead']],
+ DM:[['anchor','def'],['destroyer','str'],['metronome','dec']],FB:[['wingback','spd'],['defensivefb','def'],['invertedfb','pas']],
+ CB:[['stopper','def'],['ballplayer','pas'],['commander','lead']]};
+const styleOf=(pos,key)=>(STYLES[pos]||[]).find(x=>x[0]===key);
 const POS_BIAS={ST:-.15,W:-.09,AM:.10,CM:.22,DM:.22,FB:-.09,CB:-.21};
 const posScore=(a,p)=>AK.reduce((s,k)=>s+a[k]*(POS[p].w[k]||0),0)+POS_BIAS[p];
 const bestPos=a=>Object.keys(POS).reduce((b,p)=>posScore(a,p)>posScore(a,b)+1e-9?p:b,'ST');
@@ -394,8 +408,9 @@ en:{
   mid:'You start in your home country. Top flight needs an average of 5.0+, and below that you start in the second division.',
   top:'You start in your home country, where the top flight is tough to break into: it needs an average of 6.5+. Below that you start in the second division and fight for promotion.'},
  pos:{ST:['ST','Striker'],W:['W','Winger'],AM:['AM','Attacking midfielder'],CM:['CM','Central midfielder'],DM:['DM','Defensive midfielder'],FB:['FB','Full-back'],CB:['CB','Centre-back']},
- posLine:'Position',tapRoll:'Tap to roll',tapReroll:'Tap to reroll',rollAll:'Roll all',rollRest:'Roll the rest',rerollAll:n=>`Reroll all (${n} left)`,
- rollHint:'Tap a die to roll one stat at a time, or roll them all at once.',rerollHint:'One reroll left: tap a single die, or reroll all six.',
+ posLine:'Position',styleT:'Choose your playstyle',styleWait:'Pick a playstyle to see your first offers.',
+ styles:{target:'Target man',finisher:'Finisher',cold:'Ice-cold',speedster:'Speedster',dribbler:'Dribbler',insidefwd:'Inside forward',playmaker:'Playmaker',trequartista:'Trequartista',shadow:'Shadow striker',b2b:'Box-to-box',regista:'Regista',captain:'Captain',anchor:'Anchor',destroyer:'Destroyer',metronome:'Metronome',wingback:'Wing-back',defensivefb:'Defensive full-back',invertedfb:'Inverted full-back',stopper:'Stopper',ballplayer:'Ball-playing defender',commander:'Commander'},tapRoll:'Tap to roll',tapReroll:'Tap to reroll',rollAll:'Roll all',rollRest:'Roll the rest',rerollAll:n=>`Reroll all (${n} left)`,
+ rollHint:'Tap a die to roll one stat at a time, or roll them all at once.',rerollHint:'One reroll left: tap a single die, or reroll all eight.',
  bench:'You’re in the treatment room. The team plays this one without you, rolling d20 + team bonus + 2.',
  chPlayer:'Player',chClub:'Club',chNation:'National team',chFocus:'Focus',dc:'DC',roll:d=>`Roll d${d}`,rollAdv:'Roll 2d20 · keep best',rollDis:'Roll 2d20 · keep worst',sim:'Sim',squad:'squad',
  crit:a=>`Natural 20! +1 ${a}.`,critPick:'Natural 20! Pick an attribute to improve right now.',nat1:'Natural 1. You’re injured.',
@@ -482,8 +497,9 @@ pt:{
   mid:'Você começa no seu país. A primeira divisão pede média 5,0+, e abaixo disso você começa na segunda divisão.',
   top:'Você começa no seu país, onde é difícil entrar na primeira divisão: ela pede média 6,5+. Abaixo disso você começa na segunda divisão e briga pelo acesso.'},
  pos:{ST:['CA','Centroavante'],W:['PON','Ponta'],AM:['MEI','Meia-atacante'],CM:['MC','Meio-campista'],DM:['VOL','Volante'],FB:['LAT','Lateral'],CB:['ZAG','Zagueiro']},
- posLine:'Posição',tapRoll:'Toque para rolar',tapReroll:'Toque para rolar de novo',rollAll:'Rolar todos',rollRest:'Rolar o resto',rerollAll:n=>`Rolar todos de novo (${n})`,
- rollHint:'Toque em um dado para rolar um atributo por vez, ou role todos de uma vez.',rerollHint:'Resta uma nova rolagem: toque em um dado ou role os seis de novo.',
+ posLine:'Posição',styleT:'Escolha seu estilo de jogo',styleWait:'Escolha um estilo de jogo para ver as primeiras propostas.',
+ styles:{target:'Pivô',finisher:'Matador',cold:'Sangue-frio',speedster:'Velocista',dribbler:'Driblador',insidefwd:'Ponta invertido',playmaker:'Armador',trequartista:'Camisa 10',shadow:'Elemento surpresa',b2b:'Box-to-box',regista:'Regista',captain:'Capitão',anchor:'Cão de guarda',destroyer:'Destruidor',metronome:'Maestro',wingback:'Ala',defensivefb:'Lateral marcador',invertedfb:'Lateral construtor',stopper:'Marcador',ballplayer:'Zagueiro construtor',commander:'Xerife'},tapRoll:'Toque para rolar',tapReroll:'Toque para rolar de novo',rollAll:'Rolar todos',rollRest:'Rolar o resto',rerollAll:n=>`Rolar todos de novo (${n})`,
+ rollHint:'Toque em um dado para rolar um atributo por vez, ou role todos de uma vez.',rerollHint:'Resta uma nova rolagem: toque em um dado ou role os oito de novo.',
  bench:'Você está no departamento médico. O time joga sem você, rolando d20 + bônus do time + 2.',
  chPlayer:'Jogador',chClub:'Clube',chNation:'Seleção',chFocus:'Foco',dc:'CD',roll:d=>`Rolar d${d}`,rollAdv:'Rolar 2d20 · fica o maior',rollDis:'Rolar 2d20 · fica o menor',sim:'Simular',squad:'elenco',
  crit:a=>`20 natural! +1 de ${a}.`,critPick:'20 natural! Escolha um atributo para melhorar agora.',nat1:'1 natural. Você se lesionou.',
@@ -585,7 +601,7 @@ function randomName(nat){const N=NATIONS[nat];if(N.nick&&Math.random()<.18)retur
 
 let S=fresh();
 function fresh(){return{phase:'create',nat:'BRA',name:randomName('BRA'),roll:{},rerolls:1,history:[],trophies:[]}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
   const f=o=>{if(!o)return;if(!LEAGUES[o.league])o.league=0;const n=LEAGUES[o.league].tiers.length;if(!(o.tier>=0))o.tier=0;if(o.tier>=n)o.tier=n-1};
@@ -609,7 +625,7 @@ function fixSave(x){
 function load(){try{const r=localStorage.getItem(KEY);if(r)return fixSave(JSON.parse(r))}catch(e){}return null}
 let hofMem=null;
 function loadHof(){if(hofMem)return hofMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFKEY)||'[]');hofMem=Array.isArray(r)?r:[]}catch(e){hofMem=[]}return hofMem.slice()}
-function saveHof(h){hofMem=h.slice();try{localStorage.setItem(HOFKEY,JSON.stringify(h))}catch(e){}}
+function saveHof(h){hofMem=h.slice();try{localStorage.setItem(HOFKEY,JSON.stringify(h))}catch(e){}if(window.cloudSync)cloudSync()}
 
 /* ---------- career logic ---------- */
 function makeStartOffers(avg,nat){
@@ -640,6 +656,7 @@ function legendReady(){
 const capMods=x=>x<=7?x:7+Math.floor((x-7)/2);
 function startCareer(offer){
   S.attrs={...S.roll}; S.pos=bestPos(S.roll); S.age=17; S.year=2027;
+  const sty=styleOf(S.pos,S.style); if(sty)S.attrs[sty[1]]=Math.min(20,S.attrs[sty[1]]+1); else S.style=null;
   S.club={name:offer.name,league:offer.league,tier:offer.tier};
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont; S.startOffers=null; S.hofSaved=false;
   S.loyalty=0; S.tenure=0; S.hops=0; S.milestones=[]; S.rivalMoves=0; S.notes=[];
@@ -909,7 +926,7 @@ function retire(){
   const peak=Math.max(...H.map(h=>h.rating));
   const score=Math.round(goals+assists*0.6+S.trophies.reduce((a,x)=>a+trophyWeight(x),0)+peak*4+Math.max(0,tierOf(top.league,top.tier).pr)*6+(S.milestones||[]).length*8+(S.legends||[]).length*25);
   const hof=loadHof();
-  hof.push({id:Date.now(),name:S.name||'',nat:S.nat,pos:myPos(),from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
+  hof.push({id:Date.now(),name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
     clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason});
   saveHof(hof); S.hofSaved=true;
 }
@@ -946,7 +963,7 @@ function sheet(){
   const r=rating(S.attrs), s=S.season;
   const cond=S.phase==='season'&&s&&s.out>0?`<span class="chip inj">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</span>`:`<span class="chip fit">${t.fit}</span>`;
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:'';
-  return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted">${esc(S.club.name)} · ${leagueLine(S.club.league)}</div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.qualified&&S.phase==='season'?`<span class="chip">${LEAGUES[S.club.league].cont}</span>`:''}${wcChip}</div></div>
+  return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted">${esc(S.club.name)} · ${leagueLine(S.club.league)}</div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.qualified&&S.phase==='season'?`<span class="chip">${LEAGUES[S.club.league].cont}</span>`:''}${wcChip}</div></div>
   <div class="rating"><div class="lbl">${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
   ${fanBar()}<div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div></section>`;
 }
@@ -973,7 +990,8 @@ function createView(){
     ${hint?`<div class="muted small">${hint}</div>`:''}
     <div class="dice">${cells}</div>
     ${all?`<div class="stack" style="gap:8px"><div class="pos"><span class="ab">${t.pos[pos][0]}</span><span class="sum">${t.posLine}: <b>${t.pos[pos][1]}</b></span></div><div class="sum">${t.avgTo(fmt(avg))}</div></div>
-    <div class="stack" style="gap:10px"><h3 style="font-size:22px">${t.firstOffers}</h3><div class="offers">${offers}</div></div>`:''}
+    <div class="stack" style="gap:10px"><h3 style="font-size:22px">${t.styleT}</h3><div class="styles">${(STYLES[pos]||[]).map(([k,a])=>`<button class="stylebtn" data-act="style" data-s="${k}" aria-pressed="${S.style===k}"><b>${t.styles[k]}</b><span class="muted small">+1 ${t.attrs[a]} · ${S.roll[a]}→${Math.min(20,S.roll[a]+1)}</span></button>`).join('')}</div></div>
+    ${styleOf(pos,S.style)?`<div class="stack" style="gap:10px"><h3 style="font-size:22px">${t.firstOffers}</h3><div class="offers">${offers}</div></div>`:`<div class="muted small">${t.styleWait}</div>`}`:''}
     <div class="row">${all?`<button class="btn ghost" data-act="roll6" ${S.rerolls<1?'disabled':''}>${t.rerollAll(S.rerolls)}</button>`:`<button class="btn" data-act="roll6">${some?t.rollRest:t.rollAll}</button>`}</div>
   </section>`;
 }
@@ -1141,7 +1159,7 @@ function hofView(){
     const ps=t.pos[p.pos]||[p.pos,p.pos];
     return `<div class="hrow ${i===0?'first':''}"><div class="hrank num">${i+1}</div>
       <div class="stack" style="gap:6px;min-width:0"><span class="lbl">${p.from}–${p.to} · ${COUNTRY[lang][p.nat]||''} · ${t.seasons}: ${p.seasons}</span>
-      <div class="row" style="gap:8px"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span></div>
+      <div class="row" style="gap:8px"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span>${p.style&&t.styles[p.style]?`<span class="lbl">${t.styles[p.style]}</span>`:''}</div>
       <div class="hpath">${p.clubs.map(esc).join(' → ')}</div>
       <div class="lbl num" style="color:var(--ink)">${p.goals} ${t.goals} · ${p.assists} ${t.assists} · ${p.apps} ${t.apps} · ${t.rating} ${fmt(p.peak)}</div>
       ${cups?`<div class="cabinet">${cups}</div>`:''}
@@ -1158,7 +1176,7 @@ function render(){
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
   const isDark=effTheme()==='dark';
   const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}${isDark?t.themeLight:t.themeDark}</button>`;
-  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${themeBtn}${lt}${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
+  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}${themeBtn}${lt}${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
   const tabs=`<nav class="tabs" role="tablist"><button role="tab" data-act="tab" data-v="game" aria-selected="${view==='game'}">${t.tabGame}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(n)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
@@ -1265,7 +1283,8 @@ function onClick(e){
     const vals=keys.map(()=>d(10));
     rollDice(keys.map(k=>app.querySelector(`[data-die="a-${k}"]`)).filter(Boolean),10,vals,d10cls,()=>{const r={...a};keys.forEach((k,i)=>r[k]=vals[i]);S.roll=r;S.startOffers=null;commit()});
   }
-  else if(act==='first'){startCareer(S.startOffers[+b.dataset.i]);commit();window.scrollTo({top:0})}
+  else if(act==='style'){S.style=b.dataset.s;commit()}
+  else if(act==='first'){if(!styleOf(bestPos(S.roll),S.style))return;startCareer(S.startOffers[+b.dataset.i]);commit();window.scrollTo({top:0})}
   else if(act==='roll'){doRoll()}
   else if(act==='inj4'){const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);commit()})}
   else if(act==='inj10'){const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);commit()})})}
@@ -1305,5 +1324,6 @@ function start(data){
 start({});
 </script>
 
+<script src="cloud.js"></script>
 </body>
 </html>

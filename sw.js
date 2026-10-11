@@ -1,6 +1,6 @@
 // RPGoal offline support. Change VERSION whenever you upload new files.
-const VERSION = 'rpgoal-v3';
-const CORE = ['./', './index.html', './manifest.webmanifest', './favicon.svg',
+const VERSION = 'rpgoal-v4';
+const CORE = ['./', './index.html', './config.js', './cloud.js', './manifest.webmanifest', './favicon.svg',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -18,8 +18,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Google Fonts: keep a copy so the game looks right offline.
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+  // Fonts and the login library: keep a copy so the game works offline.
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com' || url.hostname === 'cdn.jsdelivr.net') {
     e.respondWith(caches.open(VERSION).then(c => c.match(req).then(hit => hit ||
       fetch(req).then(res => { c.put(req, res.clone()); return res; }))));
     return;
