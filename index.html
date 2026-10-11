@@ -465,6 +465,34 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .sv1 .sv-chips .lbl{margin-right:4px}
 .sv1 .sv-row{padding:6px 0;font-size:14px}
 .sv1 .sv-row .res{font-size:12.5px;text-align:right}
+/* page head on fixed tabs (Achievements, Hall of Fame) */
+.phead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;flex:none}
+.ptitle{font-size:24px;line-height:1.1;margin:0}
+.phead .achbar{flex:1 0 100%}
+.phead .subtabs{margin:0}
+.pscroll{min-width:0}
+.fixv .wrap>.pscroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:4px}
+/* Season: slim grid, one even row per competition */
+.sv1{padding:12px 14px}
+.sv1 .numgrid>div{padding:5px 8px}
+.sv1 .numgrid b{font-size:15px}
+.sv1 .sv-list .sv-row:first-child{border-top:0}
+.sv1 .sv-row{padding:7px 0;font-size:14px;align-items:center}
+.sv1 .sv-row>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sv1 .sv-row .res,.sv1 .sv-lg{font-size:12.5px;text-align:right;font-weight:600}
+.sv1 .sv-lg{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 5px}
+.sv1 .sv-lg .muted{font-weight:400}
+/* consistency pass: no wrapping headers, labels that fit in both languages */
+.phead .pfull{flex:1 0 100%}
+.sv1 .sv-lg{flex-wrap:nowrap;gap:0 7px;white-space:nowrap}
+.sv1 .sv-row>span:first-child{flex:0 1 auto}
+.trackp>.row.between,.panel>.row.between{flex-wrap:nowrap}
+.trackp>.row.between h3,.panel>.row.between h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.trackp>.row.between>.lbl,.trackp>.row.between>.btn{white-space:nowrap;flex:none}
+.numgrid .lbl{white-space:normal;overflow:visible;line-height:1.2;letter-spacing:.03em}
+.numgrid>div{justify-content:space-between}
+.crow{grid-template-columns:56px minmax(0,1fr) auto}
+.crow .yr{white-space:nowrap}
 /* team-coloured dice */
 .kit .die:not(.crit):not(.fumble) .face{fill:var(--k1);stroke:var(--k3)}
 .kit .die:not(.crit):not(.fumble) .edge{stroke:var(--ke)}
@@ -869,7 +897,7 @@ en:{
  soundOn:'Turn sound on',soundOff:'Turn sound off',
  teamT:'Team level',teamLv:['Elite','Contender','Solid','Modest','Underdog'],teamRank:(r,n)=>`${r} of ${n}`,
  offersT:'You received these offers:',firedT:'Find a new club',stayBtn:'Stay',stayDesc:'Keep going where you are.',decideLater:'Decide later',openWindow:'Open the transfer window',windowHint:n=>n?`${n} club${n>1?'s':''} made you an offer.`:'No new offers this window.',
- noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
+ noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',pgaL:'P · G · A',posProjS:'Projection',posFinalS:'Final',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
  statsT:'Career numbers',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
  awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
@@ -1005,13 +1033,13 @@ pt:{
  soundOn:'Ligar o som',soundOff:'Desligar o som',
  teamT:'Nível do time',teamLv:['Elite','Candidato','Sólido','Modesto','Azarão'],teamRank:(r,n)=>`${r} de ${n}`,
  offersT:'Você recebeu estas propostas:',firedT:'Procure um novo clube',stayBtn:'Ficar',stayDesc:'Seguir onde você está.',decideLater:'Decidir depois',openWindow:'Abrir a janela de transferências',windowHint:n=>n?`${n} clube${n>1?'s':''} te fez uma proposta.`.replace('clubes te fez','clubes te fizeram'):'Nenhuma proposta nova nesta janela.',
- noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
+ noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',pgaL:'J · G · A',posProjS:'Projeção',posFinalS:'Final',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
  statsT:'Números da carreira',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
  awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
  settingsT:'Ajustes',soundT:'Som',themeT:'Tema',langT:'Idioma',
- bySeason:'Temporada a temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
+ bySeason:'Por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
  noTitles:'Sem títulos',wcN:n=>`${n} Copa${n>1?'s':''} do Mundo`,bdoNs:n=>`${n} Bola${n>1?'s':''} de Ouro`,appsS:'jogos',ratingS:'nível',majorN:n=>`${n} grande${n>1?'s':''}`,
  tag:{legend:c=>`Lenda · ${c}`,idol:c=>`Ídolo · ${c}`,oneclub:c=>`Um clube só · ${c}`,forty:()=>'Jogou até os 40',injury:()=>'Encerrada por lesão',rival:()=>'Trocou pelo rival',
   blessed:()=>'Abençoado pelos dados',cursed:()=>'Amaldiçoado pelos dados',nat20s:()=>'Colecionador de 20',biggame:()=>'Jogador de decisão',bottler:()=>'Amarelou nas finais',
@@ -1833,7 +1861,7 @@ function tracker(){
     const ev=st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">★ ${t.ev[st.ev][0]}</span>`:'';
     const name=`${st.comp==='league'?'':compName(st.comp,S.club.league)+' · '}${roundShort(st)}`;
     return `<div class="trow ${now?'now':''} ${st.res&&st.res.skipped?'skip':''}"><span class="tag ${st.comp==='wc'?'wc':''}">${compTag(st.comp)}</span><span>${name}${st.opp?`<span class="topp"> · ${t.vsOpp(esc(oppName(st)))}</span>`:''}${ev}</span>${res}</div>`}).join('');
-  const sim=S.phase==='season'&&!s.pendingHeal&&!s.careerOver&&!s.pickAttr?`<button class="btn ghost sm" data-act="simrest">${t.simRest}</button>`:`<span class="lbl num">${t.gaApps(s.goals,s.assists,s.apps)}</span>`;
+  const sim=S.phase==='season'&&!s.pendingHeal&&!s.careerOver&&!s.pickAttr?`<button class="btn ghost sm" data-act="simrest">${t.simShort}</button>`:`<span class="lbl num">${t.gaApps(s.goals,s.assists,s.apps)}</span>`;
   return `<section class="panel trackp"><div class="row between" style="margin-bottom:6px"><h3 style="font-size:18px">${t.season(S.year)}</h3>${sim}</div><div class="track">${rows}</div></section>`;
 }
 const isGoldName=n=>[T.en.wcM,T.en.wcW,T.en.bdoM,T.en.bdoW,T.pt.wcM,T.pt.wcW,T.pt.bdoM,T.pt.bdoW].includes(n);
@@ -1918,8 +1946,8 @@ let hofG='all';
 function hofPlayers(){
   const all=loadHof().sort((a,b)=>b.score-a.score), hof=all.filter(p=>hofG==='all'||(p.g||'m')===hofG);
   const filt=`<div class="subtabs" role="group"><button data-act="hofg" data-v="all" aria-pressed="${hofG==='all'}">${t.hofAll}</button><button data-act="hofg" data-v="m" aria-pressed="${hofG==='m'}">${t.genderM}</button><button data-act="hofg" data-v="f" aria-pressed="${hofG==='f'}">${t.genderW}</button></div>`;
-  const head=`<div class="stack" style="gap:2px"><h2 style="font-size:24px">${t.hofT}</h2><div class="muted small">${t.hofSub}</div></div>`;
-  if(!hof.length)return `<section class="stack" style="gap:10px">${head}${all.length?filt:''}<div class="empty">${t.hofEmpty}</div></section>`;
+  const head=`<div class="phead"><h2 class="ptitle">${t.hofT}</h2>${all.length?`<div class="pfull">${filt}</div>`:''}</div>`;
+  if(!hof.length)return `${head}<section class="pscroll"><div class="empty">${t.hofEmpty}</div></section>`;
   const rows=hof.map((p,i)=>{
     const open=hofOpen.has(p.id), ps=t.pos[p.pos]||[p.pos,p.pos];
     const wcN=p.trophies.filter(x=>x.kind==='wc').length, bdoN=p.trophies.filter(x=>x.kind==='bdo').length, titles=p.trophies.filter(x=>x.kind!=='bdo').length;
@@ -1942,7 +1970,7 @@ function hofPlayers(){
       <button class="hbtn" data-act="hofopen" data-id="${p.id}" aria-expanded="${open}"><span class="hl1"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span><span class="gsym" aria-label="${p.g==='f'?t.genderW:t.genderM}" title="${p.g==='f'?t.genderW:t.genderM}">${p.g==='f'?'♀':'♂'}</span></span>
         <span class="hl2">${[titles?t.titlesN(titles):t.noTitles, wcN?t.wcN(wcN):'', bdoN?t.bdoNs(bdoN):'', `${p.apps} ${t.appsS}`, `${p.goals} G`, `${p.assists} A`, `${t.ratingS} ${fmt(p.peak)}`].filter(Boolean).join(' · ')}</span></button>
       <div class="hscore"><div class="n num">${p.score}</div></div>${more}</div>`}).join('');
-  return `<section class="stack" style="gap:10px">${head}${filt}<div class="hof">${rows}</div>
+  return `${head}<section class="pscroll stack" style="gap:10px"><div class="hof">${rows}</div>
   <div class="row"><button class="btn danger sm" data-act="hofclear">${hofArm?t.hofClearSure:t.hofClear}</button></div></section>`;
 }
 const hofOpen=new Set();
@@ -1959,7 +1987,7 @@ function render(){
   const tabs=`<nav class="tabs" role="tablist"><button role="tab" class="tab-home" data-act="tab" data-v="game" aria-selected="${view==='game'}" aria-label="${t.tabGame}" title="${t.tabGame}"><svg class="tablogo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><polygon points="50,30 70,63 30,63" fill="currentColor"/><path d="M50,4L50,30M90,27L70,63M10,27L30,63M50,96L70,63M50,96L30,63M90,73L70,63M10,73L30,63" stroke="currentColor" stroke-width="5"/></svg></button>${S.phase==='create'?'':`<button role="tab" data-act="tab" data-v="season" aria-selected="${view==='season'}">${t.tabSeason}</button><button role="tab" data-act="tab" data-v="stats" aria-selected="${view==='stats'}">${t.tabStats}</button>`}<button role="tab" data-act="tab" data-v="ach" aria-selected="${view==='ach'}">${t.achPage}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(0)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
-  else if(view==='ach')body=`<section class="stack" style="gap:14px">${achView()}</section>`;
+  else if(view==='ach')body=achView();
   else if(S.phase==='create')body=createView();
   else if(view==='season')body=seasonView();
   else if(view==='stats')body=statsView();
@@ -1970,7 +1998,7 @@ function render(){
   if(key===lastKey)app.dataset.still='1'; else delete app.dataset.still;
   lastKey=key;
   app.innerHTML=header+tabs+body+installRow();
-  const fixv=(view==='season'&&!!S.season)||(view==='stats'&&S.history.length>0);
+  const fixv=(view==='season'&&!!S.season)||(view==='stats'&&S.history.length>0)||view==='ach'||view==='hof';
   const one=(view==='game'&&S.phase!=='create')||fixv;
   try{document.body.classList.toggle('fixv',fixv)}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
 }
@@ -2179,10 +2207,9 @@ function achView(){
   const got=loadAch(), L=lang==='pt'?1:0, n=ACH.filter(a=>got[a.id]).length;
   const fmtD=ts=>new Date(ts).toLocaleDateString(lang==='pt'?'pt-BR':'en-GB',{day:'numeric',month:'short',year:'numeric'});
   const card=a=>`<div class="ach ${got[a.id]?'got':''} ${a.bad?'bad':''}">${achIcon(a,!!got[a.id])}<div class="ach-t"><b>${a.n[L]}</b><span>${a.d[L]}</span></div>${got[a.id]?`<span class="ach-d">${fmtD(got[a.id])}</span>`:''}</div>`;
-  return `<div class="stack" style="gap:4px"><div class="row between"><h2 style="font-size:30px">${t.achPage}</h2><span class="lbl num">${n}/${ACH.length}</span></div><div class="muted small">${t.achSub}</div></div>
-    <div class="achbar"><span style="width:${(100*n/ACH.length).toFixed(1)}%"></span></div>
-    <div class="achs">${ACH.filter(a=>!a.bad).map(card).join('')}</div>
-    <h3 style="font-size:20px;margin-top:8px">${t.achBadH}</h3><div class="achs">${ACH.filter(a=>a.bad).map(card).join('')}</div>`;
+  return `<div class="phead"><h2 class="ptitle">${t.achPage}</h2><span class="lbl num">${n}/${ACH.length}</span><div class="achbar"><span style="width:${(100*n/ACH.length).toFixed(1)}%"></span></div></div>
+    <section class="pscroll stack" style="gap:6px"><div class="achs">${ACH.filter(a=>!a.bad).map(card).join('')}</div>
+    <h3 style="font-size:18px;margin-top:10px">${t.achBadH}</h3><div class="achs">${ACH.filter(a=>a.bad).map(card).join('')}</div></section>`;
 }
 
 
@@ -2203,18 +2230,17 @@ function seasonView(){
   const s=S.season; if(!s)return `<section class="panel"><div class="muted">${t.noSeason}</div></section>`;
   const L=LEAGUES[S.club.league], lg=s.stages.filter(x=>x.comp==='league'), played=lg.filter(x=>x.res&&!x.res.skipped);
   const r=clubRank(S.club.name,S.club.league);
-  let pos='—', posL=t.projPos;
-  if(S.phase==='offseason'){pos=ord(S.history[S.history.length-1].pos);posL=t.finalPos}
+  let pos='—', posL=t.posProjS;
+  if(S.phase==='offseason'){pos=ord(S.history[S.history.length-1].pos);posL=t.posFinalS}
   else if(played.length)pos='~'+ord(clamp(Math.round(1+r.frac*(L.size-1)-(s.leagueSum/2.5)*.5*(4/played.length)),1,L.size));
   const m=L.matches, rng=x=>`${Math.round(m*x.round/4)+1}–${Math.round(m*(x.round+1)/4)}`;
-  const chips=lg.map(x=>x.res&&!x.res.skipped?`<span class="res ${x.res.tone==='good'?'w':x.res.tone==='bad'?'l':'m'}">${t.kindShort[x.res.kind]}</span>`:`<span class="res p">${(s.v||4)>=5?rng(x):roundShort(x)}</span>`).join('<span class="muted">·</span>');
-  const comps=['cup','cont','cont2','cwc','wc'].map(compStatus).filter(Boolean).map(c=>`<div class="sv-row"><span>${esc(c.name)}</span><span class="res ${c.tone}">${c.txt}</span></div>`).join('');
+  const chips=lg.map(x=>x.res&&!x.res.skipped?`<span class="res ${x.res.tone==='good'?'w':x.res.tone==='bad'?'l':'m'}">${t.kindShort[x.res.kind]}</span>`:`<span class="res p">${(s.v||4)>=5?rng(x):roundShort(x)}</span>`).join('');
+  const comps=`<div class="sv-row"><span>${esc(L.name)}</span><span class="sv-lg">${chips}</span></div>`+['cup','cont','cont2','cwc','wc'].map(compStatus).filter(Boolean).map(c=>`<div class="sv-row"><span>${esc(c.name)}</span><span class="res ${c.tone}">${c.txt}</span></div>`).join('');
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
-  const cell=(l,v,sub)=>`<div><span class="lbl">${l}</span><b>${v}</b>${sub?`<span class="sub">${sub}</span>`:''}</div>`;
-  return `<section class="panel stack sv1" style="gap:10px">${inj}
-    <div class="numgrid sv3">${cell(esc(L.name),pos,posL)}${cell(t.teamT,t.teamLv[teamLevel(r.frac)])}${cell(`G · A · ${t.apps}`,`${s.goals}·${s.assists}·${s.apps}`)}</div>
-    <div class="sv-chips"><span class="lbl">${t.raceT}</span>${chips}</div>
-    ${comps?`<div class="sv-list">${comps}</div>`:''}
+  const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
+  return `<section class="panel stack sv1" style="gap:8px">${inj}
+    <div class="numgrid sv3">${cell(posL,pos)}${cell(t.teamT,t.teamLv[teamLevel(r.frac)])}${cell(t.pgaL,`${s.apps}·${s.goals}·${s.assists}`)}</div>
+    <div class="sv-list">${comps}</div>
   </section>`+tracker();
 }
 /* ---------- Stats tab ---------- */
