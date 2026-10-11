@@ -66,6 +66,8 @@ h1,h2,h3{font-family:var(--f-ui);margin:0;text-wrap:balance;letter-spacing:-.015
 .langs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .theme-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--rule-2);border-radius:7px;color:var(--ink-2);font-size:12px;font-weight:600;padding:5px 9px}
 .theme-btn svg{width:14px;height:14px}
+.theme-btn.icon{padding:5px 7px}
+.theme-btn.icon svg path:first-child{fill:currentColor;fill-opacity:.15}
 .theme-btn svg *{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 /* tabs */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--rule)}
@@ -588,6 +590,7 @@ en:{
  udUp:c=>`You took ${c} up to the first division. Few of their fans ever thought they’d see it.`,
  ud:[c=>`Took ${c} up`,c=>`Made ${c} champions`,c=>`Conquered the continent with ${c}`,c=>`Took ${c} to the top of the world`],
  achT:'Achievement unlocked',achBadT:'Hard lesson',achPage:'Achievements',achSub:'Unlocked across all your careers. Tap a notification to dismiss it.',achBadH:'Hard lessons',hofPlayers:'Players',
+ soundOn:'Turn sound on',soundOff:'Turn sound off',
  mvKicker:'Transfer',mvTitle:c=>`Join ${c}?`,mvGo:c=>`Confirm transfer to ${c}`,mvStay:c=>`Stay at ${c}`,
  mvLegend:c=>`You’re a ${c} legend. Your name is on the walls of the stadium. Leaving now would break hearts.`,
  mvGreats:c=>`You’re becoming one of the greats here. ${c} fans already talk about you next to the club’s idols.`,
@@ -710,6 +713,7 @@ pt:{
  udUp:c=>`Você levou o ${c} para a primeira divisão. Pouca gente na torcida achou que veria isso.`,
  ud:[c=>`Subiu com o ${c}`,c=>`Fez do ${c} campeão`,c=>`Conquistou o continente com o ${c}`,c=>`Levou o ${c} ao topo do mundo`],
  achT:'Conquista desbloqueada',achBadT:'Lição dura',achPage:'Conquistas',achSub:'Desbloqueadas em todas as suas carreiras. Toque numa notificação para fechá-la.',achBadH:'Lições duras',hofPlayers:'Jogadores',
+ soundOn:'Ligar o som',soundOff:'Desligar o som',
  mvKicker:'Transferência',mvTitle:c=>`Ir para o ${c}?`,mvGo:c=>`Confirmar ida para o ${c}`,mvStay:c=>`Ficar no ${c}`,
  mvLegend:c=>`Você é lenda do ${c}. Seu nome está nos muros do estádio. Sair agora partiria corações.`,
  mvGreats:c=>`Você está virando um dos grandes daqui. A torcida do ${c} já fala de você ao lado dos ídolos do clube.`,
@@ -1549,8 +1553,9 @@ function render(){
   const n=loadHof().length;
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
   const isDark=effTheme()==='dark';
+  const sndBtn=`<button class="theme-btn icon" data-act="sound" aria-pressed="${soundOn}" aria-label="${soundOn?t.soundOff:t.soundOn}" title="${soundOn?t.soundOff:t.soundOn}"><svg viewBox="0 0 16 16"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z"/>${soundOn?'<path d="M10.4 5.6a3.2 3.2 0 0 1 0 4.8M12.3 3.8a5.8 5.8 0 0 1 0 8.4"/>':'<path d="M10.6 6.2l3.6 3.6M14.2 6.2l-3.6 3.6"/>'}</svg></button>`;
   const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}${isDark?t.themeLight:t.themeDark}</button>`;
-  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}${themeBtn}${lt}${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
+  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}${sndBtn}${themeBtn}${lt}${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
   const tabs=`<nav class="tabs" role="tablist"><button role="tab" data-act="tab" data-v="game" aria-selected="${view==='game'}">${t.tabGame}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(n)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
@@ -1646,7 +1651,7 @@ function showToast(){
   const a=toastQ.shift(), L=lang==='pt'?1:0, more=toastQ.length;
   toastEl=document.createElement('div'); toastEl.className='toast'+(a.bad?' bad':''); toastEl.setAttribute('role','status');
   toastEl.innerHTML=`${achIcon(a,true)}<div class="toast-t"><span class="lbl">${a.bad?t.achBadT:t.achT}${more?` · +${more}`:''}</span><b>${a.n[L]}</b><span>${a.d[L]}</span></div>`;
-  document.body.appendChild(toastEl);
+  document.body.appendChild(toastEl); sfx(a.bad?'achBad':'ach');
   const el=toastEl, hide=()=>{if(toastEl!==el)return;el.classList.add('out');setTimeout(()=>{el.remove();toastEl=null;showToast()},reduce?0:260)};
   el.addEventListener('click',hide); setTimeout(hide,3800);
 }
@@ -1779,7 +1784,8 @@ function flushOv(){
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
-  if(o.k==='champ'||o.k==='league'||o.k==='bdo')confetti(ovEl,o);
+  if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
+  if(o.k==='qual')sfx('qual');
   if(o.k==='career')countUp(ovEl);
   ovEl.addEventListener('click',e=>{
     if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
@@ -1798,6 +1804,59 @@ function checkIntro(){
   st.intro=1; save(); ovQ.unshift({k:'final',comp:st.comp,lg:S.club.league,opp:st.opp||null});
 }
 
+
+/* ---------- sound: everything is synthesised here, soft by design ---------- */
+const SNDKEY='rpgoal-sound';
+let soundOn=(()=>{try{return localStorage.getItem(SNDKEY)!=='off'}catch(e){return true}})();
+let actx=null, master=null;
+function ac(){
+  if(!soundOn)return null;
+  try{
+    if(!actx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;actx=new C();
+      const comp=actx.createDynamicsCompressor();comp.threshold.value=-30;comp.knee.value=20;comp.ratio.value=6;
+      master=actx.createGain();master.gain.value=.22;master.connect(comp);comp.connect(actx.destination)}
+    if(actx.state==='suspended')actx.resume();
+    return actx;
+  }catch(e){return null}
+}
+function tone(f,t0,dur,o={}){
+  const c=actx, os=c.createOscillator(), g=c.createGain(), vol=o.vol??.15;
+  os.type=o.type||'sine'; os.frequency.setValueAtTime(f,t0); if(o.f2)os.frequency.exponentialRampToValueAtTime(o.f2,t0+dur);
+  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol,t0+(o.a||.006)); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+  os.connect(g); g.connect(master); os.start(t0); os.stop(t0+dur+.03);
+}
+let noiseBuf=null;
+function tick(t0,vol){
+  const c=actx;
+  if(!noiseBuf){noiseBuf=c.createBuffer(1,Math.floor(c.sampleRate*.04),c.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3)}
+  const src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
+  src.buffer=noiseBuf; bp.type='bandpass'; bp.frequency.value=1800+Math.random()*1600; bp.Q.value=2.5; g.gain.value=vol;
+  src.connect(bp); bp.connect(g); g.connect(master); src.start(t0);
+  tone(380+Math.random()*260,t0,.05,{type:'triangle',vol:vol*.35});   // a little body under the click, like a die on wood
+}
+const SFX={
+  roll(ms){let t=actx.currentTime;const n=Math.max(6,Math.round(ms/95));for(let i=0;i<n;i++){const p=i/n;tick(t,.22*(1-p*.6));t+=.035+.14*p*p}},
+  pass(){const t=actx.currentTime;tone(1046.5,t,.55,{vol:.24});tone(2093,t,.3,{vol:.05})},
+  nat20(){const t=actx.currentTime;[784,988,1175,1568].forEach((f,i)=>tone(f,t+i*.075,.7,{vol:.07}));tone(3136,t+.3,.5,{type:'triangle',vol:.02})},
+  fail(){const t=actx.currentTime;tone(220,t,.3,{type:'triangle',vol:.3,f2:165})},
+  nat1(){const t=actx.currentTime;tone(247,t,.28,{type:'triangle',vol:.12,f2:220});tone(185,t+.2,.55,{type:'triangle',vol:.12,f2:139})},
+  title(){const t=actx.currentTime;[523.25,659.25,784,1046.5].forEach((f,i)=>tone(f,t+i*.09,1.4,{vol:.07}));
+    [523.25,659.25,784].forEach(f=>tone(f,t+.45,1.6,{vol:.05,a:.08}));[2093,2637,3136].forEach((f,i)=>tone(f,t+.5+i*.12,.5,{type:'triangle',vol:.018}))},
+  qual(){const t=actx.currentTime;tone(784,t,.4,{vol:.1});tone(1046.5,t+.1,.6,{vol:.1})},
+  ach(){const t=actx.currentTime;tone(1318.5,t,.3,{vol:.09});tone(1975.5,t+.09,.5,{vol:.08})},
+  achBad(){const t=actx.currentTime;tone(392,t,.25,{type:'triangle',vol:.1});tone(311,t+.11,.4,{type:'triangle',vol:.1})}
+};
+const sfx=(k,...a)=>{try{if(soundOn&&ac())SFX[k](...a)}catch(e){}};
+/* what a resolved roll sounds like */
+function sfxStage(){
+  const s=S.season, r=s&&s.last; if(!r||r.missed)return;
+  if(r.champ)return;                                     // the title fanfare follows
+  if(r.nat===20)return sfx('nat20'); if(r.nat===1)return sfx('nat1');
+  if(r.wdl)return r.wdl==='W'?sfx('pass'):r.wdl==='L'?sfx('fail'):null;
+  if(r.kind!=null)return r.kind<=1?sfx('pass'):r.kind>=3?sfx('fail'):null;
+  sfx(r.win?'pass':'fail');
+}
+
 /* ---------- dice animation ---------- */
 const app=document.getElementById('app');
 let busy=false, resetArm=false, hofArm=false, retireArm=false, anims=0;
@@ -1807,6 +1866,7 @@ function rollDice(els,sides,finals,clsFn,done){
   if(reduce){els.forEach((el,i)=>{setFace(el,finals[i]);const c=clsFn(finals[i]);if(c)el.classList.add(c)});setTimeout(done,150);return}
   busy=true; anims++;
   const D=fastRoll?700:sides===20?1250:1050; fastRoll=false; let left=els.length;
+  sfx('roll',D);
   els.forEach((el,i)=>{
     const delay=i*70, dir=i%2?1:-1;
     el.classList.remove('crit','fumble','dropped');
@@ -1862,12 +1922,12 @@ function doRoll(){
   const st=s.stages[s.idx];
   if(st.ev&&!st.evr){
     const e=EVMAP[st.ev], v=d(e.die), el=app.querySelector('[data-die="ev"]');
-    rollDice(el?[el]:[],e.die,[v],x=>x===e.die||(x!==1&&x+evBonus(e)>=evTarget(e))?'crit':'fumble',()=>{resolveEvent(v);commit()});
+    rollDice(el?[el]:[],e.die,[v],x=>x===e.die||(x!==1&&x+evBonus(e)>=evTarget(e))?'crit':'fumble',()=>{resolveEvent(v);const r=st.evr;sfx(r.perfect?'nat20':r.nat===1?'nat1':r.ok?'pass':'fail');commit()});
     return;
   }
   const v1=d(20), v2=d(20);
   const els=[app.querySelector('[data-die="stage"]'),app.querySelector('[data-die="stage2"]')].filter(Boolean);
-  rollDice(els,20,[v1,v2].slice(0,els.length||1),dieCls(20),()=>{resolveStage(v1,v2);commit()});
+  rollDice(els,20,[v1,v2].slice(0,els.length||1),dieCls(20),()=>{resolveStage(v1,v2);sfxStage();commit()});
 }
 app.addEventListener('input',e=>{if(e.target.id==='pname'){S.name=e.target.value;save()}});
 app.addEventListener('change',e=>{if(e.target.id==='pnat'){S.nat=e.target.value;S.name=randomName(S.nat);S.startOffers=null;commit()}});
@@ -1875,10 +1935,11 @@ app.addEventListener('click',e=>{try{onClick(e)}catch(err){console.error(err);bu
 function onClick(e){
   const b=e.target.closest('[data-act]'); if(!b||busy||b.disabled)return;
   const act=b.dataset.act;
-  if(act!=='theme'&&act!=='lang'){clearTimeout(autoT);autoT=null}
+  if(act!=='theme'&&act!=='lang'&&act!=='sound'){clearTimeout(autoT);autoT=null}
   if(act!=='reset'&&resetArm){resetArm=false}
   if(act!=='retire'&&retireArm){retireArm=false}
   if(act!=='hofclear'&&hofArm){hofArm=false}
+  if(act==='sound'){soundOn=!soundOn;try{localStorage.setItem(SNDKEY,soundOn?'on':'off')}catch(e){};render();if(soundOn)sfx('pass');return}
   if(act==='install'){if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;render()})}return}
   if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',nt==='dark'?'#121317':'#f7f7f5'));try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
   if(act==='lang'){lang=b.dataset.l;t=T[lang];try{localStorage.setItem(LANGKEY,lang)}catch(e){};document.documentElement.lang=lang==='pt'?'pt-BR':'en';render();return}
@@ -1899,8 +1960,8 @@ function onClick(e){
   else if(act==='style'){S.style=b.dataset.s;commit()}
   else if(act==='first'){if(!styleOf(bestPos(S.roll),S.style))return;startCareer(S.startOffers[+b.dataset.i]);commit();window.scrollTo({top:0})}
   else if(act==='roll'){doRoll()}
-  else if(act==='inj4'){const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);commit()})}
-  else if(act==='inj10'){const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);commit()})})}
+  else if(act==='inj4'){const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
+  else if(act==='inj10'){const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);commit()})})}
   else if(act==='endcareer'){endCareer();commit();window.scrollTo({top:0})}
   else if(act==='go'){nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='simrest'){simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
@@ -1909,7 +1970,7 @@ function onClick(e){
   else if(act==='pick'){pickAttr(b.dataset.k);commit()}
   else if(act==='retire'){ovQ.unshift({k:'retire'});flushOv()}
   else if(act==='hangup'){retire();commit();window.scrollTo({top:0})}
-  else if(act==='agechk'){const v=d(20),el=app.querySelector('[data-die="agechk"]');rollDice(el?[el]:[],20,[v],x=>{const ok=x===20||(x!==1&&x+ageBonus()>=AGE_DC[S.age]);return x===20?'crit':ok?'':'fumble'},()=>{ageCheck(v);commit()})}
+  else if(act==='agechk'){const v=d(20),el=app.querySelector('[data-die="agechk"]');rollDice(el?[el]:[],20,[v],x=>{const ok=x===20||(x!==1&&x+ageBonus()>=AGE_DC[S.age]);return x===20?'crit':ok?'':'fumble'},()=>{ageCheck(v);const k=S.history[S.history.length-1].ageCheck;sfx(v===20?'nat20':v===1?'nat1':k.ok?'pass':'fail');commit()})}
   else if(act==='home'){confirmMove({kind:'home'})}
   else if(act==='anyclub'){const v=(document.getElementById('anyclub')||{}).value;if(!v)return;const [Li,ti,...n]=v.split('|');confirmMove({kind:'any',club:{name:n.join('|'),league:+Li,tier:+ti,mode:'any'}})}
   else if(act==='reset'){
