@@ -571,6 +571,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .cabinet.oneline>*{flex:none;white-space:nowrap}
 .offnotes{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px;font-size:12.5px;line-height:1.35}
 .offnotes .on{padding:4px 8px;border-left:2px solid var(--rule-2);color:var(--ink-2)}
+.hofdel{color:var(--bad)!important;margin-left:auto}
 .offnotes .on.good{border-color:var(--good);color:var(--ink)} .offnotes .on.bad{border-color:var(--bad);color:var(--ink)} .offnotes .on.gold{border-color:#f2c14e;color:var(--ink)}
 .offnotes .on.dim{border:0;color:var(--ink-3);font-size:11.5px;padding-left:0}
 .offact{display:flex;gap:8px;flex:none;align-items:center}
@@ -1310,7 +1311,7 @@ en:{
  bdoN:n=>n>1?`${n}× Ballon d’Or`:'Ballon d’Or',bdoTop3:n=>`Ballon d’Or podium${n>1?' ×'+n:''}`,
  tags:{league:'LGE',cup:'CUP',wc:'WC',cwc:'CWC',run:'RUN'},
  hofT:'Hall of Fame',hofSub:'Retired careers, ranked by legacy points: titles, goals, assists, peak rating and the biggest club you reached.',
- hofEmpty:'No legends yet. Retire a player to put their career here.',legacy:'Legacy',hofClear:'Clear Hall of Fame',hofClearSure:'Tap again to clear',
+ hofEmpty:'No legends yet. Retire a player to put their career here.',legacy:'Legacy',hofClear:'Clear Hall of Fame',hofDel:'Remove',hofDelT:'Remove from the Hall of Fame?',hofDelDesc:'This career and all its stats leave the Hall of Fame for good. Your achievements stay. This can’t be undone.',hofDelYes:'Remove career',hofDelNo:'Keep it',hofClearSure:'Tap again to clear',
  rulesT:'How it plays',
  rules:[['Start','You begin in your home country. South Americans go straight to the top flight unless their rolls are very poor. In Europe’s big leagues the top flight needs a high average, so most start in the second division.'],
   ['Season','The league is played in four stretches on the d20, with your domestic cup from the round of 16 and, if you qualified, the continental cup in between. A title needs a run of strong stretches; 4 heavy defeats can send any club down. Top 4 qualifies for the continental cup.'],
@@ -1446,7 +1447,7 @@ pt:{
  bdoN:n=>n>1?`${n}× Bola de Ouro`:'Bola de Ouro',bdoTop3:n=>`Pódio da Bola de Ouro${n>1?' ×'+n:''}`,
  tags:{league:'LIGA',cup:'COPA',wc:'CDM',cwc:'MUN',run:'RETA'},
  hofT:'Hall da Fama',hofSub:'Carreiras encerradas, ordenadas por pontos de legado: títulos, gols, assistências, nível máximo e o maior clube que você alcançou.',
- hofEmpty:'Nenhuma lenda ainda. Aposente um jogador para colocar a carreira dele aqui.',legacy:'Legado',hofClear:'Limpar Hall da Fama',hofClearSure:'Toque de novo para limpar',
+ hofEmpty:'Nenhuma lenda ainda. Aposente um jogador para colocar a carreira dele aqui.',legacy:'Legado',hofClear:'Limpar Hall da Fama',hofDel:'Remover',hofDelT:'Remover do Hall da Fama?',hofDelDesc:'Esta carreira e todos os números dela saem do Hall da Fama para sempre. Suas conquistas continuam. Não dá para desfazer.',hofDelYes:'Remover carreira',hofDelNo:'Manter',hofClearSure:'Toque de novo para limpar',
  rulesT:'Como funciona',
  rules:[['Início','Você começa no seu país. Sul-americanos vão direto para a primeira divisão, a não ser que os dados sejam muito ruins. Nas grandes ligas europeias a primeira divisão pede média alta, então a maioria começa na segunda.'],
   ['Temporada','A liga é jogada em quatro fases no d20, com a copa nacional a partir das oitavas e, se classificado, o torneio continental no meio. O título pede uma sequência de fases fortes; 4 derrotas pesadas podem rebaixar qualquer clube. O G4 garante vaga no torneio continental.'],
@@ -1540,6 +1541,8 @@ function fixSave(x){
   if(x.season&&(!x.season.v||x.season.v<4))x.season=null;
   if(x.season&&x.season.pendingHeal&&!x.season.inj)x.season.inj={d4:null,d10:null};
   delete x.nem; delete x.mates;
+  if(x.history&&x.history.length){const seen=new Set();x.history=x.history.filter(h=>{const k=h.year;if(seen.has(k))return false;seen.add(k);return true})}
+  if(x.trophies&&x.trophies.length){const seen=new Set();x.trophies=x.trophies.filter(tr=>{if(tr.year==null)return true;const k=[tr.kind,tr.lg,tr.year,tr.w,tr.name].join('|');if(seen.has(k))return false;seen.add(k);return true})}
   if(x.season&&x.season.pendingPens&&!x.season.pens){x.season.pendingPens=false}
   if(x.season&&x.season.pendingLMC&&x.season.pensStage==null){x.season.pendingLMC=false}
   if(x.phase!=='create'){if(!x.feats)x.feats=[];if(!x.items)x.items=[];if(!x.mates)x.mates=[];if(x.insp==null)x.insp=0;if(x.pot==null)x.pot=1+Math.floor(Math.random()*10);if(x.startAvg==null)x.startAvg=x.roll&&x.roll.spd?AK.reduce((a,k)=>a+(x.roll[k]||5),0)/AK.length:6}
@@ -1548,6 +1551,11 @@ function fixSave(x){
 function load(){try{const r=localStorage.getItem(KEY);if(r)return fixSave(JSON.parse(r))}catch(e){}return null}
 let hofMem=null;
 function loadHof(){if(hofMem)return hofMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFKEY)||'[]');hofMem=Array.isArray(r)?r:[]}catch(e){hofMem=[]}return hofMem.slice()}
+const HOFDEL='rpgoal-hofdel';
+let hofDelMem=null;
+function loadHofDel(){if(hofDelMem)return hofDelMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFDEL)||'[]');hofDelMem=Array.isArray(r)?r:[]}catch(e){hofDelMem=[]}return hofDelMem.slice()}
+function addHofDel(ids){const a=new Set(loadHofDel());ids.forEach(i=>a.add(i));hofDelMem=[...a];try{localStorage.setItem(HOFDEL,JSON.stringify(hofDelMem))}catch(e){}}
+function deleteHof(id){addHofDel([id]);hofOpen.delete(id);hofCmp.delete(id);saveHof(loadHof().filter(p=>p.id!==id))}
 function saveHof(h){hofMem=h.slice();try{localStorage.setItem(HOFKEY,JSON.stringify(h))}catch(e){}if(window.cloudSync)cloudSync()}
 
 /* ---------- career logic ---------- */
@@ -1844,6 +1852,7 @@ function wcCallUp(s){
   s.wc={called:false,need}; S.notes=[s.seasonOut?['nLeftOutInj',S.nat]:['nLeftOut',S.nat]]; return null;
 }
 function nextStage(){
+  if(S.phase!=='season'||!S.season||S.season.ended)return;
   const s=S.season; if(s.pendingLMC)lmcAuto(); if(s.pendingPens)pensAuto(); s.last=null;
   if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
@@ -1916,6 +1925,7 @@ function settleLeague(s){
 }
 function endSeason(){
   const s=S.season, L=LEAGUES[S.club.league];
+  if(!s||s.ended)return; s.ended=1;
   if(s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}
   const F=s.fin||settleLeague(s), {v5,goods,fails,cr,expPos0,shieldUsed,move,qual}=F; let pos=F.pos;
   let shieldBack=false;
@@ -2402,7 +2412,7 @@ function hofPlayers(){
         ${cups?`<div class="cabinet">${cups}</div>`:''}
         ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(x=>tagChip(x,p.g||'m')).join('')}</div>`:''}
         ${(p.feats||[]).length?`<div class="cabinet">${p.feats.map(k=>`<span class="chip tg blue">${t.feats[k][0]}</span>`).join('')}${(p.items||[]).map(k=>`<span class="chip tg gold">${t.items[k][0]}</span>`).join('')}</div>`:''}
-        <div class="row" style="gap:8px"><button class="btn ghost sm" data-act="share" data-id="${p.id}">${t.shareBtn}</button><button class="btn ghost sm" data-act="hofcmp" data-id="${p.id}" aria-pressed="${hofCmp.has(p.id)}">${hofCmp.has(p.id)?t.cmpOn:t.cmpBtn}</button></div></div>`;
+        <div class="row" style="gap:8px"><button class="btn ghost sm" data-act="share" data-id="${p.id}">${t.shareBtn}</button><button class="btn ghost sm" data-act="hofcmp" data-id="${p.id}" aria-pressed="${hofCmp.has(p.id)}">${hofCmp.has(p.id)?t.cmpOn:t.cmpBtn}</button><button class="btn ghost sm hofdel" data-act="hofdel" data-id="${p.id}">${t.hofDel}</button></div></div>`;
     }
     return `<div class="hrow c g${p.g||'m'} ${open?'open':''}"><div class="hrank num">${i+1}</div>
       <button class="hbtn" data-act="hofopen" data-id="${p.id}" aria-expanded="${open}"><span class="hl1"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span><span class="gsym" aria-label="${p.g==='f'?t.genderW:t.genderM}" title="${p.g==='f'?t.genderW:t.genderM}">${p.g==='f'?'♀':'♂'}</span></span>
@@ -2978,6 +2988,8 @@ function ovHTML(o){
       return `<div class="sv-row"><span>${st.comp==='league'?'':esc(compName(st.comp,S.club.league))+' · '}${roundShort(st)}${st.opp?` <span class="topp">· ${t.vsOpp(esc(oppName(st)))}</span>`:''}</span><span class="res ${r.tone==='good'?'w':r.tone==='bad'?'l':'m'}">${word}</span></div>`}).join('');
     return `<div class="ovcard window"><span class="ov-kicker">${t.injT}</span><h2 class="ov-title" style="font-size:26px">${t.awayT}</h2><div class="ov-sub2">${t.awaySub(o.items.length)}</div><div class="sv-list away">${rows}</div><button class="btn" data-ov="close">${t.awayBack}</button></div>`;
   }
+  if(o.k==='hofdel'){const p=loadHof().find(x=>x.id===o.id);return `<div class="ovcard move"><span class="ov-kicker">${t.hofT}</span><h2 class="ov-title" style="font-size:26px">${t.hofDelT}</h2><div class="ov-sub2"><b>${esc(p?(p.name||t.unnamed):'')}</b></div><div class="ov-sub2">${t.hofDelDesc}</div>
+      <button class="btn danger" data-ov="go">${t.hofDelYes}</button><button class="btn ghost" data-ov="close">${t.hofDelNo}</button></div>`}
   if(o.k==='retire')return `<div class="ovcard move"><span class="ov-kicker">${t.retire}</span><h2 class="ov-title" style="font-size:28px">${t.retireT}</h2><div class="ov-sub2">${t.retireDesc}</div>
       <button class="btn danger" data-ov="go">${t.retireYes}</button><button class="btn ghost" data-ov="close">${t.retireNo}</button></div>`;
   if(o.k==='move'){
@@ -3029,7 +3041,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='hofdel'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='pens')pensTimer=setTimeout(pensStep,900);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -3045,6 +3057,8 @@ function flushOv(){
     if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
     if(o.k==='away'||o.k==='chron'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
+    if(o.k==='hofdel'){if(e.target.closest('[data-ov="go"]')){const id=o.id;closeOv();deleteHof(id);render();return}
+      if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
       if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='move'){const go=e.target.closest('[data-ov="go"]');if(go){const m=pendingMove;closeOv();doMove(m);return}
@@ -3270,7 +3284,8 @@ function onClick(e){
   if(act==='achf'){achF=b.dataset.v;render();return}
   if(act==='csub'){careerSub=b.dataset.v;render();return}
   if(act==='hofopen'){const id=+b.dataset.id;hofOpen.has(id)?hofOpen.delete(id):hofOpen.add(id);render();return}
-  if(act==='hofclear'){if(hofArm){saveHof([]);hofArm=false}else hofArm=true;render();return}
+  if(act==='hofdel'){ovQ.unshift({k:'hofdel',id:+b.dataset.id});flushOv();return}
+  if(act==='hofclear'){if(hofArm){addHofDel(loadHof().map(p=>p.id));saveHof([]);hofArm=false}else hofArm=true;render();return}
   if(act==='randname'){shuffleName();return}
   if(act==='gender'){if(S.phase!=='create')return;S.gender=b.dataset.g==='f'?'f':'m';S.name=randomName(S.nat,S.gender);S.startOffers=null;commit();return}
   if(act==='recap'){ovQ.push({k:'career'});flushOv();return}
@@ -3899,7 +3914,7 @@ function maybeRun(){
 }
 let runRes=null;
 function runFinish(){
-  if(ovKind!=='run'||!S.season)return;
+  if(ovKind!=='run'||!S.season||S.phase!=='season'||S.season.ended)return;
   const s=S.season, L=LEAGUES[S.club.league], type=s.run&&s.run.type, lg=S.club.league, pts=runPts(s), need=runNeed(s);
   nextStage();
   ovQ=ovQ.filter(o=>o.k!=='league');
@@ -4355,6 +4370,7 @@ function femCopy(base,over){
   return r;
 }
 T.ptW=femCopy(T.pt,FEM.pt); T.enW=femCopy(T.en,FEM.en);
+[T.ptW,T.enW].forEach(o=>{o.wc=o.wcW;o.cwc=o.cwcW;o.bdo=o.bdoW});
 const curT=(g)=>{const w=g!=null?g==='f':isW();return w?(lang==='pt'?T.ptW:T.enW):T[lang]};
 t=curT();
 start({});

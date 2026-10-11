@@ -43,9 +43,11 @@
 
   // ----- syncing -----
   const careerWeight = c => !c || !c.phase ? -1 : (c.phase === 'create' ? 0 : 1 + (c.history ? c.history.length : 0) * 10 + (c.season ? c.season.idx || 0 : 0));
+  // careers removed from the Hall of Fame stay removed on every device (tombstones ride along as one extra entry)
+  const delIds = () => (typeof loadHofDel === 'function' ? loadHofDel() : []);
   function mergeHof(a, b) {
-    const map = new Map();
-    [...(a || []), ...(b || [])].forEach(e => { if (e && e.id != null) map.set(e.id, e); });
+    const gone = new Set(delIds()), map = new Map();
+    [...(a || []), ...(b || [])].forEach(e => { if (e && e.id != null && !gone.has(e.id)) map.set(e.id, e); });
     return [...map.values()];
   }
   async function push() {
@@ -53,7 +55,7 @@
     status = 'saving'; refresh();
     // achievements ride along in the hof column as one extra entry, so no database change is needed
     const ach = typeof loadAch === 'function' ? loadAch() : {};
-    const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof().concat([{ id: '__ach', ach }]), updated_at: new Date().toISOString() });
+    const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof().concat([{ id: '__ach', ach }, { id: '__del', ids: delIds() }]), updated_at: new Date().toISOString() });
     status = error ? 'err' : 'ok'; refresh();
   }
   async function pull() {
@@ -72,7 +74,9 @@
         Object.entries(achRow.ach).forEach(([k, ts]) => { if (!mine[k] || ts < mine[k]) { mine[k] = ts; changed = true; } });
         if (changed) { achMem = null; try { localStorage.setItem(ACHKEY, JSON.stringify(mine)); } catch (e) {} achMem = mine; }
       }
-      const hof = mergeHof(loadHof(), cloudHof.filter(e => !(e && e.id === '__ach')));
+      const delRow = cloudHof.find(e => e && e.id === '__del');
+      if (delRow && Array.isArray(delRow.ids) && typeof addHofDel === 'function') addHofDel(delRow.ids);
+      const hof = mergeHof(loadHof(), cloudHof.filter(e => !(e && (e.id === '__ach' || e.id === '__del'))));
       hofMem = null; try { localStorage.setItem(HOFKEY, JSON.stringify(hof)); } catch (e) {} hofMem = hof.slice();
       if (cloudWins && cloud) {
         S = fixSave(cloud);
