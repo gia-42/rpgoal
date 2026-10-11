@@ -12,7 +12,7 @@
       badEmail: 'Enter a valid email address.', badCode: 'That code didn’t work. Check it, or ask for a new one.', other: 'Use a different email',
       signedAs: e => `Logged in as ${e}`, synced: 'Saved to your account.', syncing: 'Saving…', offline: 'Couldn’t reach your account. Your game is still saved on this device and will sync later.',
       syncNow: 'Sync now', logout: 'Log out', close: 'Close', merged: 'Your account save was loaded.',
-      uname: 'Username', unameHint: 'Shown instead of your email. 3 to 20 letters, numbers, dots, dashes or underscores.', unameSave: 'Save', unameSaving: 'Saving…', unameOk: 'Username saved.', unameBad: 'Use 3 to 20 letters, numbers, dots, dashes or underscores.', unamePick: 'Choose a username to show instead of your email.'
+      uname: 'Username', unameHint: '3 to 20 letters, numbers, dots, dashes or underscores.', unameSave: 'Save', unameSaving: 'Saving…', unameOk: 'Username saved.', unameBad: 'Use 3 to 20 letters, numbers, dots, dashes or underscores.', unamePick: 'Choose a username', welcome: 'Welcome! Pick the name shown on your account.', later: 'Later'
     },
     pt: {
       login: 'Entrar', title: 'Sua conta', guest: 'Entre para guardar sua carreira e seu Hall da Fama em todos os aparelhos em que você jogar.',
@@ -21,13 +21,14 @@
       badEmail: 'Digite um e-mail válido.', badCode: 'Esse código não funcionou. Confira ou peça um novo.', other: 'Usar outro e-mail',
       signedAs: e => `Conectado como ${e}`, synced: 'Salvo na sua conta.', syncing: 'Salvando…', offline: 'Não foi possível acessar sua conta. O jogo continua salvo neste aparelho e sincroniza depois.',
       syncNow: 'Sincronizar agora', logout: 'Sair', close: 'Fechar', merged: 'O jogo salvo na sua conta foi carregado.',
-      uname: 'Nome de usuário', unameHint: 'Aparece no lugar do seu e-mail. De 3 a 20 letras, números, pontos, hífens ou sublinhados.', unameSave: 'Salvar', unameSaving: 'Salvando…', unameOk: 'Nome de usuário salvo.', unameBad: 'Use de 3 a 20 letras, números, pontos, hífens ou sublinhados.', unamePick: 'Escolha um nome de usuário para aparecer no lugar do seu e-mail.'
+      uname: 'Nome de usuário', unameHint: 'De 3 a 20 letras, números, pontos, hífens ou sublinhados.', unameSave: 'Salvar', unameSaving: 'Salvando…', unameOk: 'Nome de usuário salvo.', unameBad: 'Use de 3 a 20 letras, números, pontos, hífens ou sublinhados.', unamePick: 'Escolha um nome de usuário', welcome: 'Bem-vindo! Escolha o nome que aparece na sua conta.', later: 'Depois'
     }
   };
   const tt = () => L[typeof lang !== 'undefined' && lang === 'pt' ? 'pt' : 'en'];
   const escH = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   const uname = u => (u && u.user_metadata && u.user_metadata.username) || '';
+  let askName = false, askedName = false;
   let sb = null, user = null, syncTimer = null, status = '', pending = null, busyPanel = false, note = '';
 
   // ----- header button -----
@@ -86,6 +87,8 @@
     const was = user && user.id;
     user = session ? session.user : null;
     if (user && user.id !== was) { setTimeout(pull, 0); if (panelOpen()) drawPanel(); }
+    // first sign-in (no username yet): ask for one right away
+    if (event === 'SIGNED_IN' && user && !uname(user) && !askedName) { askedName = true; askName = true; openPanel(); }
     if (!user) status = '';
     refresh();
   });
@@ -116,14 +119,22 @@
   let panel = null;
   const panelOpen = () => !!(panel && panel.isConnected);
   function openPanel() { if (!panel) { panel = document.createElement('div'); panel.className = 'cpanel'; panel.addEventListener('click', onPanelClick); panel.addEventListener('submit', onSubmit); } document.body.appendChild(panel); drawPanel(); }
-  function closePanel() { if (panel) panel.remove(); note = ''; }
+  function closePanel() { if (panel) panel.remove(); note = ''; askName = false; }
   function refresh() { if (typeof render === 'function') render(); if (panelOpen()) drawPanel(); }
   const G = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
   function drawPanel(msg, isErr) {
     if (!panel) return;
     const T = tt();
     let body;
-    if (user) {
+    if (user && askName && !uname(user)) {
+      body = `<h2>${T.unamePick}</h2><div class="msg">${T.welcome}</div>
+        <form data-f="uname" class="stack" style="gap:10px"><label class="lbl" for="cuname">${T.uname}</label>
+        <input id="cuname" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="${escH((user.email || '').split('@')[0])}">
+        <div class="msg small">${T.unameHint}</div>
+        <button class="btn" ${busyPanel ? 'disabled' : ''}>${busyPanel ? T.unameSaving : T.unameSave}</button></form>
+        ${msg ? `<div class="msg ${isErr ? 'err' : ''}">${msg}</div>` : ''}
+        <button class="linkb" data-c="later">${T.later}</button>`;
+    } else if (user) {
       const st = status === 'saving' ? T.syncing : status === 'err' ? T.offline : status === 'ok' ? T.synced : '';
       const un = uname(user);
       body = `<h2>${un ? escH(un) : T.title}</h2><div class="msg">${T.signedAs(escH(user.email || ''))}</div>
@@ -184,6 +195,7 @@
     const b = e.target.closest('[data-c]'); if (!b) return;
     const c = b.dataset.c, T = tt();
     if (c === 'close') closePanel();
+    else if (c === 'later') { askName = false; closePanel(); }
     else if (c === 'other') { pending = null; drawPanel(); }
     else if (c === 'google') {
       await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
@@ -201,7 +213,9 @@
       busyPanel = false;
       if (error) { drawPanel(error.message, true); return; }
       if (data && data.user) user = data.user;
-      render(); drawPanel(T.unameOk);
+      render();
+      if (askName) { askName = false; closePanel(); return; }
+      drawPanel(T.unameOk);
       return;
     }
     if (form.dataset.f === 'email') {
