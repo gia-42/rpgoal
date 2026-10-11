@@ -647,6 +647,49 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .onepage .stage .rk{margin-bottom:-2px}
 .onepage .stage.v .st-head{gap:4px}
 @media (max-height:720px){.onepage .stage h3{font-size:17px}.onepage .stage .evdesc{font-size:12.5px;line-height:1.35}.onepage .st-head .banner{font-size:11.5px;padding:3px 8px}}
+/* dice never clip: each die lives in a sized box with room to spin, bounce and drop */
+.die{overflow:visible}
+.onepage .stage.v .dicecol{overflow:hidden!important;min-height:0!important;gap:4px}
+.onepage .stage.v .dicecol>.dmain{flex:1 1 0;min-height:64px;width:100%;position:relative}
+.onepage .stage.v .dmain>svg.die{position:absolute;inset:0;margin:auto;width:78%!important;height:78%!important;max-width:150px!important;max-height:150px!important;padding:0}
+.onepage .stage.v .dmain>.pair{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;gap:6px;height:auto!important;max-height:none!important}
+.onepage .stage.v .dmain>.pair .die{height:78%!important;width:auto!important;max-width:46%!important;max-height:120px!important;padding:0;aspect-ratio:1}
+.onepage .stage.v .dicecol>.row{flex:none}
+.storydie{padding:10px 0} .healdice{padding:6px 0}
+/* short screens: a tighter player card leaves the match card room for the die */
+@media (max-height:760px){
+ .onepage .wrap{gap:8px!important;padding-top:6px!important}
+ .onepage .wrap>.panel{padding:10px 12px!important}
+ .onepage .who h2{font-size:19px!important}
+ .onepage .rating .big{font-size:22px!important}
+ .onepage .bars .fanbar,.onepage .fanbar{margin-top:5px!important;gap:2px!important}
+ .onepage .abil{margin-top:6px!important}
+ .onepage .ab-cell{padding:2px 1px!important}
+ .onepage .ab-v{font-size:15px!important}
+ .onepage .stage.v .st-tail{min-height:0!important;gap:3px!important}
+ .onepage .stage.v .st-head{gap:2px!important}
+ .onepage .stage h3{font-size:16px!important}
+ .onepage .stage.v .st-act>.btn{height:42px!important}
+ .onepage header.top{padding-bottom:4px}
+}
+/* top bar on the match card: inspiration and skip */
+.st-tools{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:26px;flex:none}
+.tool{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--rule-2);background:transparent;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.tool.insp{color:#f2c14e;border-color:#5a4a1f}
+.tool.insp[aria-pressed="true"]{background:#f2c14e;color:#1b1b1b;border-color:#f2c14e}
+.tool.simnext .tl-l{display:none!important} .tool.simnext .tl-s{display:inline!important}
+.st-tools{display:grid!important;grid-template-columns:1fr auto 1fr;gap:6px}
+.st-tools .tl{justify-self:start} .st-tools .tr{justify-self:end}
+.st-tools .rk{margin:0!important}
+.banner.note1{font-size:11px!important;padding:3px 8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;flex:none;align-self:stretch;text-align:center}
+.onepage .stage.v .dicecol{min-height:70px!important}
+.onepage .stage.v .dicecol>.dmain{min-height:70px}
+.stage.v .st-act{display:flex!important;justify-content:center;width:100%}
+.stage.v .st-act>.btn,.stage.v .st-act>.slot.main{width:min(100%,340px)!important;flex:none!important;height:46px;max-width:none!important}
+.picks.pop{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.picks.pop .pickbtn{background:#191c22;border:1px solid #2c3038;color:#f3f4f6;border-radius:9px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit}
+.picks.pop .pickbtn .lbl{color:#a9adb7}
+.picks.pop .pickbtn:disabled{opacity:.35}
 /* recovery pop-up */
 .ovcard.heal{gap:12px}
 .healdice{display:flex;gap:18px;justify-content:center;align-items:flex-end;margin:6px 0}
@@ -1625,7 +1668,7 @@ function resolveStage(v1,v2){
     const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
     r.win=win; r.tone=win?'good':'bad'; r.champ=win&&st.round===lastRound(st.comp);
     if(r.champ){s.trophies.push(st.comp==='wc'?{kind:'wc',year:S.year,w:isW()?1:undefined}:{kind:st.comp,lg:S.club.league,year:S.year});ovPush({k:'champ',comp:st.comp,lg:S.club.league,year:S.year,opp:st.opp||null})}
-    if(r.champ&&st.comp==='cont'){s.stages.splice(s.idx+1,0,{comp:'cwc',round:0,key:focusKey(),res:null},{comp:'cwc',round:1,key:focusKey(),res:null})}
+    if(r.champ&&st.comp==='cont')s.cwcDue=1;
     if(!win)s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp===st.comp&&!x.res)x.res={skipped:true}});
     if(st.comp==='wc'){if(r.champ)s.wcRes=5;else if(!win)s.wcRes=st.round}
     st.res={tone:r.tone,win,champ:r.champ,missed:!!r.missed};
@@ -1668,13 +1711,16 @@ function wcCallUp(s){
   s.wc={called:false,need}; S.notes=[s.seasonOut?['nLeftOutInj',S.nat]:['nLeftOut',S.nat]]; return null;
 }
 function nextStage(){
-  const s=S.season; s.last=null; runCheck();
+  const s=S.season; s.last=null;
   if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
   if(isWCYear(S.year)&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
     const add=wcCallUp(s);
     if(add){const at=idx<0?s.stages.length:idx;s.stages.splice(at,0,...add);idx=at}
   }
+  if(idx<0){runCheck();idx=s.stages.findIndex(x=>!x.res)}
+  if(idx<0&&!s.fin){settleLeague(s)}
+  if(idx<0&&s.cwcDue&&!s.cwcAdded){s.cwcAdded=1;s.stages.push({comp:'cwc',round:0,key:focusKey(),res:null},{comp:'cwc',round:1,key:focusKey(),res:null});idx=s.stages.findIndex(x=>!x.res)}
   s.idx=idx;
   if(s.idx>=0){activate();return}
   endSeason();
@@ -1695,9 +1741,8 @@ function grow(){
   AK.forEach(k=>S.attrs[k]=clamp(S.attrs[k],1,20));
   return{before,A,G,base,train,crits:canGrow?s.crit.length:0,hot,shielded,capped:!canGrow,ceiling:canGrow&&rating(S.attrs)>=potCap()};
 }
-function endSeason(){
-  const s=S.season, L=LEAGUES[S.club.league];
-  if(s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}
+function settleLeague(s){
+  const L=LEAGUES[S.club.league];
   const v5=(s.v||4)>=5, lgs=s.stages.filter(x=>x.comp==='league'&&x.res&&!x.res.skipped);
   const goods=lgs.filter(x=>x.res.kind<=1).length, fails=lgs.filter(x=>x.res.kind===4).length;
   // a 20-team table, stretched to the real league size
@@ -1718,25 +1763,33 @@ function endSeason(){
   }
   if(s.run){const pts=runPts(s),need=runNeed(s);s.run.pts=pts;s.run.ok=pts>=need;
     if(s.run.type==='title')pos=s.run.ok?1:Math.max(2,pos);
+    else if(s.run.type==='miracle'){if(s.run.ok){pos=1;S.miracles=(S.miracles||0)+1}}
     else if(s.run.type==='promo'){const up=L.size<=12?2:4;pos=s.run.ok?Math.min(pos,up):Math.max(pos,up+1)}
     else if(s.run.type==='releg')pos=s.run.ok?Math.min(pos,L.size-3):Math.max(pos,L.size-2)}
   if(pos===1){s.trophies.unshift({kind:'league',lg:S.club.league,year:S.year});ovPush({k:'league',lg:S.club.league,year:S.year});
     S.loyalty=Math.min(25,(S.loyalty||0)+2+Math.round(cr.frac*8))}       // the smaller the club, the more the fans love you for it
   else if(L.div===1&&pos<=4&&cr.frac>.45)S.loyalty=Math.min(25,(S.loyalty||0)+1+Math.round((cr.frac-.45)*5));
-  const bdo=bdoRank(s,pos,L);
-  if(bdo===1){s.trophies.push({kind:'bdo',year:S.year,w:isW()?1:undefined});ovPush({k:'bdo',year:S.year})}
   let move=null;
   if(L.div===2&&pos<=(L.size<=12?2:4))move='up';
   else if(L.div===1&&L.down!=null&&(v5?((fails>=4&&!shieldUsed)||(S.club.tier===0&&fails>=3&&pos>=L.size-2)):(S.club.tier===0&&pos>=L.size-2)))move='down';
   if(s.run&&s.run.type==='releg')move=s.run.ok?null:'down';
   if(s.run&&s.run.type==='promo')move=s.run.ok?'up':null;
-  let shieldBack=false;
-  {const sh=S.shield&&S.shield[S.club.name], won=s.trophies.filter(x=>x.kind==='league'||x.kind==='cup'||x.kind==='cont'||x.kind==='cont2'||x.kind==='cwc').length;
-   if(sh&&!shieldUsed&&won){sh.titles+=won;if(sh.titles>=2){delete S.shield[S.club.name];shieldBack=true}}}
   // next season's continental spot: top 4 (or a cup / continental title) = main cup, 5th–8th = second-tier cup
   const wonSpot=s.trophies.some(x=>x.kind==='cup'||x.kind==='cont'||x.kind==='cont2');
   const qual=move==='down'||L.div!==1||!L.cont?(wonSpot&&L.cont?'main':false):(pos<=4||wonSpot?'main':pos<=(L.size<=12?6:8)?'second':false);
   if(v5&&L.div===1&&L.cont&&pos>=2&&pos<=8&&move!=='down')ovPush({k:'qual',lg:S.club.league,pos,year:S.year,q:qual});
+  s.fin={v5,goods,fails,cr,expPos0,pos,shieldUsed,move,qual};
+  return s.fin;
+}
+function endSeason(){
+  const s=S.season, L=LEAGUES[S.club.league];
+  if(s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}
+  const F=s.fin||settleLeague(s), {v5,goods,fails,cr,expPos0,shieldUsed,move,qual}=F; let pos=F.pos;
+  let shieldBack=false;
+  {const sh=S.shield&&S.shield[S.club.name], won=s.trophies.filter(x=>x.kind==='league'||x.kind==='cup'||x.kind==='cont'||x.kind==='cont2'||x.kind==='cwc').length;
+   if(sh&&!shieldUsed&&won){sh.titles+=won;if(sh.titles>=2){delete S.shield[S.club.name];shieldBack=true}}}
+  const bdo=bdoRank(s,pos,L);
+  if(bdo===1){s.trophies.push({kind:'bdo',year:S.year,w:isW()?1:undefined});ovPush({k:'bdo',year:S.year})}
   const expPos=v5?expPos0:(L.div===1?[0.65,0.45,0.25,0.12][S.club.tier]:[0.5,0.35][S.club.tier]||0.5)*L.size;
   const avgRoll=s.rolls.length>=3?s.rolls.reduce((a,b)=>a+b,0)/s.rolls.length:10;
   const bad=pos>expPos+0.3*L.size&&avgRoll<9||avgRoll<5.5, awful=pos>expPos+0.5*L.size&&avgRoll<7||avgRoll<4;
@@ -2014,12 +2067,12 @@ function stageCard(){
   const comp=compName(st.comp,S.club.league);
   if(chPending){
     const C=t.chx[st.ch];
-    dice=`<div class="dicecol">${dieSVG(20,'','evd','ev')}</div>`;
+    dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
     body=`<span class="rk sy">${t.rkStory}</span><span class="lbl">${S.year} · ${esc(comp)}</span><h3>${C[0]}</h3><!--split--><div class="evdesc">${C[1]}</div>`;
     act=`<button class="btn" data-act="storyov">${t.storyOpen}</button>`;
   }else if(evPending){
     const e=EVMAP[st.ev];
-    dice=`<div class="dicecol">${dieSVG(e.die,'','evd','ev')}</div>`;
+    dice=`<div class="dicecol"><div class="dmain">${dieSVG(e.die,'','evd','ev')}</div></div>`;
     body=`<span class="rk ck">${t.rkCheck}</span><span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><!--split--><div class="evdesc">${t.ev[st.ev][1]}</div>
       <div class="mods"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>
       <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>`;
@@ -2036,7 +2089,7 @@ function stageCard(){
     const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small','ev')}<span class="lbl">${t.moment}</span></div>`:'';
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(10,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
-    dice=`<div class="dicecol">${main}<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div></div>`;
+    dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie?`<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div>`:''}</div>`;
     body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
@@ -2060,7 +2113,7 @@ function stageCard(){
       body+=`<div class="sum num">${parts} = <b>${r.total}</b> ${t.vs} ${t.dc} ${r.dc}${r.wdl?` <span class="lbl">(${t.drawAt(r.dc-3)})</span>`:''}</div><div class="verdict result v-${r.tone}">${verdict}</div>`;
       body+=r.missed?`<div class="muted small">${t.didnt}</div>`:`<div class="muted small num">${t.line(r.apps,r.goals,r.assists)}</div>`;
       if(r.crit&&r.picked)body+=`<div class="small" style="color:var(--good)">${t.crit(t.attrs[r.picked])}</div>`;
-      if(r.crit&&s.pickAttr)body+=`<div class="evbox ok"><span class="fx up">${t.critPick}</span><div class="picks">${AK.map(k=>`<button class="pickbtn" data-act="pick" data-k="${k}" ${S.attrs[k]>=20?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(20,S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
+      if(r.crit&&s.pickAttr)body+=`<div class="small" style="color:var(--good)">${t.critPick}</div>`;
       if(r.ct)body+=`<div class="small ctline ${r.ct.good?'up':'down'}">${t.critD6(r.ct.v)} · ${r.ct.good?t.ctG[r.ct.v]:r.ct.v<=3?t.nat1:t.ctB[r.ct.v]}</div>`;
       if(r.nemRes)body+=`<div class="small" style="color:var(${r.nemRes>0?'--good':'--bad'})">${r.nemRes>0?t.nemesisWon:t.nemesisLost}</div>`;
       if(I){
@@ -2072,7 +2125,7 @@ function stageCard(){
             if(I.lucky)ib+=`<div class="fx up">${t.injLucky}</div>`}}
         body+=`<div class="evbox ${I.career?'bad':I.d10?(I.out===0&&!I.season?'ok':'bad'):''}">${ib}</div>`;
       }
-      if(s.pickAttr)act='';
+      if(s.pickAttr)act=`<button class="btn" data-act="pickov">${t.pickT}</button>`;
       else if(s.careerOver)act=`<button class="btn danger" data-act="endcareer">${t.endCareer}</button>`;
       else if(s.pendingHeal)act=`<button class="btn danger" data-act="healov">${t.healOpen}</button>`;
       else{const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
@@ -2082,8 +2135,11 @@ function stageCard(){
   const autoNote=s.out>0&&!s.pendingHeal&&!s.careerOver?`<div class="banner bad">${s.carried&&!s.seasonOut&&s.idx<2?t.stillOut+' ':''}${t.autoPlay}</div>`:'';
   const notes=autoNote+(S.notes||[]).filter(Array.isArray).map(([k,...a])=>`<div class="banner">${typeof t[k]==='function'?t[k](...a.map(esc)):t[k]}</div>`).join('');
   const [head,tail='']=body.split('<!--split-->');
-  const slotA=act&&act.includes('data-act="insp"')?'':'<span class="slot"></span>', slotB=sim.includes('simnext')?'':'<span class="slot"></span>';
-  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}"><div class="st-head">${evPending||chPending?'':notes}${banner}${head}</div>${dice}<div class="st-tail">${tail}</div><div class="st-act">${act||'<span class="slot main"></span>'}${slotA}${sim}${slotB}</div></div></section>`;
+  const inspB=(act.match(/<button class="btn ghost sm insp"[\s\S]*?<\/button>/)||[''])[0]; act=act.replace(inspB,'');
+  const nextB=(sim.match(/<button class="btn ghost sm simnext"[\s\S]*?<\/button>/)||[''])[0];
+  const rkM=head.match(/^<span class="rk[^"]*">[^<]*<\/span>/), rkS=rkM?rkM[0]:'';
+  const tools=`<div class="st-tools"><span class="tl">${inspB.replace('btn ghost sm insp','tool insp')}</span>${rkS||'<span></span>'}<span class="tr">${nextB.replace('btn ghost sm simnext','tool simnext')}</span></div>`;
+  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}">${evPending||chPending?'':notes.replace(/class="banner"/g,'class="banner note1"')}${tools}<div class="st-head">${banner}${head.replace(rkS,'')}</div>${dice}<div class="st-tail">${tail}</div><div class="st-act">${act||'<span class="slot main"></span>'}</div></div></section>`;
 }
 function nextRoundName(st){const n={...st,round:st.round+1};return roundName(n)}
 function tracker(){
@@ -2124,7 +2180,7 @@ function offseasonView(){
   if(h.mentorBye)N.push(['',t.mentorBye(esc(h.mentorBye))]);
   if(S.benchNext)N.push(['bad',t.benchT]);
   if(h.feat)N.push(['good',t.featGot(t.feats[h.feat][0])]);
-  if(h.camp)N.push(['good',t.campDone(t.camp[h.camp][0])+(h.campGot&&h.campGot.length?` · ${h.campGot.map(k=>'+1 '+t.attrs[k]).join(', ')}`:'')]);
+  if(h.camp)N.push(['good',t.campDone(campLabel(h.camp))+(h.campGot&&h.campGot.length?` · +${h.campGot.length} ${t.attrs[h.campGot[0]]}`:'')]);
   if(h.scout&&!done)N.push(['gold',t.scouted]);
   const dev=t.devLead+t.devBase[g.base===1?0:g.base===0.5?3:g.base===0?1:2]+(S.age>=30&&!g.shielded?t.devSpd:'')+(g.G?t.devBonus(g.G):'')+(g.train?t.devTrain(g.train):'')+(g.crits?t.devCrit(g.crits):'')+(g.hot?t.devHot:'')+(g.capped?t.devCap:'')+t.devEnd;
   const cups=h.trophies.slice().sort(byPrestige).map(x=>`<span class="cup ${x.kind==='wc'||x.kind==='bdo'?'wc':''}">${trophyName(x)}</span>`).join('');
@@ -2231,7 +2287,7 @@ function render(){
   const isDark=effTheme()==='dark';
   const sndBtn=`<button class="theme-btn icon" data-act="sound" aria-pressed="${soundOn}" aria-label="${soundOn?t.soundOff:t.soundOn}" title="${soundOn?t.soundOff:t.soundOn}"><svg viewBox="0 0 16 16"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z"/>${soundOn?'<path d="M10.4 5.6a3.2 3.2 0 0 1 0 4.8M12.3 3.8a5.8 5.8 0 0 1 0 8.4"/>':'<path d="M10.6 6.2l3.6 3.6M14.2 6.2l-3.6 3.6"/>'}</svg></button>`;
   const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}<span class="tl">${isDark?t.themeLight:t.themeDark}</span></button>`;
-  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}<div class="setw"><button class="theme-btn icon" data-act="settings" aria-expanded="${settingsOpen}" aria-label="${t.settingsT}" title="${t.settingsT}"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/><circle cx="8" cy="8" r="4.6"/></svg></button>${settingsOpen?`<div class="setmenu" role="menu"><div class="setrow"><span>${t.soundT}</span>${sndBtn}</div><div class="setrow"><span>${t.hapT}</span><button class="theme-btn" data-act="haptics" aria-pressed="${hapticsOn}">${hapticsOn?t.onT:t.offT}</button></div><div class="setrow"><span>${t.themeT}</span>${themeBtn}</div><div class="setrow"><span>${t.langT}</span>${lt}</div></div>`:''}</div>${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
+  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}<div class="setw"><button class="theme-btn icon" data-act="settings" aria-expanded="${settingsOpen}" aria-label="${t.settingsT}" title="${t.settingsT}"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/><circle cx="8" cy="8" r="4.6"/></svg></button>${settingsOpen?`<div class="setmenu" role="menu"><div class="setrow"><span>${t.soundT}</span>${sndBtn}</div><div class="setrow"><span>${t.themeT}</span>${themeBtn}</div><div class="setrow"><span>${t.langT}</span>${lt}</div></div>`:''}</div>${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
   const tabs=`<nav class="tabs" role="tablist"><button role="tab" class="tab-home" data-act="tab" data-v="game" aria-selected="${view==='game'}" aria-label="${t.tabGame}" title="${t.tabGame}"><svg class="tablogo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><polygon points="50,30 70,63 30,63" fill="currentColor"/><path d="M50,4L50,30M90,27L70,63M10,27L30,63M50,96L70,63M50,96L30,63M90,73L70,63M10,73L30,63" stroke="currentColor" stroke-width="5"/></svg></button>${S.phase==='create'?'':`<button role="tab" data-act="tab" data-v="season" aria-selected="${view==='season'}">${t.tabSeason}</button><button role="tab" data-act="tab" data-v="stats" aria-selected="${view==='stats'}">${t.tabStats}</button>`}<button role="tab" data-act="tab" data-v="ach" aria-selected="${view==='ach'}">${t.achPage}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(0)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
@@ -2350,6 +2406,7 @@ const ACH=[
  {id:'items4',n:['Collector','Colecionador'],d:['Own four items in one career.','Tenha quatro itens numa carreira.'],test:()=>(S.items||[]).length>=4},
  {id:'quests10',n:['The board’s favourite','Queridinho da diretoria'],d:['Complete ten quests in one career.','Cumpra dez missões numa carreira.'],test:()=>(S.quests||0)>=10},
  {id:'inspfinal',n:['Rise to the moment','À altura do momento'],d:['Win three finals while inspired.','Ganhe três finais inspirado.'],test:()=>(S.inspFinals||0)>=3},
+ {id:'miracle',n:['Against all odds','Contra tudo e todos'],d:['Win the league with a miracle run in the final three games.','Ganhe a liga numa arrancada milagrosa nos três últimos jogos.'],test:()=>(S.miracles||0)>0},
  {id:'nat1s',bad:1,n:['Snake eyes','Olho de cobra'],d:['Roll five natural 1s in one career.','Tire cinco 1 naturais numa mesma carreira.'],test:()=>!!(S.rs&&S.rs.n1>=5)},
  {id:'cruel',bad:1,n:['Cruel game','Jogo cruel'],d:['Have your career ended by an injury.','Tenha a carreira encerrada por uma lesão.'],test:()=>!!S.endReason}
 ];
@@ -2379,6 +2436,7 @@ function showToast(){
   el.addEventListener('click',hide); setTimeout(hide,3800);
 }
 const ACH_ICON={
+ miracle:'M12 3l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 15.2 7 18l1.2-5.6L4 8.6l5.6-.6z M4 21h16',
  nemesis:'M4 4l16 16 M20 4L4 20 M4 16v4h4 M20 16v4h-4',
  qstreak:'M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z',
  items4:'M5 8h14l-1 12H6z M9 8a3 3 0 0 1 6 0',
@@ -2467,7 +2525,7 @@ const ACH_GROUP={titles:['firsttitle','wonderkid','promoted','league','double','
  personal:['goals30','assists20','goals300','ironman','worldclass','goat','stillgotit','forty'],
  clubs:['galactico','barca','abroad3','idol','legend','twohomes','decade','homecoming','oneclub','friends','bigbucks'],
  moments:['nat20','hothand','derby','penalty','perfect','luckyten'],
- campaign:['nemesis','qstreak','items4','quests10','inspfinal'],
+ campaign:['nemesis','qstreak','items4','quests10','inspfinal','miracle'],
  women:['uwcl','libf','nwsl','wcwc'],
  multi:['g1000','apps5000','t100','careers10','pantheon','bothwc','bothbdo','bothleague']};
 const achGroupOf=a=>a.bad?'bad':(Object.keys(ACH_GROUP).find(g=>ACH_GROUP[g].includes(a.id))||'personal');
@@ -2626,7 +2684,7 @@ function maybeWindow(){
   if(!h||h.winShown||S.age>=40||ageCheckDue(h)||(h.ageCheck&&!h.ageCheck.ok)||!prepDone(h))return;
   h.winShown=true; save(); ovQ.push({k:'window'});
 }
-function centerOn(el){if(el&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'})}
+function centerOn(el){if(document.body.classList.contains('onepage'))return;if(el&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'})}
 
 /* ---------- confirm a move ---------- */
 let pendingMove=null;
@@ -2696,6 +2754,7 @@ function ovHTML(o){
   if(o.k==='story')return storyHTML();
   if(o.k==='agechk')return ageHTML();
   if(o.k==='feat')return featHTML();
+  if(o.k==='pick')return pickHTML();
   if(o.k==='camp')return campHTML();
   if(o.k==='offers')return offersHTML();
   if(o.k==='chron')return `<div class="ovcard window"><span class="ov-kicker">${esc(S.name||t.unnamed)}</span><h2 class="ov-title" style="font-size:26px">${t.chronT}</h2><div class="chronlist">${S.history.map(h=>`<p>${chron(h)}</p>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
@@ -2756,7 +2815,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
@@ -2765,7 +2824,7 @@ function flushOv(){
     if(o.k==='heal'){healClick(e);return}
     if(o.k==='story'){storyClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
-    if(o.k==='feat'||o.k==='camp'){prepClick(e);return}
+    if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
     if(o.k==='away'||o.k==='chron'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
@@ -2785,7 +2844,7 @@ function flushOv(){
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
 }
-document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
+document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
   if(S.phase!=='season'||view!=='game'||!S.season)return;
   const s=S.season, st=s.stages[s.idx];
@@ -2830,8 +2889,8 @@ const SFX={
   // a few muffled taps, like a die settling on felt
   roll(ms){let t=actx.currentTime;const n=Math.max(5,Math.round(ms/140));for(let k=0;k<n;k++){const p=k/n;tick(t,.17*(1-p*.55));t+=.05+.17*p*p}},
   // two soft rising bells
-  pass(){const t=actx.currentTime;bell(587.3,t,.55,.12);bell(880,t+.09,.7,.1)},
-  nat20(){const t=actx.currentTime;[523.25,659.25,784,1046.5,1318.5].forEach((f,k)=>bell(f,t+k*.075,1,.055))},
+  pass(){const t=actx.currentTime;bell(659.25,t,.5,.055);bell(987.8,t+.07,.6,.035)},
+  nat20(){const t=actx.currentTime;[523.25,659.25,784,1046.5,1318.5].forEach((f,k)=>bell(f,t+k*.075,.9,.04))},
   // a low, rounded "hmm": no buzz, no sharp attack
   fail(){const t=actx.currentTime;tone(293.7,t,.42,{vol:.11,f2:261.6,a:.03});tone(146.8,t,.38,{vol:.05,a:.03})},
   nat1(){const t=actx.currentTime;tone(261.6,t,.4,{vol:.09,a:.03});tone(196,t+.22,.65,{vol:.09,f2:185,a:.035});tone(98,t+.22,.5,{vol:.04,a:.04})},
@@ -2841,23 +2900,10 @@ const SFX={
   ach(){const t=actx.currentTime;bell(880,t,.45,.07);bell(1318.5,t+.1,.6,.06)},
   achBad(){const t=actx.currentTime;tone(293.7,t,.35,{vol:.07,a:.03});tone(246.9,t+.12,.5,{vol:.07,a:.03})},
   // the main buttons: a tiny, dry click
-  click(){const t=actx.currentTime;tick(t,.08);tone(1400,t,.025,{vol:.02,a:.002})}
+  click(){const c=actx,t=c.currentTime;if(!noiseBuf)tick(t,0);const src=c.createBufferSource(),bp=c.createBiquadFilter(),g=c.createGain();src.buffer=noiseBuf;bp.type='bandpass';bp.frequency.value=2400;bp.Q.value=2.2;g.gain.value=.05;src.connect(bp);bp.connect(g);g.connect(master);src.start(t);tone(820,t,.03,{vol:.025,f2:560,a:.002})}
 };
 const sfx=(k,...a)=>{try{if(soundOn&&ac())SFX[k](...a)}catch(e){}};
-const HAPKEY='rpgoal-haptics';
-let hapticsOn=(()=>{try{return localStorage.getItem(HAPKEY)!=='off'}catch(e){return true}})();
-let hapEl=null;
-function hapTap(){
-  if(!hapEl){hapEl=document.createElement('label');hapEl.setAttribute('aria-hidden','true');hapEl.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';hapEl.innerHTML='<input type="checkbox" switch tabindex="-1">';document.body.appendChild(hapEl)}
-  hapEl.click();
-}
-function haptic(k){
-  if(!hapticsOn)return;
-  try{
-    if(navigator.vibrate){navigator.vibrate(k==='heavy'?[18,40,18]:k==='success'?[10,50,14]:8);return}
-    hapTap(); if(k==='heavy'||k==='success')setTimeout(hapTap,110);
-  }catch(e){}
-}
+function haptic(){}
 /* what a resolved roll sounds like */
 function sfxStage(){
   const s=S.season, r=s&&s.last; if(!r||r.missed)return;
@@ -2871,7 +2917,7 @@ function sfxStage(){
 /* ---------- dice animation ---------- */
 const app=document.getElementById('app');
 document.addEventListener('click',e=>{if(settingsOpen&&!e.target.closest('.setw')){settingsOpen=false;render()}});
-document.addEventListener('pointerdown',e=>{const b=e.target.closest('.st-act>.btn:first-child,.offact .btn:not(.ghost),.ovcard .btn:not(.ghost),[data-act="roll6"],[data-act="roll1"]');if(b&&!b.disabled){sfx('click');haptic('tap')}},{passive:true});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('button,select,.chopt,.prepb');if(b&&!b.disabled)sfx('click')},{passive:true});
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
 let settingsOpen=false;
 let busy=false, resetArm=false, hofArm=false, retireArm=false, anims=0;
@@ -2911,7 +2957,7 @@ function rollDice(els,sides,finals,clsFn,done){
 }
 
 /* ---------- interaction ---------- */
-function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePrep();maybeStory();flushOv();checkAch();scheduleAuto()}
+function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePick();maybePrep();maybeStory();flushOv();checkAch();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -2991,8 +3037,7 @@ function onClick(e){
   if(act!=='reset'&&resetArm){resetArm=false}
   if(act!=='retire'&&retireArm){retireArm=false}
   if(act!=='hofclear'&&hofArm){hofArm=false}
-  if(act==='haptics'){hapticsOn=!hapticsOn;try{localStorage.setItem(HAPKEY,hapticsOn?'on':'off')}catch(e){};render();haptic('tap');return}
-  if(act==='sound'){soundOn=!soundOn;try{localStorage.setItem(SNDKEY,soundOn?'on':'off')}catch(e){};render();if(soundOn)sfx('pass');return}
+  if(act==='sound'){soundOn=!soundOn;try{localStorage.setItem(SNDKEY,soundOn?'on':'off')}catch(e){};render();if(soundOn)sfx('click');return}
   if(act==='install'){if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;render()})}return}
   if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',nt==='dark'?'#121317':'#f7f7f5'));try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
   if(act==='lang'){lang=b.dataset.l;t=T[lang];try{localStorage.setItem(LANGKEY,lang)}catch(e){};document.documentElement.lang=lang==='pt'?'pt-BR':'en';render();return}
@@ -3023,16 +3068,17 @@ function onClick(e){
     if(!o.at){resolveChoice(i,null);sfx('pass');commit();return}
     const v=d(20),el=app.querySelector('[data-die="ev"]'),at=chAt(o,st);centerOn(app.querySelector('.stage'));
     rollDice(el?[el]:[],20,[v],x=>x===20?'crit':x===1?'fumble':x+chBonus(at)>=o.tgt?'win':'lose',()=>{resolveChoice(i,v);sfx(v===20?'nat20':v===1?'nat1':st.chr.ok?'pass':'fail');commit()})}
-  else if(act==='insp'){const s=S.season,st=s&&s.stages[s.idx];if(!st||s.last)return;if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--;sfx('pass')}commit()}
+  else if(act==='insp'){const s=S.season,st=s&&s.stages[s.idx];if(!st||s.last)return;if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}commit()}
   else if(act==='simnext'){view='game';simNext();commit()}
-  else if(act==='feat'){pickFeat(b.dataset.k);sfx('title');commit()}
-  else if(act==='camp'){doCamp(b.dataset.k);sfx('pass');commit()}
+  else if(act==='feat'){pickFeat(b.dataset.k);commit()}
+  else if(act==='camp'){doCamp(b.dataset.k);commit()}
   else if(act==='modhelp'){modHelp=!modHelp;render()}
   else if(act==='daily'){startDaily();commit()}
   else if(act==='chron'){ovQ.push({k:'chron'});flushOv()}
   else if(act==='share'){const p=loadHof().find(x=>x.id===+b.dataset.id);if(p)shareCard(p)}
   else if(act==='hofcmp'){const id=+b.dataset.id;if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}render()}
   else if(act==='storyov'){maybeStory();flushOv()}
+  else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
   else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
@@ -3092,6 +3138,7 @@ const extraSum=st=>extraMods(st).reduce((a,x)=>a+x[1],0);
 function effMode(st){
   let m=(st.fx||{}).mode||null;
   if(st.red)m=m==='adv'?null:'dis';
+  if(st.comp==='run'&&S.season&&S.season.run&&S.season.run.type==='miracle')m=m==='adv'?null:'dis';
   if(st.insp)m=m==='dis'?null:'adv';
   return m;
 }
@@ -3135,12 +3182,13 @@ const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mod
 /* ---- nemesis: one rival who keeps crossing your path ---- */
 function nemNats(){return Object.keys(NATIONS).filter(n=>n!==S.nat&&(S.gender!=='f'||NATIONS[n].firstW))}
 function makeNemesis(derby){
-  const nat=pick(nemNats());
+  let nat=pick(nemNats());
   S.nem={name:randomName(nat,S.gender),nat,pos:myPos(),r:+(rating(S.attrs)+Math.random()*2-.5).toFixed(1),club:null,league:null,w:0,l:0,bdo:0};
   const info=isW()?CLUB_INFO_W:CLUB_INFO_M, riv=RIVAL_PAIRS.filter(([x,y])=>x===S.club.name||y===S.club.name).map(([x,y])=>x===S.club.name?y:x).filter(n=>info[n]);
   if(derby&&riv.length){const c=pick(riv);S.nem.club=c;S.nem.league=info[c].league}
   else if(derby){const l=leagueClubs(S.club.league).filter(n=>n!==S.club.name).sort((a,b)=>teamStr(b)-teamStr(a)).slice(0,4);if(l.length){S.nem.club=pick(l);S.nem.league=S.club.league}}
   if(!S.nem.club)nemMove();
+  {const c=S.nem.league!=null&&LEAGUES[S.nem.league]?LEAGUES[S.nem.league].c:null, ok=n=>!!NATIONS[n]&&(S.gender!=='f'||!!NATIONS[n].firstW);nat=ok(c)?c:S.nat;S.nem.nat=nat;S.nem.name=randomName(nat,S.gender)}
 }
 function nemMove(){
   const n=S.nem, c=[];
@@ -3252,15 +3300,20 @@ const prepDone=h=>!!h&&(!h.featDue||!!h.feat)&&(!!h.camp||S.age>=40);
 function pickFeat(k){const h=S.history[S.history.length-1];if(!h||!h.featDue||h.feat||!h.featOpts.includes(k))return;h.feat=k;S.feats=(S.feats||[]).concat(k)}
 function doCamp(k){
   const h=S.history[S.history.length-1]; if(!h||h.camp)return; h.camp=k;
-  if(k==='train'){const w=POS[myPos()].w,ks=AK.filter(x=>S.attrs[x]<20).sort((a,b)=>(w[b]||0)-(w[a]||0)).slice(0,3);h.campGot=[];for(let i=0;i<2&&ks.length;i++){const x=ks[i%ks.length];if(S.attrs[x]<20&&rating(S.attrs)<potCap()+1){S.attrs[x]++;h.campGot.push(x)}}}
+  if(k.startsWith('tr:')){const x=k.slice(3);h.campGot=[];for(let i=0;i<2;i++)if(S.attrs[x]<20&&rating(S.attrs)<potCap()+1){S.attrs[x]++;h.campGot.push(x)}}
   if(k==='rest')S.restNext=1;
   if(k==='media')S.mediaNext=1;
-  if(k==='nat')S.natNext=1;
 }
+/* two random attributes to drill this summer */
+function campOpts(h){
+  if(!h.campOpts){const ks=AK.filter(x=>S.attrs[x]<20).sort(()=>Math.random()-.5);h.campOpts=ks.slice(0,2)}
+  return h.campOpts;
+}
+const campLabel=k=>k.startsWith('tr:')?t.campTrain(t.attrs[k.slice(3)]):t.camp[k][0];
 function autoPrep(){
   const h=S.history[S.history.length-1]; if(!h)return;
   if(h.featDue&&!h.feat)pickFeat(h.featOpts[0]);
-  if(!h.camp&&S.age<40)doCamp(S.age>=31?'rest':isWCYear(S.year+1)&&rating(S.attrs)>=wcNeed(S.nat)-1.5?'nat':pick(['train','train','media','rest']));
+  if(!h.camp&&S.age<40){const o=campOpts(h);doCamp(S.age>=31?'rest':o.length&&Math.random()<.6?'tr:'+pick(o):pick(['media','rest']))}
 }
 
 /* ---- the agent works the phones ---- */
@@ -3413,7 +3466,7 @@ function prepView(h){
   }
   if(S.age<40){
     if(!h.camp){if(!h.featDue||h.feat)out.push(`<div class="prep"><span class="lbl">${t.campT}</span><div class="muted small">${t.campSub}</div><div class="prepg">${['train','rest','media','nat'].map(k=>`<button class="prepb" data-act="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')}</div></div>`)}
-    else out.push(`<div class="prepdone">✓ ${t.campDone(t.camp[h.camp][0])}${h.campGot&&h.campGot.length?` · ${h.campGot.map(k=>'+1 '+t.attrs[k]).join(', ')}`:''}</div>`);
+    else out.push(`<div class="prepdone">✓ ${t.campDone(campLabel(h.camp))}</div>`);
   }
   return out.join('');
 }
@@ -3448,7 +3501,7 @@ en:{
  ctB:['','','','','Red card: disadvantage in the next match','Own goal: fans −1','Blooper goes viral: fans −1'],critD6:v=>`Crit table d6 ${v}`,
  inspBtn:n=>`✦ ${n}`,inspOn:'Inspired: advantage',inspHint:'Spend inspiration for advantage',redChip:'Red card: disadvantage',
  oddsLg:(n,p)=>`Strong ${n<=1?'auto':n+'+'} · ${p}%`,odds:(n,p)=>`Needs ${n<=1?'any':n+'+'} · ${p}%`,
- simNext:'Next decision',simNextS:'Skip',
+ simNext:'Skip to next decision',simNextS:'Skip',
  modHelpT:'What the numbers mean',modHelp:'Player: your overall rating. Club/Nation: how strong your team is. Focus: the attribute this match leans on (its value ÷ 5). Fans: how much the crowd loves you. Moment: the scene before the match. Extras: your feats, items and teammate bond (hold or hover to see them). Bonuses above +7 count half. You need the DC or more on d20 + bonuses; a natural 20 always wins and a natural 1 always fails.',
  dailyBtn:'Daily career',dailyT:d=>`Daily career · ${d}`,dailySub:'Everyone gets the same nation, roll and first clubs today. No rerolls.',
  shareBtn:'Share card',sortT:'Sort',sorts:{score:'Legacy',titles:'Titles',goals:'Goals',peak:'Peak'},cmpBtn:'Compare',cmpOn:'Comparing',cmpT:'Head to head',cmpHint:'Pick one more player to compare.',
@@ -3486,7 +3539,7 @@ pt:{
  ctB:['','','','','Cartão vermelho: desvantagem no próximo jogo','Gol contra: torcida −1','Lance bizarro viraliza: torcida −1'],critD6:v=>`Tabela crítica d6 ${v}`,
  inspBtn:n=>`✦ ${n}`,inspOn:'Inspirado: vantagem',inspHint:'Gaste inspiração para ter vantagem',redChip:'Vermelho: desvantagem',
  oddsLg:(n,p)=>`Forte ${n<=1?'garantido':n+'+'} · ${p}%`,odds:(n,p)=>`Precisa ${n<=1?'de qualquer':n+'+'} · ${p}%`,
- simNext:'Próxima decisão',simNextS:'Pular',
+ simNext:'Pular até a próxima decisão',simNextS:'Pular',
  modHelpT:'O que os números significam',modHelp:'Jogador: seu nível geral. Clube/Seleção: a força do seu time. Foco: o atributo que pesa neste jogo (valor ÷ 5). Torcida: o quanto a arquibancada te ama. Momento: a cena antes do jogo. Extras: seus talentos, itens e o laço com o companheiro. Bônus acima de +7 contam pela metade. Você precisa da CD ou mais em d20 + bônus; um 20 natural sempre vence e um 1 natural sempre falha.',
  dailyBtn:'Carreira do dia',dailyT:d=>`Carreira do dia · ${d}`,dailySub:'Hoje todo mundo recebe a mesma nacionalidade, rolagem e primeiros clubes. Sem rerrolagens.',
  shareBtn:'Compartilhar',sortT:'Ordenar',sorts:{score:'Legado',titles:'Títulos',goals:'Gols',peak:'Nível'},cmpBtn:'Comparar',cmpOn:'Comparando',cmpT:'Frente a frente',cmpHint:'Escolha mais um jogador para comparar.',
@@ -3496,18 +3549,18 @@ pt:{
  quests:'Missões',nemesisWon:'Nêmesis derrotado: +1 inspiração, torcida +1',nemesisLost:'Seu nêmesis levou essa'
 }};
 Object.assign(T.en,TX.en);Object.assign(T.pt,TX.pt);
-Object.assign(T.en,{rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
- runBanner:{title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
- runRes:{title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
+Object.assign(T.en,{campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (up to your ceiling).`,pickT:'Pick +1 attribute',natural20:'Natural 20',rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='miracle'?`Miracle run: three wins against DC +4, with disadvantage, and the title is yours.`:k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
+ runBanner:{miracle:'A last, impossible chase. Win all three against the odds and the title is yours.',title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
+ runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Career numbers',seasons:'Season by season'},prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
  extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
  achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
  injRoll2nd:'Roll the second d10',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
-Object.assign(T.pt,{rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
- runBanner:{title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
- runRes:{title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
+Object.assign(T.pt,{campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
+ runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
+ runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · prepara a rolagem do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números da carreira',seasons:'Temporada a temporada'},prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
  extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
@@ -3528,13 +3581,13 @@ function projPos(s){
 function runCheck(){
   const s=S.season; if(!s||s.runChecked||(s.v||4)<5)return;
   const lg=s.stages.filter(x=>x.comp==='league'); if(!lg.length||lg.some(x=>!x.res))return;
-  if(s.stages.some(x=>x.comp==='cup'&&!x.res))return;
   s.runChecked=1;
   if(s.seasonOut)return;
   const L=LEAGUES[S.club.league], pr=projPos(s), size=L.size, fails=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
   let type=null;
   const goods=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length;
   if(L.div===1&&(pr===1||(pr===2&&goods>=2)))type='title';
+  else if(L.div===1&&(pr===2||(pr===3&&goods>=2)))type='miracle';
   else if(L.div===2){const up=size<=12?2:4;if(pr>=up-1&&pr<=up+2)type='promo'}
   if(!type&&L.div===1&&L.down!=null){
     const shieldFree=S.club.tier>=2&&!(S.shield||{})[S.club.name];
@@ -3546,8 +3599,8 @@ function runCheck(){
   s.stages.splice(idx,0,...[0,1,2].map(g=>({comp:'run',round:0,g,key:focusKey(),res:null})));
 }
 const runPts=s=>s.stages.filter(x=>x.comp==='run'&&x.res&&x.res.wdl).reduce((a,x)=>a+(x.res.wdl==='W'?3:x.res.wdl==='D'?1:0),0);
-const runNeed=s=>!s.run?0:s.run.type==='title'?(s.run.pr===1?4:9):s.run.type==='releg'?4:5;
-function runDC(){const s=S.season,L=LEAGUES[S.club.league];return L.dc+(s.run&&s.run.type==='title'?2:0)}
+const runNeed=s=>!s.run?0:s.run.type==='title'?(s.run.pr===1?4:9):s.run.type==='miracle'?9:s.run.type==='releg'?4:5;
+function runDC(){const s=S.season,L=LEAGUES[S.club.league];return L.dc+(s.run&&s.run.type==='title'?2:s.run&&s.run.type==='miracle'?4:0)}
 
 /* ---- pop-up queue for the off-season and the story moments ---- */
 let ovKind=null;
@@ -3560,6 +3613,14 @@ function maybePrep(){
   if(h.ageCheck&&!h.ageCheck.ok)return;
   if(h.featDue&&!h.feat){ovQ.push({k:'feat'});return}
   if(!h.camp&&S.age<40){ovQ.push({k:'camp'});return}
+}
+function maybePick(){
+  if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pickAttr||ovHas('pick'))return;
+  ovQ.push({k:'pick'});
+}
+function pickHTML(){
+  return `<div class="ovcard move prepop"><span class="ov-kicker">${t.natural20}</span><h2 class="ov-title" style="font-size:24px">${t.pickT}</h2><div class="ov-sub2">${t.critPick}</div>
+    <div class="picks pop">${AK.map(k=>`<button class="pickbtn" data-ov="pick" data-k="${k}" ${S.attrs[k]>=20?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(20,S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
 }
 function maybeStory(){
   if(view!=='game'||S.phase!=='season'||!S.season)return;
@@ -3588,7 +3649,7 @@ function storyClick(e){
   if(v!=='ch')return;
   const s=S.season, st=s.stages[s.idx]; if(!st||!st.ch||st.chr)return;
   const i=+b.dataset.i, o=CHOICES[st.ch].opts[i]; if(!o)return;
-  if(!o.at){resolveChoice(i,null);sfx('pass');save();ovEl.innerHTML=storyHTML();return}
+  if(!o.at){resolveChoice(i,null);save();ovEl.innerHTML=storyHTML();return}
   ovEl.querySelectorAll('.chopt').forEach(x=>x.disabled=true);
   const x=d(20), el=ovEl.querySelector('[data-die="sd"]'), at=chAt(o,st);
   rollDice(el?[el]:[],20,[x],y=>y===20?'crit':y===1?'fumble':y+chBonus(at)>=o.tgt?'win':'lose',()=>{resolveChoice(i,x);sfx(x===20?'nat20':x===1?'nat1':st.chr.ok?'pass':'fail');save();ovEl.innerHTML=storyHTML()});
@@ -3616,12 +3677,13 @@ function featHTML(){
 }
 function campHTML(){
   return `<div class="ovcard move prepop"><span class="ov-kicker">${t.campT} · ${t.nextAge(S.age+1)}</span><h2 class="ov-title" style="font-size:24px">${t.campSub}</h2>
-    <div class="prepg two">${['train','rest','media','nat'].map(k=>`<button class="prepb" data-ov="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')}</div></div>`;
+    <div class="prepg two">${(()=>{const h=S.history[S.history.length-1];return campOpts(h).map(a=>`<button class="prepb" data-ov="camp" data-k="tr:${a}"><b>${t.campTrain(t.attrs[a])}</b><span>${t.campTrainD(t.attrs[a],S.attrs[a],Math.min(20,S.attrs[a]+2))}</span></button>`).join('')+['rest','media'].map(k=>`<button class="prepb" data-ov="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')})()}</div></div>`;
 }
 function prepClick(e){
-  const b=e.target.closest('[data-ov]'); if(!b)return; const v=b.dataset.ov;
-  if(v==='feat'){pickFeat(b.dataset.k);sfx('title');closeOv();commit();return}
-  if(v==='camp'){doCamp(b.dataset.k);sfx('pass');closeOv();commit();return}
+  const b=e.target.closest('[data-ov]'); if(!b||b.disabled)return; const v=b.dataset.ov;
+  if(v==='pick'){pickAttr(b.dataset.k);closeOv();commit();return}
+  if(v==='feat'){pickFeat(b.dataset.k);closeOv();commit();return}
+  if(v==='camp'){doCamp(b.dataset.k);closeOv();commit();return}
 }
 function offersHTML(){
   const list=(S.startOffers||[]).map((o,i)=>{const r=clubRank(o.name,o.league);return `<div class="wcard">${crest(kitOf(o.name),26)}<b>${esc(o.name)}</b><span class="wl">${esc(LEAGUES[o.league].name)}</span><div class="wtags">${LEAGUES[o.league].c!==S.nat?`<span class="wtag">${t.euroOffer}</span>`:''}${LEAGUES[o.league].div===2?`<span class="wtag dim">${t.div2}</span>`:''}</div><button class="btn sm" data-ov="first" data-i="${i}">${t.sign}</button></div>`}).join('');
