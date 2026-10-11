@@ -657,7 +657,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .onepage .stage.v .dicecol>.row{flex:none}
 .storydie{padding:10px 0} .healdice{padding:6px 0}
 /* short screens: a tighter player card leaves the match card room for the die */
-@media (max-height:760px){
+@media all{
  .onepage .wrap{gap:8px!important;padding-top:6px!important}
  .onepage .wrap>.panel{padding:10px 12px!important}
  .onepage .who h2{font-size:19px!important}
@@ -696,7 +696,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .stage.fit6 .st-tail .muted.small,.stage.fit6 .st-tail .small,.stage.fit6 .st-head .vsline,.stage.fit6 .nemtag{display:none!important}
 .stage.fit7 .st-tail .sum,.stage.fit7 .st-head .grec .lbl{display:none!important}
 .stage.fit3 .st-head>.banner{display:none!important}
-.stage.fit7 .verdict{font-size:16px!important}
+.stage.fit7 .verdict{font-size:16px!important;line-height:1.2!important}
 @media (max-height:650px){.onepage .wrap>.panel:not(.hero) .bars{display:none!important}.onepage .who .row{display:none!important}}
 /* fixed zones: title area, dice, result area */
 .stage.v>.st-body>.st-head{height:36%;overflow:hidden;justify-content:flex-end!important}
@@ -876,6 +876,37 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 @keyframes rcIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes fall{from{transform:translateY(0) rotate(0)}to{transform:translateY(110vh) rotate(720deg)}}
 @media (prefers-reduced-motion:reduce){.ovl,.ovl *{animation:none!important}}
+
+/* ===== match card: title on top, info at the bottom, the die in the spotlight ===== */
+.stage.v>.st-body>.st-head,.stage.evp>.st-body>.st-head{height:auto!important;flex:none!important;justify-content:flex-start!important}
+.stage.v>.st-body>.st-tail,.stage.evp>.st-body>.st-tail{height:auto!important;flex:none!important;justify-content:flex-end!important}
+.onepage .stage.v>.st-body>.dicecol{flex:1 1 0!important;min-height:0!important;display:flex;flex-direction:column}
+.onepage .stage.v>.st-body>.dicecol>.dmain{flex:1 1 0!important;min-height:0!important}
+.onepage .stage.v .dmain>svg.die{width:var(--die,140px)!important;height:var(--die,140px)!important;max-width:100%!important;max-height:100%!important}
+.onepage .stage.v .dmain>.pair .die{width:calc(var(--die,140px)*.8)!important;height:calc(var(--die,140px)*.8)!important;max-height:100%!important;max-width:47%!important}
+.onepage .stage.v .dmain{filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+/* compact player card, always */
+.onepage .wrap>.panel:not(.hero){padding:9px 12px!important}
+.onepage .who{gap:8px!important}
+.onepage .who h2{font-size:18px!important;line-height:1.15}
+.onepage .who .clubline{font-size:12.5px!important}
+.onepage .rating .big{font-size:22px!important}
+.onepage .rating .lbl{font-size:9px!important}
+.onepage .who .row{gap:5px!important}
+.onepage .who .row .chip{font-size:10px!important;padding:1px 6px!important}
+.onepage .bars{display:grid!important;grid-template-columns:1fr 1fr;gap:12px!important;margin-top:6px}
+.onepage .bars .fanbar,.onepage .fanbar{margin-top:0!important;gap:2px!important}
+.onepage .abil{margin-top:7px!important}
+.onepage .ab-cell{padding:2px 1px!important}
+.onepage .ab-v{font-size:15px!important}
+/* compact player card */
+.onepage .who .agenat{display:none}
+.onepage .who .pos .lbl{font-size:10px!important}
+.onepage .bars{gap:10px!important}
+.onepage .fb-head .lbl,.onepage .fb-state{font-size:10px!important}
+.onepage .fb-track{height:5px!important}
+.onepage .abil .ab-cell .lbl{font-size:8.5px!important}
+.onepage .abil .ab-m{display:none!important}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -2347,9 +2378,12 @@ function fitStage(){
   const b=app.querySelector&&app.querySelector('.st-body'); if(!b||!document.body.classList.contains('onepage'))return;
   const st=b.closest('.stage'); const L=['fit1','fit2','fit3','fit4','fit5','fit6','fit7'];
   const zones=[b.querySelector('.st-head'),b.querySelector('.st-tail')].filter(Boolean);
-  const over=()=>b.scrollHeight>b.clientHeight+1||zones.some(z=>z.scrollHeight>z.clientHeight+1);
+  const dm=b.querySelector('.dmain'), die=Math.round(Math.min(200,Math.max(84,b.clientHeight*.44))), minDie=die*.88;
+  st.style.setProperty('--die',die+'px');
+  const over=()=>b.scrollHeight>b.clientHeight+1||zones.some(z=>z.scrollHeight>z.clientHeight+1)||(dm&&dm.clientHeight<minDie);
   L.forEach(c=>st.classList.remove(c));
   for(const c of L){if(!over())break;st.classList.add(c)}
+  if(dm&&dm.clientHeight<die)st.style.setProperty('--die',Math.max(56,dm.clientHeight-4)+'px');
 }
 try{window.addEventListener('resize',()=>{try{fitStage()}catch(e){}})}catch(e){}
 function render(){
