@@ -551,6 +551,102 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .onepage .stage.v .dicecol{min-height:36px!important}
 @media (max-height:720px){.onepage .stage .vsline{margin:0}.onepage .wrap>.panel.hero{padding-top:8px;padding-bottom:8px}.onepage .stage .banner{padding:4px 8px;font-size:12px}}
 .onepage .stage .chip.help{padding:2px 6px}
+/* ===== one-page game screens ===== */
+.onepage .wrap>.panel.hero.offs,.onepage .wrap>.panel.hero.create{display:flex;flex-direction:column;gap:8px;overflow:hidden!important}
+.offs .offh{display:flex;flex-direction:column;gap:2px;flex:none}
+.offs .offh h2{font-size:24px;line-height:1.1}
+.offs .champline{font-size:22px}
+.offs .champline svg{width:26px;height:26px}
+.statline.sm{flex:none;gap:6px}
+.statline.sm .stat .n{font-size:22px}
+.statline.sm .stat .lbl{font-size:9.5px}
+.cabinet.oneline{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;flex:none}
+.cabinet.oneline::-webkit-scrollbar{display:none}
+.cabinet.oneline>*{flex:none;white-space:nowrap}
+.offnotes{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px;font-size:12.5px;line-height:1.35}
+.offnotes .on{padding:4px 8px;border-left:2px solid var(--rule-2);color:var(--ink-2)}
+.offnotes .on.good{border-color:var(--good);color:var(--ink)} .offnotes .on.bad{border-color:var(--bad);color:var(--ink)} .offnotes .on.gold{border-color:#f2c14e;color:var(--ink)}
+.offnotes .on.dim{border:0;color:var(--ink-3);font-size:11.5px;padding-left:0}
+.offact{display:flex;gap:8px;flex:none;align-items:center}
+.offact .btn{flex:1 1 0;min-width:0;height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.offact.wrapb{flex-wrap:wrap} .offact.wrapb .btn{flex:1 1 40%;height:40px}
+.retd .offh h2{font-size:26px}
+/* create */
+.create .ch h2{font-size:22px}
+.create .ch{flex-wrap:nowrap}
+.cfields{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center;flex:none}
+.cfields .gsel button{padding:7px 12px}
+.cfields select{min-width:0}
+.cname{grid-column:1/-1;display:flex;gap:8px}
+.cname input{flex:1;min-width:0}
+.dice.cdice{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1 1 auto;min-height:0;align-content:center}
+.cdice .dbtn{padding:2px 0;gap:2px}
+.cdice .dbtn .die{width:min(58px,13vw,9vh);height:min(58px,13vw,9vh)}
+.cdice .dbtn .lbl{font-size:10px}
+.cpos{display:flex;align-items:center;gap:8px;font-size:13.5px;flex:none}
+.styles.cst{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:none}
+.styles.cst .stylebtn{padding:7px 6px;text-align:center}
+.styles.cst .stylebtn b{font-size:12.5px}
+.ctip{flex:none;text-align:center}
+.banner.daily{flex:none}
+/* match card action row: the main button never changes size */
+.stage.v .st-act{display:grid!important;grid-template-columns:minmax(0,1fr) 54px 72px;gap:8px;width:100%;align-items:stretch}
+.stage.v .st-act>.btn:first-child,.stage.v .st-act>.slot.main{height:44px;width:100%;max-width:none!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.stage.v .st-act .btn.sm{height:44px;padding:0 6px!important;width:100%}
+.stage.v .st-act [data-act="simrest"]{display:none!important}
+.stage.v .st-act .slot{display:block}
+.btn.simnext .tl-l{display:none!important} .btn.simnext .tl-s{display:inline!important}
+/* roll-type banner */
+.rk{align-self:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:999px}
+.rk.mt{background:var(--accent);color:#fff}
+.rk.ck{background:#f2c14e;color:#1b1b1b}
+.rk.sy{background:#c96bd8;color:#fff}
+/* story / age / pre-season pop-ups */
+.storydie{display:flex;justify-content:center;margin:4px 0}
+.storydie .die{width:96px;height:96px}
+.ovcard .chopts{gap:6px}
+.ovcard .chopt{background:#191c22;border-color:#2c3038;color:#f3f4f6}
+.ovcard .chopt .lbl{color:#a9adb7}
+.ovcard .chopt.on{border-color:var(--accent)}
+.ovcard .prepg{display:grid;grid-template-columns:1fr;gap:6px;width:100%}
+.ovcard .prepg.two{grid-template-columns:1fr 1fr}
+.ovcard .prepb{background:#191c22;border-color:#2c3038;color:#f3f4f6}
+.ovcard .prepb span{color:#a9adb7}
+.ovcard .mods .chip{background:#22252c;color:#e6e7ea;border-color:#2c3038}
+/* hall of fame: one-line stats */
+.hst{display:flex!important;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;font-size:11.5px}
+.hst .ic{display:inline-flex;align-items:center;gap:2px;color:#e0ad3c;font-weight:700}
+.hst .ico{width:13px;height:13px}
+.hst .pga{display:inline-flex;align-items:center;gap:4px;color:var(--ink-2)}
+.hst .pga b{font-weight:600;color:var(--ink)}
+.hst .pga i{width:1px;height:10px;background:var(--rule-2);display:inline-block}
+.hst .rt{color:var(--ink-2)}
+.hst .tt{overflow:hidden;text-overflow:ellipsis}
+.hmore>.lbl,.hmore .hpath{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.hmore .cabinet{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.hmore .cabinet>*{flex:none;white-space:nowrap}
+/* career tab */
+.csub{flex:none;align-self:flex-start}
+.cgrid{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;flex:none}
+.radar{width:150px;height:156px}
+.radar .rg{fill:none;stroke:var(--rule-2);stroke-width:.8}
+.radar .rp{fill:color-mix(in srgb,var(--accent) 35%,transparent);stroke:var(--accent);stroke-width:1.6}
+.radar text{font-size:8.5px;fill:var(--ink-3);font-family:var(--f-ui);font-weight:600}
+.radar text.rv{fill:var(--ink);font-family:var(--f-num);font-size:9px}
+.cgrid .camp .sv-row{padding:4px 0;font-size:12px}
+.cgrid .camp .cv{font-size:11.5px}
+.fixv .trackp.nums .scrollbox{min-height:60px}
+@media (max-width:380px){.cgrid{grid-template-columns:130px minmax(0,1fr)}.radar{width:130px;height:136px}}
+/* fit fixes */
+.stage.v .st-act .btn{display:flex;align-items:center;justify-content:center;gap:4px}
+.statline.sm{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.statline.sm .stat{min-width:0}
+.trackp.nums>*{flex:none}
+.trackp.nums>.scrollbox{flex:1 1 auto!important}
+.cgrid .camp .sv-row>span:first-child{white-space:nowrap}
+.onepage .stage .rk{margin-bottom:-2px}
+.onepage .stage.v .st-head{gap:4px}
+@media (max-height:720px){.onepage .stage h3{font-size:17px}.onepage .stage .evdesc{font-size:12.5px;line-height:1.35}.onepage .st-head .banner{font-size:11.5px;padding:3px 8px}}
 /* recovery pop-up */
 .ovcard.heal{gap:12px}
 .healdice{display:flex;gap:18px;justify-content:center;align-items:flex-end;margin:6px 0}
@@ -560,9 +656,9 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .hres{display:flex;flex-direction:column;gap:6px;align-items:center;min-height:24px;font-size:14px}
 .hdanger{display:none;color:#ff8a7a;font-weight:700;font-size:14px;letter-spacing:.02em}
 .ovcard.heal.shake .hdanger{display:block}
-.ovcard.heal.shake{border-color:#a33a2e;box-shadow:0 0 0 1px #a33a2e,0 0 40px rgba(220,60,40,.35);animation:cardIn .45s both,shake .5s ease-in-out .1s infinite}
+.ovcard.heal.shake{border-color:#a33a2e;box-shadow:0 0 0 1px #a33a2e,0 0 30px rgba(220,60,40,.25);animation:shake .6s ease-in-out infinite}
 .ovcard.heal.over{border-color:#a33a2e}
-@keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,1px) rotate(-.4deg)}40%{transform:translate(3px,-1px) rotate(.4deg)}60%{transform:translate(-2px,0)}80%{transform:translate(2px,1px)}}
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-1.2px,.4px)}50%{transform:translate(1.2px,-.4px)}75%{transform:translate(-.8px,0)}}
 @media (prefers-reduced-motion:reduce){.ovcard.heal.shake{animation:none}}
 /* achievements: filters, progress, rarity */
 .achh{font-size:16px;margin:10px 0 2px}
@@ -989,7 +1085,7 @@ en:{
  awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
- settingsT:'Settings',soundT:'Sound',themeT:'Theme',langT:'Language',
+ settingsT:'Settings',hapT:'Vibration',onT:'On',offT:'Off',soundT:'Sound',themeT:'Theme',langT:'Language',
  bySeason:'Season by season',seasonsShort:n=>`${n} ${n>1?'yrs':'yr'}`,
  noTitles:'No titles',wcN:n=>`${n} World Cup${n>1?'s':''}`,bdoNs:n=>`${n} Ballon${n>1?'s':''} d’Or`,appsS:'apps',ratingS:'rating',majorN:n=>`${n} major${n>1?'s':''}`,
  tag:{legend:c=>`Legend · ${c}`,idol:c=>`Club idol · ${c}`,oneclub:c=>`One-club · ${c}`,forty:()=>'Played until 40',injury:()=>'Ended by injury',rival:()=>'Crossed to a rival',
@@ -1038,7 +1134,7 @@ en:{
  finalWin:o=>`beat ${o} in the final`,tapClose:'Tap to continue',recapT:'Career over',recapBtn:'Continue',replay:'Career recap',
  leagueChamp:l=>`${l} champions!`,recapNone:'No trophies, but plenty of stories.',titlesL:'Titles',honours:'Honours',
  bdoN:n=>n>1?`${n}× Ballon d’Or`:'Ballon d’Or',bdoTop3:n=>`Ballon d’Or podium${n>1?' ×'+n:''}`,
- tags:{league:'LGE',cup:'CUP',wc:'WC',cwc:'CWC'},
+ tags:{league:'LGE',cup:'CUP',wc:'WC',cwc:'CWC',run:'RUN'},
  hofT:'Hall of Fame',hofSub:'Retired careers, ranked by legacy points: titles, goals, assists, peak rating and the biggest club you reached.',
  hofEmpty:'No legends yet. Retire a player to put their career here.',legacy:'Legacy',hofClear:'Clear Hall of Fame',hofClearSure:'Tap again to clear',
  rulesT:'How it plays',
@@ -1125,7 +1221,7 @@ pt:{
  awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
- settingsT:'Ajustes',soundT:'Som',themeT:'Tema',langT:'Idioma',
+ settingsT:'Ajustes',hapT:'Vibração',onT:'Ligada',offT:'Desligada',soundT:'Som',themeT:'Tema',langT:'Idioma',
  bySeason:'Por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
  noTitles:'Sem títulos',wcN:n=>`${n} Copa${n>1?'s':''} do Mundo`,bdoNs:n=>`${n} Bola${n>1?'s':''} de Ouro`,appsS:'jogos',ratingS:'nível',majorN:n=>`${n} grande${n>1?'s':''}`,
  tag:{legend:c=>`Lenda · ${c}`,idol:c=>`Ídolo · ${c}`,oneclub:c=>`Um clube só · ${c}`,forty:()=>'Jogou até os 40',injury:()=>'Encerrada por lesão',rival:()=>'Trocou pelo rival',
@@ -1174,7 +1270,7 @@ pt:{
  finalWin:o=>`venceu o ${o} na final`,tapClose:'Toque para continuar',recapT:'Fim de carreira',recapBtn:'Continuar',replay:'Rever a carreira',
  leagueChamp:l=>`Campeão: ${l}!`,recapNone:'Nenhum título, mas muitas histórias.',titlesL:'Títulos',honours:'Honrarias',
  bdoN:n=>n>1?`${n}× Bola de Ouro`:'Bola de Ouro',bdoTop3:n=>`Pódio da Bola de Ouro${n>1?' ×'+n:''}`,
- tags:{league:'LIGA',cup:'COPA',wc:'CDM',cwc:'MUN'},
+ tags:{league:'LIGA',cup:'COPA',wc:'CDM',cwc:'MUN',run:'RETA'},
  hofT:'Hall da Fama',hofSub:'Carreiras encerradas, ordenadas por pontos de legado: títulos, gols, assistências, nível máximo e o maior clube que você alcançou.',
  hofEmpty:'Nenhuma lenda ainda. Aposente um jogador para colocar a carreira dele aqui.',legacy:'Legado',hofClear:'Limpar Hall da Fama',hofClearSure:'Toque de novo para limpar',
  rulesT:'Como funciona',
@@ -1320,7 +1416,7 @@ function startCareer(offer){
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
   S.loyalty=0; S.tenure=0; S.hops=0; S.milestones=[]; S.rivalMoves=0; S.notes=[];
   S.pot=S.pot||d(10); S.startAvg=rating(S.roll); S.feats=[]; S.items=[]; S.mates=[]; S.insp=0; S.quests=0;
-  makeNemesis(); newMate(); S.notes=[['nNem',S.nem.name,S.nem.club]];
+  newMate();
   S.season=buildSeason(); S.phase='season';
 }
 function pickEvent(st){
@@ -1336,6 +1432,7 @@ const clubsWhere=(f,minTier=0)=>{const o=[];LEAGUES.forEach(L=>{if(gOK(L)&&f(L))
 function pickOpp(st){
   const s=S.season, me=S.club.name, used=new Set(s.stages.filter(x=>x.opp).map(x=>x.opp));
   const choose=(list,n)=>{const l=list.filter(x=>!used.has(x.n)&&x.n!==me).sort((a,b)=>b.pr-a.pr).slice(0,Math.max(1,n));return l.length?pick(l).n:null};
+  if(st.comp==='run'){const pool=leagueClubs(S.club.league).filter(n=>n!==me&&!used.has(n));return pool.length?pick(pool):null}
   if(st.comp==='wc'){const [PA,PB]=wcPools(),ok=c=>c!==S.nat&&!used.has(c),A=PA.filter(ok),B=PB.filter(ok);return st.round===1&&B.length&&Math.random()<.5?pick(B):pick(A.length?A:B)}
   if(st.comp==='cwc'){const w=isW(),l=(st.round===0?(w?CWC_ROW_W:CWC_ROW):contIsUCL(S.club.league)?(w?CWC_SA_W:CWC_SA):(w?CWC_EU_W:CWC_EU)).filter(n=>n!==me);return pick(l)}
   if(st.comp==='cup'){const c=LEAGUES[S.club.league].c, pool=clubsWhere(L=>L.c===c);return choose(pool,[pool.length,12,8,5][st.round]||5)}
@@ -1364,6 +1461,7 @@ function activate(){
   const final=st.round===lastRound(st.comp)&&st.comp!=='league';
   const p=st.comp==='league'?.65:final?.6:.3;
   st.ev=(s.out===0&&Math.random()<p)?pickEvent(st):null;
+  if(st.ev==='derby'&&!S.nem&&(S.tenure||0)>=3&&Math.random()<.5){makeNemesis(true);if(S.nem)(S.notes=S.notes||[]).push(['nNemDerby',S.nem.name,S.nem.club])}
   if(st.ev)s.used.push(st.ev);
   else if(s.out===0&&!final&&Math.random()<.3){const ids=Object.keys(CHOICES).filter(k=>!s.used.includes('c_'+k)&&(!CHOICES[k].league||st.comp==='league'));if(ids.length){st.ch=pick(ids);s.used.push('c_'+st.ch)}}
 }
@@ -1389,7 +1487,7 @@ const contIsUCL=Li=>EU_CONT.includes(LEAGUES[Li].cont);          // European con
 const isExotic=Li=>!!(LEAGUES[Li]&&LEAGUES[Li].exotic);
 const hasCont2=Li=>['Champions League','Copa Libertadores','UEFA Women’s Champions League'].includes(LEAGUES[Li].cont);
 const cont2Name=Li=>!hasCont2(Li)?'':LEAGUES[Li].cont==='Champions League'?'Europa League':LEAGUES[Li].cont==='UEFA Women’s Champions League'?'UEFA Women’s Europa Cup':(lang==='pt'?'Copa Sul-Americana':'Copa Sudamericana');
-function compName(kind,Li,w){if(w===undefined)w=isW();if(kind==='wc')return w?t.wcW:t.wcM;if(kind==='cwc')return w?t.cwcW:t.cwcM;if(kind==='bdo')return w?t.bdoW:t.bdoM;const L=LEAGUES[Li];return kind==='league'?L.name:kind==='cup'?L.cup:kind==='cont2'?cont2Name(Li):L.cont}
+function compName(kind,Li,w){if(w===undefined)w=isW();if(kind==='wc')return w?t.wcW:t.wcM;if(kind==='cwc')return w?t.cwcW:t.cwcM;if(kind==='bdo')return w?t.bdoW:t.bdoM;const L=LEAGUES[Li];return kind==='league'||kind==='run'?L.name:kind==='cup'?L.cup:kind==='cont2'?cont2Name(Li):L.cont}
 
 /* ---------- team strength: every club has a level that drifts a little each season ---------- */
 const clubInfoMap=w=>{const m={};LEAGUES.forEach((L,Li)=>{if(!!L.w!==w)return;L.tiers.forEach((tr,ti)=>tr.clubs.forEach(n=>{if(!m[n]||L.div===1&&LEAGUES[m[n].league].div!==1)m[n]={league:Li,tier:ti,pr:tr.pr}}))});return m};
@@ -1433,6 +1531,7 @@ const qualName=(q,Li)=>qualKind(q)==='second'?cont2Name(Li):LEAGUES[Li].cont;
 function compTag(c){if(c==='cont'){const n=LEAGUES[S.club.league].cont;return contIsUCL(S.club.league)?(isW()?'UWCL':'UCL'):n.includes('Libertadores')?'LIB':n.includes('CONCACAF')?'CCC':'ACL'}if(c==='cont2')return contIsUCL(S.club.league)?'UEL':'SUD';return t.tags[c]}
 const lastRound=c=>c==='cup'?3:c==='cwc'?1:4;
 function roundName(st){
+  if(st.comp==='run')return t.runGame(st.g+1);
   if(st.comp==='league'){if((S.season&&S.season.v||4)<5)return t.half[st.round];const m=LEAGUES[S.club.league].matches;return t.md(Math.round(m*st.round/4)+1,Math.round(m*(st.round+1)/4))}
   if(st.comp==='cup')return t.cupR[st.round];
   if(st.comp==='cwc')return t.cupR[2+st.round];
@@ -1443,6 +1542,7 @@ function roundName(st){
 const roundShort=st=>st.comp==='league'&&(S.season&&S.season.v||4)<5?t.halfShort[st.round]:roundName(st);
 function dcFor(st){
   const L=LEAGUES[S.club.league];
+  if(st.comp==='run')return runDC();
   if(st.comp==='league')return L.dc;
   if(st.comp==='cup')return L.dc-1+st.round+(st.round>=2?1:0)+(isW()?1:0)+cupGap(st);
   if(st.comp==='wc')return st.round===0&&st.gdc?st.gdc:WC_DC[st.round];
@@ -1458,6 +1558,7 @@ function teamMod(st){
   return clubMod()-(isExotic(S.club.league)?9:isW()&&LEAGUES[S.club.league].c==='BRA'?3:2);
 }
 function gamesFor(st){
+  if(st.comp==='run')return 1;
   if(st.comp==='cont2')st={...st,comp:'cont'};
   if(st.comp==='league')return Math.round(LEAGUES[S.club.league].matches/((S.season&&S.season.v||4)>=5?4:2));
   if(st.comp==='cup')return 1;
@@ -1506,6 +1607,12 @@ function resolveStage(v1,v2){
     r.kind=(S.season.v||4)>=5?(margin>=7?0:margin>=3?1:margin>=-1?2:margin>=-5?3:4):(margin>=6?0:margin>=2?1:margin>=-1?2:margin>=-5?3:4);
     r.tone=r.kind<=1?'good':r.kind===2?'mid':'bad';
     st.res={tone:r.tone,kind:r.kind,missed:!!r.missed};
+  }else if(st.comp==='run'){
+    const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
+    const draw=!win&&(r.missed?r.total>=r.dc-3:(nat!==1&&r.total>=r.dc-3));
+    const k=win?'W':draw?'D':'L', g=s.rung=s.rung||{W:0,D:0,L:0}; g[k]++;
+    r.wdl=k; r.win=win; r.tone=win?'good':draw?'mid':'bad'; r.rec={...g};
+    st.res={tone:r.tone,wdl:k,missed:!!r.missed};
   }else if(st.comp==='wc'&&st.round===0&&st.g!=null){
     const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
     const draw=!win&&(r.missed?r.total>=r.dc-3:(nat!==1&&r.total>=r.dc-3));
@@ -1561,7 +1668,7 @@ function wcCallUp(s){
   s.wc={called:false,need}; S.notes=[s.seasonOut?['nLeftOutInj',S.nat]:['nLeftOut',S.nat]]; return null;
 }
 function nextStage(){
-  const s=S.season; s.last=null;
+  const s=S.season; s.last=null; runCheck();
   if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
   if(isWCYear(S.year)&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
@@ -1596,7 +1703,7 @@ function endSeason(){
   // a 20-team table, stretched to the real league size
   // where the squad "should" finish from its strength rank, moved by how your stretches went
   const cr=clubRank(S.club.name,S.club.league), expPos0=1+cr.frac*(L.size-1);
-  const noise=(Math.random()+Math.random()-1)*2.8-(Math.random()<.05?4:0);   // now and then the whole league stumbles
+  const noise=s.noise!=null?s.noise:(Math.random()+Math.random()-1)*2.8-(Math.random()<.05?4:0);   // now and then the whole league stumbles
   let pos=v5?clamp(Math.round(expPos0-(s.leagueSum/2.5)*.5+noise),1,L.size):clamp(Math.round(L.size/2-1-s.leagueSum/1.25-S.club.tier*0.5),1,L.size);
   let shieldUsed=false;
   if(v5){
@@ -1609,6 +1716,10 @@ function endSeason(){
       else pos=Math.max(pos,L.size-2);                          // 4 heavy defeats: bottom 3
     }
   }
+  if(s.run){const pts=runPts(s),need=runNeed(s);s.run.pts=pts;s.run.ok=pts>=need;
+    if(s.run.type==='title')pos=s.run.ok?1:Math.max(2,pos);
+    else if(s.run.type==='promo'){const up=L.size<=12?2:4;pos=s.run.ok?Math.min(pos,up):Math.max(pos,up+1)}
+    else if(s.run.type==='releg')pos=s.run.ok?Math.min(pos,L.size-3):Math.max(pos,L.size-2)}
   if(pos===1){s.trophies.unshift({kind:'league',lg:S.club.league,year:S.year});ovPush({k:'league',lg:S.club.league,year:S.year});
     S.loyalty=Math.min(25,(S.loyalty||0)+2+Math.round(cr.frac*8))}       // the smaller the club, the more the fans love you for it
   else if(L.div===1&&pos<=4&&cr.frac>.45)S.loyalty=Math.min(25,(S.loyalty||0)+1+Math.round((cr.frac-.45)*5));
@@ -1617,6 +1728,8 @@ function endSeason(){
   let move=null;
   if(L.div===2&&pos<=(L.size<=12?2:4))move='up';
   else if(L.div===1&&L.down!=null&&(v5?((fails>=4&&!shieldUsed)||(S.club.tier===0&&fails>=3&&pos>=L.size-2)):(S.club.tier===0&&pos>=L.size-2)))move='down';
+  if(s.run&&s.run.type==='releg')move=s.run.ok?null:'down';
+  if(s.run&&s.run.type==='promo')move=s.run.ok?'up':null;
   let shieldBack=false;
   {const sh=S.shield&&S.shield[S.club.name], won=s.trophies.filter(x=>x.kind==='league'||x.kind==='cup'||x.kind==='cont'||x.kind==='cont2'||x.kind==='cwc').length;
    if(sh&&!shieldUsed&&won){sh.titles+=won;if(sh.titles>=2){delete S.shield[S.club.name];shieldBack=true}}}
@@ -1751,7 +1864,6 @@ function newSeason(club){
   const L=LEAGUES[S.club.league];
   S.qualified=L.cont&&L.div===1?(last.qual||false):false;
   if(S.mediaNext){addLoy(2);S.mediaNext=0}
-  if(!S.nem)makeNemesis();
   if(!mateNow())newMate();
   S.age++; S.year++; S.growth=null; S.offers=null;
   buildSeason(); S.phase='season';
@@ -1808,7 +1920,7 @@ function retire(){
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
   const ud=underdogs(H);
   const hid=Date.now(); S.hofId=hid;
-  hof.push({cs,feats:S.feats||[],items:(S.items||[]).map(i=>i.k),daily:S.daily||null,nem:S.nem?{name:S.nem.name,w:S.nem.w,l:S.nem.l}:null,tags:careerTags(),g:S.gender==='f'?'f':'m',ud,oneClub,id:hid,name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
+  hof.push({cs,feats:S.feats||[],items:(S.items||[]).map(i=>i.k),daily:S.daily||null,tags:careerTags(),g:S.gender==='f'?'f':'m',ud,oneClub,id:hid,name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
     forty:!!S.reached40,clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name,w:x.w})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason});
   saveHof(hof); S.hofSaved=true;
 }
@@ -1863,25 +1975,22 @@ function createView(){
   const a=S.roll||{}, all=AK.every(k=>a[k]), some=AK.some(k=>a[k]);
   const avg=all?rating(a):0, pos=all?bestPos(a):null;
   if(all&&!S.startOffers){S.startOffers=makeStartOffers(avg,S.nat);save()}
-  const offers=all?S.startOffers.map((o,i)=>offerCard(o,i,'first',LEAGUES[o.league].c!==S.nat)).join(''):'';
-  const opts=Object.keys(NATIONS).map(k=>`<option value="${k}" ${k===S.nat?'selected':''}>${COUNTRY[lang][k]}</option>`).join('');
-  const cells=AK.map(k=>{const v=a[k], can=!v||(all&&S.rerolls>0);
-    const hint=!v?t.tapRoll:(all&&S.rerolls>0?t.tapReroll:'');
-    return `<button class="dbtn" data-act="roll1" data-k="${k}" ${can?'':'disabled'} aria-label="${t.attrs[k]}${v?' '+v:''}">${dieSVG(10,v||'',v?d10cls(v):'','a-'+k)}<span class="lbl">${t.attrs[k]}</span><span class="hint">${hint}</span></button>`}).join('');
-  const hint=!all?t.rollHint:(S.rerolls>0?t.rerollHint:'');
-  return `<section class="panel hero stack" style="gap:18px">
-    <div class="stack" style="gap:6px"><span class="lbl">${t.newRoll}</span><h2 style="font-size:30px">${t.rollPlayer}</h2></div>${S.daily?`<div class="banner daily"><b>☀ ${t.dailyT(S.daily)}</b><br><span class="small">${t.dailySub}</span></div>`:''}
-    <div class="fields">
-      <div class="field"><span class="lbl">${t.genderL}</span><div class="subtabs gsel" role="group"><button data-act="gender" data-g="m" aria-pressed="${S.gender!=='f'}">${t.genderM}</button><button data-act="gender" data-g="f" aria-pressed="${S.gender==='f'}">${t.genderW}</button></div></div>
-      <div class="field"><label class="lbl" for="pnat">${t.nat}</label><select id="pnat">${opts}</select></div>
-      <div class="field"><label class="lbl" for="pname">${t.pname}</label><div class="row" style="gap:8px;flex-wrap:nowrap"><input type="text" id="pname" maxlength="28" value="${esc(S.name)}"><button class="btn ghost sm" data-act="randname">${t.randName}</button></div></div>
+  const opts=Object.keys(NATIONS).filter(k=>S.gender!=='f'||NATIONS[k].firstW).map(k=>`<option value="${k}" ${k===S.nat?'selected':''}>${COUNTRY[lang][k]}</option>`).join('');
+  const cells=AK.map(k=>{const v=a[k], can=!S.daily&&(!v||(all&&S.rerolls>0));
+    return `<button class="dbtn" data-act="roll1" data-k="${k}" ${can?'':'disabled'} aria-label="${t.attrs[k]}${v?' '+v:''}">${dieSVG(10,v||'',v?d10cls(v):'','a-'+k)}<span class="lbl">${t.attrsS[k]}</span></button>`}).join('');
+  const styled=all&&styleOf(pos,S.style);
+  return `<section class="panel hero create">
+    ${S.daily?`<div class="banner daily"><b>${t.dailyT(S.daily)}</b> · <span class="small">${t.dailySub}</span></div>`:`<div class="row between ch"><h2>${t.rollPlayer}</h2><button class="btn ghost sm" data-act="daily">${t.dailyBtn}</button></div>`}
+    <div class="cfields">
+      <div class="subtabs gsel" role="group" aria-label="${t.genderL}"><button data-act="gender" data-g="m" aria-pressed="${S.gender!=='f'}" ${S.daily?'disabled':''}>${t.genderM}</button><button data-act="gender" data-g="f" aria-pressed="${S.gender==='f'}" ${S.daily?'disabled':''}>${t.genderW}</button></div>
+      <select id="pnat" aria-label="${t.nat}" ${S.daily?'disabled':''}>${opts}</select>
+      <div class="cname"><input type="text" id="pname" maxlength="28" value="${esc(S.name)}" aria-label="${t.pname}"><button class="btn ghost sm" data-act="randname">${t.randName}</button></div>
     </div>
-    ${hint?`<div class="muted small">${hint}</div>`:''}
-    <div class="dice">${cells}</div>
-    ${all?`<div class="stack" style="gap:8px"><div class="pos"><span class="ab">${t.pos[pos][0]}</span><span class="sum">${t.posLine}: <b>${t.pos[pos][1]}</b></span></div><div class="sum">${t.avgTo(fmt(avg))}</div></div>
-    <div class="stack" style="gap:10px"><h3 style="font-size:22px">${t.styleT}</h3><div class="styles">${(STYLES[pos]||[]).map(([k,a])=>`<button class="stylebtn" data-act="style" data-s="${k}" aria-pressed="${S.style===k}"><b>${t.styles[k]}</b><span class="muted small">+1 ${t.attrs[a]} · ${S.roll[a]}→${Math.min(20,S.roll[a]+1)}</span></button>`).join('')}</div></div>
-    ${styleOf(pos,S.style)?`<div class="stack" style="gap:10px"><h3 style="font-size:22px">${t.firstOffers}</h3><div class="offers">${offers}</div></div>`:`<div class="muted small">${t.styleWait}</div>`}`:''}
-    <div class="row">${all?`<button class="btn ghost" data-act="roll6" ${S.rerolls<1?'disabled':''}>${t.rerollAll(S.rerolls)}</button>`:`<button class="btn" data-act="roll6">${some?t.rollRest:t.rollAll}</button>`}${S.daily?'':`<button class="btn ghost" data-act="daily">☀ ${t.dailyBtn}</button>`}</div>
+    <div class="dice cdice">${cells}</div>
+    ${all?`<div class="cpos"><span class="ab">${t.pos[pos][0]}</span><span><b>${t.pos[pos][1]}</b> · ${t.avgTo(fmt(avg))}</span></div>
+      <div class="styles cst">${(STYLES[pos]||[]).map(([k,x])=>`<button class="stylebtn" data-act="style" data-s="${k}" aria-pressed="${S.style===k}"><b>${t.styles[k]}</b><span class="muted small">+1 ${t.attrsS[x]}</span></button>`).join('')}</div>`
+      :`<div class="muted small ctip">${t.rollHint}</div>`}
+    <div class="offact">${all?`${S.daily?'':`<button class="btn ghost" data-act="roll6" ${S.rerolls<1?'disabled':''}>${t.rerollS(S.rerolls)}</button>`}<button class="btn" data-act="offersov" ${styled?'':'disabled'}>${t.chooseClub}</button>`:`<button class="btn" data-act="roll6">${some?t.rollRest:t.rollAll}</button>`}</div>
   </section>`;
 }
 function fxLine(fx){
@@ -1896,28 +2005,24 @@ function stageCard(){
   const fx=st.fx||{mode:null,buff:0};
   const kv=kitVars(myKit(st));
   const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>`)}</span></div>${nemTag(st)}`:'';
-  const grp=st.comp==='wc'&&st.round===0&&st.g!=null;
-  const recNow=grp?(()=>{const done=s.stages.filter(x=>x.comp==='wc'&&x.round===0&&x.g!=null);return `<div class="grec"><span class="lbl">${t.groupT}</span>${done.map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.res&&x.res.skipped?'–':x.g+1}</span>`).join('')}</div>`})():'';
+  const grp=(st.comp==='wc'&&st.round===0&&st.g!=null)||st.comp==='run';
+  const recNow=grp?(()=>{const done=s.stages.filter(x=>x.comp===st.comp&&x.round===0&&x.g!=null);return `<div class="grec"><span class="lbl">${st.comp==='run'?t.runT:t.groupT}</span>${done.map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.res&&x.res.skipped?'–':x.g+1}</span>`).join('')}</div>`})():'';
   const race=st.comp==='league'&&(s.v||4)>=5?(()=>{const lg=s.stages.filter(x=>x.comp==='league'),g=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length,f=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
     return `<div class="grec"><span class="lbl">${t.raceT}</span>${lg.map(x=>`<span class="wd ${x.res?(x.res.kind<=1?'W':x.res.kind===4?'L':'D'):''}">${x.res?(x.res.kind<=1?'✓':x.res.kind===4?'✕':'–'):x.round+1}</span>`).join('')}<span class="muted small">${t.race(g,f)}</span></div>`})():'';
-  const banner=st.comp==='wc'&&st.round===0&&(st.g==null||st.g===0)&&!r&&!evPending&&s.wc&&s.wc.called?`<div class="banner">${t.calledUp(COUNTRY[lang][S.nat])}</div>`:'';
+  const banner=st.comp==='run'&&st.g===0&&!r&&!evPending&&s.run?`<div class="banner">${t.runBanner[s.run.type]}</div>`:st.comp==='wc'&&st.round===0&&(st.g==null||st.g===0)&&!r&&!evPending&&s.wc&&s.wc.called?`<div class="banner">${t.calledUp(COUNTRY[lang][S.nat])}</div>`:'';
   let dice='', body='', act;
   const comp=compName(st.comp,S.club.league);
   if(chPending){
-    const C=t.chx[st.ch], os=CHOICES[st.ch].opts;
+    const C=t.chx[st.ch];
     dice=`<div class="dicecol">${dieSVG(20,'','evd','ev')}</div>`;
-    body=`<span class="lbl">${S.year} · ${t.storyT} · ${t.chooseT}</span><h3>${C[0]}</h3><!--split--><div class="evdesc">${C[1]}</div>
-      <div class="chopts">${os.map((o,i)=>{const at=o.at?chAt(o,st):null,b=at?chBonus(at):0;
-        const line=o.at?`d20 ${sg(b)} ${t.attrs[at]} · ${t.target} ${o.tgt} · ${Math.round(chanceOf(o.tgt-b,null,true)*100)}%`:t.noRoll;
-        const fx=o.at?`<span class="fx up">${t.onOk}: ${effText(o.ok)}</span><span class="fx down">${t.onBad}: ${effText(o.bad)}</span>`:`<span class="fx flat">${effText(o.fx)}</span>`;
-        return `<button class="chopt" data-act="choose" data-i="${i}"><b>${C[2][o.k]}</b><span class="lbl">${line}</span>${fx}</button>`}).join('')}</div>${oppLine}`;
-    act='';
+    body=`<span class="rk sy">${t.rkStory}</span><span class="lbl">${S.year} · ${esc(comp)}</span><h3>${C[0]}</h3><!--split--><div class="evdesc">${C[1]}</div>`;
+    act=`<button class="btn" data-act="storyov">${t.storyOpen}</button>`;
   }else if(evPending){
     const e=EVMAP[st.ev];
     dice=`<div class="dicecol">${dieSVG(e.die,'','evd','ev')}</div>`;
-    body=`<span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><!--split--><div class="evdesc">${t.ev[st.ev][1]}</div>
+    body=`<span class="rk ck">${t.rkCheck}</span><span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><!--split--><div class="evdesc">${t.ev[st.ev][1]}</div>
       <div class="mods"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>
-      <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>${oppLine}`;
+      <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>`;
     act=`<button class="btn" data-act="roll">${t.roll(e.die)}</button>`;
   }else{
     const md=r?(r.pair?(r.mode||effMode(st)):null):effMode(st);
@@ -1932,8 +2037,8 @@ function stageCard(){
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(10,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol">${main}<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div></div>`;
-    body=`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small">${t.groupRule}</div>`:''}<!--split-->`;
-    if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">✎ ${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
+    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
+    if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
       body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">★ ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
     else if(st.evr){const e=EVMAP[st.ev];
@@ -1957,7 +2062,7 @@ function stageCard(){
       if(r.crit&&r.picked)body+=`<div class="small" style="color:var(--good)">${t.crit(t.attrs[r.picked])}</div>`;
       if(r.crit&&s.pickAttr)body+=`<div class="evbox ok"><span class="fx up">${t.critPick}</span><div class="picks">${AK.map(k=>`<button class="pickbtn" data-act="pick" data-k="${k}" ${S.attrs[k]>=20?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(20,S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
       if(r.ct)body+=`<div class="small ctline ${r.ct.good?'up':'down'}">${t.critD6(r.ct.v)} · ${r.ct.good?t.ctG[r.ct.v]:r.ct.v<=3?t.nat1:t.ctB[r.ct.v]}</div>`;
-      if(r.nemRes)body+=`<div class="small" style="color:var(${r.nemRes>0?'--good':'--bad'})">⚔ ${r.nemRes>0?t.nemesisWon:t.nemesisLost}</div>`;
+      if(r.nemRes)body+=`<div class="small" style="color:var(${r.nemRes>0?'--good':'--bad'})">${r.nemRes>0?t.nemesisWon:t.nemesisLost}</div>`;
       if(I){
         let ib=`<span class="lbl">${t.injT}</span>`;
         if(I.d4==null)ib+=`<div>${t.injD4Hint}</div>`;
@@ -1973,11 +2078,12 @@ function stageCard(){
       else{const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     }
   }
-  const sim=(s.pendingHeal||s.careerOver||s.pickAttr?'':`<button class="btn ghost sm" data-act="simrest"><span class="tl-l">${t.simRest}</span><span class="tl-s">${t.simShort}</span></button>`)+(s.pendingHeal||s.careerOver||s.pickAttr||chPending||injured||(!r&&isStop(st))?'':`<button class="btn ghost sm simnext" data-act="simnext" title="${t.simNext}">⏭ <span class="tl-l">${t.simNext}</span><span class="tl-s">${t.simNextS}</span></button>`);
+  const sim=(s.pendingHeal||s.careerOver||s.pickAttr?'':`<button class="btn ghost sm" data-act="simrest"><span class="tl-l">${t.simRest}</span><span class="tl-s">${t.simShort}</span></button>`)+(s.pendingHeal||s.careerOver||s.pickAttr||chPending||injured||(!r&&isStop(st))?'':`<button class="btn ghost sm simnext" data-act="simnext" title="${t.simNext}"><span class="tl-l">${t.simNext}</span><span class="tl-s">${t.simNextS}</span></button>`);
   const autoNote=s.out>0&&!s.pendingHeal&&!s.careerOver?`<div class="banner bad">${s.carried&&!s.seasonOut&&s.idx<2?t.stillOut+' ':''}${t.autoPlay}</div>`:'';
   const notes=autoNote+(S.notes||[]).filter(Array.isArray).map(([k,...a])=>`<div class="banner">${typeof t[k]==='function'?t[k](...a.map(esc)):t[k]}</div>`).join('');
   const [head,tail='']=body.split('<!--split-->');
-  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}"><div class="st-head">${notes}${banner}${head}</div>${dice}<div class="st-tail">${tail}</div><div class="row st-act">${act}${sim}</div></div></section>`;
+  const slotA=act&&act.includes('data-act="insp"')?'':'<span class="slot"></span>', slotB=sim.includes('simnext')?'':'<span class="slot"></span>';
+  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}"><div class="st-head">${evPending||chPending?'':notes}${banner}${head}</div>${dice}<div class="st-tail">${tail}</div><div class="st-act">${act||'<span class="slot main"></span>'}${slotA}${sim}${slotB}</div></div></section>`;
 }
 function nextRoundName(st){const n={...st,round:st.round+1};return roundName(n)}
 function tracker(){
@@ -1990,7 +2096,7 @@ function tracker(){
       const word=st.comp==='league'?t.kindShort[st.res.kind]:st.res.wdl?t.wdl[st.res.wdl]:st.res.champ?t.won:st.res.win?t.through:t.out;
       res=`<span class="res ${st.res.tone==='good'?'w':st.res.tone==='bad'?'l':'m'}">${st.res.missed?t.inj+' · ':''}${word}</span>`;
     }else if(i===s.idx)res=`<span class="res m">${t.upNext}</span>`;
-    const ev=(st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">★ ${t.ev[st.ev][0]}</span>`:'')+(st.ch&&(st.chr||i===s.idx)?`<span class="evtag ${st.chr?(st.chr.ok?'ok':'bad'):''}">✎ ${t.chx[st.ch][0]}</span>`:'')+(st.nem&&st.opp?`<span class="evtag nem">⚔ ${t.nemT}</span>`:'');
+    const ev=(st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">★ ${t.ev[st.ev][0]}</span>`:'')+(st.ch&&(st.chr||i===s.idx)?`<span class="evtag ${st.chr?(st.chr.ok?'ok':'bad'):''}">${t.chx[st.ch][0]}</span>`:'')+(st.nem&&st.opp?`<span class="evtag nem">${t.nemT}</span>`:'');
     const name=`${st.comp==='league'?'':compName(st.comp,S.club.league)+' · '}${roundShort(st)}`;
     return `<div class="trow ${now?'now':''} ${st.res&&st.res.skipped?'skip':''}"><span class="tag ${st.comp==='wc'?'wc':''}">${compTag(st.comp)}</span><span>${name}${st.opp?`<span class="topp"> · ${t.vsOpp(esc(oppName(st)))}</span>`:''}${ev}</span>${res}</div>`}).join('');
   const sim=S.phase==='season'&&!s.pendingHeal&&!s.careerOver&&!s.pickAttr?`<button class="btn ghost sm" data-act="simrest">${t.simShort}</button>`:`<span class="lbl num">${t.gaApps(s.goals,s.assists,s.apps)}</span>`;
@@ -2000,45 +2106,41 @@ const isGoldName=n=>[T.en.wcM,T.en.wcW,T.en.bdoM,T.en.bdoW,T.pt.wcM,T.pt.wcW,T.p
 const trophyName=x=>x.kind==='raw'?x.name:compName(x.kind,x.lg,!!x.w||(x.lg!=null&&!!(LEAGUES[x.lg]||{}).w));
 function offseasonView(){
   const h=S.history[S.history.length-1], g=S.growth, L=LEAGUES[h.league];
-  const done=S.age>=40, after=clubAfterMove(h), ac=h.ageCheck, due=ageCheckDue(h), stop=ac&&!ac.ok;
-  const offers=(S.offers||[]).map((o,i)=>offerCard(o,i,'sign',false)).join('');
-  let wcLine='';
-  if(h.wc===-1)wcLine=`<div class="muted">${t.leftOut2(COUNTRY[lang][S.nat])}</div>`;
-  else if(h.wc!=null)wcLine=`<div class="row" style="gap:8px"><span class="tag wc" style="padding:2px 8px">${t.wc}</span><span class="res ${h.wc===5?'w':'m'}">${t.wcRes[h.wc]}</span></div>`;
-  const moveLine=h.move==='up'?`<div class="verdict v-good" style="font-size:22px">${t.promoted(LEAGUES[L.up].name)}</div>`:h.move==='down'?`<div class="verdict v-bad" style="font-size:22px">${t.relegated(LEAGUES[L.down].name)}</div>`:'';
+  const done=S.age>=40, ac=h.ageCheck, due=ageCheckDue(h), stop=ac&&!ac.ok;
+  const N=[];   // [tone, text]
+  if(h.run)N.push([h.run.ok?'good':'bad',t.runRes[h.run.type][h.run.ok?1:0]]);
+  if(h.move==='up')N.push(['good',t.promoted(LEAGUES[L.up].name)]); else if(h.move==='down')N.push(['bad',t.relegated(LEAGUES[L.down].name)]);
+  if(h.fired)N.push(['bad',t.fired(esc(h.club))]);
+  if(h.shieldUsed)N.push(['',t.shieldUsed(esc(h.club))]); if(h.shieldBack)N.push(['',t.shieldBack(esc(h.club))]);
+  if(h.move==='up'&&isNaturalDiv2(h.club))N.push(['good',t.udUp(esc(h.club))]);
+  if(h.qual)N.push(['',t.nextCont(esc(qualName(h.qual,h.league)))]);
+  if(h.bdo===1)N.push(['gold',t.bdoWin]); else if(h.bdo)N.push(['',t.bdoRank(h.bdo)]);
+  if(h.nemBdo&&S.nem)N.push(['bad',h.nemBdo===1?t.nemBdo(esc(S.nem.name)):t.nemBdo2(esc(S.nem.name))]);
+  if(h.legend)N.push(['gold','★ '+t.nLegend(esc(h.club))]);
+  if(h.milestone)N.push(['',t.nMilestone(h.milestone,esc(h.club))]);
+  (h.items||[]).forEach(k=>N.push(['gold',t.newItem(t.items[k][0])]));
+  if(h.quest)N.push([h.quest.done?'good':'bad',`${h.quest.done?t.questDone:t.questFail}: ${questText(h.quest)}${h.quest.done?` · ${t.qRw[h.quest.rw]}${h.quest.got?' ('+t.attrs[h.quest.got]+')':''}`:''}`]);
+  if(h.wc===-1)N.push(['',t.leftOut2(COUNTRY[lang][S.nat])]); else if(h.wc!=null)N.push([h.wc===5?'gold':'',`${t.wc}: ${t.wcRes[h.wc]}`]);
+  if(h.mentorBye)N.push(['',t.mentorBye(esc(h.mentorBye))]);
+  if(S.benchNext)N.push(['bad',t.benchT]);
+  if(h.feat)N.push(['good',t.featGot(t.feats[h.feat][0])]);
+  if(h.camp)N.push(['good',t.campDone(t.camp[h.camp][0])+(h.campGot&&h.campGot.length?` · ${h.campGot.map(k=>'+1 '+t.attrs[k]).join(', ')}`:'')]);
+  if(h.scout&&!done)N.push(['gold',t.scouted]);
   const dev=t.devLead+t.devBase[g.base===1?0:g.base===0.5?3:g.base===0?1:2]+(S.age>=30&&!g.shielded?t.devSpd:'')+(g.G?t.devBonus(g.G):'')+(g.train?t.devTrain(g.train):'')+(g.crits?t.devCrit(g.crits):'')+(g.hot?t.devHot:'')+(g.capped?t.devCap:'')+t.devEnd;
-  return `<section class="panel hero stack" style="gap:16px">
-    <div class="stack" style="gap:4px"><span class="lbl">${t.review(h.year,esc(h.club))}</span>${h.pos===1?`<h2 class="champline">${trophySVG('')}${t.leagueChamp(esc(L.name))}</h2>`:`<h2 style="font-size:30px">${t.finished(h.pos)}</h2>`}<span class="muted">${L.name} · ${lgCountry(h.league)}</span></div>
-    ${h.fired?`<div class="banner bad">${t.fired(esc(h.club))}</div>`:''}
-    ${h.shieldUsed?`<div class="banner">${t.shieldUsed(esc(h.club))}</div>`:''}
-    ${h.shieldBack?`<div class="banner">${t.shieldBack(esc(h.club))}</div>`:''}
-    ${moveLine}
-    ${h.move==='up'&&isNaturalDiv2(h.club)?`<div class="banner">${t.udUp(esc(h.club))}</div>`:''}
-    ${h.qual?`<div class="muted">${t.nextCont(esc(qualName(h.qual,h.league)))}</div>`:''}
-    ${h.bdo===1?`<div class="banner goldb">${goldBall('')}<span>${t.bdoWin}</span></div>`:h.bdo?`<div class="banner">${t.bdoRank(h.bdo)}</div>`:''}
-    ${h.legend?`<div class="banner">★ ${t.nLegend(esc(h.club))}</div>`:''}
-    ${h.milestone?`<div class="banner">${t.nMilestone(h.milestone,esc(h.club))}</div>`:''}
-    ${(h.items||[]).map(k=>`<div class="banner goldb">${t.newItem(t.items[k][0])}</div>`).join('')}
-    ${h.nemBdo&&S.nem?`<div class="banner">⚔ ${h.nemBdo===1?t.nemBdo(esc(S.nem.name)):t.nemBdo2(esc(S.nem.name))}</div>`:''}
-    ${h.quest?`<div class="banner ${h.quest.done?'':'bad'}">${h.quest.done?t.questDone:t.questFail}: ${questText(h.quest)}${h.quest.done?` · ${t.qRw[h.quest.rw]}${h.quest.got?' ('+t.attrs[h.quest.got]+')':''}`:''}</div>`:''}
-    ${h.mentorBye?`<div class="banner">${t.mentorBye(esc(h.mentorBye))}</div>`:''}
-    ${S.benchNext?`<div class="banner bad">${t.benchT}</div>`:''}
-    <div class="statline"><div class="stat"><div class="lbl">${t.apps}</div><div class="n num">${h.apps}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${h.goals}</div></div><div class="stat"><div class="lbl">${t.assists}</div><div class="n num">${h.assists}</div></div><div class="stat"><div class="lbl">${t.avgd20}</div><div class="n num">${g.A?fmt(g.A):'—'}</div></div></div>
-    ${h.trophies.length?`<div class="cabinet">${h.trophies.slice().sort(byPrestige).map(x=>`<span class="cup ${x.kind==='wc'||x.kind==='bdo'?'wc':''}">${trophyName(x)}</span>`).join('')}</div>`:''}
-    ${wcLine}
-    <div class="muted small">${dev}</div>
-  </section>
-  <section class="panel stack" style="gap:14px">
-    <div class="row between"><h3 style="font-size:22px">${done?t.eor:t.window}</h3>${done?'':`<span class="lbl">${t.nextAge(S.age+1)}</span>`}</div>
-    ${h.scout&&!done?`<div class="chip gold" style="align-self:flex-start">${t.scouted}</div>`:''}
-    ${due||ac?`<div class="agechk ${ac?(ac.ok?'ok':'bad'):''}"><div class="dicecol">${dieSVG(20,ac?ac.nat:'',ac?(ac.nat===20?'crit':ac.nat===1?'fumble':ac.ok?'win':'lose'):'','agechk')}</div>
-      <div class="stack" style="gap:8px"><span class="lbl">${t.ageT}</span><div>${t.ageDesc(S.age)}</div>
-      <div class="mods"><span class="chip">d20 + ${t.attrs.str} ${sg(ageBonus())}</span><span class="chip">${t.dc} ${AGE_DC[S.age]}</span></div>
-      ${ac?`<div class="sum num">d20 <b>${ac.nat}</b> ${sg(ac.bonus)} = <b>${ac.nat+ac.bonus}</b> ${t.vs} ${t.dc} ${ac.dc}</div><div class="verdict result v-${ac.ok?'good':'bad'}">${ac.ok?t.agePass:t.ageFail}</div>`
-        :`<div class="row"><button class="btn" data-act="agechk">${t.roll(20)}</button></div>`}</div></div>`:''}
-    ${done||due||stop?'':prepView(h)}
-    ${done||due?'':stop?`<div class="row"><button class="btn danger" data-act="hangup">${t.ageHang}</button></div>`:prepDone(h)?`<div class="muted small">${t.windowHint((S.offers||[]).length)}</div><div class="row"><button class="btn" data-act="window">${t.openWindow}</button></div>`:`<div class="muted small">${t.prepFirst}</div>`}
-    ${!stop&&(S.age>=32||h.fired)?`<div class="row"><button class="btn danger" data-act="retire">${t.retire}</button></div>`:''}
+  const cups=h.trophies.slice().sort(byPrestige).map(x=>`<span class="cup ${x.kind==='wc'||x.kind==='bdo'?'wc':''}">${trophyName(x)}</span>`).join('');
+  let act;
+  if(done)act=`<span class="muted">${t.eor}</span>`;
+  else if(due)act=`<button class="btn" data-act="ageov">${t.ageBtn}</button>`;
+  else if(stop)act=`<button class="btn danger" data-act="hangup">${t.ageHang}</button>`;
+  else if(!prepDone(h))act=`<button class="btn" data-act="prepov">${t.prepBtn}</button>`;
+  else act=`<button class="btn" data-act="window">${t.openWindow}</button>`;
+  if(!done&&!stop&&(S.age>=32||h.fired))act+=`<button class="btn ghost danger" data-act="retire">${t.retire}</button>`;
+  return `<section class="panel hero offs">
+    <div class="offh"><span class="lbl">${t.review(h.year,esc(h.club))}</span>${h.pos===1?`<h2 class="champline">${trophySVG('')}${t.leagueChamp(esc(L.name))}</h2>`:`<h2>${t.finished(h.pos)}</h2>`}<span class="muted small">${L.name} · ${lgCountry(h.league)}</span></div>
+    <div class="statline sm"><div class="stat"><div class="lbl">${t.apps}</div><div class="n num">${h.apps}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${h.goals}</div></div><div class="stat"><div class="lbl">${t.assists}</div><div class="n num">${h.assists}</div></div><div class="stat"><div class="lbl">${t.avgd20}</div><div class="n num">${g.A?fmt(g.A):'—'}</div></div></div>
+    ${cups?`<div class="cabinet oneline">${cups}</div>`:''}
+    <div class="offnotes">${N.map(([c,x])=>`<div class="on ${c}">${x}</div>`).join('')}<div class="on dim">${dev}</div></div>
+    <div class="offact">${act}</div>
   </section>`;
 }
 const firstClub=()=>S.history.length?{name:S.history[0].club,league:S.history[0].league,tier:S.history[0].tier}:null;
@@ -2057,13 +2159,10 @@ function retiredView(){
   const H=S.history, tot=k=>H.reduce((s,h)=>s+h[k],0);
   const peak=Math.max(...H.map(h=>h.rating));
   const wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
-  return `<section class="panel hero stack" style="gap:16px"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2 style="font-size:34px">${esc(S.name||t.unnamed)}</h2>
-  <div class="statline"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.length}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
-  ${S.endReason?`<div class="banner bad">${t.endedInjury(S.endReason.age)}</div>`:''}
-  ${S.reached40?`<div class="banner goldb">${t.n40}</div>`:''}
-  <div class="muted">${t.peak(fmt(peak))}</div>
-  ${S.hofSaved?`<div class="chip gold" style="align-self:flex-start">${t.enshrined}</div>`:''}
-  <div class="row"><button class="btn" data-act="reset">${t.newCareer}</button><button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronBtn}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}<button class="btn ghost" data-act="tab" data-v="hof">${t.tabHof(0)}</button></div></section>`;
+  return `<section class="panel hero offs retd"><div class="offh"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2>${esc(S.name||t.unnamed)}</h2><span class="muted small">${t.peak(fmt(peak))}</span></div>
+  <div class="statline sm"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.length}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
+  <div class="offnotes">${S.endReason?`<div class="on bad">${t.endedInjury(S.endReason.age)}</div>`:''}${S.reached40?`<div class="on gold">${t.n40}</div>`:''}${S.hofSaved?`<div class="on gold">${t.enshrined}</div>`:''}</div>
+  <div class="offact wrapb"><button class="btn" data-act="reset">${t.newCareer}</button><button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronT}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}</div></section>`;
 }
 function careerView(){
   if(!S.history.length)return'';
@@ -2105,12 +2204,11 @@ function hofPlayers(){
         ${cups?`<div class="cabinet">${cups}</div>`:''}
         ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(tagChip).join('')}</div>`:''}
         ${(p.feats||[]).length?`<div class="cabinet">${p.feats.map(k=>`<span class="chip tg blue">${t.feats[k][0]}</span>`).join('')}${(p.items||[]).map(k=>`<span class="chip tg gold">${t.items[k][0]}</span>`).join('')}</div>`:''}
-        ${p.nem?`<span class="lbl">⚔ ${t.nemT}: ${esc(p.nem.name)} · ${t.h2h(p.nem.w,p.nem.l)}</span>`:''}
         <div class="row" style="gap:8px"><button class="btn ghost sm" data-act="share" data-id="${p.id}">${t.shareBtn}</button><button class="btn ghost sm" data-act="hofcmp" data-id="${p.id}" aria-pressed="${hofCmp.has(p.id)}">${hofCmp.has(p.id)?t.cmpOn:t.cmpBtn}</button></div></div>`;
     }
     return `<div class="hrow c g${p.g||'m'} ${open?'open':''}"><div class="hrank num">${i+1}</div>
       <button class="hbtn" data-act="hofopen" data-id="${p.id}" aria-expanded="${open}"><span class="hl1"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span><span class="gsym" aria-label="${p.g==='f'?t.genderW:t.genderM}" title="${p.g==='f'?t.genderW:t.genderM}">${p.g==='f'?'♀':'♂'}</span></span>
-        <span class="hl2">${[titles?t.titlesN(titles):t.noTitles, wcN?t.wcN(wcN):'', bdoN?t.bdoNs(bdoN):'', `${p.apps} ${t.appsS}`, `${p.goals} G`, `${p.assists} A`, csW(p.pos)>=.7&&p.cs?`${p.cs} ${t.csS}`:'', `${t.ratingS} ${fmt(p.peak)}`].filter(Boolean).join(' · ')}</span></button>
+        <span class="hl2 hst"><span class="tt">${titles?t.titlesN(titles):t.noTitles}</span>${wcN?`<span class="ic">${icoCup}${wcN}</span>`:''}${bdoN?`<span class="ic">${icoBall}${bdoN}</span>`:''}<span class="pga num"><b>${p.apps}</b> ${t.pS}<i></i><b>${p.goals}</b> G<i></i><b>${p.assists}</b> A</span><span class="rt num">${fmt(p.peak)}</span></span></button>
       <div class="hscore"><div class="n num">${p.score}</div></div>${more}</div>`}).join('');
   return `${head}<section class="pscroll stack" style="gap:10px">${cmpView(all)}<div class="hof">${rows}</div>
   <div class="row"><button class="btn danger sm" data-act="hofclear">${hofArm?t.hofClearSure:t.hofClear}</button></div></section>`;
@@ -2133,7 +2231,7 @@ function render(){
   const isDark=effTheme()==='dark';
   const sndBtn=`<button class="theme-btn icon" data-act="sound" aria-pressed="${soundOn}" aria-label="${soundOn?t.soundOff:t.soundOn}" title="${soundOn?t.soundOff:t.soundOn}"><svg viewBox="0 0 16 16"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z"/>${soundOn?'<path d="M10.4 5.6a3.2 3.2 0 0 1 0 4.8M12.3 3.8a5.8 5.8 0 0 1 0 8.4"/>':'<path d="M10.6 6.2l3.6 3.6M14.2 6.2l-3.6 3.6"/>'}</svg></button>`;
   const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}<span class="tl">${isDark?t.themeLight:t.themeDark}</span></button>`;
-  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}<div class="setw"><button class="theme-btn icon" data-act="settings" aria-expanded="${settingsOpen}" aria-label="${t.settingsT}" title="${t.settingsT}"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/><circle cx="8" cy="8" r="4.6"/></svg></button>${settingsOpen?`<div class="setmenu" role="menu"><div class="setrow"><span>${t.soundT}</span>${sndBtn}</div><div class="setrow"><span>${t.themeT}</span>${themeBtn}</div><div class="setrow"><span>${t.langT}</span>${lt}</div></div>`:''}</div>${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
+  const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}<div class="setw"><button class="theme-btn icon" data-act="settings" aria-expanded="${settingsOpen}" aria-label="${t.settingsT}" title="${t.settingsT}"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/><circle cx="8" cy="8" r="4.6"/></svg></button>${settingsOpen?`<div class="setmenu" role="menu"><div class="setrow"><span>${t.soundT}</span>${sndBtn}</div><div class="setrow"><span>${t.hapT}</span><button class="theme-btn" data-act="haptics" aria-pressed="${hapticsOn}">${hapticsOn?t.onT:t.offT}</button></div><div class="setrow"><span>${t.themeT}</span>${themeBtn}</div><div class="setrow"><span>${t.langT}</span>${lt}</div></div>`:''}</div>${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
   const tabs=`<nav class="tabs" role="tablist"><button role="tab" class="tab-home" data-act="tab" data-v="game" aria-selected="${view==='game'}" aria-label="${t.tabGame}" title="${t.tabGame}"><svg class="tablogo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><polygon points="50,30 70,63 30,63" fill="currentColor"/><path d="M50,4L50,30M90,27L70,63M10,27L30,63M50,96L70,63M50,96L30,63M90,73L70,63M10,73L30,63" stroke="currentColor" stroke-width="5"/></svg></button>${S.phase==='create'?'':`<button role="tab" data-act="tab" data-v="season" aria-selected="${view==='season'}">${t.tabSeason}</button><button role="tab" data-act="tab" data-v="stats" aria-selected="${view==='stats'}">${t.tabStats}</button>`}<button role="tab" data-act="tab" data-v="ach" aria-selected="${view==='ach'}">${t.achPage}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(0)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
@@ -2143,13 +2241,13 @@ function render(){
   else if(view==='stats')body=statsView();
   else if(S.phase==='season')body=sheet()+stageCard();
   else if(S.phase==='offseason')body=sheet()+offseasonView();
-  else body=retiredView()+sheet();
+  else body=sheet()+retiredView();
   const key=view+'|'+S.phase+'|'+(S.season?[S.season.idx,S.season.last?S.season.last.stage:'-',(S.season.stages[S.season.idx]||{}).evr?1:0,S.season.pendingHeal?1:0,S.season.inj&&S.season.inj.d10?1:0].join(','):'')+'|'+S.history.length;
   if(key===lastKey)app.dataset.still='1'; else delete app.dataset.still;
   lastKey=key;
   app.innerHTML=header+tabs+body+installRow();
   const fixv=(view==='season'&&!!S.season)||(view==='stats'&&S.history.length>0)||view==='ach'||view==='hof';
-  const one=(view==='game'&&S.phase==='season')||fixv;
+  const one=view==='game'||fixv;
   try{document.body.classList.toggle('fixv',fixv)}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
 }
 let lastKey='';
@@ -2409,7 +2507,7 @@ function achView(){
   }else if(achSort==='diff'){
     const tracked=list.filter(a=>MULTI.has(a.id)&&!got[a.id]).sort((a,b)=>{const p=prog(a),q=prog(b);return (q?q[0]/q[1]:0)-(p?p[0]/p[1]:0)});
     const rest=list.filter(a=>!tracked.includes(a)).sort((a,b)=>(ACH_RATE[b.id]??-1)-(ACH_RATE[a.id]??-1));
-    body=sec(t.achTrackedH,tracked)+sec(t.achByDiffH,rest);
+    body=sec(t.achByDiffH,rest)+sec(t.achTrackedH,tracked);
   }else{
     body=['titles','world','personal','clubs','moments','campaign','women','multi','bad'].map(g=>sec(t.achGroups[g],list.filter(a=>achGroupOf(a)===g))).join('');
   }
@@ -2449,13 +2547,15 @@ function seasonView(){
   const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
   return `<section class="panel stack sv1" style="gap:8px">${inj}
     <div class="numgrid sv3">${cell(posL,pos)}${cell(t.teamT,t.teamLv[teamLevel(r.frac)])}${cell(t.pgaL,`${s.apps}·${s.goals}·${s.assists}`)}</div>
-    <div class="sv-list">${comps}${qRow}</div>
+    <div class="sv-list">${comps}${s.run?`<div class="sv-row"><span>${t.runT}</span><span class="res ${runPts(s)>=runNeed(s)?'w':'m'}">${t.runPts(runPts(s),runNeed(s))}</span></div>`:''}${qRow}</div>
   </section>`+tracker();
 }
 /* ---------- Stats tab ---------- */
 function statsView(){
   const H=S.history;
   if(!H.length)return `<section class="panel"><div class="muted">${t.noStats}</div></section><div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`;
+  const sub=`<div class="subtabs csub" role="group">${['nums','seasons'].map(k=>`<button data-act="csub" data-v="${k}" aria-pressed="${careerSub===k}">${t.careerSubs[k]}</button>`).join('')}</div>`;
+  if(careerSub==='seasons')return sub+careerView();
   const tot=k=>H.reduce((a,h)=>a+(h[k]||0),0), peak=Math.max(...H.map(h=>h.rating));
   const byClub=[];H.forEach(h=>{let c=byClub.find(x=>x.club===h.club);if(!c){c={club:h.club,seasons:0,apps:0,goals:0,assists:0,titles:0};byClub.push(c)}c.seasons++;c.apps+=h.apps;c.goals+=h.goals;c.assists+=h.assists;c.titles+=h.trophies.filter(x=>x.kind!=='bdo').length});
   const bestBdo=H.filter(h=>h.bdo).reduce((a,h)=>Math.min(a,h.bdo),99), wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
@@ -2463,10 +2563,12 @@ function statsView(){
   const counts={};S.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1});
   const cab=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${c>1?c+'× ':''}${esc(n)}</span>`).join('');
   const clubs=byClub.map(c=>`<div class="crow"><span class="yr">${t.seasonsShort(c.seasons)}</span><span class="cl">${crest(kitOf(c.club),13)}<b>${esc(c.club)}</b>${c.titles?`<span class="muted">${t.titlesN(c.titles)}</span>`:''}</span><span class="nm">${c.apps}·${c.goals}·${c.assists}</span></div>`).join('');
-  return `<section class="panel stack" style="gap:8px"><h3 style="font-size:18px">${t.statsT}</h3>
+  return sub+`<section class="panel stack trackp nums" style="gap:8px">
     <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,fmt(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
-    ${cab?`<div class="cabinet">${cab}</div>`:''}${sparkline()}${campaignView()}
-    <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox clubbox">${clubs}</div></section>`+careerView();
+    ${cab?`<div class="cabinet oneline">${cab}</div>`:''}
+    <div class="cgrid">${radar()}${campaignView()}</div>
+    ${sparkline()}
+    <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div></section>`;
 }
 
 
@@ -2591,6 +2693,11 @@ function ovHTML(o){
   if(o.k==='bdo')return `<div class="ovcard champ gold">${goldBall()}<span class="ov-kicker">${t.bdo} · ${o.year}</span><h2 class="ov-title">${esc(S.name||t.unnamed)}</h2><div class="ov-sub">${t.ovBdoSub(o.year)}</div>${tap}</div>`;
   if(o.k==='career')return recapHTML();
   if(o.k==='heal')return healHTML();
+  if(o.k==='story')return storyHTML();
+  if(o.k==='agechk')return ageHTML();
+  if(o.k==='feat')return featHTML();
+  if(o.k==='camp')return campHTML();
+  if(o.k==='offers')return offersHTML();
   if(o.k==='chron')return `<div class="ovcard window"><span class="ov-kicker">${esc(S.name||t.unnamed)}</span><h2 class="ov-title" style="font-size:26px">${t.chronT}</h2><div class="chronlist">${S.history.map(h=>`<p>${chron(h)}</p>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
   if(o.k==='window')return windowHTML();
   if(o.k==='away'){
@@ -2623,7 +2730,7 @@ function recapHTML(){
   const top3=H.filter(h=>h.bdo&&h.bdo>1&&h.bdo<=3).length;
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
   const hon=[...underdogs(H).map(u=>udChip(u,'rc').replace('class="chip','class="chip').replace('rc">','rc" '+dl()+'>')),S.reached40?`<span class="chip rc" ${dl()}>${t.fortyChip}</span>`:'',oneClub?`<span class="chip oneclub rc" ${dl()}>${t.oneClubChip(esc(clubs[0]))}</span>`:'',bdo?`<span class="cup wc rc" ${dl()}>${t.bdoN(bdo)}</span>`:'',top3?`<span class="chip rc" ${dl()}>${t.bdoTop3(top3)}</span>`:'',
-    ...(S.legends||[]).map(l=>`<span class="chip rc" ${dl()}>★ ${t.legendChip(esc(l.club))}</span>`),...ms.map(m=>`<span class="chip rc" ${dl()}>${t.msChip(m.years,esc(m.club))}</span>`)].join('');
+    ...(S.legends||[]).map(l=>`<span class="chip rc" ${dl()}>★ ${t.legendChip(esc(l.club))}</span>`),...careerTags().filter(x=>x[0]==='idol').map(x=>`<span class="chip rc" ${dl()}>${t.tag.idol(esc(x[1]))}</span>`),(()=>{const c={};H.forEach(h=>c[h.club]=(c[h.club]||0)+1);const m=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];return m&&clubs.length>1?`<span class="chip rc" ${dl()}>${t.mostChip(m[1],esc(m[0]))}</span>`:''})()].join('');
   return `<div class="ovcard recap">${head}<span class="lbl rc" ${dl()}>${t.titlesL}</span><div class="cabinet">${cups||`<span class="ov-sub2 rc" ${dl()}>${t.recapNone}</span>`}</div>
     ${hon?`<span class="lbl rc" ${dl()}>${t.honours}</span><div class="cabinet">${hon}</div>`:''}
     <button class="btn rc" data-ov="close" ${dl()}>${t.recapBtn}</button></div>`;
@@ -2642,19 +2749,24 @@ function countUp(el){
 }
 function closeOv(){
   if(!ovEl)return; clearTimeout(ovTimer);
-  const el=ovEl; ovEl=null; el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240);
+  const el=ovEl; ovEl=null; ovKind=null; el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240);
   flushOv(); if(!ovEl)scheduleAuto();
 }
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovKind=o.k;
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
   if(o.k==='career')countUp(ovEl);
   ovEl.addEventListener('click',e=>{
     if(o.k==='heal'){healClick(e);return}
+    if(o.k==='story'){storyClick(e);return}
+    if(o.k==='agechk'){ageClick(e);return}
+    if(o.k==='feat'||o.k==='camp'){prepClick(e);return}
+    if(o.k==='offers'){offersClick(e);return}
     if(o.k==='away'||o.k==='chron'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
       if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
@@ -2673,7 +2785,7 @@ function flushOv(){
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
 }
-document.addEventListener('keydown',e=>{if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
+document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
   if(S.phase!=='season'||view!=='game'||!S.season)return;
   const s=S.season, st=s.stages[s.idx];
@@ -2712,21 +2824,40 @@ function tick(t0,vol){
   src.connect(bp); bp.connect(g); g.connect(master); src.start(t0);
   tone(220+Math.random()*120,t0,.06,{vol:vol*.4,a:.003});   // a little body under the click, like a die on wood
 }
+/* a rounded bell: a sine, a quiet octave that fades first, slow-ish attack */
+function bell(f,t0,dur,vol){tone(f,t0,dur,{vol,a:.018});tone(f*2,t0,dur*.45,{vol:vol*.18,a:.018});tone(f*3.01,t0,dur*.2,{vol:vol*.05,a:.01})}
 const SFX={
   // a few muffled taps, like a die settling on felt
   roll(ms){let t=actx.currentTime;const n=Math.max(5,Math.round(ms/140));for(let k=0;k<n;k++){const p=k/n;tick(t,.17*(1-p*.55));t+=.05+.17*p*p}},
-  // a soft marimba-like note
-  pass(){const t=actx.currentTime;tone(659.25,t,.6,{vol:.23,a:.012});tone(1318.5,t,.25,{vol:.025,a:.012})},
-  nat20(){const t=actx.currentTime;[523.25,659.25,784,1046.5].forEach((f,k)=>tone(f,t+k*.085,.9,{vol:.075,a:.015}));tone(2093,t+.36,.7,{vol:.012,a:.03})},
-  fail(){const t=actx.currentTime;tone(196,t,.32,{vol:.25,f2:174.6,a:.015})},
-  nat1(){const t=actx.currentTime;tone(220,t,.32,{vol:.13,a:.015});tone(164.8,t+.2,.6,{vol:.13,f2:155.6,a:.02})},
-  title(){const t=actx.currentTime;[392,523.25,659.25,784].forEach((f,k)=>tone(f,t+k*.11,1.6,{vol:.055,a:.02}));
-    [523.25,659.25,784].forEach(f=>tone(f,t+.5,1.8,{vol:.03,a:.25}));tone(1568,t+.62,.9,{vol:.01,a:.05})},
-  qual(){const t=actx.currentTime;tone(587.3,t,.5,{vol:.09,a:.015});tone(784,t+.12,.7,{vol:.09,a:.015})},
-  ach(){const t=actx.currentTime;tone(880,t,.45,{vol:.09,a:.012});tone(1318.5,t+.1,.6,{vol:.08,a:.012})},
-  achBad(){const t=actx.currentTime;tone(293.7,t,.35,{vol:.09,a:.015});tone(246.9,t+.12,.5,{vol:.09,a:.015})}
+  // two soft rising bells
+  pass(){const t=actx.currentTime;bell(587.3,t,.55,.12);bell(880,t+.09,.7,.1)},
+  nat20(){const t=actx.currentTime;[523.25,659.25,784,1046.5,1318.5].forEach((f,k)=>bell(f,t+k*.075,1,.055))},
+  // a low, rounded "hmm": no buzz, no sharp attack
+  fail(){const t=actx.currentTime;tone(293.7,t,.42,{vol:.11,f2:261.6,a:.03});tone(146.8,t,.38,{vol:.05,a:.03})},
+  nat1(){const t=actx.currentTime;tone(261.6,t,.4,{vol:.09,a:.03});tone(196,t+.22,.65,{vol:.09,f2:185,a:.035});tone(98,t+.22,.5,{vol:.04,a:.04})},
+  title(){const t=actx.currentTime;[392,523.25,659.25,784].forEach((f,k)=>bell(f,t+k*.11,1.5,.045));
+    [523.25,659.25,784].forEach(f=>tone(f,t+.5,1.8,{vol:.022,a:.3}));bell(1568,t+.62,.9,.012)},
+  qual(){const t=actx.currentTime;bell(587.3,t,.5,.08);bell(784,t+.12,.7,.08)},
+  ach(){const t=actx.currentTime;bell(880,t,.45,.07);bell(1318.5,t+.1,.6,.06)},
+  achBad(){const t=actx.currentTime;tone(293.7,t,.35,{vol:.07,a:.03});tone(246.9,t+.12,.5,{vol:.07,a:.03})},
+  // the main buttons: a tiny, dry click
+  click(){const t=actx.currentTime;tick(t,.08);tone(1400,t,.025,{vol:.02,a:.002})}
 };
 const sfx=(k,...a)=>{try{if(soundOn&&ac())SFX[k](...a)}catch(e){}};
+const HAPKEY='rpgoal-haptics';
+let hapticsOn=(()=>{try{return localStorage.getItem(HAPKEY)!=='off'}catch(e){return true}})();
+let hapEl=null;
+function hapTap(){
+  if(!hapEl){hapEl=document.createElement('label');hapEl.setAttribute('aria-hidden','true');hapEl.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';hapEl.innerHTML='<input type="checkbox" switch tabindex="-1">';document.body.appendChild(hapEl)}
+  hapEl.click();
+}
+function haptic(k){
+  if(!hapticsOn)return;
+  try{
+    if(navigator.vibrate){navigator.vibrate(k==='heavy'?[18,40,18]:k==='success'?[10,50,14]:8);return}
+    hapTap(); if(k==='heavy'||k==='success')setTimeout(hapTap,110);
+  }catch(e){}
+}
 /* what a resolved roll sounds like */
 function sfxStage(){
   const s=S.season, r=s&&s.last; if(!r||r.missed)return;
@@ -2740,6 +2871,7 @@ function sfxStage(){
 /* ---------- dice animation ---------- */
 const app=document.getElementById('app');
 document.addEventListener('click',e=>{if(settingsOpen&&!e.target.closest('.setw')){settingsOpen=false;render()}});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.st-act>.btn:first-child,.offact .btn:not(.ghost),.ovcard .btn:not(.ghost),[data-act="roll6"],[data-act="roll1"]');if(b&&!b.disabled){sfx('click');haptic('tap')}},{passive:true});
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
 let settingsOpen=false;
 let busy=false, resetArm=false, hofArm=false, retireArm=false, anims=0;
@@ -2766,6 +2898,7 @@ function rollDice(els,sides,finals,clsFn,done){
       if(e>=D){
         setFace(el,finals[i]);
         const c=clsFn(finals[i]); if(c)el.classList.add(c);
+        haptic(c==='crit'?'success':c==='fumble'?'heavy':'tap');
         el.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:240,easing:'ease-out'});
         if(--left===0)setTimeout(()=>{anims--;done();setTimeout(()=>{if(anims<=0){anims=0;busy=false}},400)},380);
         return;
@@ -2778,7 +2911,7 @@ function rollDice(els,sides,finals,clsFn,done){
 }
 
 /* ---------- interaction ---------- */
-function commit(){save();render();checkIntro();maybeWindow();maybeHeal();flushOv();checkAch();scheduleAuto()}
+function commit(){save();render();checkIntro();maybeWindow();maybeHeal();maybePrep();maybeStory();flushOv();checkAch();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -2787,27 +2920,27 @@ function maybeHeal(){
 function healHTML(){
   const s=S.season, I=s.inj||{}; healOpen=true;
   const d10cls=k=>I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'';
-  const done=!!I.d10, danger=I.d10&&I.d10[0]===1&&!I.career;
+  const done=!!I.d10, danger=I.first===1&&!I.d10;
   let res='';
   if(I.d4!=null)res+=`<div class="fx ${I.adv?'up':'down'}">d4 ${I.d4} · ${I.adv?t.injAdv:t.injDis}${s.inj.restUsed?' · '+t.camp.rest[0]:''}${hasFeat('ironlungs')?' · '+t.feats.ironlungs[0]:''}</div>`;
   if(done){res+=`<div class="sum num">2d10 ${I.d10[0]} · ${I.d10[1]} → <b>${I.career?'1 · 1':I.kept}</b></div>`;
     res+=I.career?`<div class="verdict v-bad">${t.injCareer}</div>`:`<div class="result">${I.season?(I.carry?t.injCarry:t.injSeason):I.out?t.injOut(I.out):t.injBack}</div>`;
     if(I.lucky)res+=`<div class="fx up">${t.injLucky}</div>`}
-  const btn=I.d4==null?`<button class="btn" data-ov="h4">${t.injRoll4}</button>`:!done?`<button class="btn" data-ov="h10">${t.injRoll10}</button>`:I.career?`<button class="btn danger" data-ov="hend">${t.endCareer}</button>`:`<button class="btn" data-ov="hclose">${t.healBack}</button>`;
+  const btn=I.d4==null?`<button class="btn" data-ov="h4">${t.injRoll4}</button>`:!done?(I.first===1?`<button class="btn danger" data-ov="h10b">${t.injRoll2nd}</button>`:`<button class="btn" data-ov="h10">${t.injRoll10}</button>`):I.career?`<button class="btn danger" data-ov="hend">${t.endCareer}</button>`:`<button class="btn" data-ov="hclose">${t.healBack}</button>`;
   return `<div class="ovcard move heal ${I.career?'over':''} ${danger?'shake':''}"><span class="ov-kicker">${t.injT}</span><h2 class="ov-title" style="font-size:26px">${t.healT}</h2>
     <div class="ov-sub2">${I.d4==null?t.injD4Hint:!done?t.healD10Hint:''}</div>
     <div class="healdice"><div class="hcell">${dieSVG(4,I.d4??'',I.d4!=null?(I.adv?'crit':'fumble'):'','hd4')}<span class="lbl">d4</span></div>
-      <div class="hcell">${dieSVG(10,I.d10?I.d10[0]:'',d10cls(0),'hd10a')}<span class="lbl">d10</span></div><div class="hcell">${dieSVG(10,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d10</span></div></div>
-    <div class="hres">${res}</div><div class="hdanger">${t.healDanger}</div>${btn}</div>`;
+      <div class="hcell">${dieSVG(10,I.d10?I.d10[0]:I.first??'',I.d10?d10cls(0):I.first===1?'fumble':'','hd10a')}<span class="lbl">d10</span></div><div class="hcell">${dieSVG(10,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d10</span></div></div>
+    <div class="hres">${res}</div>${btn}</div>`;
 }
 function healRefresh(){if(ovEl){const c=ovEl.querySelector('.ovcard');ovEl.innerHTML=healHTML();}}
 function healClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season;
   if(v==='h4'){const x=d(4),el=ovEl.querySelector('[data-die="hd4"]');rollDice(el?[el]:[],4,[x],y=>(y>=3||hasFeat('ironlungs')||s.rested)?'crit':'fumble',()=>{injD4(x);sfx(s.inj.adv?'pass':'fail');save();healRefresh()});return}
-  if(v==='h10'){const a=d(10),c=d(10),e1=ovEl.querySelector('[data-die="hd10a"]'),e2=ovEl.querySelector('[data-die="hd10b"]'),card=ovEl.querySelector('.ovcard');
-    rollDice(e1?[e1]:[],10,[a],()=>'',()=>{
-      if(a===1){busy=true;card.classList.add('shake');sfx('fail')}
-      setTimeout(()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);const I=s.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);save();healRefresh()})},a===1?1100:150)});return}
+  const second=a=>{const c=d(10),e2=ovEl.querySelector('[data-die="hd10b"]');rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);delete s.inj.first;const I=s.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);haptic(I.career?'heavy':'tap');save();healRefresh()})};
+  if(v==='h10'){const a=d(10),e1=ovEl.querySelector('[data-die="hd10a"]');
+    rollDice(e1?[e1]:[],10,[a],y=>y===1?'fumble':'',()=>{if(a===1){s.inj.first=1;sfx('nat1');haptic('heavy');save();healRefresh()}else setTimeout(()=>second(a),150)});return}
+  if(v==='h10b'){if(s.inj.first!==1)return;second(1);return}
   if(v==='hend'){healOpen=false;closeOv();endCareer();commit();window.scrollTo({top:0});return}
   if(v==='hclose'){healOpen=false;closeOv();commit();return}
 }
@@ -2852,12 +2985,13 @@ app.addEventListener('click',e=>{try{onClick(e)}catch(err){console.error(err);bu
 function onClick(e){
   const b=e.target.closest('[data-act]'); if(!b||busy||b.disabled)return;
   const act=b.dataset.act;
-  if(act!=='theme'&&act!=='lang'&&act!=='sound'){clearTimeout(autoT);autoT=null}
+  if(act!=='theme'&&act!=='lang'&&act!=='sound'&&act!=='haptics'){clearTimeout(autoT);autoT=null}
   if(act==='settings'){settingsOpen=!settingsOpen;render();return}
-  if(settingsOpen&&!['theme','lang','sound'].includes(act))settingsOpen=false;
+  if(settingsOpen&&!['theme','lang','sound','haptics'].includes(act))settingsOpen=false;
   if(act!=='reset'&&resetArm){resetArm=false}
   if(act!=='retire'&&retireArm){retireArm=false}
   if(act!=='hofclear'&&hofArm){hofArm=false}
+  if(act==='haptics'){hapticsOn=!hapticsOn;try{localStorage.setItem(HAPKEY,hapticsOn?'on':'off')}catch(e){};render();haptic('tap');return}
   if(act==='sound'){soundOn=!soundOn;try{localStorage.setItem(SNDKEY,soundOn?'on':'off')}catch(e){};render();if(soundOn)sfx('pass');return}
   if(act==='install'){if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;render()})}return}
   if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',nt==='dark'?'#121317':'#f7f7f5'));try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
@@ -2866,6 +3000,7 @@ function onClick(e){
   if(act==='hofsub'){hofSub=b.dataset.v;render();return}
   if(act==='hofg'){hofG=b.dataset.v;render();return}
   if(act==='achf'){achF=b.dataset.v;render();return}
+  if(act==='csub'){careerSub=b.dataset.v;render();return}
   if(act==='hofopen'){const id=+b.dataset.id;hofOpen.has(id)?hofOpen.delete(id):hofOpen.add(id);render();return}
   if(act==='hofclear'){if(hofArm){saveHof([]);hofArm=false}else hofArm=true;render();return}
   if(act==='randname'){shuffleName();return}
@@ -2897,6 +3032,9 @@ function onClick(e){
   else if(act==='chron'){ovQ.push({k:'chron'});flushOv()}
   else if(act==='share'){const p=loadHof().find(x=>x.id===+b.dataset.id);if(p)shareCard(p)}
   else if(act==='hofcmp'){const id=+b.dataset.id;if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}render()}
+  else if(act==='storyov'){maybeStory();flushOv()}
+  else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
+  else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);commit()})})}
@@ -2996,10 +3134,13 @@ const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mod
 
 /* ---- nemesis: one rival who keeps crossing your path ---- */
 function nemNats(){return Object.keys(NATIONS).filter(n=>n!==S.nat&&(S.gender!=='f'||NATIONS[n].firstW))}
-function makeNemesis(){
+function makeNemesis(derby){
   const nat=pick(nemNats());
   S.nem={name:randomName(nat,S.gender),nat,pos:myPos(),r:+(rating(S.attrs)+Math.random()*2-.5).toFixed(1),club:null,league:null,w:0,l:0,bdo:0};
-  nemMove();
+  const info=isW()?CLUB_INFO_W:CLUB_INFO_M, riv=RIVAL_PAIRS.filter(([x,y])=>x===S.club.name||y===S.club.name).map(([x,y])=>x===S.club.name?y:x).filter(n=>info[n]);
+  if(derby&&riv.length){const c=pick(riv);S.nem.club=c;S.nem.league=info[c].league}
+  else if(derby){const l=leagueClubs(S.club.league).filter(n=>n!==S.club.name).sort((a,b)=>teamStr(b)-teamStr(a)).slice(0,4);if(l.length){S.nem.club=pick(l);S.nem.league=S.club.league}}
+  if(!S.nem.club)nemMove();
 }
 function nemMove(){
   const n=S.nem, c=[];
@@ -3013,7 +3154,7 @@ function nemSeason(h){
   n.r=+clamp(n.r+(S.age<=22?1:S.age<=27?.5:S.age<=29?0:-.7)+(Math.random()*.8-.4),5,20).toFixed(1);
   if(h.bdo===2&&n.r>=15.5){n.bdo++;h.nemBdo=1}
   else if(h.bdo!==1&&n.r>=18&&Math.random()<.12){n.bdo++;h.nemBdo=2}
-  if(Math.random()<.3||n.club===S.club.name)nemMove();
+  if(Math.random()<.12||n.club===S.club.name)nemMove();
 }
 function canNem(st){
   const n=S.nem; if(!n||!n.club||n.club===S.club.name||st.round<1)return false;
@@ -3022,7 +3163,7 @@ function canNem(st){
   if(st.comp==='cont')return L.cont===M.cont&&M.div===1;
   return false;
 }
-const nemTag=st=>st&&st.nem&&S.nem?`<span class="nemtag">⚔ ${t.nemT}: ${esc(S.nem.name)}</span>`:'';
+const nemTag=st=>st&&st.nem&&S.nem?`<span class="nemtag">${t.nemT}: ${esc(S.nem.name)}</span>`:'';
 
 /* ---- companions ---- */
 const mateNow=()=>S&&S.club?(S.mates||[]).find(m=>m.club===S.club.name&&!m.gone):null;
@@ -3095,7 +3236,7 @@ const itemName=i=>t.items[i.k][0]+(i.club?` · ${i.club}`:'');
 
 /* ---- everything that happens to the campaign when a season ends ---- */
 function afterSeason(h,s){
-  h.cs=s.cs||0; h.bench=s.benchStart||0;
+  h.cs=s.cs||0; h.bench=s.benchStart||0; if(s.run)h.run={...s.run};
   if(s.nemW||s.nemL){h.nemW=s.nemW||0;h.nemL=s.nemL||0}
   if(s.quest){const q={...s.quest},pr=questProg(q,s,h);q.done=!!pr&&pr[0]>=pr[1];if(q.done)questReward(q);S.qStreak=q.done?(S.qStreak||0)+1:0;S.qBest=Math.max(S.qBest||0,S.qStreak);h.quest=q;S.quests=(S.quests||0)+(q.done?1:0)}
   const m=mateNow(); if(m){m.bond+=1+(h.trophies.some(x=>x.kind!=='bdo')?1:0);if(m.role==='mentor'&&S.age>=22){m.gone=1;h.mentorBye=m.name;gainInsp(1)}}
@@ -3207,12 +3348,12 @@ function campaignView(){
   const m=mateNow(), n=S.nem;
   const cap=S.history.length&&S.age>=21?t.capLv[capLv(potCap())]:'?';
   const rows=[
-    n?`<div class="sv-row"><span>⚔ ${t.nemT}</span><span class="cv">${esc(n.name)} · ${esc(n.club||'')} · ${t.h2h(n.w,n.l)}</span></div>`:'',
+    n?`<div class="sv-row"><span>${t.nemT}</span><span class="cv">${esc(n.name)} · ${esc(n.club||'')} · ${t.h2h(n.w,n.l)}</span></div>`:'',
     m?`<div class="sv-row"><span>${t.roles[m.role]}</span><span class="cv">${esc(m.name)} · ${t.bondT} ${'●'.repeat(Math.min(5,m.bond))}${'○'.repeat(Math.max(0,5-Math.min(5,m.bond)))}</span></div>`:'',
     `<div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>`,
     `<div class="sv-row"><span>✦ ${t.inspT}</span><span class="cv">${S.insp||0}/2 · ${t.questsN(S.quests||0)}</span></div>`
   ].join('');
-  return `<div class="camp"><div class="sv-list">${rows}</div>${feats||items?`<div class="cabinet sm">${feats}${items}</div>`:''}</div>`;
+  return `<div class="camp"><div class="sv-list">${rows}</div>${feats||items?`<div class="cabinet sm oneline">${feats}${items}</div>`:''}</div>`;
 }
 
 /* ---- share card: an image of the career ---- */
@@ -3348,22 +3489,164 @@ pt:{
  simNext:'Próxima decisão',simNextS:'Pular',
  modHelpT:'O que os números significam',modHelp:'Jogador: seu nível geral. Clube/Seleção: a força do seu time. Foco: o atributo que pesa neste jogo (valor ÷ 5). Torcida: o quanto a arquibancada te ama. Momento: a cena antes do jogo. Extras: seus talentos, itens e o laço com o companheiro. Bônus acima de +7 contam pela metade. Você precisa da CD ou mais em d20 + bônus; um 20 natural sempre vence e um 1 natural sempre falha.',
  dailyBtn:'Carreira do dia',dailyT:d=>`Carreira do dia · ${d}`,dailySub:'Hoje todo mundo recebe a mesma nacionalidade, rolagem e primeiros clubes. Sem rerrolagens.',
- shareBtn:'Compartilhar card',sortT:'Ordenar',sorts:{score:'Legado',titles:'Títulos',goals:'Gols',peak:'Nível'},cmpBtn:'Comparar',cmpOn:'Comparando',cmpT:'Frente a frente',cmpHint:'Escolha mais um jogador para comparar.',
+ shareBtn:'Compartilhar',sortT:'Ordenar',sorts:{score:'Legado',titles:'Títulos',goals:'Gols',peak:'Nível'},cmpBtn:'Comparar',cmpOn:'Comparando',cmpT:'Frente a frente',cmpHint:'Escolha mais um jogador para comparar.',
  nNem:(n,c)=>`Seu nêmesis: ${n} (${c}). Vocês vão se reencontrar.`,nMateFollow:n=>`${n} vai junto para o novo clube.`,mentorBye:n=>`${n}, seu mentor, pendura as chuteiras. Você leva as lições: +1 inspiração.`,
  nemBdo:n=>`${n} ficou com a Bola de Ouro na sua frente.`,nemBdo2:n=>`Seu nêmesis ${n} ganhou a Bola de Ouro.`,
  benchT:'Você perdeu a vaga de titular. Reconquiste.',firedNote:'',cs:'Jogos sem sofrer gol',csS:'SG',
  quests:'Missões',nemesisWon:'Nêmesis derrotado: +1 inspiração, torcida +1',nemesisLost:'Seu nêmesis levou essa'
 }};
 Object.assign(T.en,TX.en);Object.assign(T.pt,TX.pt);
-Object.assign(T.en,{extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
+Object.assign(T.en,{rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
+ runBanner:{title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
+ runRes:{title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
+ ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
+ mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Career numbers',seasons:'Season by season'},prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
+ extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
  achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
- healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
-Object.assign(T.pt,{extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
+ injRoll2nd:'Roll the second d10',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
+Object.assign(T.pt,{rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
+ runBanner:{title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
+ runRes:{title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
+ ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · prepara a rolagem do jogo',rkStory:'História',pS:'J',
+ mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números da carreira',seasons:'Temporada a temporada'},prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
+ extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
  achGroups:{titles:'Títulos',world:'Palco mundial',personal:'Marcas pessoais',clubs:'Clubes e torcida',moments:'Momentos e dados',campaign:'Campanha',women:'Futebol feminino',multi:'Entre carreiras',bad:'Lições duras'},
  achFilt:{all:'Todas',done:'Desbloqueadas',todo:'Bloqueadas'},achSorts:{std:'Por tipo',recent:'Recentes',diff:'Dificuldade'},
- healOpen:'Rolar os dados de recuperação',healT:'Rolagem de recuperação',healD10Hint:'Role 2d10. Dois 1 encerram a carreira.',healDanger:'Um 1 no primeiro dado. Mais um 1 e acabou…',healBack:'Voltar à temporada'});
+ injRoll2nd:'Rolar o segundo d10',healOpen:'Rolar os dados de recuperação',healT:'Rolagem de recuperação',healD10Hint:'Role 2d10. Dois 1 encerram a carreira.',healDanger:'Um 1 no primeiro dado. Mais um 1 e acabou…',healBack:'Voltar à temporada'});
 
+
+/* ================= v44: run-in, pop-ups, career radar ================= */
+/* ---- the final three games when the title, survival or promotion is on the line ---- */
+function projPos(s){
+  const L=LEAGUES[S.club.league], cr=clubRank(S.club.name,S.club.league), e=1+cr.frac*(L.size-1);
+  if(s.noise==null)s.noise=(Math.random()+Math.random()-1)*2.8-(Math.random()<.05?4:0);
+  let p=clamp(Math.round(e-(s.leagueSum/2.5)*.5+s.noise),1,L.size);
+  const lg=s.stages.filter(x=>x.comp==='league'&&x.res&&!x.res.skipped), goods=lg.filter(x=>x.res.kind<=1).length;
+  if(p===1&&goods<3)p=2; return p;
+}
+function runCheck(){
+  const s=S.season; if(!s||s.runChecked||(s.v||4)<5)return;
+  const lg=s.stages.filter(x=>x.comp==='league'); if(!lg.length||lg.some(x=>!x.res))return;
+  if(s.stages.some(x=>x.comp==='cup'&&!x.res))return;
+  s.runChecked=1;
+  if(s.seasonOut)return;
+  const L=LEAGUES[S.club.league], pr=projPos(s), size=L.size, fails=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
+  let type=null;
+  const goods=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length;
+  if(L.div===1&&(pr===1||(pr===2&&goods>=2)))type='title';
+  else if(L.div===2){const up=size<=12?2:4;if(pr>=up-1&&pr<=up+2)type='promo'}
+  if(!type&&L.div===1&&L.down!=null){
+    const shieldFree=S.club.tier>=2&&!(S.shield||{})[S.club.name];
+    if((fails>=4&&!shieldFree)||(S.club.tier===0&&fails>=3&&pr>=size-2)||(fails>=3&&pr>=size-2))type='releg';
+  }
+  if(!type)return;
+  s.run={type,pr};
+  const at=s.stages.findIndex(x=>!x.res), idx=at<0?s.stages.length:at;
+  s.stages.splice(idx,0,...[0,1,2].map(g=>({comp:'run',round:0,g,key:focusKey(),res:null})));
+}
+const runPts=s=>s.stages.filter(x=>x.comp==='run'&&x.res&&x.res.wdl).reduce((a,x)=>a+(x.res.wdl==='W'?3:x.res.wdl==='D'?1:0),0);
+const runNeed=s=>!s.run?0:s.run.type==='title'?(s.run.pr===1?4:9):s.run.type==='releg'?4:5;
+function runDC(){const s=S.season,L=LEAGUES[S.club.league];return L.dc+(s.run&&s.run.type==='title'?2:0)}
+
+/* ---- pop-up queue for the off-season and the story moments ---- */
+let ovKind=null;
+const ovHas=k=>ovKind===k||ovQ.some(o=>o.k===k);
+function maybePrep(){
+  if(view!=='game'||S.phase!=='offseason')return;
+  const h=S.history[S.history.length-1]; if(!h)return;
+  if(['agechk','feat','camp','window'].some(ovHas))return;
+  if(ageCheckDue(h)){ovQ.push({k:'agechk'});return}
+  if(h.ageCheck&&!h.ageCheck.ok)return;
+  if(h.featDue&&!h.feat){ovQ.push({k:'feat'});return}
+  if(!h.camp&&S.age<40){ovQ.push({k:'camp'});return}
+}
+function maybeStory(){
+  if(view!=='game'||S.phase!=='season'||!S.season)return;
+  const s=S.season, st=s.stages[s.idx];
+  if(!st||s.last||!st.ch||st.chr||s.out>0||ovHas('story'))return;
+  ovQ.push({k:'story'});
+}
+function storyHTML(){
+  const s=S.season, st=s.stages[s.idx]; if(!st||!st.ch)return'';
+  const C=t.chx[st.ch], os=CHOICES[st.ch].opts, R=st.chr;
+  const opts=os.map((o,i)=>{const at=o.at?chAt(o,st):null,b=at?chBonus(at):0;
+    const line=o.at?`d20 ${sg(b)} ${t.attrs[at]} · ${t.target} ${o.tgt} · ${Math.round(chanceOf(o.tgt-b,null,true)*100)}%`:t.noRoll;
+    const fx=o.at?`<span class="fx up">${t.onOk}: ${effText(o.ok)}</span><span class="fx down">${t.onBad}: ${effText(o.bad)}</span>`:`<span class="fx flat">${effText(o.fx)}</span>`;
+    const pickd=R&&R.i===i;
+    return `<button class="chopt ${pickd?'on':''}" data-ov="ch" data-i="${i}" ${R?'disabled':''}><b>${C[2][o.k]}</b><span class="lbl">${line}</span>${fx}</button>`}).join('');
+  const o=R?os[R.i]:null;
+  const res=R?`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.auto?C[2][o.k]:R.ok?t.success:t.fail}</div><div class="small">${R.auto?'':`d20 ${R.nat} ${sg(R.bonus)} = ${R.total} ${t.vs} ${R.tgt} · `}${effText(R.auto?o.fx:R.ok?o.ok:o.bad)}</div>`:'';
+  return `<div class="ovcard move story"><span class="ov-kicker">${t.storyT} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${C[0]}</h2><div class="ov-sub2">${C[1]}</div>
+    <div class="storydie">${dieSVG(20,R&&!R.auto?R.nat:'',R&&!R.auto?(R.nat===20?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd','sd')}</div>
+    ${R?res:`<div class="chopts">${opts}</div>`}
+    ${R?`<button class="btn" data-ov="close">${t.storyBack}</button>`:''}</div>`;
+}
+function storyClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
+  if(v==='close'){closeOv();commit();return}
+  if(v!=='ch')return;
+  const s=S.season, st=s.stages[s.idx]; if(!st||!st.ch||st.chr)return;
+  const i=+b.dataset.i, o=CHOICES[st.ch].opts[i]; if(!o)return;
+  if(!o.at){resolveChoice(i,null);sfx('pass');save();ovEl.innerHTML=storyHTML();return}
+  ovEl.querySelectorAll('.chopt').forEach(x=>x.disabled=true);
+  const x=d(20), el=ovEl.querySelector('[data-die="sd"]'), at=chAt(o,st);
+  rollDice(el?[el]:[],20,[x],y=>y===20?'crit':y===1?'fumble':y+chBonus(at)>=o.tgt?'win':'lose',()=>{resolveChoice(i,x);sfx(x===20?'nat20':x===1?'nat1':st.chr.ok?'pass':'fail');save();ovEl.innerHTML=storyHTML()});
+}
+function ageHTML(){
+  const h=S.history[S.history.length-1], ac=h.ageCheck;
+  const btn=!ac?`<button class="btn" data-ov="roll">${t.roll(20)}</button>`:ac.ok?`<button class="btn" data-ov="close">${t.ageGo}</button>`:`<button class="btn danger" data-ov="hang">${t.ageHang}</button>`;
+  return `<div class="ovcard move agepop ${ac?(ac.ok?'ok':'bad'):''}"><span class="ov-kicker">${t.ageT} · ${t.yrs(S.age)}</span><h2 class="ov-title" style="font-size:24px">${t.ageQ}</h2><div class="ov-sub2">${t.ageDesc(S.age)}</div>
+    <div class="storydie">${dieSVG(20,ac?ac.nat:'',ac?(ac.nat===20?'crit':ac.nat===1?'fumble':ac.ok?'win':'lose'):'evd','ad')}</div>
+    <div class="mods" style="justify-content:center"><span class="chip">d20 + ${t.attrs.str} ${sg(ageBonus())}</span><span class="chip">${t.dc} ${AGE_DC[S.age]}</span><span class="chip odds">${Math.round(chanceOf(AGE_DC[S.age]-ageBonus(),null,true)*100)}%</span></div>
+    ${ac?`<div class="sum num">d20 <b>${ac.nat}</b> ${sg(ac.bonus)} = <b>${ac.nat+ac.bonus}</b> ${t.vs} ${t.dc} ${ac.dc}</div><div class="verdict result v-${ac.ok?'good':'bad'}" style="font-size:20px">${ac.ok?t.agePass:t.ageFail}</div>`:''}
+    ${btn}</div>`;
+}
+function ageClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
+  if(v==='roll'){const x=d(20),el=ovEl.querySelector('[data-die="ad"]');
+    rollDice(el?[el]:[],20,[x],y=>{const ok=y===20||(y!==1&&y+ageBonus()>=AGE_DC[S.age]);return y===20?'crit':y===1?'fumble':ok?'win':'lose'},()=>{ageCheck(x);const k=S.history[S.history.length-1].ageCheck;sfx(x===20?'nat20':x===1?'nat1':k.ok?'pass':'fail');save();ovEl.innerHTML=ageHTML()});return}
+  if(v==='close'){closeOv();commit();return}
+  if(v==='hang'){closeOv();retire();commit();window.scrollTo({top:0});return}
+}
+function featHTML(){
+  const h=S.history[S.history.length-1];
+  return `<div class="ovcard move prepop"><span class="ov-kicker">${t.featKick}</span><h2 class="ov-title" style="font-size:24px">${t.featT}</h2><div class="ov-sub2">${t.featSub(S.age)}</div>
+    <div class="prepg">${h.featOpts.map(k=>`<button class="prepb" data-ov="feat" data-k="${k}"><b>${t.feats[k][0]}</b><span>${t.feats[k][1]}</span></button>`).join('')}</div></div>`;
+}
+function campHTML(){
+  return `<div class="ovcard move prepop"><span class="ov-kicker">${t.campT} · ${t.nextAge(S.age+1)}</span><h2 class="ov-title" style="font-size:24px">${t.campSub}</h2>
+    <div class="prepg two">${['train','rest','media','nat'].map(k=>`<button class="prepb" data-ov="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')}</div></div>`;
+}
+function prepClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b)return; const v=b.dataset.ov;
+  if(v==='feat'){pickFeat(b.dataset.k);sfx('title');closeOv();commit();return}
+  if(v==='camp'){doCamp(b.dataset.k);sfx('pass');closeOv();commit();return}
+}
+function offersHTML(){
+  const list=(S.startOffers||[]).map((o,i)=>{const r=clubRank(o.name,o.league);return `<div class="wcard">${crest(kitOf(o.name),26)}<b>${esc(o.name)}</b><span class="wl">${esc(LEAGUES[o.league].name)}</span><div class="wtags">${LEAGUES[o.league].c!==S.nat?`<span class="wtag">${t.euroOffer}</span>`:''}${LEAGUES[o.league].div===2?`<span class="wtag dim">${t.div2}</span>`:''}</div><button class="btn sm" data-ov="first" data-i="${i}">${t.sign}</button></div>`}).join('');
+  return `<div class="ovcard window"><span class="ov-kicker">${t.firstOffers}</span><h2 class="ov-title" style="font-size:26px">${t.offersT}</h2><div class="wcards n${(S.startOffers||[]).length}">${list}</div><button class="linkb" data-ov="close">${t.decideLater}</button></div>`;
+}
+function offersClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b){if(e.target===ovEl)closeOv();return} const v=b.dataset.ov;
+  if(v==='close'){closeOv();return}
+  if(v==='first'){const o=S.startOffers&&S.startOffers[+b.dataset.i];if(!o)return;closeOv();startCareer(o);commit();window.scrollTo({top:0})}
+}
+
+/* ---- the player's attributes as an octagon, like the old football games ---- */
+function radar(){
+  const a=S.attrs||{}, N=AK.length, cx=80, cy=78, R=56;
+  const pt=(i,v)=>{const ang=-Math.PI/2+i*2*Math.PI/N;return[(cx+Math.cos(ang)*R*v).toFixed(1),(cy+Math.sin(ang)*R*v).toFixed(1)]};
+  const ring=v=>AK.map((_,i)=>pt(i,v).join(',')).join(' ');
+  const poly=AK.map((k,i)=>pt(i,clamp((a[k]||0)/20,0,1)).join(',')).join(' ');
+  const labels=AK.map((k,i)=>{const [x,y]=pt(i,1.24);return `<text x="${x}" y="${(+y+3).toFixed(1)}" text-anchor="middle">${t.attrs3[k]}</text><text x="${x}" y="${(+y+13).toFixed(1)}" text-anchor="middle" class="rv">${a[k]||0}</text>`}).join('');
+  return `<svg class="radar" viewBox="0 0 160 166" aria-label="${t.attrsT}"><polygon points="${ring(1)}" class="rg"/><polygon points="${ring(.75)}" class="rg"/><polygon points="${ring(.5)}" class="rg"/><polygon points="${ring(.25)}" class="rg"/>${AK.map((_,i)=>`<line x1="${cx}" y1="${cy}" x2="${pt(i,1)[0]}" y2="${pt(i,1)[1]}" class="rg"/>`).join('')}<polygon points="${poly}" class="rp"/>${labels}</svg>`;
+}
+let careerSub='nums';
+
+/* ---- small inline icons: World Cup trophy and the golden ball ---- */
+const icoCup=`<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2h7v3a3.5 3.5 0 0 1-7 0z M4.5 3H2.5c0 2 1 3 2.3 3 M11.5 3h2c0 2-1 3-2.3 3 M8 8.5v2.5 M5.5 14h5 M6.5 11h3v3h-3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+const icoBall=`<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="6.2" r="4.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.2l1.6 1.2-.6 1.9H7l-.6-1.9z" fill="currentColor"/><path d="M6 10.4l-.8 2.1h5.6l-.8-2.1 M4.5 14h7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 let modHelp=false, hofSort='score';
 const hofCmp=new Set();
@@ -3384,7 +3667,7 @@ function start(data){
   S=(data&&data.phase)?fixSave(data):(load()||fresh());
   if(S.phase==='season'&&!S.season)buildSeason();
   document.documentElement.lang=lang==='pt'?'pt-BR':'en';
-  render(); checkIntro(); maybeWindow(); flushOv(); checkAch(true); scheduleAuto();
+  render(); checkIntro(); maybeWindow(); maybeHeal(); maybePrep(); maybeStory(); flushOv(); checkAch(true); scheduleAuto();
 }
 start({});
 </script>
