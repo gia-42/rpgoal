@@ -51,7 +51,9 @@
   async function push() {
     if (!user) return;
     status = 'saving'; refresh();
-    const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof(), updated_at: new Date().toISOString() });
+    // achievements ride along in the hof column as one extra entry, so no database change is needed
+    const ach = typeof loadAch === 'function' ? loadAch() : {};
+    const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof().concat([{ id: '__ach', ach }]), updated_at: new Date().toISOString() });
     status = error ? 'err' : 'ok'; refresh();
   }
   async function pull() {
@@ -63,7 +65,14 @@
       const cloud = data.career, local = S;
       const cloudWins = careerWeight(cloud) > careerWeight(local) ||
         (careerWeight(cloud) === careerWeight(local) && cloud && (cloud.savedAt || 0) > (local.savedAt || 0));
-      const hof = mergeHof(loadHof(), data.hof);
+      const cloudHof = Array.isArray(data.hof) ? data.hof : [];
+      const achRow = cloudHof.find(e => e && e.id === '__ach');
+      if (achRow && achRow.ach && typeof loadAch === 'function') {
+        const mine = loadAch(); let changed = false;
+        Object.entries(achRow.ach).forEach(([k, ts]) => { if (!mine[k] || ts < mine[k]) { mine[k] = ts; changed = true; } });
+        if (changed) { achMem = null; try { localStorage.setItem(ACHKEY, JSON.stringify(mine)); } catch (e) {} achMem = mine; }
+      }
+      const hof = mergeHof(loadHof(), cloudHof.filter(e => !(e && e.id === '__ach')));
       hofMem = null; try { localStorage.setItem(HOFKEY, JSON.stringify(hof)); } catch (e) {} hofMem = hof.slice();
       if (cloudWins && cloud) {
         S = fixSave(cloud);
