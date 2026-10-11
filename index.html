@@ -531,6 +531,9 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .sp-box{position:relative;margin:4px 8px}
 .sp-c{position:absolute;transform:translate(-50%,-50%);line-height:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
 .sp-c .crest{display:block}
+.sp-a{position:absolute;transform:translate(-50%,-125%);display:flex;gap:1px;line-height:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));z-index:1}
+.sp-a .sp-i{width:15px;height:15px;display:block}
+.sp-box{margin-top:16px!important}
 .sp-l{fill:none;stroke:var(--accent);stroke-width:2;vector-effect:non-scaling-stroke}
 .sp-t{fill:var(--ink-2)} .sp-g{fill:#f2c14e}
 .sp-ax{font-size:10px;color:var(--ink-3);font-family:var(--f-num)}
@@ -2397,7 +2400,7 @@ function hofPlayers(){
         <div class="hpath">${p.clubs.map(esc).join(' → ')}</div>
         <div class="numgrid">${[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.rating,fmt(p.peak)]].map(([l,v])=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`).join('')}</div>
         ${cups?`<div class="cabinet">${cups}</div>`:''}
-        ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(tagChip).join('')}</div>`:''}
+        ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(x=>tagChip(x,p.g||'m')).join('')}</div>`:''}
         ${(p.feats||[]).length?`<div class="cabinet">${p.feats.map(k=>`<span class="chip tg blue">${t.feats[k][0]}</span>`).join('')}${(p.items||[]).map(k=>`<span class="chip tg gold">${t.items[k][0]}</span>`).join('')}</div>`:''}
         <div class="row" style="gap:8px"><button class="btn ghost sm" data-act="share" data-id="${p.id}">${t.shareBtn}</button><button class="btn ghost sm" data-act="hofcmp" data-id="${p.id}" aria-pressed="${hofCmp.has(p.id)}">${hofCmp.has(p.id)?t.cmpOn:t.cmpBtn}</button></div></div>`;
     }
@@ -2434,6 +2437,7 @@ function fitStage(){
 }
 try{window.addEventListener('resize',()=>{try{fitStage()}catch(e){}})}catch(e){}
 function render(){
+  t=curT();
   const n=loadHof().length;
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
   const isDark=effTheme()==='dark';
@@ -2602,7 +2606,7 @@ function showToast(){
   if(toastEl||!toastQ.length||typeof document==='undefined'||!document.body)return;
   const a=toastQ.shift(), L=lang==='pt'?1:0, more=toastQ.length;
   toastEl=document.createElement('div'); toastEl.className='toast'+(a.bad?' bad':''); toastEl.setAttribute('role','status');
-  toastEl.innerHTML=`${achIcon(a,true)}<div class="toast-t"><span class="lbl">${a.bad?t.achBadT:t.achT}${more?` · +${more}`:''}</span><b>${a.n[L]}</b><span>${a.d[L]}</span></div>`;
+  toastEl.innerHTML=`${achIcon(a,true)}<div class="toast-t"><span class="lbl">${a.bad?t.achBadT:t.achT}${more?` · +${more}`:''}</span><b>${achTx(a,'n',L)}</b><span>${achTx(a,'d',L)}</span></div>`;
   document.body.appendChild(toastEl); sfx(a.bad?'achBad':'ach');
   const el=toastEl, hide=()=>{if(toastEl!==el)return;el.classList.add('out');setTimeout(()=>{el.remove();toastEl=null;showToast()},reduce?0:260)};
   el.addEventListener('click',hide); setTimeout(hide,3800);
@@ -2749,7 +2753,7 @@ function achView(){
   const fmtD=ts=>new Date(ts).toLocaleDateString(lang==='pt'?'pt-BR':'en-GB',{day:'numeric',month:'short',year:'numeric'});
   const prog=a=>{const f=ACH_PROG[a.id];if(!f||got[a.id])return null;try{const [c,tg]=f();return[Math.max(0,Math.min(c,tg)),tg]}catch(e){return null}};
   const card=a=>{const pr=prog(a), rr=rarity(ACH_RATE[a.id]);
-    return `<div class="ach ${got[a.id]?'got':''} ${a.bad?'bad':''}">${achIcon(a,!!got[a.id])}<div class="ach-t"><b>${a.n[L]}</b><span>${a.d[L]}</span>${pr?`<div class="achp"><i style="width:${(100*pr[0]/pr[1]).toFixed(1)}%"></i></div><span class="achpn num">${fmtNum(pr[0])} / ${fmtNum(pr[1])}</span>`:''}</div><div class="ach-r">${got[a.id]?`<span class="ach-d">${fmtD(got[a.id])}</span>`:''}<span class="rar r${rr}">${t.rar[rr]}</span></div></div>`};
+    return `<div class="ach ${got[a.id]?'got':''} ${a.bad?'bad':''}">${achIcon(a,!!got[a.id])}<div class="ach-t"><b>${achTx(a,'n',L)}</b><span>${achTx(a,'d',L)}</span>${pr?`<div class="achp"><i style="width:${(100*pr[0]/pr[1]).toFixed(1)}%"></i></div><span class="achpn num">${fmtNum(pr[0])} / ${fmtNum(pr[1])}</span>`:''}</div><div class="ach-r">${got[a.id]?`<span class="ach-d">${fmtD(got[a.id])}</span>`:''}<span class="rar r${rr}">${t.rar[rr]}</span></div></div>`};
   const list=ACH.filter(a=>achF==='all'||(achF==='done'?!!got[a.id]:!got[a.id]));
   const sec=(title,arr,extra='')=>arr.length?`<h3 class="achh">${title}${extra}</h3><div class="achs">${arr.map(card).join('')}</div>`:'';
   let body='';
@@ -2857,7 +2861,7 @@ function careerTags(){
   return out;
 }
 const TAG_TONE={legend:'gold',idol:'blue',blessed:'blue',cursed:'red',nat20s:'gold',biggame:'gold',bottler:'red',journeyman:'',iron:'blue',glass:'red',late:'',prodigy:'blue',scorer:'blue',creator:'blue',redemption:'blue',oneclub:'blue',forty:'gold',injury:'red',rival:'red'};
-const tagChip=([k,c])=>`<span class="chip tg ${TAG_TONE[k]||''}">${t.tag[k](c?esc(c):'')}</span>`;
+const tagChip=([k,c],g)=>`<span class="chip tg ${TAG_TONE[k]||''}">${(g?curT(g):t).tag[k](c?esc(c):'')}</span>`;
 
 /* ---------- transfer window pop-up ---------- */
 function windowHTML(){
@@ -3259,7 +3263,7 @@ function onClick(e){
   if(act==='sound'){soundOn=!soundOn;try{localStorage.setItem(SNDKEY,soundOn?'on':'off')}catch(e){};render();if(soundOn)sfx('click');return}
   if(act==='install'){if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;render()})}return}
   if(act==='theme'){const nt=effTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=nt;document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content',nt==='dark'?'#121317':'#f7f7f5'));try{localStorage.setItem(THEMEKEY,nt)}catch(e){};render();return}
-  if(act==='lang'){lang=b.dataset.l;t=T[lang];try{localStorage.setItem(LANGKEY,lang)}catch(e){};document.documentElement.lang=lang==='pt'?'pt-BR':'en';render();return}
+  if(act==='lang'){lang=b.dataset.l;t=curT();try{localStorage.setItem(LANGKEY,lang)}catch(e){};document.documentElement.lang=lang==='pt'?'pt-BR':'en';render();return}
   if(act==='tab'){view=b.dataset.v;try{localStorage.setItem(VIEWKEY,view)}catch(e){};render();scheduleAuto();window.scrollTo({top:0});return}
   if(act==='hofsub'){hofSub=b.dataset.v;render();return}
   if(act==='hofg'){hofG=b.dataset.v;render();return}
@@ -3622,8 +3626,10 @@ function sparkline(){
   const W=300,Hh=46,min=Math.min(...H.map(h=>h.rating))-0.5,max=Math.max(...H.map(h=>h.rating))+0.5;
   const X=i=>6+i*(W-12)/(H.length-1), Y=v=>Hh-6-(v-min)/(max-min)*(Hh-14);
   const pts=H.map((h,i)=>`${X(i).toFixed(1)},${Y(h.rating).toFixed(1)}`).join(' ');
-  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="sp-c" style="left:${(X(i)/W*100).toFixed(2)}%;top:${(Y(h.rating)/Hh*100).toFixed(2)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:'').join('');
-  return `<div class="spark"><div class="row between"><span class="lbl">${t.sparkT}</span><span class="lbl">${t.sparkKey}</span></div><div class="sp-box"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" class="sp-l"/></svg>${marks}</div><div class="row between sp-ax"><span>${H[0].age}</span><span>${H[H.length-1].age}</span></div></div>`;
+  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="sp-c" style="left:${(X(i)/W*100).toFixed(2)}%;top:${(Y(h.rating)/Hh*100).toFixed(2)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:'').join('')
+    +H.map((h,i)=>{const b=h.bdo===1, w=h.trophies.some(x=>x.kind==='wc'); if(!b&&!w)return'';
+      return `<span class="sp-a" style="left:${(X(i)/W*100).toFixed(2)}%;top:${(Y(h.rating)/Hh*100).toFixed(2)}%" title="${h.year}${b?' · '+(isW()?t.bdoW:t.bdoM):''}${w?' · '+(isW()?t.wcW:t.wcM):''}">${b?goldBall('sp-i'):''}${w?trophySVG('sp-i'):''}</span>`}).join('');
+  return `<div class="spark"><span class="lbl">${t.sparkT}</span><div class="sp-box"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" class="sp-l"/></svg>${marks}</div><div class="row between sp-ax"><span>${H[0].age}</span><span>${H[H.length-1].age}</span></div></div>`;
 }
 
 /* ---- campaign panel (Career tab) ---- */
@@ -3794,7 +3800,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runBanner:{miracle:'A last, impossible chase. Win all three against the odds and the title is yours.',title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
- mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Numbers',seasons:'Seasons',inv:'Inventory'},invT:'Inventory',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
+ mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Numbers',seasons:'Seasons',inv:'Locker room'},invT:'Locker room',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
  pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensNeed:'goal on 4+',pensTake:'Take your penalty',pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
  lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
  lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
@@ -3813,7 +3819,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
- mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números',seasons:'Temporadas',inv:'Inventário'},invT:'Inventário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
+ mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números',seasons:'Temporadas',inv:'Vestiário'},invT:'Vestiário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
  pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
  lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
  lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
@@ -4296,6 +4302,61 @@ function start(data){
   document.documentElement.lang=lang==='pt'?'pt-BR':'en';
   render(); checkIntro(); maybeWindow(); maybeHeal(); maybePrep(); maybeStory(); flushOv(); checkAch(true); scheduleAuto();
 }
+/* ---- women's careers: feminine wording (pt) and her/she (en) ---- */
+const FEM={pt:{
+ 'tag.blessed':()=>'Abençoada pelos dados','tag.cursed':()=>'Amaldiçoada pelos dados','tag.biggame':()=>'Jogadora de decisão','tag.journeyman':()=>'Rodada','tag.creator':()=>'Armadora',
+ retired:'Aposentada',unnamed:'Jogadora sem nome',injured:n=>`Lesionada · fora por ${n} jogo${n>1?'s':''}`,rollPlayer:'Crie sua jogadora',pname:'Nome da jogadora',
+ 'pos.CB.1':'Zagueira','styles.finisher':'Matadora','styles.dribbler':'Dribladora','styles.insidefwd':'Ponta invertida','styles.playmaker':'Armadora','styles.captain':'Capitã',
+ 'styles.destroyer':'Destruidora','styles.metronome':'Maestrina','styles.defensivefb':'Lateral marcadora','styles.invertedfb':'Lateral construtora','styles.stopper':'Marcadora','styles.ballplayer':'Zagueira construtora',
+ autoPlay:'Lesionada · jogos simulados automaticamente',seasonOutChip:'Lesionada · fora da temporada',n40:'Você jogou até os 40. Uma jogadora que não envelhece.',
+ throughTo:r=>`Classificada: ${r}`,throughGroup:'Classificada na fase de grupos',outIn:r=>`Eliminada · ${r}`,winners:c=>`Campeã: ${c}!`,won:'Campeã',
+ calledUp:n=>`Convocada para a Copa do Mundo! (${n})`,'wcRes.4':'Vice-campeã','wcRes.5':'Campeã',notCalled:'Não convocada',groupOut:'Eliminada da Copa na fase de grupos.',
+ ovChamps:'Campeã!',ovLeague:'Campeã da liga!',ovBdoSub:y=>`A melhor jogadora do mundo em ${y}`,leagueChamp:l=>`Campeã: ${l}!`,
+ fired:c=>`Dispensada: o ${c} encerrou seu contrato depois da má fase.`,firedShort:'Dispensada',
+ 'fanScale.0':'Odiada','fanScale.1':'Neutra','fanStatus.0':'Odiada','fanStatus.1':'Mal-vista','fanStatus.2':'Neutra','fanStatus.3':'Querida','fanStatus.4':'Amada',
+ nMerc:'Mais um clube novo. A torcida já te vê como mercenária.','capLv.0':'Jogadora de elenco',
+ 'feats.clutch.0':'Decisiva','feats.lucky.0':'Sortuda','feats.captain.0':'Líder nata','feats.inspiring.0':'Inspiradora','feats.latebloomer.0':'Tardia','xm.fClutch':'Decisiva',
+ 'chron.champ':n=>`campeã do ${n}`,'chron.wc':'campeã do mundo','chron.fired':'Mandada embora.',inspOn:'Inspirada: vantagem',
+ 'runRes.miracle.1':'Virada histórica! Campeã contra todas as probabilidades!','runRes.title.1':'Campeã na última rodada!',
+ 'ev.tackle.1':'A atacante adversária sai livre. Você é a última defensora.','ev.oneone.2':'Você dribla a goleira e empurra para a rede.','ev.oneone.3':'A goleira abafa.','ev.oneone.1':'Você sai sozinha com a goleira pela frente.',
+ 'ev.fk.1':'Barreira armada, goleira se mexendo. Essa é sua.','ev.pen.3':'A goleira defende. O jogo vira contra você.',
+ 'ev.night.1':'As colegas te chamam para sair dois dias antes do jogo.','ev.crisis.1':'Duas veteranas estão se estranhando antes do jogo. Todas olham para você.',
+ 'chx.mentor.0':'Uma veterana oferece treinos extras','chx.mentor.1':'Depois do treino, uma experiente se oferece para ficar com você.',
+ 'chx.pundit.1':'Ao vivo na TV, uma ex-craque diz que você é superestimada.','chx.tunnel.1':'A capitã rival chega perto e diz o que pensa de você.',
+ 'chx.youth.0':'Uma garota da base pede ajuda','chx.youth.1':'Uma menina de 16 anos te espera depois do treino, nervosa.','chx.youth.2.train':'Treinar com ela a semana toda',
+ 'chx.pens.2.kid':'Deixar com a garota','chx.legend.1':'Uma das maiores lendas da história do clube aparece no treino.','chx.legend.2.shootout':'Desafiá-la nos pênaltis',
+ 'chx.prank.1':'As companheiras encheram sua chuteira de espuma de barbear.','chx.selfie.1':'Uma torcedora mirim driblou a segurança para tirar uma selfie.','chx.selfie.0':'Uma torcedora no treino',
+ 'items.kidshirt.0':'Camisa da garota da base','items.kidshirt.2':'Treine uma garota da base a semana toda e dê certo.',
+ lmcAssist:'Sua companheira empurra pra rede! Vitória!',lmcBeaten:'Elas marcam. Eliminada no último lance.',
+ 'lmcA.0.1.1':'Tocar para a companheira livre','lmcA.0.1.2':'Partir para cima da última zagueira','lmcA.1.1.2':'Ajeitar para uma companheira','lmcA.2.0':'Você sai livre no contra-ataque com uma zagueira na cola.','lmcA.4.1.2':'Achar a companheira livre',
+ 'lmcD.0.0':'Acréscimos. A atacante adversária sai cara a cara e só você pode alcançá-la.','lmcD.1.0':'Último escanteio delas. A zagueira adversária subiu para a área.','lmcD.1.1.1':'Marcar colado',
+ 'lmcD.2.0':'Duas contra uma, e você é a última defensora.','lmcD.3.0':'A ponta adversária dispara pela linha para um último cruzamento.','lmcD.3.1.0':'Correr atrás dela',lmcPendD:'Empate no fim: elas têm um último ataque!',
+ 'rules.12.1':'A cada 4 anos (2031, 2035…), no meio da temporada. Você é convocada se seu nível for alto o bastante para a sua seleção; as favoritas são as mais difíceis de entrar. Três jogos no grupo: vença um e perca no máximo um para chegar ao mata-mata.'
+},en:{
+ 'ev.oneone.2':'You round her and slot it home.','ev.tackle.3':'You miss her, and they score.',
+ 'items.kidshirt.2':'Train an academy kid all week and nail it.',
+ 'chx.selfie.2.chat':'Sign her shirt and chat','chx.tunnel.1':'Their captain leans in and tells you exactly what she thinks of you.',
+ 'chx.youth.2.advice':'Give her advice','chx.youth.2.train':'Train with her all week','chx.legend.2.shootout':'Challenge her to a shootout',
+ 'lmcD.0.0':'Stoppage time. Their striker is through on goal and only you can catch her.','lmcD.1.1.1':'Man-mark her tight','lmcD.3.1.0':'Chase her down','lmcD.3.1.1':'Shoulder her off the ball'
+}};
+const ACH_FEM={
+ league:['Campeã!'],wccall:['Convocada','Seja convocada para a Copa do Mundo.'],wc:['Campeã do mundo'],bdo:[null,'Seja eleita a melhor jogadora do mundo.'],
+ ironman:['Mulher de ferro'],wc2:['Bicampeã do mundo'],wc3:['Tricampeã do mundo'],cupking:['Rainha de copa'],friends:[null,'Passe de odiada a amada pela torcida do mesmo clube.'],
+ bothwc:['Campeã do mundo dos dois lados'],fired:[null,'Seja dispensada pelo clube.'],relegated:['Rebaixada','Seja rebaixada.'],hated:['Inimiga pública','Seja odiada pela própria torcida.'],
+ merc:['Mercenária'],unwanted:['Indesejada','Seja dispensada por dois clubes.'],party:['Baladeira'],items4:['Colecionadora'],quests10:['Queridinha da diretoria'],
+ inspfinal:[null,'Ganhe três finais inspirada.'],stories10:['Contadora de histórias'],bestteach:['Aprendeu com a melhor'],torch:[null,'Treine uma garota da base e ganhe a camisa dela.'],
+ items10:['Acumuladora'],giantkill:['Matadora de gigantes'],globetrot:['Campeã em todo lugar']};
+const ACH_FEM_EN={torch:[null,'Train an academy kid and earn her shirt.'],ironman:['Iron woman']};
+const achTx=(a,k,L)=>{if(isW()){const m=(L===1?ACH_FEM:ACH_FEM_EN)[a.id],v=m&&m[k==='n'?0:1];if(v)return v}return a[k][L]};
+function femCopy(base,over){
+  const cp=o=>Array.isArray(o)?o.map(cp):o&&typeof o==='object'?Object.fromEntries(Object.entries(o).map(([k,v])=>[k,cp(v)])):o;
+  const r=cp(base);
+  for(const [p,v] of Object.entries(over)){const ks=p.split('.');let o=r;for(let i=0;i<ks.length-1;i++){o=o[ks[i]];if(!o)break}if(o&&ks.at(-1) in o)o[ks.at(-1)]=v;else console.warn('fem path',p)}
+  return r;
+}
+T.ptW=femCopy(T.pt,FEM.pt); T.enW=femCopy(T.en,FEM.en);
+const curT=(g)=>{const w=g!=null?g==='f':isW();return w?(lang==='pt'?T.ptW:T.enW):T[lang]};
+t=curT();
 start({});
 </script>
 
