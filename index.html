@@ -89,7 +89,7 @@ h1,h2,h3{font-family:var(--f-ui);margin:0;text-wrap:balance;letter-spacing:-.015
 .ab-cell{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;min-width:0}
 .ab-cell .lbl{font-size:9.5px;letter-spacing:.01em;max-width:100%;line-height:1.25;white-space:nowrap}
 @media (max-width:420px){.ab-cell .lbl,.pickbtn .lbl{font-size:8.5px;letter-spacing:0}}
-.lshort{display:none}
+.lshort{display:none} .l3{display:none}
 @media (max-width:360px){.lfull{display:none}.lshort{display:inline}}
 .ab-v{font-family:var(--f-num);font-weight:500;font-size:24px;line-height:1.1}
 .ab-m{font-family:var(--f-num);font-size:11px;color:var(--ink-3)}
@@ -104,6 +104,85 @@ h1,h2,h3{font-family:var(--f-ui);margin:0;text-wrap:balance;letter-spacing:-.015
 .fb-tick{position:absolute;top:0;bottom:0;width:1px;background:var(--bg);opacity:.9}
 .fb-scale{position:relative;height:15px;font-size:10.5px;color:var(--ink-3)}.fb-scale span{position:absolute;top:0;white-space:nowrap}.fb-scale span:nth-child(2){transform:translateX(-50%)}.fb-scale span:last-child{right:0}
 .teambar{margin-top:10px}
+.bars .teambar{margin-top:10px}
+.sv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sv-card{border:1px solid var(--rule);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sv-big{font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+.sv-chips{display:flex;flex-wrap:wrap;gap:2px 4px;align-items:center;font-size:12.5px;margin-top:6px}
+.sv-list{display:flex;flex-direction:column}
+.sv-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--rule);font-size:15px}
+.sv-row:first-child{border-top:0}
+.tabs{overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{white-space:nowrap}
+.onepage{height:100vh;height:100dvh;overflow:hidden}
+.onepage .wrap{height:calc(100vh - env(safe-area-inset-top,0px));height:calc(100dvh - env(safe-area-inset-top,0px));padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));gap:10px}
+.onepage .wrap>*{flex:none}
+.onepage .wrap>.panel.hero{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+.onepage .wrap>.panel.hero>.stage{margin:auto 0}
+.onepage .panel{padding:14px 16px}
+.onepage .who h2{font-size:22px}
+.onepage .rating .big{font-size:30px}
+.onepage .fanbar{margin-top:10px;gap:4px}
+.onepage .fb-scale{display:none}
+.onepage .bars{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.onepage .bars .fanbar{margin-top:10px}
+.onepage .abil{margin-top:12px}
+.onepage .ab-cell{padding:6px 2px}
+.onepage .ab-v{font-size:20px}
+.onepage .dicecol .d20{max-width:104px}
+.onepage .dicecol .die{max-width:96px}
+.onepage .verdict{font-size:20px}
+.onepage .install{display:none}
+html.onepage,body.onepage{margin:0;height:100%;overflow:hidden;box-sizing:border-box}
+.onepage .rating>.lbl:last-child{display:none}
+.onepage .who .pos .lbl{font-size:10.5px}
+.onepage .stage .lbl{font-size:10px}
+.onepage .stage .evbox{padding:7px 10px;gap:3px}
+.onepage .stage .evbox,.onepage .stage .evdesc{font-size:12.5px;line-height:1.4}
+.onepage .stage .sum{font-size:13px}
+.onepage .stage .verdict{font-size:18px}
+.onepage .stage .muted.small,.onepage .stage .small{font-size:12px}
+.onepage .stage .banner{font-size:13px;padding:6px 10px}
+.onepage .top{flex-wrap:nowrap;padding-bottom:0}
+.onepage .top .meta{flex-wrap:nowrap;gap:6px}
+.onepage .top .meta>.lbl,.onepage .top [data-act="reset"],.onepage .theme-btn .tl{display:none}
+.onepage .mark{font-size:20px}
+.onepage .tabs button{padding-block:6px}
+@media (max-width:440px){.tabs{gap:0}.tabs button{padding-inline:6px;font-size:13px}.tabs .tab-home{padding-inline:4px 8px}.tablogo{width:24px;height:24px}}
+.onepage .who{flex-wrap:nowrap;gap:10px}
+.onepage .who>.stack{gap:3px!important;min-width:0}
+.onepage .who .muted{font-size:14px}
+.onepage .rating .big{font-size:26px}
+.onepage .bars .fanbar{margin-top:8px}
+.onepage .abil{grid-template-columns:repeat(8,1fr)!important;margin-top:10px}
+.onepage .lfull,.onepage .lshort{display:none!important} .onepage .l3{display:inline}
+.onepage .ab-cell{padding:5px 1px}
+.onepage .ab-v{font-size:18px}
+.onepage .ab-m{font-size:10px}
+.onepage .wrap>.panel.hero{padding:12px 14px}
+.onepage .stage{grid-template-columns:96px minmax(0,1fr)!important;gap:14px;justify-items:stretch!important;text-align:left!important;align-items:center}
+.onepage .stage .mods,.onepage .stage .row{justify-content:flex-start!important}
+.onepage .stage h3{font-size:19px}
+.onepage .stage .dicecol{gap:6px}
+.onepage .stage .dicecol .d20{max-width:84px}
+.onepage .stage .dicecol .die{max-width:72px}
+.onepage .stage .pair{gap:4px;flex-wrap:wrap;justify-content:center}
+.onepage .stage .pair .die{max-width:46px}
+.onepage .stage .dicecol .small{max-width:34px}
+.onepage .stage .dcell .lbl{font-size:9px}
+.onepage .stage .stack{gap:7px!important}
+.onepage .stage .evdesc,.onepage .stage .evbox{font-size:13.5px}
+.onepage .stage .chip{font-size:11.5px;padding:2px 7px}
+.onepage .stage .btn{padding:9px 14px;font-size:14px}
+.onepage .stage .row{flex-wrap:nowrap;align-items:center}
+.tl-s{display:none} .onepage .tl-l{display:none} .onepage .tl-s{display:inline}
+.onepage .stage [data-act="simrest"]{display:none}
+.onepage .stage .row .btn:first-child{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.onepage .stage .btn.ghost.sm{flex:none;padding:8px 10px;font-size:12.5px}
+.tabs .tab-home{display:inline-flex;align-items:center;justify-content:center;padding-inline:10px}
+.tablogo{width:26px;height:26px;display:block}
+.tab-home[aria-selected="true"] .tablogo{color:var(--accent)}
 .teambar .fb-fill{background:var(--ink-3)} .teambar .fb-state{color:var(--ink-2)}
 .teambar.tl0 .fb-fill,.teambar.tl1 .fb-fill{background:var(--accent)} .teambar.tl0 .fb-state,.teambar.tl1 .fb-state{color:var(--accent)}
 .fl0 .fb-fill{background:var(--bad)} .fl0 .fb-state{color:var(--bad)}
@@ -300,6 +379,16 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .ovcard.window{max-width:460px;align-items:stretch;text-align:left}
 .ovcard.window .ov-kicker,.ovcard.window .ov-title,.ovcard.window .ov-sub2{text-align:center}
 .wlist{display:flex;flex-direction:column;gap:8px;width:100%}
+.wsec{align-self:flex-start;margin-top:6px}
+.wcards{display:grid;gap:8px;width:100%;grid-template-columns:repeat(3,minmax(0,1fr))}
+.wcards.n1{grid-template-columns:minmax(0,1fr)} .wcards.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;border:1px solid #2c3038;border-radius:10px;padding:10px 8px;background:#191c22;min-width:0}
+.wcard b{font-size:14px;color:#fff;line-height:1.2;overflow-wrap:anywhere}
+.wcard .wl{font-size:11.5px;color:#a9adb7}
+.wcard .wtags{display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
+.wcard .wtag{margin:0}
+.ovcard .wcard .btn{width:100%;margin-top:auto;min-width:0}
+.wcard .crest{margin-bottom:2px}
 .wopt{display:flex;align-items:center;gap:12px;border:1px solid #2c3038;border-radius:10px;padding:10px 12px;background:#191c22}
 .wopt.stay{border-color:#3d4560;background:#1b2030}
 .wopt.any{align-items:flex-end}
@@ -312,8 +401,11 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .wopt .crest{flex:none}
 .wtag{display:inline-block;margin-top:3px;margin-right:4px;font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px;background:#2e2715;color:#f2c14e}
 .wopt-t .wtag{align-self:flex-start;color:#f2c14e}
+.wcard .wtag{color:#f2c14e} .wcard .wtag.bad{background:#3a1d1b;color:#ff8a7e} .wcard .wtag.dim{background:#22252c;color:#b9bcc4}
 .wopt-t .wtag.bad{background:#3a1d1b;color:#ff8a7e} .wopt-t .wtag.dim{background:#22252c;color:#b9bcc4}
 .ovcard.window .linkb{align-self:center;color:#a9adb7;margin-top:4px;background:none;border:0;text-decoration:underline;font:inherit;font-size:13px;cursor:pointer}
+.sv-list.away{width:100%;text-align:left}
+.ovcard .sv-row{border-top-color:#2c3038;color:#e6e7ea;font-size:14px}
 .mv-why{display:flex;flex-direction:column;gap:8px;text-align:left;width:100%;border-top:1px solid #2c3038;border-bottom:1px solid #2c3038;padding:12px 0;margin:4px 0}
 .mv-why p{margin:0;font-size:14.5px;line-height:1.45;color:#d6d8dd}
 .ovcard.move .btn.ghost{background:transparent;color:#e6e7ea;border-color:#3a3e47}
@@ -384,77 +476,77 @@ const COUNTRY={
 const LEAGUES=[
  {c:'BRA',div:1,name:'Brasileirão',cup:'Copa do Brasil',cont:'Copa Libertadores',dc:13,matches:38,size:20,lvl:0,down:10,tiers:[
   {min:0,pr:0,clubs:['Juventude','Mirassol','Ceará','Vitória','Sport','Fortaleza']},
-  {min:6,pr:1,clubs:['Bahia','Botafogo','Grêmio','Internacional','Vasco da Gama','Fluminense','Cruzeiro']},
+  {min:6,pr:1,clubs:['Bahia','Botafogo','Grêmio','Internacional','Vasco da Gama','Fluminense','Cruzeiro','Red Bull Bragantino']},
   {min:7.5,pr:2,clubs:['Corinthians','Flamengo','Palmeiras','São Paulo','Atlético Mineiro','Santos']}]},
  {c:'ITA',div:1,name:'Serie A',cup:'Coppa Italia',cont:'Champions League',dc:16,matches:38,size:20,lvl:1,down:15,tiers:[
-  {min:10.5,pr:3,clubs:['Lecce','Cagliari','Udinese','Genoa','Parma']},
+  {min:10.5,pr:3,clubs:['Lecce','Cagliari','Udinese','Genoa','Parma','Como','Empoli','Hellas Verona','Monza','Venezia']},
   {min:12,pr:4,clubs:['Fiorentina','Atalanta','Lazio','Roma','Bologna','Torino']},
   {min:14,pr:5,clubs:['Juventus','Inter','Milan','Napoli']}]},
- {c:'FRA',div:1,name:'Ligue 1',cup:'Coupe de France',cont:'Champions League',dc:16,matches:34,size:18,lvl:1,down:16,tiers:[
-  {min:10.5,pr:3,clubs:['Angers','Auxerre','Le Havre','Toulouse','Brest']},
+ {c:'FRA',div:1,name:'Ligue 1',cup:'Coupe de France',cont:'Champions League',dc:16,matches:38,size:20,lvl:1,down:16,tiers:[
+  {min:10.5,pr:3,clubs:['Angers','Auxerre','Le Havre','Toulouse','Brest','Nantes','Montpellier','Reims','Paris FC','Clermont Foot','AC Ajaccio']},
   {min:12,pr:4,clubs:['Lens','Rennes','Nice','Strasbourg','Lille']},
   {min:14,pr:5,clubs:['Marseille','Lyon','Monaco']},
   {min:17.5,pr:6.8,clubs:['Paris Saint-Germain']}]},
- {c:'GER',div:1,name:'Bundesliga',cup:'DFB-Pokal',cont:'Champions League',dc:16,matches:34,size:18,lvl:1,down:17,tiers:[
-  {min:10.5,pr:3,clubs:['Augsburg','Heidenheim','Mainz','Union Berlin','Werder Bremen']},
-  {min:12,pr:4,clubs:['Wolfsburg','Freiburg','Eintracht Frankfurt','Stuttgart','Hoffenheim']},
+ {c:'GER',div:1,name:'Bundesliga',cup:'DFB-Pokal',cont:'Champions League',dc:16,matches:38,size:20,lvl:1,down:17,tiers:[
+  {min:10.5,pr:3,clubs:['Augsburg','Heidenheim','Mainz','Union Berlin','Werder Bremen','VfL Bochum','St. Pauli','Holstein Kiel','Fortuna Düsseldorf','1. FC Nürnberg']},
+  {min:12,pr:4,clubs:['Wolfsburg','Freiburg','Eintracht Frankfurt','Stuttgart','Hoffenheim','Borussia Mönchengladbach']},
   {min:14,pr:5,clubs:['Borussia Dortmund','Bayer Leverkusen','RB Leipzig']},
   {min:17.5,pr:6.8,clubs:['Bayern Munich']}]},
  {c:'ESP',div:1,name:'LaLiga',cup:'Copa del Rey',cont:'Champions League',dc:17,matches:38,size:20,lvl:1,down:18,tiers:[
-  {min:11,pr:3.5,clubs:['Getafe','Osasuna','Alavés','Rayo Vallecano','Mallorca']},
-  {min:12.5,pr:4.5,clubs:['Real Sociedad','Villarreal','Sevilla','Athletic Club','Real Betis','Valencia']},
+  {min:11,pr:3.5,clubs:['Getafe','Osasuna','Alavés','Rayo Vallecano','Mallorca','Espanyol','Las Palmas','Leganés','Real Valladolid']},
+  {min:12.5,pr:4.5,clubs:['Real Sociedad','Villarreal','Sevilla','Athletic Club','Real Betis','Valencia','Celta Vigo','Girona']},
   {min:15,pr:5.5,clubs:['Atlético Madrid']},
   {min:18.5,pr:8,clubs:['Real Madrid','Barcelona']}]},
  {c:'ENG',div:1,name:'Premier League',cup:'FA Cup',cont:'Champions League',dc:19,matches:38,size:20,lvl:2,down:19,tiers:[
-  {min:12,pr:4.5,clubs:['Brentford','Bournemouth','Fulham','Everton','Crystal Palace']},
+  {min:12,pr:4.5,clubs:['Brentford','Bournemouth','Fulham','Everton','Crystal Palace','Wolverhampton','Nottingham Forest','Ipswich Town','Burnley','Sheffield United']},
   {min:14,pr:5.5,clubs:['Aston Villa','Newcastle','Tottenham','West Ham','Brighton']},
   {min:17,pr:7,clubs:['Manchester City','Liverpool','Arsenal','Manchester United','Chelsea']}]},
- {c:'ARG',div:1,name:'Liga Profesional',cup:'Copa Argentina',cont:'Copa Libertadores',dc:13,matches:27,size:28,lvl:0,down:11,tiers:[
-  {min:0,pr:0,clubs:['Sarmiento','Platense','Barracas Central','Tigre','Banfield']},
-  {min:6,pr:1,clubs:['Lanús','Vélez Sarsfield','Estudiantes','Talleres','Rosario Central',"Newell's Old Boys"]},
+ {c:'ARG',div:1,name:'Liga Profesional',cup:'Copa Argentina',cont:'Copa Libertadores',dc:13,matches:38,size:20,lvl:0,down:11,tiers:[
+  {min:0,pr:0,clubs:['Sarmiento','Platense','Barracas Central','Tigre','Banfield','Huracán','Gimnasia La Plata','Defensa y Justicia']},
+  {min:6,pr:1,clubs:['Lanús','Vélez Sarsfield','Estudiantes','Talleres','Rosario Central',"Newell's Old Boys",'Argentinos Juniors']},
   {min:7.5,pr:2,clubs:['Boca Juniors','River Plate','Racing Club','Independiente','San Lorenzo']}]},
- {c:'URU',div:1,name:'Primera División',cup:'Copa AUF Uruguay',cont:'Copa Libertadores',dc:12,matches:30,size:16,lvl:0,down:12,tiers:[
-  {min:0,pr:-.3,clubs:['Cerro','Boston River','Racing de Montevideo','Progreso']},
-  {min:5.5,pr:.2,clubs:['Defensor Sporting','Danubio','Liverpool de Montevideo','Montevideo Wanderers']},
+ {c:'URU',div:1,name:'Primera División',cup:'Copa AUF Uruguay',cont:'Copa Libertadores',dc:12,matches:38,size:20,lvl:0,down:12,tiers:[
+  {min:0,pr:-.3,clubs:['Cerro','Boston River','Racing de Montevideo','Progreso','Deportivo Maldonado','Plaza Colonia','Miramar Misiones','Montevideo City Torque','Tacuarembó','Atenas','Central Español','Sud América']},
+  {min:5.5,pr:.2,clubs:['Defensor Sporting','Danubio','Liverpool de Montevideo','Montevideo Wanderers','River Plate Montevideo','Cerro Largo']},
   {min:7,pr:1,clubs:['Peñarol','Nacional']}]},
- {c:'POR',div:1,name:'Liga Portugal',cup:'Taça de Portugal',cont:'Champions League',dc:14,matches:34,size:18,lvl:0,down:13,tiers:[
-  {min:8,pr:1.5,clubs:['Arouca','Estoril','Gil Vicente','Rio Ave']},
-  {min:9,pr:2.3,clubs:['Braga','Vitória de Guimarães','Famalicão','Moreirense']},
+ {c:'POR',div:1,name:'Liga Portugal',cup:'Taça de Portugal',cont:'Champions League',dc:14,matches:38,size:20,lvl:0,down:13,tiers:[
+  {min:8,pr:1.5,clubs:['Arouca','Estoril','Gil Vicente','Rio Ave','Estrela da Amadora','CD Nacional','AVS','Boavista','Farense','Vizela','Portimonense']},
+  {min:9,pr:2.3,clubs:['Braga','Vitória de Guimarães','Famalicão','Moreirense','Santa Clara','Casa Pia']},
   {min:10.5,pr:3,clubs:['Benfica','Porto','Sporting CP']}]},
- {c:'NED',div:1,name:'Eredivisie',cup:'KNVB Beker',cont:'Champions League',dc:14,matches:34,size:18,lvl:0,down:14,tiers:[
-  {min:8,pr:1.5,clubs:['Heracles','Go Ahead Eagles','NEC','Sparta Rotterdam']},
-  {min:9,pr:2.3,clubs:['AZ','Twente','Utrecht','Heerenveen']},
+ {c:'NED',div:1,name:'Eredivisie',cup:'KNVB Beker',cont:'Champions League',dc:14,matches:38,size:20,lvl:0,down:14,tiers:[
+  {min:8,pr:1.5,clubs:['Heracles','Go Ahead Eagles','NEC','Sparta Rotterdam','NAC Breda','Almere City','RKC Waalwijk','Excelsior','FC Volendam','FC Emmen']},
+  {min:9,pr:2.3,clubs:['AZ','Twente','Utrecht','Heerenveen','Fortuna Sittard','PEC Zwolle','Groningen']},
   {min:10.5,pr:3,clubs:['Ajax','PSV','Feyenoord']}]},
  {c:'BRA',div:2,name:'Série B',cup:'Copa do Brasil',cont:null,dc:11,matches:38,size:20,lvl:0,up:0,tiers:[
-  {min:0,pr:-1,clubs:['Ituano','Novorizontino','Operário','Paysandu','Avaí']},
-  {min:3,pr:-.5,clubs:['Goiás','Coritiba','Ponte Preta','América Mineiro','Chapecoense']}]},
- {c:'ARG',div:2,name:'Primera Nacional',cup:'Copa Argentina',cont:null,dc:11,matches:34,size:18,lvl:0,up:6,tiers:[
-  {min:0,pr:-1,clubs:['Almirante Brown','Chacarita Juniors','Ferro Carril Oeste','All Boys']},
-  {min:3,pr:-.5,clubs:['Quilmes','Colón','Arsenal de Sarandí']}]},
- {c:'URU',div:2,name:'Segunda División',cup:'Copa AUF Uruguay',cont:null,dc:10,matches:22,size:14,lvl:0,up:7,tiers:[
-  {min:0,pr:-1.3,clubs:['Rampla Juniors','Fénix','Juventud','Uruguay Montevideo']},
-  {min:3,pr:-.8,clubs:['Cerrito','Rentistas','Villa Española']}]},
- {c:'POR',div:2,name:'Liga Portugal 2',cup:'Taça de Portugal',cont:null,dc:12,matches:34,size:18,lvl:0,up:8,tiers:[
-  {min:6,pr:-.5,clubs:['Feirense','Leixões','Académico de Viseu','Penafiel']},
-  {min:7,pr:0,clubs:['Marítimo','Académica','Paços de Ferreira']}]},
+  {min:0,pr:-1,clubs:['Ituano','Novorizontino','Operário','Paysandu','Avaí','CRB','Amazonas','Remo','Botafogo-SP','Londrina']},
+  {min:3,pr:-.5,clubs:['Goiás','Coritiba','Ponte Preta','América Mineiro','Chapecoense','Atlético Goianiense','Cuiabá','Criciúma','Guarani','Vila Nova']}]},
+ {c:'ARG',div:2,name:'Primera Nacional',cup:'Copa Argentina',cont:null,dc:11,matches:38,size:20,lvl:0,up:6,tiers:[
+  {min:0,pr:-1,clubs:['Almirante Brown','Chacarita Juniors','Ferro Carril Oeste','All Boys','Tristán Suárez','Deportivo Morón','Chaco For Ever','Agropecuario','Defensores de Belgrano','Mitre','Temperley','Nueva Chicago','San Telmo']},
+  {min:3,pr:-.5,clubs:['Quilmes','Colón','Arsenal de Sarandí','Aldosivi','San Martín de Tucumán','Gimnasia de Mendoza','Atlanta']}]},
+ {c:'URU',div:2,name:'Segunda División',cup:'Copa AUF Uruguay',cont:null,dc:10,matches:38,size:20,lvl:0,up:7,tiers:[
+  {min:0,pr:-1.3,clubs:['Rampla Juniors','Fénix','Juventud','Uruguay Montevideo','Potencia','Huracán Buceo','Bella Vista','Rocha','Canadian','Colón FC','Durazno','Salto','Paysandú FC']},
+  {min:3,pr:-.8,clubs:['Cerrito','Rentistas','Villa Española','Basáñez','Oriental','Albion','La Luz']}]},
+ {c:'POR',div:2,name:'Liga Portugal 2',cup:'Taça de Portugal',cont:null,dc:12,matches:38,size:20,lvl:0,up:8,tiers:[
+  {min:6,pr:-.5,clubs:['Feirense','Leixões','Académico de Viseu','Penafiel','Mafra','Alverca','Felgueiras','União de Leiria','Varzim','Trofense','Benfica B','Porto B']},
+  {min:7,pr:0,clubs:['Marítimo','Académica','Paços de Ferreira','Tondela','Chaves','Oliveirense','Torreense','Belenenses']}]},
  {c:'NED',div:2,name:'Eerste Divisie',cup:'KNVB Beker',cont:null,dc:12,matches:38,size:20,lvl:0,up:9,tiers:[
-  {min:6,pr:-.5,clubs:['Den Bosch','Telstar','Dordrecht','MVV']},
-  {min:7,pr:0,clubs:['Roda JC','ADO Den Haag','Vitesse','Willem II']}]},
+  {min:6,pr:-.5,clubs:['Den Bosch','Telstar','Dordrecht','MVV','Helmond Sport','Jong Ajax','Jong PSV','TOP Oss','Jong AZ','Jong Utrecht','Achilles 29','FC Lisse']},
+  {min:7,pr:0,clubs:['Roda JC','ADO Den Haag','Vitesse','Willem II','Cambuur','De Graafschap','VVV-Venlo','FC Eindhoven']}]},
  {c:'ITA',div:2,name:'Serie B',cup:'Coppa Italia',cont:null,dc:14,matches:38,size:20,lvl:1,up:1,tiers:[
-  {min:8.5,pr:.5,clubs:['Cittadella','Modena','Spezia','Bari','Palermo']},
-  {min:9.5,pr:1,clubs:['Sampdoria','Cremonese','Salernitana','Sassuolo','Pisa']}]},
- {c:'FRA',div:2,name:'Ligue 2',cup:'Coupe de France',cont:null,dc:13,matches:34,size:18,lvl:1,up:2,tiers:[
-  {min:8.5,pr:.5,clubs:['Annecy','Grenoble','Laval','Rodez','Guingamp']},
-  {min:9.5,pr:1,clubs:['Saint-Étienne','Bordeaux','Caen','Metz','Lorient']}]},
- {c:'GER',div:2,name:'2. Bundesliga',cup:'DFB-Pokal',cont:null,dc:14,matches:34,size:18,lvl:1,up:3,tiers:[
-  {min:8.5,pr:.5,clubs:['Paderborn','Elversberg','Darmstadt','Karlsruher SC','Magdeburg']},
-  {min:9.5,pr:1,clubs:['Hamburger SV','Schalke 04','Hertha BSC','Köln','Hannover 96']}]},
- {c:'ESP',div:2,name:'Segunda División',cup:'Copa del Rey',cont:null,dc:14,matches:42,size:22,lvl:1,up:4,tiers:[
-  {min:8.5,pr:.7,clubs:['Mirandés','Eibar','Huesca','Burgos','Racing Santander']},
-  {min:9.5,pr:1.2,clubs:['Sporting Gijón','Real Zaragoza','Deportivo La Coruña','Málaga','Real Oviedo']}]},
- {c:'ENG',div:2,name:'Championship',cup:'FA Cup',cont:null,dc:15,matches:46,size:24,lvl:1,up:5,tiers:[
-  {min:9,pr:1,clubs:['Preston North End','Millwall','Blackburn Rovers','QPR','Hull City']},
-  {min:10,pr:1.5,clubs:['Leeds United','Sunderland','Leicester City','Southampton','Norwich City']}]}
+  {min:8.5,pr:.5,clubs:['Cittadella','Modena','Spezia','Bari','Palermo','Cosenza','Juve Stabia','Mantova','Carrarese','Cesena']},
+  {min:9.5,pr:1,clubs:['Sampdoria','Cremonese','Salernitana','Sassuolo','Pisa','Brescia','Frosinone','Catanzaro','Südtirol','Reggiana']}]},
+ {c:'FRA',div:2,name:'Ligue 2',cup:'Coupe de France',cont:null,dc:13,matches:38,size:20,lvl:1,up:2,tiers:[
+  {min:8.5,pr:.5,clubs:['Annecy','Grenoble','Laval','Rodez','Guingamp','Dunkerque','Martigues','Quevilly-Rouen','Valenciennes','Sochaux']},
+  {min:9.5,pr:1,clubs:['Saint-Étienne','Bordeaux','Caen','Metz','Lorient','Amiens','Troyes','Bastia','Pau','Red Star']}]},
+ {c:'GER',div:2,name:'2. Bundesliga',cup:'DFB-Pokal',cont:null,dc:14,matches:38,size:20,lvl:1,up:3,tiers:[
+  {min:8.5,pr:.5,clubs:['Paderborn','Elversberg','Darmstadt','Karlsruher SC','Magdeburg','Jahn Regensburg','Preußen Münster','SSV Ulm','Dynamo Dresden','1860 München']},
+  {min:9.5,pr:1,clubs:['Hamburger SV','Schalke 04','Hertha BSC','Köln','Hannover 96','Kaiserslautern','Greuther Fürth','Hansa Rostock','Arminia Bielefeld','Eintracht Braunschweig']}]},
+ {c:'ESP',div:2,name:'Segunda División',cup:'Copa del Rey',cont:null,dc:14,matches:38,size:20,lvl:1,up:4,tiers:[
+  {min:8.5,pr:.7,clubs:['Mirandés','Eibar','Huesca','Burgos','Racing Santander','Albacete','Cartagena','Córdoba','Tenerife','Castellón']},
+  {min:9.5,pr:1.2,clubs:['Sporting Gijón','Real Zaragoza','Deportivo La Coruña','Málaga','Real Oviedo','Levante','Granada','Elche','Almería','Cádiz']}]},
+ {c:'ENG',div:2,name:'Championship',cup:'FA Cup',cont:null,dc:15,matches:38,size:20,lvl:1,up:5,tiers:[
+  {min:9,pr:1,clubs:['Preston North End','Millwall','Blackburn Rovers','QPR','Hull City','Bristol City','Cardiff City','Derby County','Plymouth Argyle','Swansea City']},
+  {min:10,pr:1.5,clubs:['Leeds United','Sunderland','Leicester City','Southampton','Norwich City','Middlesbrough','Coventry City','West Brom','Watford','Stoke City']}]}
 ];
 const HOME={BRA:[0,10],ARG:[6,11],URU:[7,12],POR:[8,13],NED:[9,14],ITA:[1,15],FRA:[2,16],GER:[3,17],ESP:[4,18],ENG:[5,19]};
 const REGION={BRA:'sa',ARG:'sa',URU:'sa',POR:'mid',NED:'mid',ITA:'top',FRA:'top',GER:'top',ESP:'top',ENG:'top'};
@@ -577,8 +669,8 @@ const T={
 en:{
  tag:'A football career in dice',seasonAge:(y,a)=>`Season ${y} · age ${a}`,retired:'Retired',newCareer:'New career',wipe:'Tap again to wipe',
  themeDark:'Dark',themeLight:'Light',installIOS:'Install: tap Share, then Add to Home Screen',installBtn:'Install app',
- tabGame:'Career',tabHof:n=>`Hall of Fame${n?` (${n})`:''}`,
- attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Decisions',lead:'Leadership'},attrsS:{spd:'Speed',fin:'Finish.',ski:'Skills',pas:'Passing',def:'Defend.',str:'Physical',dec:'Decis.',lead:'Leader.'},
+ tabGame:'Game',tabSeason:'Season',tabStats:'Career',tabHof:n=>`Hall of Fame${n?` (${n})`:''}`,
+ attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Decisions',lead:'Leadership'},attrs3:{spd:'SPD',fin:'FIN',ski:'SKL',pas:'PAS',def:'DEF',str:'PHY',dec:'DEC',lead:'LDR'},attrsS:{spd:'Speed',fin:'Finish.',ski:'Skills',pas:'Passing',def:'Defend.',str:'Physical',dec:'Decis.',lead:'Leader.'},
  unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 20 · mod ${m}`,
  div2:'2nd division',
  newRoll:'New career · 8d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
@@ -612,6 +704,10 @@ en:{
  soundOn:'Turn sound on',soundOff:'Turn sound off',
  teamT:'Team level',teamLv:['Elite','Contender','Solid','Modest','Underdog'],teamRank:(r,n)=>`${r} of ${n}`,
  offersT:'You received these offers:',firedT:'Find a new club',stayBtn:'Stay',stayDesc:'Keep going where you are.',decideLater:'Decide later',openWindow:'Open the transfer window',windowHint:n=>n?`${n} club${n>1?'s':''} made you an offer.`:'No new offers this window.',
+ noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
+ statsT:'Career numbers',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
+ awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
+ leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  mvKicker:'Transfer',mvTitle:c=>`Join ${c}?`,mvGo:c=>`Confirm transfer to ${c}`,mvStay:c=>`Stay at ${c}`,
  mvLegend:c=>`You’re a ${c} legend. Your name is on the walls of the stadium. Leaving now would break hearts.`,
  mvGreats:c=>`You’re becoming one of the greats here. ${c} fans already talk about you next to the club’s idols.`,
@@ -702,8 +798,8 @@ en:{
 pt:{
  tag:'Uma carreira no futebol, nos dados',seasonAge:(y,a)=>`Temporada ${y} · ${a} anos`,retired:'Aposentado',newCareer:'Nova carreira',wipe:'Toque de novo para apagar',
  themeDark:'Escuro',themeLight:'Claro',installIOS:'Instalar: toque em Compartilhar e depois em Adicionar à Tela de Início',installBtn:'Instalar app',
- tabGame:'Carreira',tabHof:n=>`Hall da Fama${n?` (${n})`:''}`,
- attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Liderança'},attrsS:{spd:'Veloc.',fin:'Final.',ski:'Habil.',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Lider.'},
+ tabGame:'Jogo',tabSeason:'Temporada',tabStats:'Carreira',tabHof:n=>`Hall da Fama${n?` (${n})`:''}`,
+ attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Liderança'},attrs3:{spd:'VEL',fin:'FIN',ski:'HAB',pas:'PAS',def:'DEF',str:'FÍS',dec:'DEC',lead:'LID'},attrsS:{spd:'Veloc.',fin:'Final.',ski:'Habil.',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Lider.'},
  unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 20 · mod ${m}`,
  div2:'2ª divisão',
  newRoll:'Nova carreira · 8d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
@@ -737,6 +833,10 @@ pt:{
  soundOn:'Ligar o som',soundOff:'Desligar o som',
  teamT:'Nível do time',teamLv:['Elite','Candidato','Sólido','Modesto','Azarão'],teamRank:(r,n)=>`${r} de ${n}`,
  offersT:'Você recebeu estas propostas:',firedT:'Procure um novo clube',stayBtn:'Ficar',stayDesc:'Seguir onde você está.',decideLater:'Decidir depois',openWindow:'Abrir a janela de transferências',windowHint:n=>n?`${n} clube${n>1?'s':''} te fez uma proposta.`.replace('clubes te fez','clubes te fizeram'):'Nenhuma proposta nova nesta janela.',
+ noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
+ statsT:'Números da carreira',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
+ awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
+ leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  mvKicker:'Transferência',mvTitle:c=>`Ir para o ${c}?`,mvGo:c=>`Confirmar ida para o ${c}`,mvStay:c=>`Ficar no ${c}`,
  mvLegend:c=>`Você é lenda do ${c}. Seu nome está nos muros do estádio. Sair agora partiria corações.`,
  mvGreats:c=>`Você está virando um dos grandes daqui. A torcida do ${c} já fala de você ao lado dos ídolos do clube.`,
@@ -830,7 +930,7 @@ try{const th=localStorage.getItem(THEMEKEY);if(th==='dark'||th==='light')documen
 const LANGKEY='rpgoal-lang', HOFKEY='rpgoal-hof', VIEWKEY='rpgoal-view';
 let lang=(()=>{try{const v=localStorage.getItem(LANGKEY);if(v)return v}catch(e){}return (navigator.language||'').toLowerCase().startsWith('pt')?'pt':'en'})();
 let t=T[lang];
-let view=(()=>{try{return localStorage.getItem(VIEWKEY)==='hof'?'hof':'game'}catch(e){return'game'}})();
+let view=(()=>{try{const v=localStorage.getItem(VIEWKEY);return ['hof','season','stats','ach'].includes(v)?v:'game'}catch(e){return'game'}})();
 const ord=n=>{if(lang==='pt')return n+'º';const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
 
 /* ---------- helpers ---------- */
@@ -974,7 +1074,13 @@ function teamStr(n){
   return S.teams[n];
 }
 /* clubs currently in a league: its own list plus your club if it arrived by promotion */
-function leagueClubs(Li){const l=[];LEAGUES[Li].tiers.forEach(tr=>tr.clubs.forEach(n=>l.push(n)));if(S.club&&S.club.league===Li&&!l.includes(S.club.name))l.push(S.club.name);return l}
+function leagueClubs(Li){
+  const l=[];LEAGUES[Li].tiers.forEach(tr=>tr.clubs.forEach(n=>l.push(n)));
+  if(S.club&&S.club.league===Li&&!l.includes(S.club.name)){
+    // your club came up (or went down): it replaces the club that went the other way, so the league stays at 20
+    l.sort((a,b)=>teamStr(a)-teamStr(b)); if(LEAGUES[Li].div===1)l.shift(); else l.pop(); l.push(S.club.name);
+  }
+  return l}
 function clubRank(n,Li){
   const l=leagueClubs(Li).map(c=>({c,v:teamStr(c)})).sort((a,b)=>b.v-a.v);
   const i=l.findIndex(x=>x.c===n);return{rank:i+1,of:l.length,frac:l.length>1?i/(l.length-1):0};
@@ -1049,7 +1155,7 @@ function resolveStage(v1,v2){
   let nat=v1;
   if(fx.mode&&v2!=null){r.pair=[v1,v2];nat=fx.mode==='adv'?Math.max(v1,v2):Math.min(v1,v2)}
   r.nat=nat;
-  if(s.out>0){r.missed=true;r.pm=0;r.kb=0;r.team=2;r.total=nat+cm+2;s.out--}
+  if(s.out>0){r.missed=true;r.pm=0;r.kb=0;r.team=2;r.total=nat+cm+2;s.out--;(s.away=s.away||[]).push(s.idx)}
   else{
     r.pm=pmod(rating(S.attrs)); r.kb=keyBonus(S.attrs[st.key]); r.buff=fx.buff; r.loy=st.comp==='wc'?0:loyBonus();
     r.raw=r.pm+cm+r.kb+r.buff+r.loy; r.mods=capMods(r.raw); r.hot=s.hot>0?2:0; if(s.hot>0)s.hot--;
@@ -1115,6 +1221,7 @@ function wcCallUp(s){
 }
 function nextStage(){
   const s=S.season; s.last=null;
+  if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
   if(isWCYear(S.year)&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
     const add=wcCallUp(s);
@@ -1141,6 +1248,7 @@ function grow(){
 }
 function endSeason(){
   const s=S.season, L=LEAGUES[S.club.league];
+  if(s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}
   const v5=(s.v||4)>=5, lgs=s.stages.filter(x=>x.comp==='league'&&x.res&&!x.res.skipped);
   const goods=lgs.filter(x=>x.res.kind<=1).length, fails=lgs.filter(x=>x.res.kind===4).length;
   // a 20-team table, stretched to the real league size
@@ -1366,7 +1474,7 @@ function attrBars(a,before){
 function teamBar(){
   if(!S.club||S.phase==='create')return'';
   const r=clubRank(S.club.name,S.club.league), lv=teamLevel(r.frac), v=teamStr(S.club.name), w=clamp((v-35)/(95-35)*100,3,100);
-  return `<div class="fanbar teambar tl${lv}" aria-label="${t.teamT}: ${t.teamLv[lv]}"><div class="fb-head"><span class="lbl">${t.teamT}</span><span class="fb-state">${t.teamLv[lv]} · ${t.teamRank(ord(r.rank),r.of)}</span></div>
+  return `<div class="fanbar teambar tl${lv}" aria-label="${t.teamT}: ${t.teamLv[lv]}"><div class="fb-head"><span class="lbl">${t.teamT}</span><span class="fb-state">${t.teamLv[lv]}</span></div>
     <div class="fb-track"><span class="fb-fill" style="width:${w.toFixed(1)}%"></span></div></div>`;
 }
 function fanBar(){
@@ -1377,7 +1485,7 @@ function fanBar(){
     <div class="fb-track"><span class="fb-fill" style="width:${lv===6?100:Math.min(Math.max(3,pos(L)),lv===5?78:100)}%"></span>${ticks}</div>
     <div class="fb-scale"><span style="left:0">${t.fanScale[0]}</span><span style="left:${pos(0)}%">${t.fanScale[1]}</span><span>${t.fanScale[2]}</span></div></div>`;
 }
-const aLbl=k=>`<span class="lfull">${t.attrs[k]}</span><span class="lshort">${t.attrsS[k]}</span>`;
+const aLbl=k=>`<span class="lfull">${t.attrs[k]}</span><span class="lshort">${t.attrsS[k]}</span><span class="l3">${t.attrs3[k]}</span>`;
 const leagueLine=Li=>`${LEAGUES[Li].name} · ${lgCountry(Li)}${LEAGUES[Li].div===2?` · ${t.div2}`:''}`;
 function sheet(){
   const r=rating(S.attrs), s=S.season;
@@ -1385,7 +1493,7 @@ function sheet(){
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:'';
   return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted clubline">${crest(kitOf(S.club.name),14)}<span>${esc(S.club.name)} · ${leagueLine(S.club.league)}</span></div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.phase==='season'&&S.season&&S.season.stages.some(x=>x.comp==='cont'||x.comp==='cont2')?`<span class="chip">${qualName(S.season.stages.some(x=>x.comp==='cont2')?'second':'main',S.club.league)}</span>`:''}${wcChip}</div></div>
   <div class="rating"><div class="lbl">${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
-  ${fanBar()}${teamBar()}<div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div></section>`;
+  <div class="bars">${fanBar()}${teamBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div></section>`;
 }
 function offerCard(o,i,act,euro){
   const riv=act==='sign'&&S.club&&isRival(S.club.name,o.name);
@@ -1487,7 +1595,7 @@ function stageCard(){
       else{const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     }
   }
-  const sim=s.pendingHeal||s.careerOver||s.pickAttr?'':`<button class="btn ghost sm" data-act="simrest">${t.simRest}</button>`;
+  const sim=s.pendingHeal||s.careerOver||s.pickAttr?'':`<button class="btn ghost sm" data-act="simrest"><span class="tl-l">${t.simRest}</span><span class="tl-s">${t.simShort}</span></button>`;
   const autoNote=s.out>0&&!s.pendingHeal&&!s.careerOver?`<div class="banner bad">${s.carried&&!s.seasonOut&&s.idx<2?t.stillOut+' ':''}${t.autoPlay}</div>`:'';
   const notes=autoNote+(S.notes||[]).filter(Array.isArray).map(([k,...a])=>`<div class="banner">${typeof t[k]==='function'?t[k](...a.map(esc)):t[k]}</div>`).join('');
   return `<section class="panel hero"><div class="stage">${dice}<div class="stack" style="gap:10px">${notes}${banner}${body}<div class="row">${act}${sim}</div></div></div></section>`;
@@ -1588,8 +1696,7 @@ function careerView(){
 }
 let hofSub='players';
 function hofView(){
-  const sub=`<div class="subtabs" role="group"><button data-act="hofsub" data-v="players" aria-pressed="${hofSub==='players'}">${t.hofPlayers}</button><button data-act="hofsub" data-v="ach" aria-pressed="${hofSub==='ach'}">${t.achPage}</button></div>`;
-  return sub+(hofSub==='ach'?`<section class="stack" style="gap:14px">${achView()}</section>`:hofPlayers());
+  return hofPlayers();
 }
 function hofPlayers(){
   const hof=loadHof().sort((a,b)=>b.score-a.score);
@@ -1617,19 +1724,23 @@ function render(){
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
   const isDark=effTheme()==='dark';
   const sndBtn=`<button class="theme-btn icon" data-act="sound" aria-pressed="${soundOn}" aria-label="${soundOn?t.soundOff:t.soundOn}" title="${soundOn?t.soundOff:t.soundOn}"><svg viewBox="0 0 16 16"><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z"/>${soundOn?'<path d="M10.4 5.6a3.2 3.2 0 0 1 0 4.8M12.3 3.8a5.8 5.8 0 0 1 0 8.4"/>':'<path d="M10.6 6.2l3.6 3.6M14.2 6.2l-3.6 3.6"/>'}</svg></button>`;
-  const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}${isDark?t.themeLight:t.themeDark}</button>`;
+  const themeBtn=`<button class="theme-btn" data-act="theme" aria-label="${isDark?t.themeLight:t.themeDark}">${isDark?'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg>':'<svg viewBox="0 0 16 16"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'}<span class="tl">${isDark?t.themeLight:t.themeDark}</span></button>`;
   const header=`<header class="top"><div class="mark"><svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50.0,26.0 74.0,67.3 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,2.0 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 50.0,26.0" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 74.0,67.3 50.0,26.0" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,26.0 91.6,74.0 74.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="91.6,74.0 50.0,98.0 74.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 74.0,67.3 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,98.0 8.4,74.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,74.0 8.4,26.0 26.0,67.3" fill="#15171c" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="8.4,26.0 50.0,26.0 26.0,67.3" fill="#fafaf7" stroke="#3c4048" stroke-width="2" stroke-linejoin="round"/><polygon points="50.0,2.0 91.6,26.0 91.6,74.0 50.0,98.0 8.4,74.0 8.4,26.0" fill="none" stroke="#15171c" stroke-width="4" stroke-linejoin="round"/></svg><span>RP<b>G</b>oal</span></div><div class="meta">${window.cloudBtn?cloudBtn():''}${sndBtn}${themeBtn}${lt}${S.phase==='create'?`<span class="lbl">${t.tag}</span>`:`<span class="lbl num">${S.phase==='retired'?t.retired:t.seasonAge(S.year,S.age)}</span>${S.phase==='retired'?'':`<button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button>`}`}</div></header>`;
-  const tabs=`<nav class="tabs" role="tablist"><button role="tab" data-act="tab" data-v="game" aria-selected="${view==='game'}">${t.tabGame}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(n)}</button></nav>`;
+  const tabs=`<nav class="tabs" role="tablist"><button role="tab" class="tab-home" data-act="tab" data-v="game" aria-selected="${view==='game'}" aria-label="${t.tabGame}" title="${t.tabGame}"><svg class="tablogo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/><polygon points="50,30 70,63 30,63" fill="currentColor"/><path d="M50,4L50,30M90,27L70,63M10,27L30,63M50,96L70,63M50,96L30,63M90,73L70,63M10,73L30,63" stroke="currentColor" stroke-width="5"/></svg></button>${S.phase==='create'?'':`<button role="tab" data-act="tab" data-v="season" aria-selected="${view==='season'}">${t.tabSeason}</button><button role="tab" data-act="tab" data-v="stats" aria-selected="${view==='stats'}">${t.tabStats}</button>`}<button role="tab" data-act="tab" data-v="ach" aria-selected="${view==='ach'}">${t.achPage}</button><button role="tab" data-act="tab" data-v="hof" aria-selected="${view==='hof'}">${t.tabHof(n)}</button></nav>`;
   let body='';
   if(view==='hof')body=hofView();
+  else if(view==='ach')body=`<section class="stack" style="gap:14px">${achView()}</section>`;
   else if(S.phase==='create')body=createView();
-  else if(S.phase==='season')body=sheet()+stageCard()+tracker()+careerView();
-  else if(S.phase==='offseason')body=sheet()+offseasonView()+careerView();
-  else body=retiredView()+sheet()+careerView();
+  else if(view==='season')body=seasonView();
+  else if(view==='stats')body=statsView();
+  else if(S.phase==='season')body=sheet()+stageCard();
+  else if(S.phase==='offseason')body=sheet()+offseasonView();
+  else body=retiredView()+sheet();
   const key=view+'|'+S.phase+'|'+(S.season?[S.season.idx,S.season.last?S.season.last.stage:'-',(S.season.stages[S.season.idx]||{}).evr?1:0,S.season.pendingHeal?1:0,S.season.inj&&S.season.inj.d10?1:0].join(','):'')+'|'+S.history.length;
   if(key===lastKey)app.dataset.still='1'; else delete app.dataset.still;
   lastKey=key;
   app.innerHTML=header+tabs+body+installRow();
+  const one=view==='game'&&S.phase!=='create';try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
 }
 let lastKey='';
 
@@ -1682,6 +1793,13 @@ const ACH=[
  {id:'oneclub',n:['One-club career','Um clube só'],d:['Spend a whole career at one club (3+ seasons).','Passe a carreira inteira num só clube (3+ temporadas).'],test:()=>S.phase==='retired'&&S.history.length>=3&&S.history.every(h=>h.club===S.history[0].club)&&!(S.endReason&&S.age<30)},
  {id:'stillgotit',n:['Still got it','Ainda dá caldo'],d:['Pass the keep-playing check at 37 or older.','Passe no teste para continuar jogando aos 37 ou mais.'],test:()=>S.history.some(h=>h.ageCheck&&h.ageCheck.ok&&h.age>=37)},
  {id:'forty',n:['Ageless','Sem idade'],d:['Play until you are 40.','Jogue até os 40.'],test:()=>!!S.reached40},
+ {id:'friends',n:['From enemies to friends','De inimigo a amigo'],d:['Go from hated to loved by the same club’s fans.','Passe de odiado a amado pela torcida do mesmo clube.'],test:()=>!!S.club&&S.phase!=='create'&&S.hatedAt===S.club.name&&fanTier()>=4},
+ {id:'goat',n:['The GOAT','O GOAT'],d:['Reach a rating of 20.','Chegue a nível 20.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=20},
+ {id:'wc3',n:['Three stars','Tricampeão do mundo'],d:['Win three World Cups.','Ganhe três Copas do Mundo.'],test:()=>allTrophies().filter(x=>x.kind==='wc').length>=3},
+ {id:'cupking',n:['Cup specialist','Rei de copa'],d:['Win the national cup three times.','Ganhe a copa nacional três vezes.'],test:()=>allTrophies().filter(x=>x.kind==='cup').length>=3},
+ {id:'perfectgroup',n:['Perfect group','Fase de grupos perfeita'],d:['Win all three World Cup group games.','Vença os três jogos da fase de grupos da Copa.'],test:()=>!!(S.season&&S.season.wcg&&S.season.wcg.W>=3)},
+ {id:'hothand',n:['Hot hand','Mão quente'],d:['Roll two natural 20s in one season.','Tire dois 20 naturais na mesma temporada.'],test:()=>!!(S.season&&S.season.rolls&&S.season.rolls.filter(x=>x===20).length>=2)},
+ {id:'twohomes',n:['Two homes','Duas casas'],d:['Become a legend at two different clubs.','Vire lenda em dois clubes diferentes.'],test:()=>new Set((S.legends||[]).map(l=>l.club)).size>=2},
  {id:'fired',bad:1,n:['Shown the door','Porta da rua'],d:['Get released by your club.','Seja dispensado pelo clube.'],test:()=>S.history.some(h=>h.fired)},
  {id:'relegated',bad:1,n:['The drop','Rebaixado'],d:['Get relegated.','Seja rebaixado.'],test:()=>S.history.some(h=>h.move==='down')},
  {id:'judas',bad:1,n:['Judas','Judas'],d:['Sign for your club’s biggest rival.','Assine com o maior rival do seu clube.'],test:()=>(S.rivalMoves||0)>0},
@@ -1691,8 +1809,11 @@ const ACH=[
  {id:'earlyflight',bad:1,n:['Early flight home','Voo de volta antecipado'],d:['Go out of a World Cup in the group stage.','Caia na fase de grupos de uma Copa.'],test:()=>S.history.some(h=>h.wc===0)||!!(S.season&&S.season.wcRes===0)},
  {id:'ouch',bad:1,n:['Ouch','Ai'],d:['Roll a natural 1 and get injured.','Tire um 1 natural e se lesione.'],test:()=>!!(S.season&&S.season.injuries>0)},
  {id:'longroad',bad:1,n:['The long road back','A longa volta'],d:['Suffer an injury that ends your season.','Sofra uma lesão que encerra sua temporada.'],test:()=>!!(S.season&&S.season.seasonOut)},
- {id:'soclose',bad:1,n:['So close','Bateu na trave'],d:['Lose a final.','Perca uma final.'],test:()=>!!(S.season&&S.season.stages.some(x=>x.comp!=='league'&&x.round===lastRound(x.comp)&&x.res&&!x.res.skipped&&!x.res.win))},
+ {id:'soclose',bad:1,n:['Runners-up','Bateu na trave'],d:['Lose a final.','Perca uma final.'],test:()=>!!(S.season&&S.season.stages.some(x=>x.comp!=='league'&&x.round===lastRound(x.comp)&&x.res&&!x.res.skipped&&!x.res.win))},
  {id:'party',bad:1,n:['Party animal','Baladeiro'],d:['Go out the night before and pay for it on the pitch.','Saia na véspera e pague por isso em campo.'],test:()=>!!(S.season&&S.season.stages.some(x=>x.ev==='night'&&x.evr&&!x.evr.ok))},
+ {id:'tooshort',bad:1,n:['Way too short','Curta demais'],d:['Have your career ended by an injury before you turn 25.','Tenha a carreira encerrada por lesão antes dos 25 anos.'],test:()=>!!S.endReason&&S.endReason.age<25},
+ {id:'wcfinal',bad:1,n:['So close…','Tão perto…'],d:['Lose a World Cup final.','Perca uma final de Copa do Mundo.'],test:()=>S.history.some(h=>h.wc===4)||!!(S.season&&S.season.stages.some(x=>x.comp==='wc'&&x.round===4&&x.res&&x.res.win===false))},
+ {id:'unwanted',bad:1,n:['Unwanted','Indesejado'],d:['Get released by two clubs.','Seja dispensado por dois clubes.'],test:()=>S.history.filter(h=>h.fired).length>=2},
  {id:'cruel',bad:1,n:['Cruel game','Jogo cruel'],d:['Have your career ended by an injury.','Tenha a carreira encerrada por uma lesão.'],test:()=>!!S.endReason}
 ];
 let achMem=null;
@@ -1700,10 +1821,11 @@ function loadAch(){if(achMem)return{...achMem};try{achMem=JSON.parse(localStorag
 function saveAch(a){achMem={...a};try{localStorage.setItem(ACHKEY,JSON.stringify(a))}catch(e){}if(window.cloudSync)cloudSync()}
 function checkAch(silent){
   if(!S||S.phase==='create')return;
+  if(S.club&&fanTier()===0)S.hatedAt=S.club.name;
   const got=loadAch(), newly=[];
   ACH.forEach(a=>{if(got[a.id])return;let ok=false;try{ok=a.test()}catch(e){}if(ok){got[a.id]=Date.now();newly.push(a)}});
   if(!newly.length)return;
-  saveAch(got); if(view==='hof'&&hofSub==='ach')render();
+  saveAch(got); if(view==='ach')render();
   if(!silent)newly.forEach(a=>toastQ.push(a));
   showToast();
 }
@@ -1757,6 +1879,16 @@ const ACH_ICON={
  oneclub:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M10.5 8.5l2-1.5v10',
  stillgotit:'M6 3h12 M6 21h12 M7 3c0 5 10 7 10 9s-10 4-10 9 M17 3c0 5-10 7-10 9s10 4 10 9',
  forty:'M4 21h16v-7H4z M4 17.5c2 1 4 1 6 0s4-1 6 0 3 1 4 0 M9 14v-3.5 M15 14v-3.5 M9 8a1 1 0 0 0 0-.1 M15 8a1 1 0 0 0 0-.1',
+ friends:'M3 12l4-4 4 3 3-3 3 1 4 4-5 5-2-2-2 2-3-2-2 1z M7 8l4 4',
+ goat:'M6 4c0 3 1.5 5 3.5 6M18 4c0 3-1.5 5-3.5 6 M9 10h6l1 5-4 5-4-5z M10.5 14h.1 M13.5 14h.1',
+ wc3:'M12 2.5l1.3 2.7 3 .4-2.2 2 .5 3L12 9.2 9.4 10.6l.5-3-2.2-2 3-.4z M6 12l1.3 2.7 3 .4-2.2 2 .5 3L6 18.7l-2.6 1.4.5-3-2.2-2 3-.4z M18 12l1.3 2.7 3 .4-2.2 2 .5 3L18 18.7l-2.6 1.4.5-3-2.2-2 3-.4z',
+ cupking:'M7 3.5h10v4.5a5 5 0 0 1-10 0z M12 13v3.5 M8 21h8 M9.5 16.5h5 M4 5l1.5 1.5L7 5 M17 5l1.5 1.5L20 5',
+ perfectgroup:'M3 6h5v12H3z M9.5 6h5v12h-5z M16 6h5v12h-5z M4.3 12l1 1 1.7-2.2 M10.8 12l1 1 1.7-2.2 M17.3 12l1 1 1.7-2.2',
+ hothand:'M12 21c-4 0-6.5-2.8-6.5-6.5C5.5 10 9 8 9.5 3.5 12 6 13 8 13 10c1-1 1.5-2.2 1.5-3.5C17 9 18.5 11.5 18.5 14.5 18.5 18.2 16 21 12 21z',
+ twohomes:'M2 12l5-4.5 5 4.5 M3.5 11v8.5h7V11 M12 12l5-4.5 5 4.5 M13.5 11v8.5h7V11',
+ tooshort:'M6 3h12 M6 21h12 M7 3c0 5 10 7 10 9s-10 4-10 9 M17 3c0 5-10 7-10 9s10 4 10 9 M9 9l6 6',
+ wcfinal:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z M4 20L20 4',
+ unwanted:'M14 3H5v18h9 M10 12h11 M17 8l4 4-4 4 M2 2l4 4',
  fired:'M14 3H5v18h9 M10 12h11 M17 8l4 4-4 4',
  relegated:'M12 5v14 M6 13l6 6 6-6 M5 3h14',
  judas:'M12 2.5v13 M8 6.5h8 M12 15.5l-2 6h4z',
@@ -1782,13 +1914,59 @@ function achView(){
 }
 
 
+
+/* ---------- Season tab: how this season is going ---------- */
+function compStatus(comp){
+  const s=S.season, st=s.stages.filter(x=>x.comp===comp); if(!st.length)return null;
+  const done=st.filter(x=>x.res&&!x.res.skipped), out=st.some(x=>x.res&&x.res.skipped)||done.some(x=>x.res.win===false&&!x.res.wdl);
+  const champ=done.some(x=>x.res.champ), next=st.find(x=>!x.res);
+  let txt,tone='m';
+  if(champ){txt=t.won;tone='w'}
+  else if(out){const lost=done.filter(x=>x.res.win===false||x.res.wdl==='L').pop()||done[done.length-1];txt=t.outIn(lost?roundName(lost):roundName(st[0]));tone='l'}
+  else if(next){txt=done.length?t.stillIn(roundName(next)):t.startsIn(roundName(next));tone=done.length?'w':'m'}
+  else txt='—';
+  return{name:compName(comp,S.club.league),txt,tone};
+}
+function seasonView(){
+  const s=S.season; if(!s)return `<section class="panel"><div class="muted">${t.noSeason}</div></section>`;
+  const L=LEAGUES[S.club.league], lg=s.stages.filter(x=>x.comp==='league'), played=lg.filter(x=>x.res&&!x.res.skipped);
+  const r=clubRank(S.club.name,S.club.league);
+  let proj='';
+  if(S.phase==='offseason'){const h=S.history[S.history.length-1];proj=`<div class="sv-big">${ord(h.pos)}</div><div class="muted small">${t.finalPos}</div>`}
+  else if(played.length){const p=clamp(Math.round(1+r.frac*(L.size-1)-(s.leagueSum/2.5)*.5*(4/played.length)),1,L.size);proj=`<div class="sv-big">~${ord(p)}</div><div class="muted small">${t.projPos}</div>`}
+  else proj=`<div class="sv-big">—</div><div class="muted small">${t.projPos}</div>`;
+  const chips=lg.map(x=>x.res&&!x.res.skipped?`<span class="res ${x.res.tone==='good'?'w':x.res.tone==='bad'?'l':'m'}">${t.kindShort[x.res.kind]}</span>`:`<span class="res p">${roundShort(x)}</span>`).join('<span class="muted"> · </span>');
+  const comps=['cup','cont','cont2','cwc','wc'].map(compStatus).filter(Boolean).map(c=>`<div class="sv-row"><span>${esc(c.name)}</span><span class="res ${c.tone}">${c.txt}</span></div>`).join('');
+  const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
+  return `<section class="panel stack" style="gap:14px">
+    ${inj}<div class="sv-grid"><div class="sv-card"><span class="lbl">${esc(L.name)}</span>${proj}<div class="sv-chips">${chips}</div></div>
+      <div class="sv-card"><span class="lbl">${t.teamT}</span><div class="sv-big">${t.teamLv[teamLevel(r.frac)]}</div><div class="muted small">${esc(S.club.name)}</div></div></div>
+    ${comps?`<div class="sv-list">${comps}</div>`:''}
+    ${S.phase==='season'&&!s.pendingHeal&&!s.careerOver&&!s.pickAttr?`<div class="row"><button class="btn ghost sm" data-act="simrest">${t.simRest}</button></div>`:''}
+  </section>`+tracker();
+}
+/* ---------- Stats tab ---------- */
+function statsView(){
+  const H=S.history;
+  if(!H.length)return `<section class="panel"><div class="muted">${t.noStats}</div></section><div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`;
+  const tot=k=>H.reduce((a,h)=>a+(h[k]||0),0), peak=Math.max(...H.map(h=>h.rating));
+  const byClub=[];H.forEach(h=>{let c=byClub.find(x=>x.club===h.club);if(!c){c={club:h.club,seasons:0,apps:0,goals:0,assists:0,titles:0};byClub.push(c)}c.seasons++;c.apps+=h.apps;c.goals+=h.goals;c.assists+=h.assists;c.titles+=h.trophies.filter(x=>x.kind!=='bdo').length});
+  const bestBdo=H.filter(h=>h.bdo).reduce((a,h)=>Math.min(a,h.bdo),99), wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
+  const clubs=byClub.map(c=>`<div class="srow"><div class="syr">${crest(kitOf(c.club),18)}</div><div style="min-width:0"><div class="sclub">${esc(c.club)}</div><div class="sleague">${t.seasonsN(c.seasons)}${c.titles?` · ${t.titlesN(c.titles)}`:''}</div></div>
+    <div class="sstats num"><span class="lbl">${t.apps}</span><span class="lbl">G</span><span class="lbl">A</span><span class="lbl">${t.gpg}</span><b>${c.apps}</b><b>${c.goals}</b><b>${c.assists}</b><b>${c.apps?(c.goals/c.apps).toFixed(2):'—'}</b></div></div>`).join('');
+  return `<section class="panel stack" style="gap:12px"><h3 style="font-size:22px">${t.statsT}</h3>
+    <div class="statline"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.apps}</div><div class="n num">${tot('apps')}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.assists}</div><div class="n num">${tot('assists')}</div></div></div>
+    <div class="statline"><div class="stat"><div class="lbl">${t.peakT}</div><div class="n num">${fmt(peak)}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.filter(x=>x.kind!=='bdo').length}</div></div><div class="stat"><div class="lbl">${t.bdo}</div><div class="n num">${bestBdo<99?ord(bestBdo):'—'}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
+    <span class="lbl">${t.byClub}</span><div class="seasons">${clubs}</div></section>`+careerView()+(S.phase!=='retired'?`<div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`:'');
+}
+
 /* ---------- transfer window pop-up ---------- */
 function windowHTML(){
   const h=S.history[S.history.length-1], after=clubAfterMove(h), offers=S.offers||[];
   const row=(k,name,league,sub,btn,act,extra='',tags='')=>`<div class="wopt ${k}">${crest(kitOf(name),30)}<div class="wopt-t"><b>${esc(name)}</b><span>${esc(LEAGUES[league].name)} · ${lgCountry(league)}${LEAGUES[league].div===2?` · ${t.div2}`:''}</span>${sub?`<span class="wsub">${sub}</span>`:''}${tags}</div>${extra}<button class="btn sm" ${act}>${btn}</button></div>`;
   const tagsFor=o=>{const tg=[];if(S.club&&isRival(S.club.name,o.name))tg.push(`<span class="wtag bad">${t.rivalTag(esc(S.club.name))}</span>`);if(o.mode)tg.push(`<span class="wtag">${o.mode==='home'?t.homeT:t.reunionTag}</span>`);
     const r=clubRank(o.name,o.league);tg.push(`<span class="wtag dim">${t.teamLv[teamLevel(r.frac)]}</span>`);return tg.join('')};
-  const list=offers.map((o,i)=>row('',o.name,o.league,'',t.sign,`data-ov="sign" data-i="${i}"`,'',tagsFor(o))).join('');
+  const list=offers.map((o,i)=>`<div class="wcard">${crest(kitOf(o.name),26)}<b>${esc(o.name)}</b><span class="wl">${esc(LEAGUES[o.league].name)}</span><div class="wtags">${tagsFor(o)}</div><button class="btn sm" data-ov="sign" data-i="${i}">${t.sign}</button></div>`).join('');
   const stay=h.fired?'':row('stay',S.club.name,after.league,t.stayDesc,t.stayBtn,'data-ov="stay"');
   let fc='';
   if(S.age>=30&&!S.lockedIn){
@@ -1800,7 +1978,9 @@ function windowHTML(){
   return `<div class="ovcard window"><span class="ov-kicker">${t.window} · ${t.nextAge(S.age+1)}</span>
     <h2 class="ov-title" style="font-size:26px">${h.fired?t.firedT:t.offersT}</h2>
     ${h.fired?`<div class="ov-sub2">${t.fired(esc(h.club))}</div>`:''}${h.scout?`<div class="ov-sub2">${t.scouted}</div>`:''}
-    <div class="wlist">${list||`<div class="ov-sub2">${h.fired?t.noClub:t.noOffers}</div>`}${stay}</div>
+    <span class="lbl wsec">${t.leaveT}</span>
+    ${list?`<div class="wcards n${offers.length}">${list}</div>`:`<div class="ov-sub2">${h.fired?t.noClub:t.noOffers}</div>`}
+    ${stay?`<span class="lbl wsec">${t.stayT}</span><div class="wlist">${stay}</div>`:''}
     ${fc?`<span class="lbl" style="align-self:flex-start">${t.finalT}</span><div class="wlist">${fc}</div>`:''}
     <button class="linkb" data-ov="close">${t.decideLater}</button></div>`;
 }
@@ -1878,6 +2058,11 @@ function ovHTML(o){
   if(o.k==='bdo')return `<div class="ovcard champ gold">${goldBall()}<span class="ov-kicker">${t.bdo} · ${o.year}</span><h2 class="ov-title">${esc(S.name||t.unnamed)}</h2><div class="ov-sub">${t.ovBdoSub(o.year)}</div>${tap}</div>`;
   if(o.k==='career')return recapHTML();
   if(o.k==='window')return windowHTML();
+  if(o.k==='away'){
+    const s=S.season, rows=o.items.map(i=>s.stages[i]).filter(Boolean).map(st=>{const r=st.res||{};const word=st.comp==='league'?t.kindShort[r.kind]:r.wdl?t.wdl[r.wdl]:r.champ?t.won:r.win?t.through:t.out;
+      return `<div class="sv-row"><span>${st.comp==='league'?'':esc(compName(st.comp,S.club.league))+' · '}${roundShort(st)}${st.opp?` <span class="topp">· ${t.vsOpp(esc(oppName(st)))}</span>`:''}</span><span class="res ${r.tone==='good'?'w':r.tone==='bad'?'l':'m'}">${word}</span></div>`}).join('');
+    return `<div class="ovcard window"><span class="ov-kicker">${t.injT}</span><h2 class="ov-title" style="font-size:26px">${t.awayT}</h2><div class="ov-sub2">${t.awaySub(o.items.length)}</div><div class="sv-list away">${rows}</div><button class="btn" data-ov="close">${t.awayBack}</button></div>`;
+  }
   if(o.k==='retire')return `<div class="ovcard move"><span class="ov-kicker">${t.retire}</span><h2 class="ov-title" style="font-size:28px">${t.retireT}</h2><div class="ov-sub2">${t.retireDesc}</div>
       <button class="btn danger" data-ov="go">${t.retireYes}</button><button class="btn ghost" data-ov="close">${t.retireNo}</button></div>`;
   if(o.k==='move'){
@@ -1928,12 +2113,13 @@ function closeOv(){
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='window'||o.k==='away'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl);
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
   if(o.k==='career')countUp(ovEl);
   ovEl.addEventListener('click',e=>{
+    if(o.k==='away'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='retire'){if(e.target.closest('[data-ov="go"]')){closeOv();retire();commit();window.scrollTo({top:0});return}
       if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='move'){const go=e.target.closest('[data-ov="go"]');if(go){const m=pendingMove;closeOv();doMove(m);return}
@@ -1949,8 +2135,6 @@ function flushOv(){
       if(v==='anyclub'){const val=(ovEl.querySelector('#anyclubOv')||{}).value;if(!val)return;const [Li,ti,...n]=val.split('|');closeOv();confirmMove({kind:'any',club:{name:n.join('|'),league:+Li,tier:+ti,mode:'any'}});return}
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
-  if(o.k==='final')ovTimer=setTimeout(closeOv,reduce?2000:3200);
-  if(o.k==='qual')ovTimer=setTimeout(closeOv,3500);
 }
 document.addEventListener('keydown',e=>{if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
@@ -2125,7 +2309,7 @@ function onClick(e){
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(10),c=d(10);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],10,[a],()=>'',()=>{rollDice(e2?[e2]:[],10,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'nat1':I.lucky?'nat20':I.season?'fail':I.out===0?'pass':null);commit()})})}
   else if(act==='endcareer'){endCareer();commit();window.scrollTo({top:0})}
   else if(act==='go'){nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
-  else if(act==='simrest'){simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
+  else if(act==='simrest'){view='game';simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='sign'){confirmMove({kind:'sign',i:+b.dataset.i})}
   else if(act==='stay'){newSeason(null);commit();window.scrollTo({top:0})}
   else if(act==='pick'){pickAttr(b.dataset.k);commit()}
