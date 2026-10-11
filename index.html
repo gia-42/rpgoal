@@ -687,9 +687,8 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .stage.fit2 .st-head .banner{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-size:11px!important;padding:3px 8px!important}
 .stage.fit2 .st-rule{display:none}
 .stage.fit3 .mods .chip:not(.odds):not(.help):not(.hot){display:none}
-.stage.fit3 .evdesc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .onepage .stage.v.fit3 .st-body>.dicecol,.onepage .stage.v.fit3 .st-body>.dicecol>.dmain{min-height:54px!important}
-.stage.fit4 .evdesc,.stage.fit4 .st-body .vsline+.nemtag,.stage.fit4 .grec .muted{display:none}
+.stage.fit4 .st-body .vsline+.nemtag,.stage.fit4 .grec .muted{display:none}
 .stage.fit4 h3{font-size:15px!important}
 .onepage .stage.v.fit4 .st-body>.dicecol,.onepage .stage.v.fit4 .st-body>.dicecol>.dmain{min-height:44px!important}
 .stage.fit5 .st-head>.lbl,.stage.fit5 .evbox,.stage.fit5 .evline,.stage.fit5 .ctline{display:none}
@@ -699,6 +698,28 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .stage.fit3 .st-head>.banner{display:none!important}
 .stage.fit7 .verdict{font-size:16px!important}
 @media (max-height:650px){.onepage .wrap>.panel:not(.hero) .bars{display:none!important}.onepage .who .row{display:none!important}}
+/* fixed zones: title area, dice, result area */
+.stage.v>.st-body>.st-head{height:36%;overflow:hidden;justify-content:flex-end!important}
+.stage.v>.st-body>.st-tail{height:34%;overflow:hidden;justify-content:flex-start!important}
+.stage.v>.st-body>.dicecol,.onepage .stage.v>.st-body>.dicecol{flex:1 1 0!important;min-height:0!important}
+.onepage .stage.v>.st-body>.dicecol>.dmain{min-height:0!important}
+.stage.v>.st-body>.st-head>.banner.note1{margin-bottom:auto}
+.ovcard.still:not(.shake){animation:none!important}
+.runres .ov-title{font-size:30px}
+.runres.good .ov-title{color:var(--good)} .runres.bad .ov-title{color:var(--bad)}
+/* bench text, and the small dice tucked in the corner so the main die never changes size */
+.stage.fit1 .st-tail>.muted{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px}
+.stage.fit3 .st-tail>.muted{-webkit-line-clamp:2;font-size:12px}
+.onepage .stage.v>.st-body>.dicecol{position:relative}
+.onepage .stage.v>.st-body>.dicecol>.row{position:absolute;right:2px;bottom:0;flex-direction:row;gap:4px!important;z-index:1}
+.onepage .stage.v>.st-body>.dicecol>.row .dcell{gap:0}
+.onepage .stage.v>.st-body>.dicecol>.row .dcell .lbl{display:none}
+.onepage .stage.v>.st-body>.dicecol>.row .die.small{width:30px!important;height:30px!important;max-width:30px!important}
+.onepage .stage.v>.st-body>.dicecol>.row .row{gap:2px!important}
+.stage.evp>.st-body>.st-head{height:28%}
+.stage.evp>.st-body>.st-tail{height:50%}
+.stage.evp .evdesc{line-height:1.35}
+.stage.fit4 .evdesc{font-size:11.5px!important}
 /* top bar on the match card: inspiration and skip */
 .st-tools{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:26px;flex:none}
 .tool{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--rule-2);background:transparent;color:var(--ink-2);cursor:pointer;white-space:nowrap}
@@ -2179,7 +2200,7 @@ function stageCard(){
   const nextB=(sim.match(/<button class="btn ghost sm simnext"[\s\S]*?<\/button>/)||[''])[0];
   const rkM=head.match(/^<span class="rk[^"]*">[^<]*<\/span>/), rkS=rkM?rkM[0]:'';
   const tools=`<div class="st-tools"><span class="tl">${inspB.replace('btn ghost sm insp','tool insp')}</span>${rkS||'<span></span>'}<span class="tr">${nextB.replace('btn ghost sm simnext','tool simnext')}</span></div>`;
-  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''}">${tools}<div class="st-body">${evPending||chPending?'':notes.replace(/class="banner"/g,'class="banner note1"')}<div class="st-head">${banner}${head.replace(rkS,'')}</div>${dice}<div class="st-tail">${tail}</div></div><div class="st-act">${act||'<span class="slot main"></span>'}</div></div></section>`;
+  return `<section class="panel hero"><div class="stage v ${chPending?'choice':''} ${evPending||chPending?'evp':''}">${tools}<div class="st-body"><div class="st-head">${evPending||chPending?'':notes.replace(/class="banner"/g,'class="banner note1"')}${banner}${head.replace(rkS,'')}</div>${dice}<div class="st-tail">${tail}</div></div><div class="st-act">${act||'<span class="slot main"></span>'}</div></div></section>`;
 }
 function nextRoundName(st){const n={...st,round:st.round+1};return roundName(n)}
 function tracker(){
@@ -2325,8 +2346,10 @@ function rulesView(){
 function fitStage(){
   const b=app.querySelector&&app.querySelector('.st-body'); if(!b||!document.body.classList.contains('onepage'))return;
   const st=b.closest('.stage'); const L=['fit1','fit2','fit3','fit4','fit5','fit6','fit7'];
+  const zones=[b.querySelector('.st-head'),b.querySelector('.st-tail')].filter(Boolean);
+  const over=()=>b.scrollHeight>b.clientHeight+1||zones.some(z=>z.scrollHeight>z.clientHeight+1);
   L.forEach(c=>st.classList.remove(c));
-  for(const c of L){if(b.scrollHeight<=b.clientHeight+1)break;st.classList.add(c)}
+  for(const c of L){if(!over())break;st.classList.add(c)}
 }
 try{window.addEventListener('resize',()=>{try{fitStage()}catch(e){}})}catch(e){}
 function render(){
@@ -3030,7 +3053,12 @@ function healHTML(){
       <div class="hcell">${dieSVG(10,I.d10?I.d10[0]:I.first??'',I.d10?d10cls(0):I.first===1?'fumble':'','hd10a')}<span class="lbl">d10</span></div><div class="hcell">${dieSVG(10,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d10</span></div></div>
     <div class="hres">${res}</div>${btn}</div>`;
 }
-function healRefresh(){if(ovEl){const c=ovEl.querySelector('.ovcard');ovEl.innerHTML=healHTML();}}
+function ovUpdate(html){
+  if(!ovEl)return; const card=ovEl.querySelector('.ovcard'), tmp=document.createElement('div'); tmp.innerHTML=html; const n=tmp.firstElementChild;
+  if(!card||!n){ovEl.innerHTML=html;return}
+  card.className=n.className+' still'; card.innerHTML=n.innerHTML;
+}
+function healRefresh(){ovUpdate(healHTML())}
 function healClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season;
   if(v==='h4'){const x=d(4),el=ovEl.querySelector('[data-die="hd4"]');rollDice(el?[el]:[],4,[x],y=>(y>=3||hasFeat('ironlungs')||s.rested)?'crit':'fumble',()=>{injD4(x);sfx(s.inj.adv?'pass':'fail');save();healRefresh()});return}
@@ -3601,7 +3629,7 @@ pt:{
  quests:'Missões',nemesisWon:'Nêmesis derrotado: +1 inspiração, torcida +1',nemesisLost:'Seu nêmesis levou essa'
 }};
 Object.assign(T.en,TX.en);Object.assign(T.pt,TX.pt);
-Object.assign(T.en,{runNext:'Next game',runTable:'See the final table',runPlay:'Play the final stretch',campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (up to your ceiling).`,pickT:'Pick +1 attribute',natural20:'Natural 20',rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='miracle'?`Miracle run: three wins against DC +4, with disadvantage, and the title is yours.`:k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
+Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',runPromoted:'Promoted!',runCont:'Continue',runNext:'Next game',runTable:'See the final table',runPlay:'Play the final stretch',campTrain:a=>`Train ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (up to your ceiling).`,pickT:'Pick +1 attribute',natural20:'Natural 20',rerollS:n=>`Reroll all (${n})`,runT:'Run-in',runGame:n=>`Final stretch · game ${n} of 3`,runRule:(k,n)=>k==='miracle'?`Miracle run: three wins against DC +4, with disadvantage, and the title is yours.`:k==='title'?`Title race: ${n}+ points from the last three games and the title is yours.`:k==='promo'?`Promotion race: ${n}+ points from the last three games and you go up.`:`Relegation battle: ${n}+ points from the last three games and you survive.`,
  runBanner:{miracle:'A last, impossible chase. Win all three against the odds and the title is yours.',title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
@@ -3610,10 +3638,10 @@ Object.assign(T.en,{runNext:'Next game',runTable:'See the final table',runPlay:'
  achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
  injRoll2nd:'Roll the second d10',healOpen:'Roll the recovery dice',healT:'Recovery roll',healD10Hint:'Roll 2d10. Two 1s end your career.',healDanger:'A 1 on the first die. One more 1 and it’s over…',healBack:'Back to the season'});
-Object.assign(T.pt,{runNext:'Próximo jogo',runTable:'Ver a tabela final',runPlay:'Jogar a reta final',campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
+Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento!',runPromoted:'Acesso!',runCont:'Continuar',runNext:'Próximo jogo',runTable:'Ver a tabela final',runPlay:'Jogar a reta final',campTrain:a=>`Treinar ${a}`,campTrainD:(a,x,y)=>`+2 ${a}: ${x} → ${y} (até o seu teto).`,pickT:'Escolha +1 atributo',natural20:'20 natural',rerollS:n=>`Rerrolar (${n})`,runT:'Reta final',runGame:n=>`Reta final · jogo ${n} de 3`,runRule:(k,n)=>k==='miracle'?`Arrancada milagrosa: três vitórias contra CD +4, com desvantagem, e a taça é sua.`:k==='title'?`Briga pelo título: ${n}+ pontos nos últimos três jogos e a taça é sua.`:k==='promo'?`Briga pelo acesso: ${n}+ pontos nos últimos três jogos e você sobe.`:`Luta contra o rebaixamento: ${n}+ pontos nos últimos três jogos e você se salva.`,
  runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
- ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · prepara a rolagem do jogo',rkStory:'História',pS:'J',
+ ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números da carreira',seasons:'Temporada a temporada'},prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
  extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
  achGroups:{titles:'Títulos',world:'Palco mundial',personal:'Marcas pessoais',clubs:'Clubes e torcida',moments:'Momentos e dados',campaign:'Campanha',women:'Futebol feminino',multi:'Entre carreiras',bad:'Lições duras'},
@@ -3679,9 +3707,31 @@ function maybeRun(){
   const s=S.season, st=s.stages[s.idx];
   if(!st||st.comp!=='run'||s.pendingHeal||s.pickAttr||s.out>0||ovHas('run'))return;
   if(s.last&&s.last.stage!==s.idx)return;
+  if(s.last&&!s.stages.some(x=>x.comp==='run'&&!x.res))return;
   ovQ.push({k:'run'});
 }
+let runRes=null;
+function runFinish(){
+  if(ovKind!=='run'||!S.season)return;
+  const s=S.season, L=LEAGUES[S.club.league], type=s.run&&s.run.type, lg=S.club.league, pts=runPts(s), need=runNeed(s);
+  nextStage();
+  ovQ=ovQ.filter(o=>o.k!=='league');
+  const F=s.fin||{}, pos=F.pos;
+  runRes={type,pos,pts,need,lg,ok:!!(s.run&&s.run.ok),move:F.move,champ:pos===1};
+  save(); ovUpdate(runResultHTML());
+  if(runRes.champ){confetti(ovEl,{k:'league'});sfx('title')}else sfx(runRes.ok?'pass':'fail');
+}
+function runResultHTML(){
+  const R=runRes, L=LEAGUES[R.lg];
+  let title, tone;
+  if(R.champ){title=t.ovLeague;tone='good'}
+  else if(R.type==='releg'){title=R.move==='down'?t.runRelegated:t.runEscaped;tone=R.move==='down'?'bad':'good'}
+  else if(R.type==='promo'){title=R.move==='up'?t.runPromoted:t.finished(R.pos);tone=R.move==='up'?'good':'bad'}
+  else{title=t.finished(R.pos);tone='mid'}
+  return `<div class="ovcard move runpop runres ${tone}">${R.champ?trophySVG():''}<span class="ov-kicker">${t.runT} · ${esc(L.name)}</span><h2 class="ov-title">${title}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${t.runPts(R.pts,R.need)}</div><button class="btn" data-ov="rdone">${t.runCont}</button></div>`;
+}
 function runHTML(){
+  if(runRes)return runResultHTML();
   const s=S.season, st=s.stages[s.idx]; if(!st||st.comp!=='run')return'';
   const r=s.last&&s.last.stage===s.idx?s.last:null, need=runNeed(s), pts=runPts(s), md=r?(r.pair?r.mode:null):effMode(st);
   const games=s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}</span>`).join('');
@@ -3695,7 +3745,7 @@ function runHTML(){
   const left=s.stages.filter(x=>x.comp==='run'&&!x.res).length;
   const btn=!r?`<button class="btn" data-ov="rroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
-    :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn" data-ov="rclose">${t.runTable}</button>`;
+    :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
   return `<div class="ovcard move runpop ${s.run.type}"><span class="ov-kicker">${t.runT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
@@ -3706,11 +3756,14 @@ function runHTML(){
 }
 function runClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, st=s.stages[s.idx];
-  if(v==='rinsp'){if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}save();ovEl.innerHTML=runHTML();return}
+  if(v==='rinsp'){if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}save();ovUpdate(runHTML());return}
   if(v==='rroll'){const v1=d(20),v2=d(20),els=[ovEl.querySelector('[data-die="rd0"]'),ovEl.querySelector('[data-die="rd1"]')].filter(Boolean);
-    rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovEl.innerHTML=runHTML()});return}
-  if(v==='rnext'){nextStage();save();const n=S.season&&S.season.stages[S.season.idx];if(S.phase==='season'&&n&&n.comp==='run'){ovEl.innerHTML=runHTML()}else{closeOv();commit()}return}
+    rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovUpdate(runHTML());
+      const s2=S.season;if(!s2.stages.some(x=>x.comp==='run'&&!x.res)&&!s2.pendingHeal&&!s2.pickAttr&&!s2.careerOver){busy=true;setTimeout(()=>{busy=false;runFinish()},1500)}});return}
+  if(v==='rdone'){runRes=null;closeOv();commit();return}
+  if(v==='rnext'){nextStage();save();const n=S.season&&S.season.stages[S.season.idx];if(S.phase==='season'&&n&&n.comp==='run'){ovUpdate(runHTML())}else{closeOv();commit()}return}
   if(v==='rclose'){closeOv();commit();return}
+  if(v==='rtable'){runFinish();return}
 }
 function maybeStory(){
   if(view!=='game'||S.phase!=='season'||!S.season)return;
@@ -3739,10 +3792,10 @@ function storyClick(e){
   if(v!=='ch')return;
   const s=S.season, st=s.stages[s.idx]; if(!st||!st.ch||st.chr)return;
   const i=+b.dataset.i, o=CHOICES[st.ch].opts[i]; if(!o)return;
-  if(!o.at){resolveChoice(i,null);save();ovEl.innerHTML=storyHTML();return}
+  if(!o.at){resolveChoice(i,null);save();ovUpdate(storyHTML());return}
   ovEl.querySelectorAll('.chopt').forEach(x=>x.disabled=true);
   const x=d(20), el=ovEl.querySelector('[data-die="sd"]'), at=chAt(o,st);
-  rollDice(el?[el]:[],20,[x],y=>y===20?'crit':y===1?'fumble':y+chBonus(at)>=o.tgt?'win':'lose',()=>{resolveChoice(i,x);sfx(x===20?'nat20':x===1?'nat1':st.chr.ok?'pass':'fail');save();ovEl.innerHTML=storyHTML()});
+  rollDice(el?[el]:[],20,[x],y=>y===20?'crit':y===1?'fumble':y+chBonus(at)>=o.tgt?'win':'lose',()=>{resolveChoice(i,x);sfx(x===20?'nat20':x===1?'nat1':st.chr.ok?'pass':'fail');save();ovUpdate(storyHTML())});
 }
 function ageHTML(){
   const h=S.history[S.history.length-1], ac=h.ageCheck;
@@ -3756,7 +3809,7 @@ function ageHTML(){
 function ageClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
   if(v==='roll'){const x=d(20),el=ovEl.querySelector('[data-die="ad"]');
-    rollDice(el?[el]:[],20,[x],y=>{const ok=y===20||(y!==1&&y+ageBonus()>=AGE_DC[S.age]);return y===20?'crit':y===1?'fumble':ok?'win':'lose'},()=>{ageCheck(x);const k=S.history[S.history.length-1].ageCheck;sfx(x===20?'nat20':x===1?'nat1':k.ok?'pass':'fail');save();ovEl.innerHTML=ageHTML()});return}
+    rollDice(el?[el]:[],20,[x],y=>{const ok=y===20||(y!==1&&y+ageBonus()>=AGE_DC[S.age]);return y===20?'crit':y===1?'fumble':ok?'win':'lose'},()=>{ageCheck(x);const k=S.history[S.history.length-1].ageCheck;sfx(x===20?'nat20':x===1?'nat1':k.ok?'pass':'fail');save();ovUpdate(ageHTML())});return}
   if(v==='close'){closeOv();commit();return}
   if(v==='hang'){closeOv();retire();commit();window.scrollTo({top:0});return}
 }
