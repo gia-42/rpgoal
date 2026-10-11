@@ -907,6 +907,31 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .onepage .fb-track{height:5px!important}
 .onepage .abil .ab-cell .lbl{font-size:8.5px!important}
 .onepage .abil .ab-m{display:none!important}
+
+/* season tab: segmented progress bars */
+.segbar{display:flex;gap:3px;width:50%;flex:none;align-items:center}
+.segbar i{flex:1 1 0;height:10px;border-radius:3px;background:var(--rule-2);min-width:6px}
+.segbar i.g{background:var(--good)} .segbar i.m{background:var(--warn)} .segbar i.b{background:var(--bad)}
+.segbar i.gold{background:#f2c14e}
+.segbar i.x{background:var(--rule);opacity:.45}
+.segbar i.now{box-shadow:0 0 0 1.5px var(--ink-2)}
+.sv1 .sv-row{align-items:center}
+.sv1 .sv-row>span:first-child{padding-right:10px}
+
+/* career: inventory */
+.invg{display:grid!important;grid-template-columns:1fr 1fr;gap:6px;align-content:start}
+.inv{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid var(--rule);border-radius:9px;background:var(--card);opacity:.55}
+.inv.on{opacity:1;border-color:#5a4a1f}
+.invi{width:26px;height:26px;flex:none;fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.inv.on .invi{stroke:#f2c14e}
+.inv-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.inv-t b{font-size:13px;line-height:1.2}
+.inv-t .eff{font-size:11.5px;color:var(--ink-2);line-height:1.3}
+.inv-t .how{font-size:10.5px;color:var(--ink-3);line-height:1.3}
+.inv.on .inv-t .how{color:#c9962b}
+@media (max-width:360px){.invg{grid-template-columns:1fr}}
+.camp .lbl{font-size:9.5px}
+.camp .featw{flex-wrap:wrap!important;gap:4px}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1101,7 +1126,7 @@ const EVENTS=[
  {id:'cwcgap',die:20,at:['dec','lead'],tgt:14,ok:{mode:'adv'},bad:{mode:'dis'},forced:true}
 ];
 const evB=e=>[Math.floor(S.attrs[e.at[0]]/5),Math.floor(S.attrs[e.at[1]]/10)];
-const evBonus=e=>evB(e)[0]+evB(e)[1];
+const evBonus=e=>evB(e)[0]+evB(e)[1]+(e.id==='derby'&&typeof hasItem==='function'&&hasItem('scarf')?2:0);
 const evChip=e=>{const[b0,b1]=evB(e);return `d${e.die} + ${t.attrs[e.at[0]]} ${sg(b0)} + ${t.attrs[e.at[1]]} ${sg(b1)}`};
 const EVMAP=Object.fromEntries(EVENTS.map(e=>[e.id,e]));
 const WC_DC=[15,17,18,20,21];
@@ -1494,6 +1519,7 @@ function fixSave(x){
   if(x.tenure==null){let n=0;const H=x.history||[];for(let i=H.length-1;i>=0&&x.club&&H[i].club===x.club.name;i--)n++;x.tenure=n}
   if(x.season&&(!x.season.v||x.season.v<4))x.season=null;
   if(x.season&&x.season.pendingHeal&&!x.season.inj)x.season.inj={d4:null,d10:null};
+  delete x.nem; delete x.mates;
   if(x.phase!=='create'){if(!x.feats)x.feats=[];if(!x.items)x.items=[];if(!x.mates)x.mates=[];if(x.insp==null)x.insp=0;if(x.pot==null)x.pot=1+Math.floor(Math.random()*10);if(x.startAvg==null)x.startAvg=x.roll&&x.roll.spd?AK.reduce((a,k)=>a+(x.roll[k]||5),0)/AK.length:6}
   return x;
 }
@@ -1545,7 +1571,6 @@ function startCareer(offer){
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
   S.loyalty=0; S.tenure=0; S.hops=0; S.milestones=[]; S.rivalMoves=0; S.notes=[];
   S.pot=S.pot||d(10); S.startAvg=rating(S.roll); S.feats=[]; S.items=[]; S.mates=[]; S.insp=0; S.quests=0;
-  newMate();
   S.season=buildSeason(); S.phase='season';
 }
 function pickEvent(st){
@@ -1584,16 +1609,15 @@ function wcGroup(){
 function activate(){
   const s=S.season, st=s.stages[s.idx]; if(!st)return;
   if(s.redNext&&!st.res&&!st.red){st.red=1;s.redNext=0}
-  if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;if(st.opp&&canNem(st)&&Math.random()<.4){st.opp=S.nem.club;st.nem=1}}
+  if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;}
   if(st.ev!==undefined)return;
   if(st.comp==='run'){st.ev=null;return}
   if(st.comp==='cwc'&&st.round===1&&!contIsUCL(S.club.league)){st.ev=s.out===0?'cwcgap':null;return}
   const final=st.round===lastRound(st.comp)&&st.comp!=='league';
   const p=st.comp==='league'?.65:final?.6:.3;
   st.ev=(s.out===0&&Math.random()<p)?pickEvent(st):null;
-  if(st.ev==='derby'&&!S.nem&&(S.tenure||0)>=3&&Math.random()<.5){makeNemesis(true);if(S.nem)(S.notes=S.notes||[]).push(['nNemDerby',S.nem.name,S.nem.club])}
   if(st.ev)s.used.push(st.ev);
-  else if(s.out===0&&!final&&Math.random()<.3){const ids=Object.keys(CHOICES).filter(k=>!s.used.includes('c_'+k)&&(!CHOICES[k].league||st.comp==='league'));if(ids.length){st.ch=pick(ids);s.used.push('c_'+st.ch)}}
+  else if(s.out===0&&!final&&Math.random()<.33){const ids=Object.keys(CHOICES).filter(k=>!s.used.includes('c_'+k)&&(!CHOICES[k].league||st.comp==='league')&&(!CHOICES[k].cond||CHOICES[k].cond()));if(ids.length){const seen=S.chSeen||{},w=ids.map(k=>1/(1+3*(seen[k]||0)));let r=Math.random()*w.reduce((a,b)=>a+b,0),pk=ids[ids.length-1];for(let j=0;j<ids.length;j++){r-=w[j];if(r<=0){pk=ids[j];break}}st.ch=pk;s.used.push('c_'+pk)}}
 }
 function buildSeason(){
   let q=qualKind(S.qualified)&&!!LEAGUES[S.club.league].cont&&LEAGUES[S.club.league].div===1?qualKind(S.qualified):false;
@@ -1606,6 +1630,7 @@ function buildSeason(){
   if(S.restNext){s.rested=1;S.restNext=0}
   if(S.natNext){s.natCamp=1;S.natNext=0}
   if(hasFeat('inspiring'))gainInsp(1);
+  if(hasItem('hatball'))gainInsp(1);
   activate();
   return s;
 }
@@ -1712,6 +1737,7 @@ function resolveEvent(v){
   if(perfect){fx.mode='adv';if(S.age<=33)S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1);if(st.ev==='training')s.train++}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   st.evr={nat:v,bonus,tgt,total,ok,perfect}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
+  if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=3)giveItem('scarf')}
 }
 function resolveStage(v1,v2){
   const s=S.season, st=s.stages[s.idx], fx=st.fx||{mode:null,buff:0};
@@ -1763,7 +1789,6 @@ function resolveStage(v1,v2){
   }
   if(!r.missed)addStats(r,gamesFor(st),nat);
   if(r.crit&&!r.missed)critGood(r);
-  if(st.nem&&!r.missed&&r.win!=null&&S.nem){if(r.win){S.nem.w++;s.nemW=(s.nemW||0)+1;gainInsp(1);addLoy(1);r.nemRes=1}else{S.nem.l++;s.nemL=(s.nemL||0)+1;r.nemRes=-1}}
   if(st.comp==='league'&&s.bench>0&&!r.missed)s.bench--;
   if(r.champ&&!r.missed&&isCrit(nat))s.bootsWon=1;
   if(r.champ&&st.insp)S.inspFinals=(S.inspFinals||0)+1;
@@ -1774,14 +1799,16 @@ function pickAttr(k){const s=S.season;if(!s.pickAttr||S.attrs[k]>=20)return;S.at
 function autoPick(){const w=POS[myPos()].w,ks=AK.filter(k=>S.attrs[k]<20).sort((a,b)=>(w[b]||0)-(w[a]||0));pickAttr(ks[0]||AK[0])}
 function injD4(v){const s=S.season;s.inj.d4=v;s.inj.adv=v>=3||hasFeat('ironlungs')||!!s.rested;if(s.rested&&!(v>=3))s.inj.restUsed=1;s.rested=0}
 function injD10(a,b){
-  const s=S.season, i=s.inj, kept=i.adv?Math.max(a,b):Math.min(a,b);
+  const s=S.season, i=s.inj; let kept=i.adv?Math.max(a,b):Math.min(a,b);
+  if(hasItem('tape')&&!(a===1&&b===1)&&kept<10){kept++;i.tape=1}
+  if(a===10&&b===10)giveItem('tape');
   i.d10=[a,b]; i.kept=kept; s.pendingHeal=false;
   if(a===1&&b===1){i.career=true;s.careerOver=true;return}
   if(a===10&&b===10){i.lucky=true;S.attrs.str=Math.min(20,S.attrs.str+1)}
   if(kept===1){
     const L1=s.stages.find(x=>x.comp==='league'&&x.round===((s.v||4)>=5?2:1));
     const past=!!L1&&(!!L1.res||s.stages.indexOf(L1)<=s.idx);
-    i.season=true; s.seasonOut=true; s.out=99;
+    i.season=true; s.seasonOut=true; s.out=99; s.tapeDue=1;
     if(past){i.carry=true;S.carryOut=2}
   }else{i.out=kept>=10?0:kept>=8?1:kept>=5?2:3; s.out=i.out}
 }
@@ -1789,7 +1816,8 @@ function endCareer(){S.endReason={kind:'injury',age:S.age};endSeason();retire()}
 /* the World Cup breaks up the season: it is played before the second half of the league */
 function wcCallUp(s){
   const need=wcNeed(S.nat);
-  if(rating(S.attrs)>=need-(s.natCamp?1:0)&&!s.seasonOut){
+  if(rating(S.attrs)>=need-(s.natCamp?1:0)-(hasItem('cap')?.5:0)&&!s.seasonOut){
+    s.calledWC=1;if(S.history.filter(h=>h.wc!=null&&h.wc>=0).length>=2)giveItem('cap');
     s.wc={called:true,need};
     const add=wcGroup().map((x,g)=>({comp:'wc',round:0,g,opp:x.c,gdc:x.dc,key:focusKey(),res:null}));
     for(let r=1;r<5;r++)add.push({comp:'wc',round:r,key:focusKey(),res:null});
@@ -1902,7 +1930,7 @@ function endSeason(){
 function bdoScore(s,pos,L){
   const tp={league:L.div===1?(L.lvl===0?6:12):0,cup:3,cont:-1,cont2:2,wc:30,cwc:8};
   let tr=0;s.trophies.forEach(x=>{tr+=x.kind==='cont'?(contIsUCL(x.lg)?28:10):(tp[x.kind]||0)});
-  return rating(S.attrs)*4+s.goals*0.8+s.assists*0.5+(s.cs||0)*0.25+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
+  return rating(S.attrs)*4+s.goals*0.8+s.assists*0.5+(s.cs||0)*0.25+(hasItem('docu')?3:0)+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
 }
 const BDO_T=[146,139,136,134,132.5,131,129,127,125.5,123.5];
 function bdoRank(s,pos,L){const sc=bdoScore(s,pos,L);for(let i=0;i<BDO_T.length;i++)if(sc>=BDO_T[i])return i+1;return null}
@@ -1968,7 +1996,7 @@ function reunionClubs(){
 /* from the season you play at 32, your body gets a say every summer: d20 + (Physical−10)/2 against a rising DC */
 const AGE_DC={32:4,33:5,34:7,35:10,36:15,37:17,38:18,39:19};
 const ageCheckDue=h=>!!h&&S.phase==='offseason'&&S.age>=32&&S.age<=39&&!h.ageCheck;
-const ageBonus=()=>clamp(Math.floor((S.attrs.str-10)/2),-3,5)+(S.attrs.str>=18?2:0)+(hasFeat('ageless')?3:0);
+const ageBonus=()=>clamp(Math.floor((S.attrs.str-10)/2),-3,5)+(S.attrs.str>=18?2:0)+(hasFeat('ageless')?3:0)+(hasItem('pendant')?1:0);
 function ageCheck(v){
   const h=S.history[S.history.length-1], dc=AGE_DC[S.age], bonus=ageBonus();
   h.ageCheck={nat:v,bonus,dc,ok:v===20||(v!==1&&v+bonus>=dc)};
@@ -1992,7 +2020,6 @@ function newSeason(club){
     if(isRival(from,club.name)){L-=4+(hadL>=7?3:0);S.rivalMoves=(S.rivalMoves||0)+1;notes.push(['nRival',from,club.name])}
     S.loyalty=Math.min(25,L); S.tenure=0; S.legend=(S.legends||[]).some(l=>l.club===club.name)?club.name:null;
     S.club={name:club.name,league:club.league,tier:club.tier};
-    matesOnMove(from).forEach(n=>notes.push(n));
   }else{
     const curPr=tierOf(S.club.league,S.club.tier).pr, best=(S.offers||[]).reduce((b,o)=>o.pr>(b?b.pr:-99)?o:b,null);
     S.hops=0; S.loyalty=(S.loyalty||0)+1+(S.attrs.lead>=14?1:0)+(hasFeat('captain')?1:0);
@@ -2004,7 +2031,6 @@ function newSeason(club){
   const L=LEAGUES[S.club.league];
   S.qualified=L.cont&&L.div===1?(last.qual||false):false;
   if(S.mediaNext){addLoy(2);S.mediaNext=0}
-  if(!mateNow())newMate();
   S.age++; S.year++; S.growth=null; S.offers=null;
   buildSeason(); S.phase='season';
 }
@@ -2207,7 +2233,6 @@ function stageCard(){
       if(r.crit&&r.picked)body+=`<div class="small" style="color:var(--good)">${t.crit(t.attrs[r.picked])}</div>`;
       if(r.crit&&s.pickAttr)body+=`<div class="small" style="color:var(--good)">${t.critPick}</div>`;
       if(r.ct)body+=`<div class="small ctline ${r.ct.good?'up':'down'}">${t.critD6(r.ct.v)} · ${r.ct.good?t.ctG[r.ct.v]:r.ct.v<=3?t.nat1:t.ctB[r.ct.v]}</div>`;
-      if(r.nemRes)body+=`<div class="small" style="color:var(${r.nemRes>0?'--good':'--bad'})">${r.nemRes>0?t.nemesisWon:t.nemesisLost}</div>`;
       if(I){
         let ib=`<span class="lbl">${t.injT}</span>`;
         if(I.d4==null)ib+=`<div>${t.injD4Hint}</div>`;
@@ -2263,13 +2288,11 @@ function offseasonView(){
   if(h.move==='up'&&isNaturalDiv2(h.club))N.push(['good',t.udUp(esc(h.club))]);
   if(h.qual)N.push(['',t.nextCont(esc(qualName(h.qual,h.league)))]);
   if(h.bdo===1)N.push(['gold',t.bdoWin]); else if(h.bdo)N.push(['',t.bdoRank(h.bdo)]);
-  if(h.nemBdo&&S.nem)N.push(['bad',h.nemBdo===1?t.nemBdo(esc(S.nem.name)):t.nemBdo2(esc(S.nem.name))]);
   if(h.legend)N.push(['gold','★ '+t.nLegend(esc(h.club))]);
   if(h.milestone)N.push(['',t.nMilestone(h.milestone,esc(h.club))]);
   (h.items||[]).forEach(k=>N.push(['gold',t.newItem(t.items[k][0])]));
   if(h.quest)N.push([h.quest.done?'good':'bad',`${h.quest.done?t.questDone:t.questFail}: ${questText(h.quest)}${h.quest.done?` · ${t.qRw[h.quest.rw]}${h.quest.got?' ('+t.attrs[h.quest.got]+')':''}`:''}`]);
   if(h.wc===-1)N.push(['',t.leftOut2(COUNTRY[lang][S.nat])]); else if(h.wc!=null)N.push([h.wc===5?'gold':'',`${t.wc}: ${t.wcRes[h.wc]}`]);
-  if(h.mentorBye)N.push(['',t.mentorBye(esc(h.mentorBye))]);
   if(S.benchNext)N.push(['bad',t.benchT]);
   if(h.feat)N.push(['good',t.featGot(t.feats[h.feat][0])]);
   if(h.camp)N.push(['good',t.campDone(campLabel(h.camp))+(h.campGot&&h.campGot.length?` · +${h.campGot.length} ${t.attrs[h.campGot[0]]}`:'')]);
@@ -2507,13 +2530,22 @@ const ACH=[
  {id:'tooshort',bad:1,n:['Way too short','Curta demais'],d:['Have your career ended by an injury before you turn 25.','Tenha a carreira encerrada por lesão antes dos 25 anos.'],test:()=>!!S.endReason&&S.endReason.age<25},
  {id:'wcfinal',bad:1,n:['So close…','Tão perto…'],d:['Lose a World Cup final.','Perca uma final de Copa do Mundo.'],test:()=>S.history.some(h=>h.wc===4)||!!(S.season&&S.season.stages.some(x=>x.comp==='wc'&&x.round===4&&x.res&&x.res.win===false))},
  {id:'unwanted',bad:1,n:['Unwanted','Indesejado'],d:['Get released by two clubs.','Seja dispensado por dois clubes.'],test:()=>S.history.filter(h=>h.fired).length>=2},
- {id:'nemesis',n:['Rivalry settled','Rivalidade resolvida'],d:['Beat your nemesis five times.','Vença o seu nêmesis cinco vezes.'],test:()=>!!(S.nem&&S.nem.w>=5)},
  {id:'qstreak',n:['On a mission','Em missão'],d:['Complete quests in four seasons in a row.','Cumpra missões em quatro temporadas seguidas.'],test:()=>(S.qBest||0)>=4},
- {id:'items4',n:['Collector','Colecionador'],d:['Own four items in one career.','Tenha quatro itens numa carreira.'],test:()=>(S.items||[]).length>=4},
+ {id:'items4',n:['Collector','Colecionador'],d:['Own six items in one career.','Tenha seis itens numa carreira.'],test:()=>(S.items||[]).length>=6},
  {id:'quests10',n:['The board’s favourite','Queridinho da diretoria'],d:['Complete ten quests in one career.','Cumpra dez missões numa carreira.'],test:()=>(S.quests||0)>=10},
  {id:'inspfinal',n:['Rise to the moment','À altura do momento'],d:['Win three finals while inspired.','Ganhe três finais inspirado.'],test:()=>(S.inspFinals||0)>=3},
  {id:'miracle',n:['Against all odds','Contra tudo e todos'],d:['Win the league with a miracle run in the final three games.','Ganhe a liga numa arrancada milagrosa nos três últimos jogos.'],test:()=>(S.miracles||0)>0},
+ {id:'stories10',n:['Storyteller','Contador de histórias'],d:['Live twenty different stories in one career.','Viva vinte histórias diferentes numa carreira.'],test:()=>Object.keys(S.chSeen||{}).length>=20},
+ {id:'seen20',n:['Seen it all','Já vi de tudo'],d:['Live every story in the game across your careers.','Viva todas as histórias do jogo entre todas as carreiras.'],test:()=>storiesSeen()>=Object.keys(CHOICES).length},
+ {id:'silver',n:['Silver tongue','Bom de lábia'],d:['Pass five story checks in a row.','Passe em cinco testes de história seguidos.'],test:()=>(S.chBest||0)>=5},
+ {id:'covstar',n:['Cover star','Estrela da capa'],d:['Earn the game cover.','Conquiste a capa do jogo.'],test:()=>hasItem('cover')},
+ {id:'leadrole',n:['Leading role','Papel principal'],d:['Earn the documentary.','Conquiste o documentário.'],test:()=>hasItem('docu')},
+ {id:'bestteach',n:['Learned from the best','Aprendeu com o melhor'],d:['Beat a club legend in a shootout.','Vença uma lenda do clube nos pênaltis.'],test:()=>hasItem('legendsign')},
+ {id:'torch',n:['Passing the torch','Passando o bastão'],d:['Train an academy kid and earn his shirt.','Treine um garoto da base e ganhe a camisa dele.'],test:()=>hasItem('kidshirt')},
+ {id:'items10',n:['Hoarder','Acumulador'],d:['Own ten items in one career.','Tenha dez itens numa carreira.'],test:()=>(S.items||[]).length>=10},
+ {id:'ultras',n:['Back on side','De volta ao lado deles'],d:['Win over the ultras face to face.','Conquiste a torcida organizada cara a cara.'],test:()=>!!S.flag_ultras},
  {id:'nat1s',bad:1,n:['Snake eyes','Olho de cobra'],d:['Roll five natural 1s in one career.','Tire cinco 1 naturais numa mesma carreira.'],test:()=>!!(S.rs&&S.rs.n1>=5)},
+ {id:'plottwist',bad:1,n:['Plot twist','Reviravolta'],d:['Fail ten story checks in one career.','Falhe em dez testes de história numa carreira.'],test:()=>(S.chFail||0)>=10},
  {id:'cruel',bad:1,n:['Cruel game','Jogo cruel'],d:['Have your career ended by an injury.','Tenha a carreira encerrada por uma lesão.'],test:()=>!!S.endReason}
 ];
 let achMem=null;
@@ -2541,9 +2573,19 @@ function showToast(){
   const el=toastEl, hide=()=>{if(toastEl!==el)return;el.classList.add('out');setTimeout(()=>{el.remove();toastEl=null;showToast()},reduce?0:260)};
   el.addEventListener('click',hide); setTimeout(hide,3800);
 }
+const storiesSeen=()=>{try{return Object.keys(JSON.parse(localStorage.getItem('rpgoal-stories')||'{}')).length}catch(e){return 0}};
 const ACH_ICON={
+ stories10:'M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z M9 9h6 M9 13h6',
+ seen20:'M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z',
+ silver:'M4 6h16v9H9l-5 4z M8 10h8',
+ covstar:'M5 4h14v16H5z M12 8l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z',
+ leadrole:'M4 7h11v10H4z M15 10l5-3v10l-5-3',
+ bestteach:'M5 17c3-6 5-9 6-9s-1 7 1 7 3-4 4-4 1 3 3 3 M5 20h14',
+ torch:'M12 3c2 3 3 4.5 3 6.5A3 3 0 0 1 9 9.5C9 7.5 10 6 12 3z M10 12h4l-1 9h-2z',
+ items10:'M4 8h16v12H4z M8 8V5h8v3 M4 13h16',
+ ultras:'M4 20V9l4-3 4 3 4-3 4 3v11 M8 13h8',
+ plottwist:'M4 12a8 8 0 1 0 3-6.2 M4 4v4h4',
  miracle:'M12 3l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 15.2 7 18l1.2-5.6L4 8.6l5.6-.6z M4 21h16',
- nemesis:'M4 4l16 16 M20 4L4 20 M4 16v4h4 M20 16v4h-4',
  qstreak:'M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z',
  items4:'M5 8h14l-1 12H6z M9 8a3 3 0 0 1 6 0',
  quests10:'M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z M10 9h5 M10 13h5',
@@ -2631,12 +2673,13 @@ const ACH_GROUP={titles:['firsttitle','wonderkid','promoted','league','double','
  personal:['goals30','assists20','goals300','ironman','worldclass','goat','stillgotit','forty'],
  clubs:['galactico','barca','abroad3','idol','legend','twohomes','decade','homecoming','oneclub','friends','bigbucks'],
  moments:['nat20','hothand','derby','penalty','perfect','luckyten'],
- campaign:['nemesis','qstreak','items4','quests10','inspfinal','miracle'],
+ campaign:['stories10','seen20','silver','covstar','leadrole','bestteach','torch','items10','ultras','qstreak','items4','quests10','inspfinal','miracle'],
  women:['uwcl','libf','nwsl','wcwc'],
  multi:['g1000','apps5000','t100','careers10','pantheon','bothwc','bothbdo','bothleague']};
 const achGroupOf=a=>a.bad?'bad':(Object.keys(ACH_GROUP).find(g=>ACH_GROUP[g].includes(a.id))||'personal');
 /* how many careers unlock each one (simulated, %) */
 const ACH_RATE={"abroad3": 49.7, "apps5000": 3, "assists20": 26.4, "barca": 11.0, "bdo": 21.1, "bdo3": 2.4, "bigbucks": 6.3, "bothbdo": 0.5, "bothleague": 3, "bothwc": 0.5, "careers10": 6, "cont2": 17.4, "cont3": 13.1, "cruel": 3.9, "cupking": 61.4, "cwc": 35.8, "cwcdavid": 8.8, "decade": 55.5, "derby": 84.3, "double": 55.8, "earlyflight": 16.8, "fairytale": 2.4, "fired": 4.8, "firsttitle": 97.8, "forty": 0.4, "friends": 1.9, "g1000": 3, "galactico": 10.6, "goals30": 18.0, "goals300": 18.7, "goat": 2.8, "hated": 4.0, "homecoming": 6, "hothand": 77.7, "idol": 98.7, "inspfinal": 65.0, "ironman": 63.5, "items4": 49.6, "judas": 4.1, "league": 81.3, "legend": 8.6, "lib": 10.2, "libf": 0.8, "longroad": 16.9, "luckyten": 3.5, "merc": 27.9, "nat1s": 84.4, "nat20": 99.4, "nemesis": 28.6, "nwsl": 4.7, "oddswin": 0.9, "oneclub": 3, "ouch": 97.6, "pantheon": 4, "party": 80.4, "penalty": 95.3, "perfect": 99.6, "perfectgroup": 68.2, "promoted": 28.7, "qstreak": 47.7, "quests10": 39.9, "relegated": 11.8, "snub": 47.9, "soclose": 85.5, "stillgotit": 6.7, "t100": 3, "tooshort": 1.5, "treble": 15.6, "twohomes": 0.5, "ucl": 41.0, "unwanted": 0.2, "uwcl": 29.7, "wc": 26.3, "wc2": 3.4, "wc3": 0.1, "wccall": 95.9, "wcfinal": 13.5, "wcwc": 21.7, "wonderkid": 27.9, "worldclass": 27.3};
+Object.assign(ACH_RATE,{stories10:55,seen20:8,silver:41,covstar:21,leadrole:20,bestteach:4,torch:12,items10:9,ultras:7,plottwist:6,items4:56});
 const live=()=>S&&S.phase!=='create';
 const bestSeason=k=>Math.max(0,...S.history.map(h=>h[k]||0),S.phase==='season'&&S.season?S.season[k]||0:0);
 const ACH_PROG={
@@ -2649,12 +2692,12 @@ const ACH_PROG={
  abroad3:()=>[new Set(S.history.map(h=>LEAGUES[h.league].c).concat(live()&&S.club?[LEAGUES[S.club.league].c]:[])).size,4],
  decade:()=>[live()?S.tenure||0:0,10], twohomes:()=>[new Set((S.legends||[]).map(l=>l.club)).size,2],
  hothand:()=>[S.season&&S.season.rolls?S.season.rolls.filter(x=>x===20).length:0,2],
- nemesis:()=>[S.nem?S.nem.w:0,5], qstreak:()=>[S.qStreak||0,4], items4:()=>[(S.items||[]).length,4], quests10:()=>[S.quests||0,10], inspfinal:()=>[S.inspFinals||0,3],
+ qstreak:()=>[S.qStreak||0,4], stories10:()=>[Object.keys(S.chSeen||{}).length,20], seen20:()=>[storiesSeen(),Object.keys(CHOICES).length], silver:()=>[S.chStreak||0,5], items10:()=>[(S.items||[]).length,10], plottwist:()=>[S.chFail||0,10], items4:()=>[(S.items||[]).length,6], quests10:()=>[S.quests||0,10], inspfinal:()=>[S.inspFinals||0,3],
  g1000:()=>[sumAll('goals'),1000], apps5000:()=>[sumAll('apps'),5000], t100:()=>[sumAll('titles'),100], careers10:()=>[loadHof().length,10],
  pantheon:()=>[loadHof().filter(p=>p.score>=500).length,5],
  nat1s:()=>[S.rs?S.rs.n1:0,5], unwanted:()=>[S.history.filter(h=>h.fired).length,2]
 };
-const MULTI=new Set(['goals300','ironman','decade','abroad3','twohomes','nemesis','qstreak','items4','quests10','inspfinal','bdo3','cont3','wc2','wc3','cupking','g1000','apps5000','t100','careers10','pantheon','nat1s','unwanted']);
+const MULTI=new Set(['goals300','ironman','decade','abroad3','twohomes','stories10','seen20','silver','items10','plottwist','qstreak','items4','quests10','inspfinal','bdo3','cont3','wc2','wc3','cupking','g1000','apps5000','t100','careers10','pantheon','nat1s','unwanted']);
 const rarity=r=>r==null?4:r>=60?0:r>=25?1:r>=8?2:r>=2?3:4;
 function achView(){
   const got=loadAch(), L=lang==='pt'?1:0, n=ACH.filter(a=>got[a.id]).length;
@@ -2704,22 +2747,34 @@ function seasonView(){
   else if(played.length)pos='~'+ord(clamp(Math.round(1+r.frac*(L.size-1)-(s.leagueSum/2.5)*.5*(4/played.length)),1,L.size));
   const m=L.matches, rng=x=>`${Math.round(m*x.round/4)+1}–${Math.round(m*(x.round+1)/4)}`;
   const chips=lg.map(x=>x.res&&!x.res.skipped?`<span class="res ${x.res.tone==='good'?'w':x.res.tone==='bad'?'l':'m'}">${t.kindShort[x.res.kind]}</span>`:`<span class="res p">${(s.v||4)>=5?rng(x):roundShort(x)}</span>`).join('');
-  const comps=`<div class="sv-row"><span>${esc(L.name)}</span><span class="sv-lg">${chips}</span></div>`+['cup','cont','cont2','cwc','wc'].map(compStatus).filter(Boolean).map(c=>`<div class="sv-row"><span>${esc(c.name)}</span><span class="res ${c.tone}">${c.txt}</span></div>`).join('');
+  /* one segment per stretch or round: green good, amber mixed, red bad, grey still to play */
+  const seg=x=>{const i=s.stages.indexOf(x), now=i===s.idx&&S.phase==='season'&&!x.res;let c='p';
+    if(x.res&&x.res.skipped)c='x';
+    else if(x.res&&x.comp==='league')c=x.res.kind<=1?'g':x.res.kind===2?'m':'b';
+    else if(x.res&&x.res.champ)c='gold';
+    else if(x.res&&x.res.wdl)c=x.res.wdl==='W'?'g':x.res.wdl==='D'?'m':'b';
+    else if(x.res)c=x.res.win?'g':'b';
+    const tip=x.comp==='league'?roundName(x)+(x.res&&!x.res.skipped?' · '+t.kindShort[x.res.kind]:''):roundName(x)+(x.res&&x.res.wdl?' · '+t.wdl[x.res.wdl]:x.res&&!x.res.skipped?' · '+(x.res.champ?t.won:x.res.win?t.through:t.out):'');
+    return `<i class="${c} ${now?'now':''}" title="${esc(tip)}"></i>`};
+  const bar=list=>`<span class="segbar">${list.map(seg).join('')}</span>`;
+  const row=(name,list)=>list.length?`<div class="sv-row"><span>${esc(name)}</span>${bar(list)}</div>`:'';
+  const comps=row(L.name,lg)+['cup','cont','cont2','cwc','wc'].map(c=>row(compName(c,S.club.league),s.stages.filter(x=>x.comp===c))).join('');
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
   const q=s.quest, qp=q?questProg(q,s,S.phase==='offseason'?S.history[S.history.length-1]:null):null;
   const qRow=q?`<div class="sv-row"><span>${t.questT}: ${questText(q)} <span class="muted">(${t.qRw[q.rw]})</span></span><span class="res ${qp&&qp[0]>=qp[1]?'w':'p'}">${qp?(qp[1]>1?`${qp[0]}/${qp[1]}`:qp[0]?'✓':'—'):'—'}</span></div>`:'';
   const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
   return `<section class="panel stack sv1" style="gap:8px">${inj}
     <div class="numgrid sv3">${cell(posL,pos)}${cell(t.teamT,t.teamLv[teamLevel(r.frac)])}${cell(t.pgaL,`${s.apps}·${s.goals}·${s.assists}`)}</div>
-    <div class="sv-list">${comps}${s.run?`<div class="sv-row"><span>${t.runT}</span><span class="res ${runPts(s)>=runNeed(s)?'w':'m'}">${t.runPts(runPts(s),runNeed(s))}</span></div>`:''}${qRow}</div>
+    <div class="sv-list">${comps}${s.run?row(t.runT,s.stages.filter(x=>x.comp==='run')):''}${qRow}</div>
   </section>`+tracker();
 }
 /* ---------- Stats tab ---------- */
 function statsView(){
   const H=S.history;
   if(!H.length)return `<section class="panel"><div class="muted">${t.noStats}</div></section><div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`;
-  const sub=`<div class="subtabs csub" role="group">${['nums','seasons'].map(k=>`<button data-act="csub" data-v="${k}" aria-pressed="${careerSub===k}">${t.careerSubs[k]}</button>`).join('')}</div>`;
+  const sub=`<div class="subtabs csub" role="group">${['nums','seasons','inv'].map(k=>`<button data-act="csub" data-v="${k}" aria-pressed="${careerSub===k}">${t.careerSubs[k]}</button>`).join('')}</div>`;
   if(careerSub==='seasons')return sub+careerView();
+  if(careerSub==='inv')return sub+inventoryView();
   const tot=k=>H.reduce((a,h)=>a+(h[k]||0),0), peak=Math.max(...H.map(h=>h.rating));
   const byClub=[];H.forEach(h=>{let c=byClub.find(x=>x.club===h.club);if(!c){c={club:h.club,seasons:0,apps:0,goals:0,assists:0,titles:0};byClub.push(c)}c.seasons++;c.apps+=h.apps;c.goals+=h.goals;c.assists+=h.assists;c.titles+=h.trophies.filter(x=>x.kind!=='bdo').length});
   const bestBdo=H.filter(h=>h.bdo).reduce((a,h)=>Math.min(a,h.bdo),99), wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
@@ -3230,7 +3285,8 @@ const outputScore=(g,a,cs,pos)=>Math.round((g+a*0.6+cs*1.4)*(OUTF[pos]||1));
 /* the ceiling: rolled in secret at the start, revealed by the scouts at 21 */
 const potCap=()=>clamp(Math.round(7+(S.startAvg||6)+(S.pot||5)*0.6),12,20)+(hasFeat('latebloomer')?2:0);
 const capLv=c=>c>=19?4:c>=17?3:c>=15?2:c>=13.5?1:0;
-const gainInsp=n=>{S.insp=clamp((S.insp||0)+n,0,2)};
+const inspMax=()=>hasItem('kidshirt')?3:2;
+const gainInsp=n=>{S.insp=clamp((S.insp||0)+n,0,inspMax())};
 const addLoy=n=>{S.loyalty=clamp((S.loyalty||0)+n,-10,25)};
 
 /* extra match modifiers from feats, items, companions and form */
@@ -3244,7 +3300,9 @@ function extraMods(st){
   if(st.comp==='league'&&clubItem('armband',S.club.name))o.push(['iArm',1]);
   if(st.comp==='cup'&&clubItem('shirt',S.club.name))o.push(['iShirt',1]);
   if(st.comp==='wc'&&hasItem('ball'))o.push(['iBall',1]);
-  const m=mateNow(); if(m&&m.bond>=4&&st.comp==='league')o.push(['mate',1]);
+  if(['cont','cont2','cwc'].includes(st.comp)&&hasItem('medal'))o.push(['iMedal',1]);
+  if(st.key==='str'&&hasItem('studs'))o.push(['iStuds',1]);
+  if((st.key==='fin'||st.key==='ski')&&hasItem('newboots'))o.push(['iSig',1]);
   if(s&&s.bench>0&&st.comp==='league')o.push(['bench',-2]);
   return o;
 }
@@ -3272,26 +3330,29 @@ function stageOdds(st){
 const CHOICES={
  eve:{league:1,opts:[{k:'rest',fx:{buff:1}},{k:'dinner',at:'lead',tgt:12,ok:{mode:'adv',loy:1},bad:{buff:-1}},{k:'talk',at:'dec',tgt:14,ok:{mode:'adv',loy:2},bad:{mode:'dis',loy:-2}}]},
  mentor:{opts:[{k:'extra',at:'str',tgt:11,ok:{grow:1,buff:1},bad:{buff:-1}},{k:'video',at:'dec',tgt:10,ok:{buff:2},bad:{}}]},
- party:{opts:[{k:'skip',fx:{}},{k:'go',at:'lead',tgt:12,ok:{insp:1,bond:1},bad:{mode:'dis'}}]},
+ party:{opts:[{k:'skip',fx:{}},{k:'go',at:'lead',tgt:12,ok:{insp:1,loy:1},bad:{mode:'dis'}}]},
  charity:{opts:[{k:'go',fx:{loy:1}},{k:'squad',at:'lead',tgt:12,ok:{loy:2,insp:1},bad:{loy:1}}]},
  pundit:{opts:[{k:'ignore',fx:{}},{k:'pitch',at:'key',tgt:13,ok:{buff:2},bad:{buff:-1}},{k:'online',at:'dec',tgt:15,ok:{loy:2,insp:1},bad:{loy:-2,mode:'dis'}}]},
  contract:{opts:[{k:'extend',fx:{loy:2}},{k:'raise',at:'lead',tgt:13,ok:{insp:1,buff:1},bad:{loy:-2}}]}
 };
-const chBonus=at=>Math.floor((S.attrs[at]-10)/2);
+const chBonus=at=>Math.floor((S.attrs[at]-10)/2)+(hasItem('legendsign')?1:0);
 const chAt=(o,st)=>o.at==='key'?st.key:o.at;
 function applyEff(e,st){
   e=e||{}; st.fx={mode:e.mode||null,buff:e.buff||0};
   if(e.loy)addLoy(e.loy); if(e.insp)gainInsp(e.insp); if(e.grow)S.season.train+=e.grow;
-  if(e.bond){const m=mateNow();if(m)m.bond++}
+  if(e.scout)S.season.scout=1; if(e.item)giveItem(e.item); if(e.flag)S['flag_'+e.flag]=1;
 }
 function resolveChoice(i,v){
   const s=S.season, st=s.stages[s.idx], o=CHOICES[st.ch].opts[i]; let eff;
   if(!o.at){st.chr={i,auto:1,ok:true};eff=o.fx}
-  else{const at=chAt(o,st), b=chBonus(at), tot=v+b, ok=v===20||(v!==1&&tot>=o.tgt);st.chr={i,nat:v,bonus:b,tgt:o.tgt,total:tot,ok,at};eff=ok?o.ok:o.bad}
+  else{const at=chAt(o,st), b=chBonus(at), tot=v+b, ok=v===20||(v!==1&&tot>=o.tgt);st.chr={i,nat:v,bonus:b,tgt:o.tgt,total:tot,ok,at};eff=ok?o.ok:o.bad;if(st.ch==='charity'&&o.k==='squad'&&ok)giveItem('pendant')}
   applyEff(eff,st);
+  S.chSeen=S.chSeen||{}; S.chSeen[st.ch]=(S.chSeen[st.ch]||0)+1;
+  if(!st.chr.auto){if(st.chr.ok){S.chStreak=(S.chStreak||0)+1;S.chBest=Math.max(S.chBest||0,S.chStreak)}else{S.chStreak=0;S.chFail=(S.chFail||0)+1}}
+  try{const k='rpgoal-stories',a=JSON.parse(localStorage.getItem(k)||'{}');a[st.ch]=1;localStorage.setItem(k,JSON.stringify(a))}catch(e){}
 }
 const autoChoice=st=>{const os=CHOICES[st.ch].opts;let best=0,bv=-9;os.forEach((o,i)=>{const v=!o.at?0.5:(21-(o.tgt-chBonus(chAt(o,st))))/20*1.2-.4+Math.random()*.3;if(v>bv){bv=v;best=i}});return best};
-const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mode==='dis')p.push(t.fx.dis);if(e.buff)p.push(t.fx.buff(e.buff));if(e.loy)p.push(t.cx.loy(e.loy));if(e.insp)p.push(t.cx.insp(e.insp));if(e.grow)p.push(t.cx.grow);if(e.bond)p.push(t.cx.bond);return p.length?p.join(' · '):t.cx.nothing};
+const effText=e=>{e=e||{};const p=[];if(e.mode==='adv')p.push(t.fx.adv);if(e.mode==='dis')p.push(t.fx.dis);if(e.buff)p.push(t.fx.buff(e.buff));if(e.loy)p.push(t.cx.loy(e.loy));if(e.insp)p.push(t.cx.insp(e.insp));if(e.grow)p.push(t.cx.grow);if(e.scout)p.push(t.cx.scout);if(e.item)p.push(t.cx.item(t.items[e.item][0]));if(e.bond)p.push(t.cx.bond);return p.length?p.join(' · '):t.cx.nothing};
 
 /* ---- nemesis: one rival who keeps crossing your path ---- */
 function nemNats(){return Object.keys(NATIONS).filter(n=>n!==S.nat&&(S.gender!=='f'||NATIONS[n].firstW))}
@@ -3325,10 +3386,10 @@ function canNem(st){
   if(st.comp==='cont')return L.cont===M.cont&&M.div===1;
   return false;
 }
-const nemTag=st=>st&&st.nem&&S.nem?`<span class="nemtag">${t.nemT}: ${esc(S.nem.name)}</span>`:'';
+const nemTag=()=>'';
 
 /* ---- companions ---- */
-const mateNow=()=>S&&S.club?(S.mates||[]).find(m=>m.club===S.club.name&&!m.gone):null;
+const mateNow=()=>null;
 function newMate(){
   const c=LEAGUES[S.club.league].c, ok=n=>NATIONS[n]&&(S.gender!=='f'||NATIONS[n].firstW);
   const nat=Math.random()<.65&&ok(c)?c:pick(Object.keys(NATIONS).filter(ok));
@@ -3352,7 +3413,7 @@ function makeQuest(){
   if(csW()>=.7)o.push({k:'cs',n:Math.max(5,Math.round(expCS*1.05))});
   o.push(L.div===2?{k:'promo'}:r.frac<=.12?{k:'title'}:r.frac<=.4?{k:'top4'}:{k:'half'});
   o.push({k:'cupsemi'});
-  const q=pick(o); q.rw=pick(['attr','fans','insp']); return q;
+  const q=pick(o); q.rw=pick(['attr','fans','insp']); if(q.n&&hasItem('notebook'))q.n=Math.max(3,Math.round(q.n*.9)); return q;
 }
 function questProg(q,s,h){
   if(q.k==='goals')return[s.goals,q.n];if(q.k==='assists')return[s.assists,q.n];if(q.k==='cs')return[s.cs||0,q.n];
@@ -3373,7 +3434,7 @@ const questText=q=>q.k==='goals'?t.qx.goals(q.n):q.k==='assists'?t.qx.assists(q.
 function critGood(r){
   const s=S.season, v=d(6); r.ct={v,good:1};
   if(v===1){r.goals=(r.goals||0)+1;s.goals++}
-  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2}
+  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2;const st0=s.stages[s.idx];if(st0&&isFinal(st0))giveItem('hatball')}
   else if(v===3)addLoy(2);
   else if(v===4)s.hot+=1;
   else if(v===5)s.scout=1;
@@ -3392,22 +3453,24 @@ function critBad(r,st){
 function giveItem(k,club,h){
   S.items=S.items||[];
   if(club?S.items.some(i=>i.k===k&&i.club===club):S.items.some(i=>i.k===k))return;
-  S.items.push({k,club:club||null,year:S.year}); if(h)(h.items=h.items||[]).push(k);
+  S.items.push({k,club:club||null,year:S.year}); if(h)(h.items=h.items||[]).push(k); else (S.itemNotes=S.itemNotes||[]).push(k);
 }
 const itemName=i=>t.items[i.k][0]+(i.club?` · ${i.club}`:'');
 
 /* ---- everything that happens to the campaign when a season ends ---- */
 function afterSeason(h,s){
-  h.cs=s.cs||0; h.bench=s.benchStart||0; if(s.run)h.run={...s.run};
+  if(hasItem('cover'))addLoy(1);
+  h.cs=s.cs||0; h.bench=s.benchStart||0; if(s.tapeDue&&!S.endReason)giveItem('tape',null,h); if(s.run)h.run={...s.run};
   if(s.nemW||s.nemL){h.nemW=s.nemW||0;h.nemL=s.nemL||0}
   if(s.quest){const q={...s.quest},pr=questProg(q,s,h);q.done=!!pr&&pr[0]>=pr[1];if(q.done)questReward(q);S.qStreak=q.done?(S.qStreak||0)+1:0;S.qBest=Math.max(S.qBest||0,S.qStreak);h.quest=q;S.quests=(S.quests||0)+(q.done?1:0)}
-  const m=mateNow(); if(m){m.bond+=1+(h.trophies.some(x=>x.kind!=='bdo')?1:0);if(m.role==='mentor'&&S.age>=22){m.gone=1;h.mentorBye=m.name;gainInsp(1)}}
-  if(S.tenure>=5)giveItem('armband',S.club.name,h);
-  if(fanTier()>=5)giveItem('shirt',S.club.name,h);
+  if(S.tenure>=8)giveItem('armband',S.club.name,h);
+  if(fanTier()>=5&&S.tenure>=6&&h.trophies.some(x=>x.kind!=='bdo'))giveItem('shirt',S.club.name,h);
   if(s.goals>=30)giveItem('goldboot',null,h);
   if(h.bdo===1)giveItem('ball',null,h);
   if(s.bootsWon)giveItem('boots',null,h);
-  nemSeason(h);
+  if(h.trophies.some(x=>x.kind==='cont'))giveItem('medal',null,h);
+  if((S.quests||0)>=10)giveItem('notebook',null,h);
+  if(S.itemNotes&&S.itemNotes.length){h.items=(h.items||[]).concat(S.itemNotes);S.itemNotes=[]}
   if(FEAT_AGES.includes(S.age)&&!S.endReason){const pool=FEATS.filter(k=>!hasFeat(k));h.featOpts=pool.sort(()=>Math.random()-.5).slice(0,3);h.featDue=1}
 }
 const prepDone=h=>!!h&&(!h.featDue||!!h.feat)&&(!!h.camp||S.age>=40);
@@ -3462,7 +3525,6 @@ function chron(h){
   const lead=bits.length?bits.join(C.and):C.pos(ord(h.pos),L.name);
   const me=csW()>=.7&&h.cs?C.cs(h.cs):h.goals>=h.assists?C.goals(h.goals):C.assists(h.assists);
   const extra=[];
-  if(h.nemW||h.nemL)extra.push(h.nemW>=h.nemL?C.nemWin(esc(S.nem?S.nem.name:'')):C.nemLose(esc(S.nem?S.nem.name:'')));
   if(h.fired)extra.push(C.fired);
   if(h.injuries>=2)extra.push(C.inj);
   if(h.quest&&h.quest.done)extra.push(C.quest);
@@ -3510,17 +3572,24 @@ function sparkline(){
 
 /* ---- campaign panel (Career tab) ---- */
 function campaignView(){
-  const feats=(S.feats||[]).map(k=>`<span class="chip tg blue" title="${esc(t.feats[k][1])}">${t.feats[k][0]}</span>`).join('');
-  const items=(S.items||[]).map(i=>`<span class="chip tg gold" title="${esc(t.items[i.k][1])}">${esc(itemName(i))}</span>`).join('');
-  const m=mateNow(), n=S.nem;
   const cap=S.history.length&&S.age>=21?t.capLv[capLv(potCap())]:'?';
-  const rows=[
-    n?`<div class="sv-row"><span>${t.nemT}</span><span class="cv">${esc(n.name)} · ${esc(n.club||'')} · ${t.h2h(n.w,n.l)}</span></div>`:'',
-    m?`<div class="sv-row"><span>${t.roles[m.role]}</span><span class="cv">${esc(m.name)} · ${t.bondT} ${'●'.repeat(Math.min(5,m.bond))}${'○'.repeat(Math.max(0,5-Math.min(5,m.bond)))}</span></div>`:'',
-    `<div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>`,
-    `<div class="sv-row"><span>✦ ${t.inspT}</span><span class="cv">${S.insp||0}/2 · ${t.questsN(S.quests||0)}</span></div>`
-  ].join('');
-  return `<div class="camp"><div class="sv-list">${rows}</div>${feats||items?`<div class="cabinet sm oneline">${feats}${items}</div>`:''}</div>`;
+  const feats=(S.feats||[]).map(k=>`<span class="chip tg blue" title="${esc(t.feats[k][1])}">${t.feats[k][0]}</span>`).join('');
+  return `<div class="camp"><span class="lbl">${t.profT}</span><div class="sv-list">
+    <div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>
+    <div class="sv-row"><span>${t.inspT}</span><span class="cv">✦ ${S.insp||0}/${inspMax()}</span></div>
+    <div class="sv-row"><span>${t.quests}</span><span class="cv">${S.quests||0}</span></div>
+    <div class="sv-row"><span>${t.invT}</span><span class="cv">${(S.items||[]).length}/${ITEMS.length}</span></div></div>
+    <span class="lbl" style="margin-top:4px">${t.featsT}</span>${feats?`<div class="cabinet sm featw">${feats}</div>`:`<div class="muted small">${t.noFeats}</div>`}</div>`;
+}
+const ITEMS=['boots','armband','shirt','goldboot','ball','medal','scarf','tape','pendant','notebook','hatball','cap'];
+const ITEM_ICON={boots:'M4 15h9l3-3 4 1v4H4z M7 15V9h4l1 3',armband:'M5 9h14v6H5z M9 9v6 M15 9v6',shirt:'M8 4l-4 3 2 3 2-1v11h8V9l2 1 2-3-4-3-2 2h-4z',goldboot:'M6 5h9l3 3v4l-3 3v4H8v-5l-2-2z',ball:'M12 3.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12z M12 7l2 1.5-.8 2.3h-2.4L10 8.5z M8 19h8',
+ medal:'M8 3l4 6 4-6 M12 21a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 13.5v5',scarf:'M5 6l14 3-2 3-12-3z M7 9l-2 10 3-1 2-9 M15 12l1 8 3-2-1-7',tape:'M12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z',pendant:'M7 4c0 4 2 6 5 7 3-1 5-3 5-7 M12 11v2 M12 13l3 4-3 4-3-4z',notebook:'M6 4h11a1 1 0 0 1 1 1v15H7a1 1 0 0 1-1-1z M9 8h6 M9 12h6 M9 16h4',hatball:'M12 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M12 8l2.5 1.8-1 2.9h-3l-1-2.9z M7 21h10',cap:'M4 13a8 6 0 0 1 16 0z M4 13h16 M12 7V5'};
+function inventoryView(){
+  const own=Object.fromEntries((S.items||[]).map(i=>[i.k+(i.club?'|'+i.club:''),i]));
+  const has=k=>(S.items||[]).filter(i=>i.k===k);
+  const cards=ITEMS.slice().sort((x,y)=>(has(y).length?1:0)-(has(x).length?1:0)).map(k=>{const got=has(k), on=got.length>0, I=t.items[k];
+    return `<div class="inv ${on?'on':''}"><svg class="invi" viewBox="0 0 24 24" aria-hidden="true"><path d="${ITEM_ICON[k]}"/></svg><div class="inv-t"><b>${I[0]}${got.length>1?` ×${got.length}`:''}</b><span class="eff">${I[1]}</span><span class="how">${on?got.map(i=>t.invGot(i.year,i.club?esc(i.club):'')).join(' · '):`${t.invHow}: ${I[2]}`}</span></div></div>`}).join('');
+  return `<section class="panel stack trackp" style="gap:8px"><div class="row between"><h3 style="font-size:18px">${t.invT}</h3><span class="lbl">${t.invHave(ITEMS.filter(k=>has(k).length).length,ITEMS.length)}</span></div><div class="scrollbox invg">${cards}</div></section>`;
 }
 
 /* ---- share card: an image of the career ---- */
@@ -3587,12 +3656,13 @@ function prepView(h){
 
 const TX={
 en:{
- cx:{loy:n=>`fans ${sg(n)}`,insp:n=>`+${n} inspiration`,grow:'+1 growth',bond:'bond +1',nothing:'nothing changes'},
+ cx:{scout:'a scout takes note',item:n=>`item: ${n}`,loy:n=>`fans ${sg(n)}`,insp:n=>`+${n} inspiration`,grow:'+1 growth',bond:'bond +1',nothing:'nothing changes'},
  nemT:'Nemesis',h2h:(w,l)=>`H2H ${w}–${l}`,roles:{partner:'Strike partner',mentor:'Mentor',captain:'Captain'},bondT:'bond',
  ceilT:'Ceiling',capLv:['Squad player','Solid pro','International','World class','All-time great'],inspT:'Inspiration',questsN:n=>`${n} quest${n===1?'':'s'} done`,
  qx:{goals:n=>`Score ${n} goals`,assists:n=>`Make ${n} assists`,cs:n=>`Keep ${n} clean sheets`,title:'Win the league',top4:'Finish in the top 4',half:'Finish in the top half',promo:'Win promotion',cupsemi:'Reach the cup semi-final'},
  qRw:{attr:'+1 attribute',fans:'fans +3',insp:'+1 inspiration'},questT:'Quest',questDone:'Quest complete',questFail:'Quest failed',
- items:{boots:['Lucky boots','+1 in finals. Earned with a natural 20 in a final you won.'],armband:['Captain’s armband','+1 in league matches for this club. Five seasons at the club.'],shirt:['Iconic shirt','+1 in cup matches for this club. Became a club idol.'],goldboot:['Golden boot','Goals +10%. A 30-goal season.'],ball:['The golden ball','+1 at the World Cup. Won the Ballon d’Or.']},
+ items:{boots:['Lucky boots','+1 in every final.','Roll a natural 20 in a final you win.'],armband:['Captain’s armband','+1 in league stretches for this club.','Play eight seasons in a row at one club.'],shirt:['Iconic shirt','+1 in cup matches for this club.','Become a club idol after six seasons there and win a title that year.'],goldboot:['Golden boot','Goals +10%.','Score 30 goals in a season.'],ball:['The golden ball','+1 in World Cup matches.','Win the Ballon d’Or.'],
+  medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win three derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 10 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
  newItem:n=>`New item: ${n}`,
  feats:{clutch:['Clutch','+2 in finals.'],bigstage:['Big stage','+1 in continental, Club World Cup and World Cup matches.'],workhorse:['Workhorse','+1 in every league stretch.'],poacher:['Poacher','Goals +25%.'],maestro:['Maestro','Assists +25%.'],wall:['The wall','+1 when the focus is Defending or Physical; clean sheets +25%.'],ironlungs:['Iron lungs','Always roll the recovery d10s with advantage.'],ageless:['Ageless','+3 on the age checks.'],lucky:['Lucky','A natural 19 counts as a critical.'],captain:['Born leader','Fans warm to you faster: +1 support every season.'],inspiring:['Inspiring','Start every season with 1 inspiration.'],latebloomer:['Late bloomer','Ceiling +2 and you keep improving until 35.']},
  featT:'Level up! Choose a feat',featSub:a=>`At ${a} you have learned something about your game. Pick one; it lasts the whole career.`,featGot:k=>`New feat: ${k}`,
@@ -3603,7 +3673,7 @@ en:{
  chron:{champ:n=>`champions of the ${n}`,up:'promoted',down:'relegated',won:c=>`won the ${c}`,bdo:'Ballon d’Or',wc:'world champion',and:', ',pos:(p,n)=>`${p} in the ${n}`,goals:n=>`${n} goals`,assists:n=>`${n} assists`,cs:n=>`${n} clean sheets`,nemWin:n=>`Got the better of ${n}.`,nemLose:n=>`${n} had the last word.`,fired:'Shown the door.',inj:'A season of knocks.',quest:'Quest complete.',feat:k=>`Learned: ${k}.`},
  chronT:'Chronicle',chronBtn:'Read the chronicle',
  sparkT:'Rating by age',sparkKey:'● title  ● major',legacyPts:'Legacy points',
- xm:{fClutch:'Clutch',fBig:'Big stage',fWork:'Workhorse',fWall:'The wall',iBoots:'Lucky boots',iArm:'Armband',iShirt:'Shirt',iBall:'Golden ball',mate:'Bond',bench:'Bench fight'},
+ xm:{iMedal:'Medal',fClutch:'Clutch',fBig:'Big stage',fWork:'Workhorse',fWall:'The wall',iBoots:'Lucky boots',iArm:'Armband',iShirt:'Shirt',iBall:'Golden ball',mate:'Bond',bench:'Bench fight'},
  chx:{eve:['The night before the derby','The city is buzzing and the squad is restless.',{rest:'Early night',dinner:'Team dinner',talk:'A fiery interview'}],
   mentor:['A veteran offers extra sessions','After training, an old pro offers to stay with you.',{extra:'Stay and train',video:'Study the video'}],
   party:['Teammates’ party','The dressing room is celebrating a birthday tonight.',{skip:'Stay home',go:'Go along'}],
@@ -3616,7 +3686,7 @@ en:{
  inspBtn:n=>`✦ ${n}`,inspOn:'Inspired: advantage',inspHint:'Spend inspiration for advantage',redChip:'Red card: disadvantage',
  oddsLg:(n,p)=>`Strong ${n<=1?'auto':n+'+'} · ${p}%`,odds:(n,p)=>`Needs ${n<=1?'any':n+'+'} · ${p}%`,
  simNext:'Skip to next decision',simNextS:'Skip',
- modHelpT:'What the numbers mean',modHelp:'Player: your overall rating. Club/Nation: how strong your team is. Focus: the attribute this match leans on (its value ÷ 5). Fans: how much the crowd loves you. Moment: the scene before the match. Extras: your feats, items and teammate bond (hold or hover to see them). Bonuses above +7 count half. You need the DC or more on d20 + bonuses; a natural 20 always wins and a natural 1 always fails.',
+ modHelpT:'What the numbers mean',modHelp:'Player: your overall rating. Club/Nation: how strong your team is. Focus: the attribute this match leans on (its value ÷ 5). Fans: how much the crowd loves you. Moment: the scene before the match. Extras: your feats and items (hold or hover to see them). Bonuses above +7 count half. You need the DC or more on d20 + bonuses; a natural 20 always wins and a natural 1 always fails.',
  dailyBtn:'Daily career',dailyT:d=>`Daily career · ${d}`,dailySub:'Everyone gets the same nation, roll and first clubs today. No rerolls.',
  shareBtn:'Share card',sortT:'Sort',sorts:{score:'Legacy',titles:'Titles',goals:'Goals',peak:'Peak'},cmpBtn:'Compare',cmpOn:'Comparing',cmpT:'Head to head',cmpHint:'Pick one more player to compare.',
  nNem:(n,c)=>`Your nemesis: ${n} (${c}). You will meet again.`,nMateFollow:n=>`${n} follows you to the new club.`,mentorBye:n=>`${n}, your mentor, hangs up the boots. You carry the lessons: +1 inspiration.`,
@@ -3625,12 +3695,13 @@ en:{
  quests:'Quests',nemesisWon:'Nemesis beaten: +1 inspiration, fans +1',nemesisLost:'Your nemesis wins this one'
 },
 pt:{
- cx:{loy:n=>`torcida ${sg(n)}`,insp:n=>`+${n} inspiração`,grow:'+1 evolução',bond:'laço +1',nothing:'nada muda'},
+ cx:{scout:'um olheiro anota seu nome',item:n=>`item: ${n}`,loy:n=>`torcida ${sg(n)}`,insp:n=>`+${n} inspiração`,grow:'+1 evolução',bond:'laço +1',nothing:'nada muda'},
  nemT:'Nêmesis',h2h:(w,l)=>`Confronto ${w}–${l}`,roles:{partner:'Parceiro de ataque',mentor:'Mentor',captain:'Capitão'},bondT:'laço',
  ceilT:'Teto',capLv:['Jogador de elenco','Profissional sólido','De seleção','Classe mundial','Lenda eterna'],inspT:'Inspiração',questsN:n=>`${n} missõ${n===1?'ão':'es'} cumprida${n===1?'':'s'}`,
  qx:{goals:n=>`Marque ${n} gols`,assists:n=>`Dê ${n} assistências`,cs:n=>`Termine ${n} jogos sem sofrer gol`,title:'Ganhe a liga',top4:'Termine no top 4',half:'Termine na metade de cima',promo:'Conquiste o acesso',cupsemi:'Chegue à semifinal da copa'},
  qRw:{attr:'+1 atributo',fans:'torcida +3',insp:'+1 inspiração'},questT:'Missão',questDone:'Missão cumprida',questFail:'Missão falhou',
- items:{boots:['Chuteira da sorte','+1 em finais. Ganha com um 20 natural numa final vencida.'],armband:['Braçadeira de capitão','+1 nos jogos de liga por este clube. Cinco temporadas no clube.'],shirt:['Camisa histórica','+1 nos jogos de copa por este clube. Virou ídolo.'],goldboot:['Chuteira de ouro','Gols +10%. Uma temporada de 30 gols.'],ball:['A bola dourada','+1 na Copa do Mundo. Ganhou a Bola de Ouro.']},
+ items:{boots:['Chuteira da sorte','+1 em todas as finais.','Tire um 20 natural numa final vencida.'],armband:['Braçadeira de capitão','+1 nas fases da liga por este clube.','Jogue oito temporadas seguidas num clube.'],shirt:['Camisa histórica','+1 nos jogos de copa por este clube.','Vire ídolo de um clube depois de seis temporadas e ganhe um título naquele ano.'],goldboot:['Chuteira de ouro','Gols +10%.','Marque 30 gols numa temporada.'],ball:['A bola dourada','+1 nos jogos de Copa do Mundo.','Ganhe a Bola de Ouro.'],
+  medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença três momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 10 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
  newItem:n=>`Novo item: ${n}`,
  feats:{clutch:['Decisivo','+2 em finais.'],bigstage:['Palco grande','+1 em jogos continentais, do Mundial e da Copa do Mundo.'],workhorse:['Incansável','+1 em toda fase da liga.'],poacher:['Matador','Gols +25%.'],maestro:['Maestro','Assistências +25%.'],wall:['A muralha','+1 quando o foco é Defesa ou Físico; jogos sem sofrer gol +25%.'],ironlungs:['Pulmão de aço','Sempre rola os d10 de recuperação com vantagem.'],ageless:['Sem idade','+3 nos testes de idade.'],lucky:['Sortudo','Um 19 natural conta como crítico.'],captain:['Líder nato','A torcida te abraça mais rápido: +1 de apoio por temporada.'],inspiring:['Inspirador','Começa toda temporada com 1 inspiração.'],latebloomer:['Tardio','Teto +2 e você continua evoluindo até os 35.']},
  featT:'Subiu de nível! Escolha um talento',featSub:a=>`Aos ${a} você aprendeu algo sobre o seu jogo. Escolha um; ele vale pela carreira toda.`,featGot:k=>`Novo talento: ${k}`,
@@ -3641,7 +3712,7 @@ pt:{
  chron:{champ:n=>`campeão do ${n}`,up:'acesso',down:'rebaixado',won:c=>`ganhou ${c}`,bdo:'Bola de Ouro',wc:'campeão do mundo',and:', ',pos:(p,n)=>`${p} no ${n}`,goals:n=>`${n} gols`,assists:n=>`${n} assistências`,cs:n=>`${n} jogos sem sofrer gol`,nemWin:n=>`Levou a melhor sobre ${n}.`,nemLose:n=>`${n} deu a última palavra.`,fired:'Mandado embora.',inj:'Uma temporada de pancadas.',quest:'Missão cumprida.',feat:k=>`Aprendeu: ${k}.`},
  chronT:'Crônica',chronBtn:'Ler a crônica',
  sparkT:'Nível por idade',sparkKey:'● título  ● grande',legacyPts:'Pontos de legado',
- xm:{fClutch:'Decisivo',fBig:'Palco grande',fWork:'Incansável',fWall:'Muralha',iBoots:'Chuteira',iArm:'Braçadeira',iShirt:'Camisa',iBall:'Bola dourada',mate:'Laço',bench:'Briga pela vaga'},
+ xm:{iMedal:'Medalha',fClutch:'Decisivo',fBig:'Palco grande',fWork:'Incansável',fWall:'Muralha',iBoots:'Chuteira',iArm:'Braçadeira',iShirt:'Camisa',iBall:'Bola dourada',mate:'Laço',bench:'Briga pela vaga'},
  chx:{eve:['A noite antes do clássico','A cidade está fervendo e o elenco, inquieto.',{rest:'Dormir cedo',dinner:'Jantar do elenco',talk:'Entrevista inflamada'}],
   mentor:['Um veterano oferece treinos extras','Depois do treino, um experiente se oferece para ficar com você.',{extra:'Ficar e treinar',video:'Estudar os vídeos'}],
   party:['Festa do elenco','O vestiário comemora um aniversário hoje à noite.',{skip:'Ficar em casa',go:'Ir junto'}],
@@ -3654,7 +3725,7 @@ pt:{
  inspBtn:n=>`✦ ${n}`,inspOn:'Inspirado: vantagem',inspHint:'Gaste inspiração para ter vantagem',redChip:'Vermelho: desvantagem',
  oddsLg:(n,p)=>`Forte ${n<=1?'garantido':n+'+'} · ${p}%`,odds:(n,p)=>`Precisa ${n<=1?'de qualquer':n+'+'} · ${p}%`,
  simNext:'Pular até a próxima decisão',simNextS:'Pular',
- modHelpT:'O que os números significam',modHelp:'Jogador: seu nível geral. Clube/Seleção: a força do seu time. Foco: o atributo que pesa neste jogo (valor ÷ 5). Torcida: o quanto a arquibancada te ama. Momento: a cena antes do jogo. Extras: seus talentos, itens e o laço com o companheiro. Bônus acima de +7 contam pela metade. Você precisa da CD ou mais em d20 + bônus; um 20 natural sempre vence e um 1 natural sempre falha.',
+ modHelpT:'O que os números significam',modHelp:'Jogador: seu nível geral. Clube/Seleção: a força do seu time. Foco: o atributo que pesa neste jogo (valor ÷ 5). Torcida: o quanto a arquibancada te ama. Momento: a cena antes do jogo. Extras: seus talentos e itens. Bônus acima de +7 contam pela metade. Você precisa da CD ou mais em d20 + bônus; um 20 natural sempre vence e um 1 natural sempre falha.',
  dailyBtn:'Carreira do dia',dailyT:d=>`Carreira do dia · ${d}`,dailySub:'Hoje todo mundo recebe a mesma nacionalidade, rolagem e primeiros clubes. Sem rerrolagens.',
  shareBtn:'Compartilhar',sortT:'Ordenar',sorts:{score:'Legado',titles:'Títulos',goals:'Gols',peak:'Nível'},cmpBtn:'Comparar',cmpOn:'Comparando',cmpT:'Frente a frente',cmpHint:'Escolha mais um jogador para comparar.',
  nNem:(n,c)=>`Seu nêmesis: ${n} (${c}). Vocês vão se reencontrar.`,nMateFollow:n=>`${n} vai junto para o novo clube.`,mentorBye:n=>`${n}, seu mentor, pendura as chuteiras. Você leva as lições: +1 inspiração.`,
@@ -3667,7 +3738,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runBanner:{miracle:'A last, impossible chase. Win all three against the odds and the title is yours.',title:'Title race! The league comes down to the last three games.',releg:'Relegation battle! Three games to save the season.',promo:'Promotion race! Three games to go up.'},runPts:(p,n)=>`${p} pts · need ${n}`,
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
- mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Career numbers',seasons:'Season by season'},prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
+ mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{nums:'Numbers',seasons:'Seasons',inv:'Inventory'},invT:'Inventory',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
  extrasL:'Extras',rar:['Common','Uncommon','Rare','Epic','Legendary'],achDoneH:'Unlocked · newest first',achLockedH:'Still locked',achTrackedH:'In progress',achByDiffH:'From most common to rarest',achNone:'Nothing here yet.',
  achGroups:{titles:'Titles',world:'World stage',personal:'Personal records',clubs:'Clubs and fans',moments:'Moments and dice',campaign:'Campaign',women:'Women’s football',multi:'Across careers',bad:'Hard lessons'},
  achFilt:{all:'All',done:'Unlocked',todo:'Locked'},achSorts:{std:'By type',recent:'Recently unlocked',diff:'Difficulty'},
@@ -3676,7 +3747,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runBanner:{miracle:'Uma última perseguição impossível. Vença os três contra tudo e a taça é sua.',title:'Briga pelo título! A liga se decide nos três últimos jogos.',releg:'Luta contra a queda! Três jogos para salvar a temporada.',promo:'Briga pelo acesso! Três jogos para subir.'},runPts:(p,n)=>`${p} pts · precisa de ${n}`,
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
- mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números da carreira',seasons:'Temporada a temporada'},prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
+ mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{nums:'Números',seasons:'Temporadas',inv:'Inventário'},invT:'Inventário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
  extrasL:'Extras',rar:['Comum','Incomum','Rara','Épica','Lendária'],achDoneH:'Desbloqueadas · mais recentes primeiro',achLockedH:'Ainda bloqueadas',achTrackedH:'Em andamento',achByDiffH:'Da mais comum à mais rara',achNone:'Nada aqui ainda.',
  achGroups:{titles:'Títulos',world:'Palco mundial',personal:'Marcas pessoais',clubs:'Clubes e torcida',moments:'Momentos e dados',campaign:'Campanha',women:'Futebol feminino',multi:'Entre carreiras',bad:'Lições duras'},
  achFilt:{all:'Todas',done:'Desbloqueadas',todo:'Bloqueadas'},achSorts:{std:'Por tipo',recent:'Recentes',diff:'Dificuldade'},
@@ -3886,6 +3957,81 @@ let careerSub='nums';
 /* ---- small inline icons: World Cup trophy and the golden ball ---- */
 const icoCup=`<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2h7v3a3.5 3.5 0 0 1-7 0z M4.5 3H2.5c0 2 1 3 2.3 3 M11.5 3h2c0 2-1 3-2.3 3 M8 8.5v2.5 M5.5 14h5 M6.5 11h3v3h-3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 const icoBall=`<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="6.2" r="4.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.2l1.6 1.2-.6 1.9H7l-.6-1.9z" fill="currentColor"/><path d="M6 10.4l-.8 2.1h5.6l-.8-2.1 M4.5 14h7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* ---- more story scenes; some only show up when they fit the moment ---- */
+Object.assign(CHOICES,{
+ rain:{opts:[{k:'short',at:'pas',tgt:12,ok:{buff:2},bad:{buff:-1}},{k:'long',at:'str',tgt:12,ok:{mode:'adv',item:'studs'},bad:{mode:'dis'}},{k:'safe',fx:{}}]},
+ selfie:{opts:[{k:'photo',fx:{loy:1}},{k:'chat',at:'lead',tgt:11,ok:{loy:2,insp:1},bad:{loy:1}}]},
+ hamstring:{opts:[{k:'through',at:'str',tgt:13,ok:{buff:1},bad:{mode:'dis'}},{k:'physio',fx:{buff:-1}}]},
+ tunnel:{opts:[{k:'bite',at:'dec',tgt:14,ok:{mode:'adv',loy:1},bad:{mode:'dis'}},{k:'smile',at:'dec',tgt:9,ok:{buff:1},bad:{}}]},
+ youth:{cond:()=>S.age>=27,opts:[{k:'advice',fx:{insp:1}},{k:'train',at:'lead',tgt:13,ok:{insp:1,loy:1,item:'kidshirt'},bad:{}}]},
+ agentcall:{cond:()=>S.age>=21&&S.age<=31,opts:[{k:'listen',at:'dec',tgt:13,ok:{scout:1},bad:{loy:-2}},{k:'hangup',fx:{loy:1}}]},
+ birthday:{opts:[{k:'family',fx:{buff:1}},{k:'cake',at:'lead',tgt:10,ok:{insp:1},bad:{}}]},
+ cover:{cond:()=>rating(S.attrs)>=15,opts:[{k:'accept',at:'dec',tgt:12,ok:{insp:1,loy:1,item:'cover'},bad:{mode:'dis'}},{k:'decline',fx:{}}]},
+ flight:{opts:[{k:'sleep',at:'str',tgt:12,ok:{},bad:{mode:'dis'}},{k:'film',at:'dec',tgt:12,ok:{buff:1},bad:{buff:-2}}]},
+ newcoach:{opts:[{k:'learn',at:'dec',tgt:12,ok:{grow:1,buff:1},bad:{buff:-1}},{k:'own',at:'key',tgt:13,ok:{mode:'adv'},bad:{mode:'dis'}}]},
+ pens:{opts:[{k:'take',at:'fin',tgt:13,ok:{mode:'adv',loy:1},bad:{loy:-1,mode:'dis'}},{k:'kid',fx:{insp:1}}]},
+ heat:{opts:[{k:'pace',at:'dec',tgt:11,ok:{buff:1},bad:{}},{k:'press',at:'spd',tgt:14,ok:{mode:'adv'},bad:{mode:'dis'}}]},
+ docu:{cond:()=>rating(S.attrs)>=14,opts:[{k:'open',at:'lead',tgt:12,ok:{loy:2,item:'docu'},bad:{loy:-1}},{k:'shut',fx:{buff:1}}]},
+ referee:{opts:[{k:'calm',at:'dec',tgt:11,ok:{buff:1},bad:{buff:-1}},{k:'edge',at:'def',tgt:14,ok:{mode:'adv'},bad:{mode:'dis',loy:-1}}]},
+ family:{opts:[{k:'score',at:'key',tgt:13,ok:{mode:'adv',insp:1},bad:{buff:-1}},{k:'enjoy',fx:{buff:1}}]},
+ ultras:{cond:()=>fanTier()<=2,opts:[{k:'talk',at:'lead',tgt:13,ok:{loy:3,flag:'ultras'},bad:{loy:-2}},{k:'feet',at:'key',tgt:12,ok:{buff:2},bad:{buff:-1}}]},
+ bootdeal:{opts:[{k:'wear',at:'ski',tgt:12,ok:{buff:2,item:'newboots'},bad:{mode:'dis'}},{k:'old',fx:{buff:1}}]},
+ legend:{opts:[{k:'ask',at:'dec',tgt:10,ok:{grow:1,insp:1},bad:{}},{k:'shootout',at:'fin',tgt:14,ok:{loy:2,insp:1,item:'legendsign'},bad:{loy:-1}}]},
+ rumour:{opts:[{k:'deny',at:'lead',tgt:11,ok:{loy:2},bad:{loy:-1}},{k:'silent',fx:{loy:-1,buff:1}}]},
+ prank:{opts:[{k:'laugh',fx:{insp:1}},{k:'back',at:'dec',tgt:13,ok:{insp:1,loy:1},bad:{mode:'dis'}}]}
+});
+const STORY_TX={
+en:{
+ rain:['Torrential rain','The pitch is a swamp and the ball barely rolls.',{short:'Keep it short',long:'Go long and fight',safe:'Play it safe'}],
+ selfie:['A fan on the training pitch','A young fan slipped past security for a selfie.',{photo:'Take the photo',chat:'Sign his shirt and chat'}],
+ hamstring:['A tight hamstring','Something pulls in the warm-up. The physio is watching you.',{through:'Play through it',physio:'Tell the physio'}],
+ tunnel:['Trash talk in the tunnel','Their captain leans in and tells you exactly what he thinks of you.',{bite:'Bite back',smile:'Smile and walk on'}],
+ youth:['An academy kid asks for help','A 16-year-old waits for you after training, nervous.',{advice:'Give him advice',train:'Train with him all week'}],
+ agentcall:['A call from your agent','A rich club is asking about you. Do you want to hear more?',{listen:'Hear him out',hangup:'Hang up'}],
+ birthday:['Matchday birthday','You turn a year older on the day of the game.',{family:'Breakfast with family',cake:'Cake in the dressing room'}],
+ cover:['A video game cover','A game studio wants you on the cover of this year’s edition.',{accept:'Accept and do the shoot',decline:'Decline politely'}],
+ flight:['A delayed flight','The team lands at 3 a.m. The match is in the afternoon.',{sleep:'Sleep on the bus',film:'Coffee and match video'}],
+ newcoach:['A new coach','The new manager brings a new system and wants to see who adapts.',{learn:'Learn it fast',own:'Stick to your game'}],
+ pens:['Penalty duty','The captain lets you decide who takes the penalties today.',{take:'Take them yourself',kid:'Give them to the youngster'}],
+ heat:['38 °C kick-off','An afternoon game under a burning sun.',{pace:'Pace yourself',press:'Press from the first minute'}],
+ docu:['A documentary crew','Cameras follow you everywhere this week.',{open:'Open up to them',shut:'Keep them out of the dressing room'}],
+ referee:['A strict referee','Today’s referee is famous for his cards.',{calm:'Keep calm',edge:'Play on the edge'}],
+ family:['Family in the stands','Your family flew in to watch you play.',{score:'Do something special for them',enjoy:'Just enjoy the day'}],
+ ultras:['The ultras want answers','After a bad run, the hardcore fans wait outside the training ground.',{talk:'Go and talk to them',feet:'Let your football talk'}],
+ bootdeal:['New boots on matchday','A sponsor sends brand-new boots and wants you in them today.',{wear:'Wear them',old:'Stick with your old pair'}],
+ legend:['A club legend visits','One of the greatest players in club history shows up at training.',{ask:'Ask for advice',shootout:'Challenge him to a shootout'}],
+ rumour:['Transfer rumours','A newspaper says you’re leaving at the end of the season.',{deny:'Deny it publicly',silent:'Say nothing'}],
+ prank:['Dressing-room prank','Your teammates filled your boots with shaving foam.',{laugh:'Laugh along',back:'Plan your revenge'}]
+},
+pt:{
+ rain:['Chuva torrencial','O gramado virou um pântano e a bola mal rola.',{short:'Toque curto',long:'Bola longa e disputa',safe:'Jogar seguro'}],
+ selfie:['Um torcedor no treino','Um torcedor mirim driblou a segurança para tirar uma selfie.',{photo:'Tirar a foto',chat:'Autografar a camisa e conversar'}],
+ hamstring:['Posterior travado','Algo puxa no aquecimento. O fisioterapeuta está de olho.',{through:'Jogar assim mesmo',physio:'Avisar o fisioterapeuta'}],
+ tunnel:['Provocação no túnel','O capitão rival chega perto e diz o que pensa de você.',{bite:'Responder',smile:'Sorrir e seguir'}],
+ youth:['Um garoto da base pede ajuda','Um menino de 16 anos te espera depois do treino, nervoso.',{advice:'Dar conselhos',train:'Treinar com ele a semana toda'}],
+ agentcall:['Ligação do empresário','Um clube rico está perguntando por você. Quer ouvir mais?',{listen:'Ouvir a proposta',hangup:'Desligar'}],
+ birthday:['Aniversário em dia de jogo','Você faz aniversário no dia da partida.',{family:'Café com a família',cake:'Bolo no vestiário'}],
+ cover:['Capa de videogame','Um estúdio quer você na capa da edição deste ano.',{accept:'Aceitar e fazer as fotos',decline:'Recusar com educação'}],
+ flight:['Voo atrasado','O time pousa às 3 da manhã. O jogo é à tarde.',{sleep:'Dormir no ônibus',film:'Café e vídeo do adversário'}],
+ newcoach:['Técnico novo','O novo treinador traz outro sistema e quer ver quem se adapta.',{learn:'Aprender rápido',own:'Manter o seu jogo'}],
+ pens:['Cobrança de pênaltis','O capitão deixa você decidir quem bate os pênaltis hoje.',{take:'Bater você mesmo',kid:'Deixar com o garoto'}],
+ heat:['Jogo a 38 °C','Partida à tarde sob um sol de rachar.',{pace:'Dosar o ritmo',press:'Pressionar desde o início'}],
+ docu:['Equipe de documentário','Câmeras te seguem por toda parte esta semana.',{open:'Se abrir para eles',shut:'Mantê-los fora do vestiário'}],
+ referee:['Árbitro rigoroso','O juiz de hoje é famoso pelos cartões.',{calm:'Manter a calma',edge:'Jogar no limite'}],
+ family:['Família na arquibancada','Sua família veio de longe para te ver jogar.',{score:'Fazer algo especial para eles',enjoy:'Só aproveitar o dia'}],
+ ultras:['A organizada quer respostas','Depois de uma fase ruim, a torcida organizada espera na porta do CT.',{talk:'Ir conversar com eles',feet:'Responder em campo'}],
+ bootdeal:['Chuteira nova no dia do jogo','Um patrocinador manda chuteiras novas e quer você com elas hoje.',{wear:'Usar as novas',old:'Ficar com as antigas'}],
+ legend:['Visita de uma lenda','Um dos maiores ídolos da história do clube aparece no treino.',{ask:'Pedir conselhos',shootout:'Desafiá-lo nos pênaltis'}],
+ rumour:['Boatos de transferência','Um jornal diz que você vai sair no fim da temporada.',{deny:'Desmentir em público',silent:'Não dizer nada'}],
+ prank:['Pegadinha no vestiário','Os companheiros encheram sua chuteira de espuma de barbear.',{laugh:'Rir junto',back:'Planejar a vingança'}]
+}};
+Object.assign(T.en.chx,STORY_TX.en); Object.assign(T.pt.chx,STORY_TX.pt);
+Object.assign(T.en.items,{studs:['Long studs','+1 in matches where the focus is Physical.','Win the long-ball fight in torrential rain.'],kidshirt:['Academy kid’s shirt','You can hold 3 inspiration instead of 2.','Train an academy kid all week and pull it off.'],cover:['Game cover','Fans +1 at your club every season.','Do the video game cover shoot and nail it.'],docu:['Documentary','+3 in the Ballon d’Or vote.','Open up to a documentary crew.'],newboots:['Signature boots','+1 in matches where the focus is Finishing or Skills.','Wear brand-new boots on matchday and shine.'],legendsign:['Legend’s autograph','+1 on every story check.','Beat a club legend in a shootout.']});
+Object.assign(T.pt.items,{studs:['Travas longas','+1 nos jogos com foco em Físico.','Vença a disputa de bola longa na chuva torrencial.'],kidshirt:['Camisa do garoto da base','Você pode guardar 3 inspirações em vez de 2.','Treine um garoto da base a semana toda e dê certo.'],cover:['Capa do jogo','Torcida +1 no seu clube a cada temporada.','Faça as fotos da capa do videogame e mande bem.'],docu:['Documentário','+3 na votação da Bola de Ouro.','Se abra para uma equipe de documentário.'],newboots:['Chuteira assinatura','+1 nos jogos com foco em Finalização ou Habilidade.','Use chuteiras novas no dia do jogo e brilhe.'],legendsign:['Autógrafo da lenda','+1 em todos os testes de história.','Vença uma lenda do clube nos pênaltis.']});
+Object.assign(T.en.xm,{iStuds:'Studs',iSig:'Boots'}); Object.assign(T.pt.xm,{iStuds:'Travas',iSig:'Chuteira'});
+ITEMS.push('studs','kidshirt','cover','docu','newboots','legendsign');
+Object.assign(ITEM_ICON,{studs:'M4 14h12l4-3v4H4z M7 14v3 M11 14v3 M15 14v3',kidshirt:'M8 4l-4 3 2 3 2-1v11h8V9l2 1 2-3-4-3-2 2h-4z M12 12v4',cover:'M5 4h14v16H5z M8 8h8 M8 16h5 M12 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4z',docu:'M4 7h11v10H4z M15 10l5-3v10l-5-3',newboots:'M4 15h9l3-3 4 1v4H4z M9 12l2-4 M12 13l2-4',legendsign:'M5 17c3-6 5-9 6-9s-1 7 1 7 3-4 4-4 1 3 3 3 M5 20h14'});
 
 let modHelp=false, hofSort='score';
 const hofCmp=new Set();
