@@ -3410,7 +3410,7 @@ function leagueTableView(s,form){
   const mv=S.lgMv&&S.lgMv.year===S.year-1?S.lgMv:null, nm={};
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" title="${esc(x.n)}"><td class="num">${x.pos}</td><td class="tm">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" title="${esc(x.n)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
     <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
@@ -3922,8 +3922,20 @@ function healHTML(){
       <div class="hcell">${dieSVG(12,I.d10?I.d10[0]:I.first??'',I.d10?d10cls(0):I.first===1?'fumble':'','hd10a')}<span class="lbl">d12</span></div><div class="hcell">${dieSVG(12,I.d10?I.d10[1]:'',d10cls(1),'hd10b')}<span class="lbl">d12</span></div></div>
     <div class="hres">${res}</div>${btn}</div>`;
 }
+/* the full table behind the pop-up follows every match, rows sliding to their new places */
+function refreshLeagueTable(){
+  const old=app.querySelector('section.ltab'), s=S.season; if(!old||!s||!s.lt)return;
+  const tmp=document.createElement('div'); tmp.innerHTML=leagueTableView(s,old.querySelector('th.fm')?1:0); const nw=tmp.firstElementChild; if(!nw)return;
+  const ot=old.querySelector('tbody'), nt=nw.querySelector('tbody'); if(!ot||!nt)return;
+  if(ot.innerHTML===nt.innerHTML)return;
+  const before={}; ot.querySelectorAll('tr[data-k]').forEach(r=>{before[r.dataset.k]=r.getBoundingClientRect().top});
+  const hd=old.querySelector('.row .lbl'), hn=nw.querySelector('.row .lbl'); if(hd&&hn)hd.textContent=hn.textContent;
+  ot.innerHTML=nt.innerHTML;
+  if(reduce)return;
+  ot.querySelectorAll('tr[data-k]').forEach(r=>{const b=before[r.dataset.k];if(b==null)return;const dy=b-r.getBoundingClientRect().top;if(dy)r.animate([{transform:`translateY(${dy}px)`},{transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'})});
+}
 function ovUpdate(html){
-  if(!ovEl)return; const card=ovEl.querySelector('.ovcard'), tmp=document.createElement('div'); tmp.innerHTML=html; const n=tmp.firstElementChild;
+  if(!ovEl)return; try{setTimeout(refreshLeagueTable,0)}catch(e){} const card=ovEl.querySelector('.ovcard'), tmp=document.createElement('div'); tmp.innerHTML=html; const n=tmp.firstElementChild;
   if(!card||!n){ovEl.innerHTML=html;return}
   card.className=n.className+' still'; card.innerHTML=n.innerHTML;
 }
