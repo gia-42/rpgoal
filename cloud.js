@@ -11,7 +11,7 @@
       sent: e => `We sent a 6-digit code to ${e}. It can take a minute to arrive.`, code: 'Code', verify: 'Log in', checking: 'Checking…',
       badEmail: 'Enter a valid email address.', badCode: 'That code didn’t work. Check it, or ask for a new one.', other: 'Use a different email',
       signedAs: e => `Logged in as ${e}`, synced: 'Saved to your account.', syncing: 'Saving…', offline: 'Couldn’t reach your account. Your game is still saved on this device and will sync later.',
-      syncNow: 'Sync now', logout: 'Log out', close: 'Close', merged: 'Your account save was loaded.',
+      syncNow: 'Sync now', logout: 'Log out', close: 'Close', merged: 'Your account save was loaded.', lock: 'Syncing your career…', newer: 'A newer save of this career was found in your account and loaded.',
       uname: 'Username', unameHint: '3 to 20 letters, numbers, dots, dashes or underscores.', unameSave: 'Save', unameSaving: 'Saving…', unameOk: 'Username saved.', unameBad: 'Use 3 to 20 letters, numbers, dots, dashes or underscores.', unamePick: 'Choose a username', welcome: 'Welcome! Pick the name shown on your account.', later: 'Later'
     },
     pt: {
@@ -20,7 +20,7 @@
       sent: e => `Enviamos um código de 6 dígitos para ${e}. Pode levar um minuto para chegar.`, code: 'Código', verify: 'Entrar', checking: 'Verificando…',
       badEmail: 'Digite um e-mail válido.', badCode: 'Esse código não funcionou. Confira ou peça um novo.', other: 'Usar outro e-mail',
       signedAs: e => `Conectado como ${e}`, synced: 'Salvo na sua conta.', syncing: 'Salvando…', offline: 'Não foi possível acessar sua conta. O jogo continua salvo neste aparelho e sincroniza depois.',
-      syncNow: 'Sincronizar agora', logout: 'Sair', close: 'Fechar', merged: 'O jogo salvo na sua conta foi carregado.',
+      syncNow: 'Sincronizar agora', logout: 'Sair', close: 'Fechar', merged: 'O jogo salvo na sua conta foi carregado.', lock: 'Sincronizando sua carreira…', newer: 'Encontramos um save mais novo desta carreira na sua conta e ele foi carregado.',
       uname: 'Nome de usuário', unameHint: 'De 3 a 20 letras, números, pontos, hífens ou sublinhados.', unameSave: 'Salvar', unameSaving: 'Salvando…', unameOk: 'Nome de usuário salvo.', unameBad: 'Use de 3 a 20 letras, números, pontos, hífens ou sublinhados.', unamePick: 'Escolha um nome de usuário', welcome: 'Bem-vindo! Escolha o nome que aparece na sua conta.', later: 'Depois'
     }
   };
@@ -43,6 +43,39 @@
 
   // ----- syncing -----
   const careerWeight = c => !c || !c.phase ? -1 : (c.phase === 'create' ? 0 : 1 + (c.history ? c.history.length : 0) * 10 + (c.season ? c.season.idx || 0 : 0));
+  // how far a copy of a career has got: seasons and stages first, then every single save (rev), then the clock
+  const rank = c => [careerWeight(c), (c && c.rev) || 0, (c && c.savedAt) || 0];
+  const ahead = (a, b) => { const x = rank(a), y = rank(b); for (let i = 0; i < 3; i++) { if (x[i] !== y[i]) return x[i] > y[i]; } return false; };
+  // Which copy to keep. Every save gets a stamp (sid); syncSid is the stamp both sides last agreed on.
+  // If only one side changed since then, that side wins. If both changed (played on two devices at once),
+  // the copy that got further wins, and on a tie the one already in the account.
+  function decide(c, l, hof) {
+    if (!c || !c.phase) return 'local';
+    if (!l || !l.phase || l.phase === 'create' && c.phase !== 'create') return 'cloud';
+    const lStale = finished(l, hof), cStale = finished(c, hof);
+    if (lStale && !cStale) return 'cloud';
+    if (cStale && !lStale) return 'local';
+    if (c.sid && c.sid === l.sid) return 'same';
+    const base = l.syncSid, cMoved = !base || c.sid !== base, lMoved = !base || l.sid !== base;
+    if (base && !cMoved) return 'local';
+    if (base && !lMoved) return 'cloud';
+    const same = careerId(c) && careerId(c) === careerId(l);
+    if (same) { const wc = careerWeight(c), wl = careerWeight(l); return wl > wc ? 'local' : wc > wl ? 'cloud' : ((c.rev || 0) >= (l.rev || 0) ? 'cloud' : 'local'); }
+    return (c.savedAt || 0) > (l.savedAt || 0) ? 'cloud' : 'local';
+  }
+  // every pull and push runs one after another, never at the same time
+  let chain = Promise.resolve();
+  const serial = fn => (chain = chain.then(fn).catch(() => { status = 'err'; refresh(); }));
+  // swap in a copy from the account in the middle of a session: close what is open and show it
+  function adopt(cloud, msg) {
+    S = fixSave(cloud); S.syncSid = S.sid;
+    if (S.phase === 'season' && !S.season) buildSeason();
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    try { if (typeof ovQ !== 'undefined') ovQ = []; while (typeof ovEl !== 'undefined' && ovEl) closeOv(); if (typeof homeHold !== 'undefined') homeHold = true; } catch (e) {}
+    note = msg || tt().merged;
+    render(); if (typeof scheduleAuto === 'function') scheduleAuto();
+    try { const b = document.createElement('div'); b.className = 'ctoast'; b.textContent = note; document.body.appendChild(b); setTimeout(() => b.remove(), 3800); } catch (e) {}
+  }
   // careers removed from the Hall of Fame stay removed on every device (tombstones ride along as one extra entry)
   const delIds = () => (typeof loadHofDel === 'function' ? loadHofDel() : []);
   function mergeHof(a, b) {
@@ -52,17 +85,36 @@
     return typeof hofDedupe === 'function' ? hofDedupe(all) : all;   // the same career finished on two devices counts once
   }
   const finished = (c, hof) => typeof careerFinishedIn === 'function' && careerFinishedIn(c, hof);
-  async function push() {
-    if (!user) return;
+  const push = () => serial(pushNow);
+  async function pushNow(tries) {
+    if (!user) return; tries = tries || 0;
     status = 'saving'; refresh();
+    // look before writing: if another device moved on since we last agreed, decide instead of overwriting
+    {
+      var { data, error } = await sb.from('rpgoal_saves').select('career,updated_at').eq('user_id', user.id).maybeSingle();
+      if (error) { status = 'err'; refresh(); return; }
+      var seenAt = data ? data.updated_at : null;
+      const c = data && data.career, d = c ? decide(c, S, loadHof()) : 'local';
+      if (d === 'cloud') { adopt(c, tt().newer); status = 'ok'; refresh(); return; }
+      if (d === 'same') { status = 'ok'; refresh(); return; }
+    }
+    S.syncSid = S.sid; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
     // achievements ride along in the hof column as one extra entry, so no database change is needed
     const ach = typeof loadAch === 'function' ? loadAch() : {};
     // never send an old copy of a career that is already in the Hall of Fame
     if (finished(S, loadHof())) { S = fresh(S.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} render(); }
-    const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof().concat([{ id: '__ach', ach }, { id: '__del', ids: delIds() }]), updated_at: new Date().toISOString() });
-    status = error ? 'err' : 'ok'; refresh();
+    const row = { career: S, hof: loadHof().concat([{ id: '__ach', ach }, { id: '__del', ids: delIds() }]), updated_at: new Date().toISOString() };
+    let err = null;
+    if (seenAt) {
+      // write only if nobody else wrote since we looked; otherwise look again and decide again
+      const r = await sb.from('rpgoal_saves').update(row).eq('user_id', user.id).eq('updated_at', seenAt).select('user_id');
+      err = r.error;
+      if (!err && (!r.data || !r.data.length)) { if (tries < 2) return pushNow(tries + 1); err = (await sb.from('rpgoal_saves').upsert({ user_id: user.id, ...row })).error; }   // still racing: plain write
+    } else err = (await sb.from('rpgoal_saves').upsert({ user_id: user.id, ...row })).error;
+    status = err ? 'err' : 'ok'; refresh();
   }
-  async function pull() {
+  const pull = () => serial(pullNow);
+  async function pullNow() {
     if (!user) return;
     status = 'saving'; refresh();
     const { data, error } = await sb.from('rpgoal_saves').select('career,hof,updated_at').eq('user_id', user.id).maybeSingle();
@@ -80,38 +132,45 @@
       if (delRow && Array.isArray(delRow.ids) && typeof addHofDel === 'function') addHofDel(delRow.ids);
       const hof = mergeHof(loadHof(), cloudHof.filter(e => !(e && (e.id === '__ach' || e.id === '__del'))));
       hofMem = null; try { localStorage.setItem(HOFKEY, JSON.stringify(hof)); } catch (e) {} hofMem = hof.slice();
-      // which career to keep: a copy of a career that already ended is never kept; the same career keeps its furthest copy;
-      // two different careers keep the one played most recently
-      const lStale = finished(local, hof), cStale = finished(cloud, hof);
-      const same = cloud && local && careerId && careerId(cloud) && careerId(cloud) === careerId(local);
-      let cloudWins;
-      if (lStale && !cStale) cloudWins = true;
-      else if (cStale && !lStale) cloudWins = false;
-      else if (same) cloudWins = careerWeight(cloud) > careerWeight(local) || (careerWeight(cloud) === careerWeight(local) && (cloud.savedAt || 0) > (local.savedAt || 0));
-      else cloudWins = !!cloud && cloud.phase && ((cloud.savedAt || 0) > (local.savedAt || 0) || careerWeight(local) <= 0 && careerWeight(cloud) > 0);
-      if (lStale && cStale) { S = fresh(local.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} note = tt().merged; }
-      else if (cloudWins && cloud) {
-        S = fixSave(cloud);
-        if (S.phase === 'season' && !S.season) buildSeason();
-        try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
-        note = tt().merged;
-      }
-      render(); if (typeof scheduleAuto === 'function') scheduleAuto();
+      // which copy to keep (a copy of a career that already ended is never kept)
+      const lStale = finished(local, hof), cStale = finished(cloud, hof), d = decide(cloud, local, hof);
+      if (lStale && cStale) { S = fresh(local.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} note = tt().merged; render(); }
+      else if (d === 'cloud' && cloud) { adopt(cloud, local.phase && local.phase !== 'create' && careerId(cloud) === careerId(local) ? tt().newer : tt().merged); }
+      else if (d === 'same') { S.syncSid = S.sid; status = 'ok'; refresh(); return; }
+      else { render(); if (typeof scheduleAuto === 'function') scheduleAuto(); }
     }
-    await push();
+    await pushNow();
   }
+  // while a sync is checking the account, the game waits (a few seconds at most), so no one plays on an old copy
+  let lockEl = null, lockT = null;
+  function lock(on) {
+    clearTimeout(lockT);
+    if (on) {
+      if (!lockEl) { lockEl = document.createElement('div'); lockEl.className = 'csync'; }
+      lockEl.innerHTML = `<div><span class="cspin"></span>${tt().lock}</div>`; document.body.appendChild(lockEl);
+      lockT = setTimeout(() => lock(false), 6000);
+    } else if (lockEl) lockEl.remove();
+  }
+  async function syncFirst() { if (!user) return; lock(true); try { await pull(); } finally { lock(false); } }
+  let lastHidden = 0;
   window.cloudSync = () => {
     if (!user) return;
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(push, 1500);
+    syncTimer = setTimeout(push, 1200);
   };
-  addEventListener('online', () => { if (user) push(); });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && user) { clearTimeout(syncTimer); push(); } });
+  addEventListener('online', () => { if (user) pull(); });
+  // leaving the app: save now. Coming back: check the account first (another device may have played on)
+  document.addEventListener('visibilitychange', () => {
+    if (!user) return;
+    if (document.visibilityState === 'hidden') { lastHidden = Date.now(); clearTimeout(syncTimer); push(); }
+    else if (Date.now() - lastHidden > 1500) syncFirst();
+  });
+  addEventListener('pageshow', e => { if (e.persisted && user) syncFirst(); });
 
   sb.auth.onAuthStateChange((event, session) => {
     const was = user && user.id;
     user = session ? session.user : null;
-    if (user && user.id !== was) { setTimeout(pull, 0); if (panelOpen()) drawPanel(); }
+    if (user && user.id !== was) { setTimeout(syncFirst, 0); if (panelOpen()) drawPanel(); }
     // first sign-in (no username yet): ask for one right away
     if (event === 'SIGNED_IN' && user && !uname(user) && !askedName) { askedName = true; askName = true; openPanel(); }
     if (!user) status = '';
@@ -123,6 +182,11 @@
   css.textContent = `
   .cdot{width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block;margin-left:2px}
   .cdot.err{background:var(--warn)}
+  .csync{position:fixed;inset:0;z-index:90;background:rgba(10,12,16,.55);display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .csync>div{background:var(--card);color:var(--ink);border:1px solid var(--rule-2);border-radius:12px;padding:14px 18px;font-size:14px;display:flex;align-items:center;gap:10px;font-family:var(--f-ui)}
+  .cspin{width:14px;height:14px;border-radius:50%;border:2px solid var(--rule-2);border-top-color:var(--good);animation:cspin .8s linear infinite}
+  @keyframes cspin{to{transform:rotate(360deg)}}
+  .ctoast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);z-index:95;max-width:min(92vw,420px);background:var(--card);color:var(--ink);border:1px solid var(--rule-2);border-left:3px solid var(--good);border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.35);font-family:var(--f-ui)}
   .cpanel{position:fixed;inset:0;z-index:20;background:rgba(10,12,16,.55);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 56px) 16px 24px;overflow-y:auto}
   .cbox{width:100%;max-width:400px;background:var(--card);color:var(--ink);border:1px solid var(--rule-2);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;font-family:var(--f-ui)}
   .cbox h2{font-size:20px}
@@ -225,8 +289,8 @@
     else if (c === 'other') { pending = null; drawPanel(); }
     else if (c === 'google') {
       await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
-    } else if (c === 'sync') { await pull(); }
-    else if (c === 'logout') { clearTimeout(syncTimer); await push(); await sb.auth.signOut(); user = null; status = ''; note = ''; closePanel(); render(); }
+    } else if (c === 'sync') { await syncFirst(); }
+    else if (c === 'logout') { clearTimeout(syncTimer); await push(); await chain; await sb.auth.signOut(); user = null; status = ''; note = ''; closePanel(); render(); }
   }
   async function onSubmit(e) {
     e.preventDefault(); const T = tt();
@@ -265,5 +329,5 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && panelOpen()) closePanel(); });
 
   render();
-  sb.auth.getSession().then(({ data }) => { if (data && data.session && !user) { user = data.session.user; pull(); } });
+  sb.auth.getSession().then(({ data }) => { if (data && data.session && !user) { user = data.session.user; syncFirst(); } });
 })();

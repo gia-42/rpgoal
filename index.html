@@ -1119,7 +1119,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .pkrow.turn{border-color:var(--accent)}
 .pkteam{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
 .pkteam b{font-size:11.5px;line-height:1.15;color:#f3f4f6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
-.pkslots{display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;scroll-behavior:smooth}.pkslots::-webkit-scrollbar{display:none}.pk{flex:none}
+.pkslots{display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;overflow-y:hidden;padding-block:4px;margin-block:-4px;scrollbar-width:none;scroll-behavior:smooth}.pkslots::-webkit-scrollbar{display:none}.pk{flex:none}
 .pkboard.sd .pk,.pkboard.sd .pk .die{width:24px!important;height:24px!important;max-width:24px!important}
 .pk{width:30px;height:30px;display:inline-flex}
 .pk .die{width:30px!important;height:30px!important;max-width:30px!important}
@@ -1140,6 +1140,12 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .wdtip{position:fixed;z-index:80;background:#f3f4f6;color:#15171c;font-size:12.5px;font-weight:600;padding:5px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:wdtipIn .14s ease-out both}
 .wdtip.out{opacity:0;transition:opacity .2s}
 @keyframes wdtipIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* result text never gets cut: these areas keep their usual size but may grow for a long result */
+.runpop .fixinfo,.lbpop .lbinfo2{height:auto!important;min-height:96px;overflow:visible!important}
+.lbpop .lbinfo2{min-height:112px}
+@media (max-height:700px){.runpop .fixinfo{min-height:88px}.lbpop .lbinfo2{min-height:100px}}
+.runpop .fixinfo .sum,.lbpop .lbinfo2 .sum{font-size:12.5px;line-height:1.35}
+.runpop .fixinfo .small,.lbpop .lbinfo2 .small{line-height:1.3}
 /* ---------- iPad layouts ---------- */
 body.ipadL .wrap{max-width:1240px}
 body.ipadP .wrap{max-width:1000px}
@@ -1792,7 +1798,7 @@ function randomName(nat,g){g=g||(typeof S!=='undefined'&&S&&S.gender)||'m';const
 
 let S=fresh();
 function fresh(g){g=g||'m';return{phase:'create',gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
-function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
+function save(){S.savedAt=Date.now();S.rev=(S.rev||0)+1;S.sid=S.savedAt.toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
   if(!x.cid&&x.phase&&x.phase!=='create'){const id=careerId(x);if(id)x.cid=id}
@@ -1877,7 +1883,7 @@ function makeStartOffers(avg,nat){
 /* 0 hated · 1 disliked · 2 neutral · 3 liked · 4 loved · 5 club idol · 6 legend */
 const fanTierOf=L=>L<=-6?0:L<=-2?1:L<3?2:L<7?3:L<12?4:5;
 const fanTier=()=>S.legend&&S.club&&S.legend===S.club.name?6:fanTierOf(S.loyalty||0);
-const loyBonus=()=>[-2,-1,0,1,2,2,3][fanTier()];
+const loyBonus=()=>[-1,-1,0,0,1,1,2][fanTier()];   // the fans help a little; how you play moves them a lot more
 function legendReady(){
   if(S.legend===S.club.name||(S.tenure||0)<12||(S.loyalty||0)<20||rating(S.attrs)<13)return false;
   const rows=S.history.slice(-S.tenure).filter(h=>h.club===S.club.name);
@@ -1885,7 +1891,7 @@ function legendReady(){
   const form=rows.slice(-5).filter(h=>h.pos<=3&&LEAGUES[h.league].div===1).length;
   return pts>=20&&form>=4;
 }
-// bonuses stack, past +7 they count for half in the league, past +8 a third in cups (where the opponents scout you)
+// bonuses stack: past +7 they count for half in the league, past +8 a third in cups (where the opponents scout you)
 const capMods=(x,st)=>st&&st.comp!=='league'&&st.comp!=='run'?(x<=8?x:8+Math.floor((x-8)/3)):(x<=7?x:7+Math.floor((x-7)/2));
 function startCareer(offer){
   delete S.mem; delete S.lgMv; applyMem();
@@ -5130,19 +5136,42 @@ function lgBuild(s){
   const codes=clubCodes([me].concat(others)), strs=others.map(teamStr).concat(teamStr(me));
   const teams=others.map(n=>{const ppg=clamp(lgPPG(teamStr(n),strs)+(Math.random()-.5)*.24,.45,2.65), pD=.26, pW=clamp((ppg-pD)/3,.04,.86);
     const res=[];for(let i=0;i<M;i++){const x=Math.random();res.push(x<pW?3:x<pW+pD?1:0)}
-    return{n,c:codes[n],res,tb:Math.random()}});
+    return{n,c:codes[n],res,tb:Math.random(),ppg}});
+  const sz=lbSizes(M), n=others.length;
+  // the rivalry: once in each half of the season
+  const riv=others.find(x=>isRival(me,x))||others.slice().sort((x,y)=>teamStr(y)-teamStr(x))[Math.floor(Math.random()*Math.min(4,others.length))];
+  let blocks, fx=null;
+  if(M===2*n&&(n+1)%2===0){
+    // the whole league's fixture list: a double round robin (everyone once in rounds 1–n, again in n+1–2n with home and away swapped),
+    // and every match between other clubs is played out from the two clubs' strength, so the table is one consistent season
+    const N=n+1, sh=a=>a.slice().sort(()=>Math.random()-.5), arr=sh([me].concat(others)), base=[];
+    for(let r=0;r<N-1;r++){const pr=[];for(let i=0;i<N/2;i++){const x=arr[i],y=arr[N-1-i];pr.push((r+i)%2?[y,x]:[x,y])}base.push(pr);arr.splice(1,0,arr.pop())}
+    const o1=sh(base.map((_,i)=>i)); let o2=sh(base.map((_,i)=>i));
+    if(o2[0]===o1[N-2]&&o2.length>1){const t0=o2[0];o2[0]=o2[1];o2[1]=t0}   // never the same opponent twice in a row
+    const rounds=o1.map(i=>base[i]).concat(o2.map(i=>base[i].map(([x,y])=>[y,x])));
+    const ppg={}; others.forEach(x=>{ppg[x]=teams.find(q=>q.n===x).ppg}); ppg[me]=1.38;
+    // one match: the gap in strength (plus a little home edge) shifts the odds; upsets and draws always possible
+    const play=(h,a)=>{const g=ppg[h]-ppg[a]+.12, D=clamp(.28-.05*Math.abs(g),.16,.28), H=clamp(.36+.28*g,.05,.84-D), x=Math.random();return x<H?[3,0]:x<H+D?[1,1]:[0,3]};
+    const res={}; others.forEach(x=>res[x]=[]);
+    const seq=[];
+    rounds.forEach((pr,r)=>pr.forEach(([h,a])=>{
+      if(h===me||a===me){const o=h===me?a:h;seq.push({opp:o,ha:h===me?'H':'A'});res[o][r]=play(h,a)[h===me?1:0];return}   // a placeholder until you play it
+      const[ph,pa]=play(h,a);res[h][r]=ph;res[a][r]=pa}));
+    teams.forEach(q=>{q.res=res[q.n]});
+    fx=seq.map(m=>m.opp);
+    seq.forEach(m=>{if(m.opp===riv){m.der=1;m.dtx=Math.floor(Math.random()*4)}});
+    blocks=[];let p=0;sz.forEach(k=>{blocks.push(seq.slice(p,p+k));p+=k});
+  }else{
   // fixtures: every club once at home and once away, topped up for longer seasons
   let H=others.slice(), A=others.slice();
   while(H.length+A.length<M){const o=pick(others);(H.length<=A.length?H:A).push(o)}
   while(H.length+A.length>M){(H.length>=A.length?H:A).pop()}
   H.sort(()=>Math.random()-.5); A.sort(()=>Math.random()-.5);
-  const sz=lbSizes(M), hc=sz.map((n,i)=>n%2===0?n/2:i===4?Math.ceil(n/2):Math.floor(n/2));
+  const hc=sz.map((n,i)=>n%2===0?n/2:i===4?Math.ceil(n/2):Math.floor(n/2));
   let sum=hc.reduce((a,b)=>a+b,0);
   for(let i=3;i>=0&&sum<H.length;i--)if(sz[i]%2&&hc[i]<Math.ceil(sz[i]/2)){hc[i]++;sum++}
   for(let i=0;i<5&&sum>H.length;i++)if(hc[i]>0){hc[i]--;sum--}
-  const blocks=sz.map((n,i)=>{const b=[];for(let k=0;k<hc[i]&&H.length;k++)b.push({opp:H.shift(),ha:'H'});while(b.length<n&&A.length)b.push({opp:A.shift(),ha:'A'});while(b.length<n&&H.length)b.push({opp:H.shift(),ha:'H'});return b.sort(()=>Math.random()-.5)});
-  // the rivalry: once in rounds 1–19 and once in rounds 20–35
-  const riv=others.find(n=>isRival(me,n))||others.slice().sort((a,b)=>teamStr(b)-teamStr(a))[Math.floor(Math.random()*Math.min(4,others.length))];
+  blocks=sz.map((n,i)=>{const b=[];for(let k=0;k<hc[i]&&H.length;k++)b.push({opp:H.shift(),ha:'H'});while(b.length<n&&A.length)b.push({opp:A.shift(),ha:'A'});while(b.length<n&&H.length)b.push({opp:H.shift(),ha:'H'});return b.sort(()=>Math.random()-.5)});
   const halves=[[0,1],[2,3]];
   const where=()=>{const o=[];blocks.forEach((b,bi)=>b.forEach((m,j)=>{if(m.opp===riv)o.push([bi,j])}));return o};
   halves.forEach((hf,hi)=>{
@@ -5154,9 +5183,10 @@ function lgBuild(s){
     const b2=blocks[tb][j2]; blocks[tb][j2]=a; blocks[src[0]][src[1]]=b2;
   });
   halves.forEach(hf=>{for(const bi of hf){const m=blocks[bi].find(m=>m.opp===riv);if(m){m.der=1;m.dtx=Math.floor(Math.random()*4);break}}});
+  }
   // a moment or two inside every block
   blocks.slice(0,4).forEach(b=>{const c=b.map((m,j)=>j).filter(j=>!b[j].der).sort(()=>Math.random()-.5).slice(0,1+(Math.random()<.6?1:0));c.forEach(j=>{b[j].mq=1})});
-  s.lt={M,sz,codes,teams,me:{res:[],wdl:[]},riv};
+  s.lt={M,sz,codes,teams,me:{res:[],wdl:[]},riv,fx};
   return blocks;
 }
 const lbStart=(s,k)=>1+s.lt.sz.slice(0,k).reduce((a,b)=>a+b,0);
@@ -5176,7 +5206,8 @@ function lbDC(m){
 }
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
-  const T=s.lt; if(!T)return; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w);
+  const T=s.lt; if(!T)return; const r=T.me.res.length; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w);
+  if(T.fx&&T.fx[r]){const q=T.teams.find(x=>x.n===T.fx[r]);if(q)q.res[r]=w==='W'?0:w==='D'?1:3}   // the other side of your match
 }
 function lbBlockFx(st,i,m){
   if(m.der&&m.dr)return m.dr.fx||{mode:null,buff:0};
@@ -5934,7 +5965,7 @@ function seasonFans(h,s){
   const out=[], add=(k,n)=>{if(n)out.push([k,n])};
   const lv=teamLevel(clubRank(S.club.name,S.club.league).frac), small=lv>=3, big=lv<=1, bonus=lv>=3?2:lv===2?1:0;
   const ms=Object.values(s.mg||{}).reduce((a,b)=>a.concat(b),[]), m=ms.length?ms.reduce((a,b)=>a+b,0)/ms.length:0;
-  if(!s.seasonOut&&ms.length>=3)add('form',m>=8?2:m>=4?1:m<=-6?-2:m<=-3?-1:0);
+  if(!s.seasonOut&&ms.length>=3)add('form',m>=8?3:m>=4?2:m>=1?1:m<=-6?-3:m<=-3?-2:m<=-1?-1:0);
   h.trophies.forEach(x=>{if(x.kind==='cup')add('cupW',1+bonus);else if(x.kind==='cont'||x.kind==='cont2'||x.kind==='cwc')add('contW',2+bonus)});
   if(h.move==='up')add('up',small?2:1);
   if(h.move==='down')add('down',-2);
