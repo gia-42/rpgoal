@@ -26,7 +26,7 @@
   --bg:#f7f7f5; --card:#ffffff; --sunk:#f2f3f1; --ink:#15171c; --ink-2:#4a4f5c; --ink-3:#8a8f9b; --rule:#e2e3e0; --rule-2:#cfd1cc;
   --accent:#3346d3; --accent-soft:#eceefc; --on-accent:#ffffff;
   --good:#1f63d6; --good-soft:#e8f0fd; --bad:#c23a2e; --bad-soft:#fbeceb; --warn:#a86512; --warn-soft:#fbf1e3;
-  --d20:#2b2e35; --dnum:#ffffff; --d10:#ffffff; --d10num:#15171c; --dedge:rgba(21,23,28,.35);
+  --d20:#2b2e35; --dshade:.3; --dnum:#ffffff; --d10:#ffffff; --d10num:#15171c; --dedge:rgba(21,23,28,.35);
   --f-ui:"Instrument Sans","Helvetica Neue",Arial,system-ui,sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
 }
@@ -34,13 +34,13 @@
   --bg:#121317; --card:#181a1f; --sunk:#1d1f25; --ink:#eceef2; --ink-2:#b0b4be; --ink-3:#7c818d; --rule:#2a2d34; --rule-2:#3a3e47;
   --accent:#8193ff; --accent-soft:#232842; --on-accent:#0e1018;
   --good:#6ea8ff; --good-soft:#17233a; --bad:#ff7a6e; --bad-soft:#331b1a; --warn:#e3a14d; --warn-soft:#2f2416;
-  --d20:#d5d8de; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
+  --d20:#d5d8de; --dshade:.1; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121317; --card:#181a1f; --sunk:#1d1f25; --ink:#eceef2; --ink-2:#b0b4be; --ink-3:#7c818d; --rule:#2a2d34; --rule-2:#3a3e47;
   --accent:#8193ff; --accent-soft:#232842; --on-accent:#0e1018;
   --good:#6ea8ff; --good-soft:#17233a; --bad:#ff7a6e; --bad-soft:#331b1a; --warn:#e3a14d; --warn-soft:#2f2416;
-  --d20:#d5d8de; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
+  --d20:#d5d8de; --dshade:.1; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
   color-scheme:dark}
 *{box-sizing:border-box}
 html,body{overscroll-behavior:none}
@@ -230,6 +230,7 @@ html.onepage,body.onepage{margin:0;height:100%;overflow:hidden;box-sizing:border
 .die.lose .face{fill:var(--bad);stroke:var(--bad)} .die.lose text{fill:#fff} .die.lose .edge{stroke:rgba(255,255,255,.35)}
 .die.mid .face{fill:var(--warn);stroke:var(--warn)} .die.mid text{fill:#fff} .die.mid .edge{stroke:rgba(255,255,255,.35)}
 .die.dropped{opacity:.25}
+.d20 .bp{fill:#000;opacity:var(--dshade,.12)}.die.win .bp,.die.lose .bp,.die.mid .bp,.die.fumble .bp,.die.crit .bp{fill:#000;opacity:.13}
 .d20 .edge{stroke:rgba(128,128,128,.5)}
 .die.evd .face{fill:var(--d20);stroke:var(--d20)} .die.evd text{fill:var(--dnum)}
 .dbtn{background:none;border:1px solid transparent;padding:8px 2px;color:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:8px;width:100%}
@@ -2356,7 +2357,7 @@ function retire(){
 function dieSVG(type,val,cls='',id=''){
   const attr=`class="die d${type} ${type===20||type===10?'':'dN'} ${cls}" ${id?`data-die="${id}"`:''} viewBox="0 0 100 100" aria-hidden="true"`;
   const tx=(y,fs=24)=>`<text x="50" y="${y}" font-size="${fs}">${val}</text>`;
-  if(type===20)return `<svg ${attr}><polygon class="face" points="50,4 90,27 90,73 50,96 10,73 10,27"/><path class="edge" d="M50,4L50,22M50,22L90,27M50,22L10,27M90,27L76,66M10,27L24,66M90,73L76,66M10,73L24,66M50,96L76,66M50,96L24,66M50,22L76,66L24,66Z"/>${tx(50)}</svg>`;
+  if(type===20)return `<svg ${attr}><polygon class="face" points="50,4 90,27 90,73 50,96 10,73 10,27"/><path class="bp" d="M50,4L90,27L50,22Z M10,27L10,73L24,66Z M90,73L50,96L76,66Z"/><path class="edge" d="M50,4L50,22M50,22L90,27M50,22L10,27M90,27L76,66M10,27L24,66M90,73L76,66M10,73L24,66M50,96L76,66M50,96L24,66M50,22L76,66L24,66Z"/>${tx(50)}</svg>`;
   if(type===10)return `<svg ${attr}><polygon class="face" points="50,4 94,46 50,96 6,46"/><path class="edge" d="M50,4L30,60M50,4L70,60M30,60L50,96M70,60L50,96M30,60L70,60M6,46L30,60M94,46L70,60"/>${tx(40)}</svg>`;
   if(type===4)return `<svg ${attr}><polygon class="face" points="50,8 94,88 6,88"/><path class="edge" d="M50,8L50,64M50,64L94,88M50,64L6,88"/>${tx(62,22)}</svg>`;
   if(type===6)return `<svg ${attr}><rect class="face" x="12" y="12" width="76" height="76" rx="12"/>${tx(50,30)}</svg>`;
