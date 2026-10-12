@@ -4175,7 +4175,7 @@ function onClick(e){
   else if(act==='home'){confirmMove({kind:'home'})}
   else if(act==='anyclub'){const v=(document.getElementById('anyclub')||{}).value;if(!v)return;const [Li,ti,...n]=v.split('|');confirmMove({kind:'any',club:{name:n.join('|'),league:+Li,tier:+ti,mode:'any'}})}
   else if(act==='reset'){
-    if(S.phase==='create'||S.phase==='retired'||resetArm){resetArm=false;const n=S.nat,g=S.gender;S=fresh(g);S.nat=n;S.name=randomName(n,g);view='game';commit()}
+    if(S.phase==='create'||S.phase==='retired'||resetArm){resetArm=false;ovQ=[];while(ovEl)closeOv();const n=S.nat,g=S.gender;S=fresh(g);S.nat=n;S.name=randomName(n,g);view='game';commit()}
     else{resetArm=true;render()}
   }
 }

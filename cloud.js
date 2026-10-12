@@ -51,15 +51,22 @@
   // the copy that got further wins, and on a tie the one already in the account.
   function decide(c, l, hof) {
     if (!c || !c.phase) return 'local';
-    if (!l || !l.phase || l.phase === 'create' && c.phase !== 'create') return 'cloud';
-    const lStale = finished(l, hof), cStale = finished(c, hof);
-    if (lStale && !cStale) return 'cloud';
-    if (cStale && !lStale) return 'local';
+    if (!l || !l.phase) return 'cloud';
     if (c.sid && c.sid === l.sid) return 'same';
+    // a career that has ended (retired, or already in the Hall of Fame) never comes back over a newer one
+    const done = x => x.phase === 'retired' || finished(x, hof);
+    const cDone = done(c), lDone = done(l);
+    const same = careerId(c) && careerId(c) === careerId(l);
+    if (cDone && !lDone && (!same || l.phase === 'create')) return 'local';
+    if (same && lDone && !cDone) return 'local';          // you retired here: that is further than the copy in the account
+    if (same && cDone && !lDone) return 'cloud';
+    if (!same && lDone && !cDone && c.phase !== 'create') return 'cloud';   // another device already started a new career
+    if (c.phase === 'create' && l.phase !== 'create') return 'local';      // an empty new game in the account never replaces a real one
+    // a device that never synced must not wipe the account with an empty new game
+    if (l.phase === 'create' && !l.syncSid && c.phase !== 'create') return 'cloud';
     const base = l.syncSid, cMoved = !base || c.sid !== base, lMoved = !base || l.sid !== base;
     if (base && !cMoved) return 'local';
     if (base && !lMoved) return 'cloud';
-    const same = careerId(c) && careerId(c) === careerId(l);
     if (same) { const wc = careerWeight(c), wl = careerWeight(l); return wl > wc ? 'local' : wc > wl ? 'cloud' : ((c.rev || 0) >= (l.rev || 0) ? 'cloud' : 'local'); }
     return (c.savedAt || 0) > (l.savedAt || 0) ? 'cloud' : 'local';
   }
@@ -102,7 +109,7 @@
     // achievements ride along in the hof column as one extra entry, so no database change is needed
     const ach = typeof loadAch === 'function' ? loadAch() : {};
     // never send an old copy of a career that is already in the Hall of Fame
-    if (finished(S, loadHof())) { S = fresh(S.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} render(); }
+    if (S.phase !== 'retired' && finished(S, loadHof())) { S = fresh(S.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} render(); }
     const row = { career: S, hof: loadHof().concat([{ id: '__ach', ach }, { id: '__del', ids: delIds() }]), updated_at: new Date().toISOString() };
     let err = null;
     if (seenAt) {
@@ -134,7 +141,7 @@
       hofMem = null; try { localStorage.setItem(HOFKEY, JSON.stringify(hof)); } catch (e) {} hofMem = hof.slice();
       // which copy to keep (a copy of a career that already ended is never kept)
       const lStale = finished(local, hof), cStale = finished(cloud, hof), d = decide(cloud, local, hof);
-      if (lStale && cStale) { S = fresh(local.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} note = tt().merged; render(); }
+      if (false) {}
       else if (d === 'cloud' && cloud) { adopt(cloud, local.phase && local.phase !== 'create' && careerId(cloud) === careerId(local) ? tt().newer : tt().merged); }
       else if (d === 'same') { S.syncSid = S.sid; status = 'ok'; refresh(); return; }
       else { render(); if (typeof scheduleAuto === 'function') scheduleAuto(); }
