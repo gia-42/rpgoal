@@ -1801,7 +1801,7 @@ function activate(){
 }
 /* continental group stage: three opponents, home and away (the order is drawn every season), 6 quick rolls */
 const isCG=st=>!!st&&(st.comp==='cont'||st.comp==='cont2')&&st.round===0&&st.g!=null;
-const CG_NEED=11;
+const CG_NEED=9;
 const cgPts=s=>{const g=s.cg||{W:0,D:0};return g.W*3+g.D};
 function contGroupStages(s,comp){
   const opps=[];
