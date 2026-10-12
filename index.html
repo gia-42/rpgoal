@@ -1146,10 +1146,28 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 @media (max-height:700px){.runpop .fixinfo{min-height:88px}.lbpop .lbinfo2{min-height:100px}}
 .runpop .fixinfo .sum,.lbpop .lbinfo2 .sum{font-size:12.5px;line-height:1.35}
 .runpop .fixinfo .small,.lbpop .lbinfo2 .small{line-height:1.3}
+.pkgoal{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center}
+.pkframe{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:6px;width:100%;padding:8px;border:2px solid #e6e7ea;border-bottom:0;border-radius:6px 6px 0 0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 6px,transparent 6px 12px)}
+.pkspot{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border-radius:8px;border:1px solid #2c3038;background:#191c22;color:#e6e7ea;font:inherit;font-size:12px;cursor:pointer;min-width:0}
+.pkspot b{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.pkspot .num{font-size:10.5px;color:#a9adb7}
+.pkspot.tl{grid-column:1;grid-row:1}.pkspot.tr{grid-column:3;grid-row:1}.pkspot.mid{grid-column:2;grid-row:1/3;align-self:center}.pkspot.bl{grid-column:1;grid-row:2}.pkspot.br{grid-column:3;grid-row:2}
+.pkspot.on{border-color:var(--accent,#6b8afd);background:color-mix(in srgb,var(--accent,#6b8afd) 18%,#191c22)}
 /* ---------- iPad layouts ---------- */
 body.ipadL .wrap{max-width:1240px}
 body.ipadP .wrap{max-width:1000px}
-body.ipadL:not(.iphome) .wrap>*:not(header):not(nav),body.ipadP:not(.iphome) .wrap>*:not(header):not(nav){width:100%;max-width:860px;align-self:center;box-sizing:border-box}
+body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
+.ipgrid.ip2{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}
+.ipadP .ipgrid.ip2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.ip2 .ipcol>section.trackp{flex:1 1 auto}
+/* seasons list, contract and Hall of Fame spread into two columns */
+:is(.ipadL,.ipadP) .seasonsP .scrollbox{display:grid;grid-template-columns:1fr 1fr;column-gap:28px;align-content:start}
+:is(.ipadL,.ipadP) .ctab{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;row-gap:8px;align-content:start;grid-auto-flow:row dense}
+:is(.ipadL,.ipadP) .ctab>*{grid-column:1}
+:is(.ipadL,.ipadP) .ctab>.lbl{grid-column:2;grid-row:1}
+:is(.ipadL,.ipadP) .ctab>.scrollbox{grid-column:2;grid-row:2/span 6;max-height:none}
+:is(.ipadL,.ipadP) .hof{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.ipadL .hof{grid-template-columns:1fr 1fr 1fr}
+:is(.ipadL,.ipadP) .ach-grid,:is(.ipadL,.ipadP) .achg{grid-template-columns:repeat(3,minmax(0,1fr))}
 .ipgrid{display:grid;gap:14px;flex:1 1 auto!important;min-height:0}
 .ipgrid.ipL{grid-template-columns:minmax(0,1fr) 472px minmax(0,1fr)}
 .ipgrid.ipP{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
@@ -2153,7 +2171,7 @@ function resolveEvent(v){
   const bonus=evBonus(e), tgt=evTarget(e), total=v+bonus;
   const perfect=v===e.die, ok=perfect||(v!==1&&total>=tgt);
   let fx={...(ok?e.ok:e.bad)};
-  if(perfect){fx.mode='adv';if(S.age<=33)S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1);if(st.ev==='training')s.train++}
+  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1);if(st.ev==='training')s.train++}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   st.evr={nat:v,bonus,tgt,total,ok,perfect}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
   if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=3)giveItem('scarf')}
@@ -2174,7 +2192,7 @@ function resolveStage(v1,v2){
     r.total=nat+r.mods+r.hot+lx;
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
-    if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&!isCG(st)&&AK.some(k=>S.attrs[k]<20))s.pickAttr=true}
+    if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&!isCG(st)&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(nat===1){r.injury=true;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null}}
   }
   r.dc=dcFor(st);
@@ -2306,7 +2324,7 @@ function grow(){
   const G=canGrow&&rolls.length?clamp(Math.round((A-9)/1.5),0,6):0;
   const train=canGrow?s.train:0;
   for(let i=0;i<G+train;i++){const open=AK.filter(k=>S.attrs[k]<20);if(!open.length||rating(S.attrs)>=potCap())break;S.attrs[pick(open)]++}
-  if(canGrow)s.crit.forEach(k=>S.attrs[k]++);
+  if(canGrow)s.crit.forEach(k=>{if(rating(S.attrs)<critCap())S.attrs[k]++})   // big moments can carry you past your ceiling, but only so far;
   AK.forEach(k=>S.attrs[k]=clamp(S.attrs[k],1,20));
   return{before,A,G,base,train,crits:canGrow?s.crit.length:0,hot,shielded,capped:!canGrow,ceiling:canGrow&&rating(S.attrs)>=potCap()};
 }
@@ -2912,7 +2930,7 @@ function careerView(){
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
     return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${fmt(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
-  return `<section class="panel stack trackp" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${rows}</div>${S.phase!=='retired'?`<div class="row" style="justify-content:flex-end"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`:''}</section>`;
+  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${rows}</div>${S.phase!=='retired'?`<div class="row" style="justify-content:flex-end"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`:''}</section>`;
 }
 let hofSub='players';
 let hofTab='players';
@@ -3404,10 +3422,13 @@ function seasonView(){
   const q=s.quest, qp=q?questProg(q,s,S.phase==='offseason'?S.history[S.history.length-1]:null):null;
   const qRow=q?`<div class="sv-row"><span>${t.questT}: ${questText(q)} <span class="muted">(${t.qRw[q.rw]})</span></span><span class="res ${qp&&qp[0]>=qp[1]?'w':'p'}">${qp?(qp[1]>1?`${qp[0]}/${qp[1]}`:qp[0]?'✓':'—'):'—'}</span></div>`:'';
   const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
-  return `<section class="panel stack sv1" style="gap:8px">${inj}
+  const sv1=`<section class="panel stack sv1" style="gap:8px">${inj}
     <div class="numgrid sv3">${cell(posL,pos)}${cell(t.teamT,t.teamLv[teamLevel(r.frac)])}${cell(t.pgaL,`${s.apps}·${s.goals}·${s.assists}`)}</div>
     <div class="sv-list">${comps}${s.run?row(s.lt?t.pushT:t.runT,s.stages.filter(x=>x.comp==='run')):''}${qRow}</div>
-  </section>`+(s.lt?`<div class="subtabs ssub" role="group">${['table','track'].map(k=>`<button data-act="ssub" data-v="${k}" aria-pressed="${seasonSub===k}">${t.ssub[k]}</button>`).join('')}</div>`+(seasonSub==='table'?leagueTableView(s):tracker()):tracker());
+  </section>`;
+  // iPad: summary and fixtures on the left, the full table (with form) on the right
+  if(ipMode&&s.lt)return `<div class="ipgrid ip2"><div class="ipcol">${sv1}${tracker()}</div><div class="ipcol">${leagueTableView(s,1)}</div></div>`;
+  return sv1+(s.lt?`<div class="subtabs ssub" role="group">${['table','track'].map(k=>`<button data-act="ssub" data-v="${k}" aria-pressed="${seasonSub===k}">${t.ssub[k]}</button>`).join('')}</div>`+(seasonSub==='table'?leagueTableView(s):tracker()):tracker());
 }
 let seasonSub='table';
 function leagueTableView(s,form){
@@ -4088,7 +4109,7 @@ function onClick(e){
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(12),c=d(12);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],12,[a],()=>'',()=>{rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'careerInj':I.season||I.out>0?'injury':'pass');commit()})})}
   else if(act==='endcareer'){endCareer();commit();window.scrollTo({top:0})}
-  else if(act==='go'){nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
+  else if(act==='go'){homeHold=true;nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='simrest'){view='game';simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='sign'){confirmMove({kind:'sign',i:+b.dataset.i})}
   else if(act==='stay'){newSeason(null);commit();window.scrollTo({top:0})}
@@ -4119,7 +4140,10 @@ const outputScore=(g,a,cs,pos)=>Math.round((g+a*0.6+cs*1.4)*(OUTF[pos]||1));
 /* the ceiling: rolled in secret at the start, revealed by the scouts at 21 */
 const NAT_POT={BRA:2,ARG:2,FRA:2.2,ESP:2,POR:1.1,ENG:.9,ITA:1.5,GER:.9,NED:.6,URU:-.1,MAR:-.8,JPN:-.9,KOR:-1.1,EGY:-1,RSA:-.9,KSA:-1.1,USA:-1.6}, NAT_POT_W={USA:1.5,ESP:1.5,ENG:1.2,BRA:1,FRA:1,GER:1,NED:.6,ITA:.3,POR:0,ARG:0,URU:-.3};
 const natPot=()=>(isW()?NAT_POT_W:NAT_POT)[S.nat]||0;
-const potCap=()=>clamp(Math.round(3.2+(S.startAvg||6)*1.35+(S.pot||5)*0.6+natPot()),10,20)+(hasFeat('latebloomer')?2:0);
+// a player's ceiling: 20 overall is for the rarest talents (or a late bloomer who keeps working)
+const potCap=()=>Math.min(20,clamp(Math.round(3.2+(S.startAvg||6)*1.35+(S.pot||5)*0.6+natPot()),10,19)+(hasFeat('latebloomer')?1:0));
+// big moments (natural 20s, perfect moments) can carry you a little past that ceiling, but never to a perfect 20 on their own
+const critCap=()=>Math.min(potCap()+2,Math.max(potCap(),19.5));
 const capLv=c=>c>=19?4:c>=17?3:c>=15?2:c>=13.5?1:0;
 const inspMax=()=>hasItem('kidshirt')?3:2;
 const gainInsp=n=>{S.insp=clamp((S.insp||0)+n,0,inspMax())};
@@ -4344,7 +4368,7 @@ function reposHTML(){
 function pickFeat(k){const h=S.history[S.history.length-1];if(!h||!h.featDue||h.feat||!h.featOpts.includes(k))return;h.feat=k;S.feats=(S.feats||[]).concat(k)}
 function doCamp(k){
   const h=S.history[S.history.length-1]; if(!h||h.camp)return; h.camp=k;
-  if(k.startsWith('tr:')){const x=k.slice(3);h.campGot=[];for(let i=0;i<2;i++)if(S.attrs[x]<20&&rating(S.attrs)<potCap()+1){S.attrs[x]++;h.campGot.push(x)}}
+  if(k.startsWith('tr:')){const x=k.slice(3);h.campGot=[];for(let i=0;i<2;i++)if(S.attrs[x]<20&&rating(S.attrs)<critCap()){S.attrs[x]++;h.campGot.push(x)}}
   if(k==='rest')S.restNext=1;
   if(k==='media')S.mediaNext=1;
 }
@@ -5052,7 +5076,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{contract:'Contract',nums:'Numbers',seasons:'Seasons',inv:'Locker room'},invT:'Locker room',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
- pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
+ pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
  lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
  lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
   ['A cross floats towards the far post with you arriving.',['Head it in','Volley it','Cushion it back for a teammate']],
@@ -5071,7 +5095,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{contract:'Contrato',nums:'Números',seasons:'Temporadas',inv:'Vestiário'},invT:'Vestiário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
- pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
+ pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
  lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
  lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
   ['Um cruzamento viaja para a segunda trave e você chega de frente.',['Cabecear','Pegar de voleio','Ajeitar para um companheiro']],
@@ -5235,7 +5259,7 @@ function lbResolveOne(st,v1,v2){
   if(!r.missed){
     const g={goals:0,assists:0,apps:0,cs:0};addStats(g,1,nat,true);r.g=g.goals;r.a=g.assists;
     if(g.goals>0&&m.opp&&S.history.some(h=>h.club===m.opp)&&m.opp!==S.club.name)S.flag_exgoal=1;
-    if(crit){r.crit=1;s.hot=2;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(k=>S.attrs[k]<20))s.pickAttr=true}
+    if(crit){r.crit=1;s.hot=2;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(nat===1&&Math.random()<.3){r.inj=1;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null}}
   }
   if(m.der&&!r.missed){if(r.w==='W')fanAdd('rivW',1,m.opp,null);else if(r.w==='L')fanAdd('rivL',-1,m.opp,null)}
@@ -5266,7 +5290,7 @@ function lbMomentEv(st,m){if(!m.mev){let id=pickEvent(st);if(!id||id==='derby'||
 function lbMomentRoll(st,v){
   const s=S.season, m=st.ms[st.mi||0]; if(!m||!m.mq||m.mr)return; const e=lbMomentEv(st,m);
   const b=evBonus(e), tgt=evTarget(e), tot=v+b, perfect=v===e.die, ok=perfect||(v!==1&&tot>=tgt), fx={...(ok?e.ok:e.bad)};
-  if(perfect){fx.mode='adv';if(S.age<=33)S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1)}
+  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1)}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   m.mr={nat:v,b,tgt,tot,ok,perfect,fx:{mode:fx.mode||null,buff:fx.buff||0}};
 }
@@ -5384,7 +5408,7 @@ function lbClick(e){
       ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbmgo">${t.lbCont}</button>`});
       const dd=ovEl.querySelector('[data-die="lbm"]');if(dd)dd.classList.add(R.ok?'win':'lose')});return}
   if(v==='lbmgo'){lbRefresh();return}
-  if(v==='lbnext'){lbLast=null;closeOv();nextStage();commit();return}
+  if(v==='lbnext'){lbLast=null;homeHold=true;closeOv();nextStage();commit();return}
 }
 /* which pop-up the next game needs */
 let homeHold=true;
@@ -5402,7 +5426,7 @@ function playSync(){
   const pk=['stage','lb'];
   if(view!=='game'||S.phase!=='season'||!S.season){if(pk.includes(ovKind))closeOv();return}
   const k=playKind();
-  if(pk.includes(ovKind)){if(k===ovKind){if(k==='stage'){ovUpdate(stagePopHTML());try{fitStage()}catch(e){}}else lbRefresh();return}closeOv()}
+  if(pk.includes(ovKind)){if(homeHold){closeOv();return}if(k===ovKind){if(k==='stage'){ovUpdate(stagePopHTML());try{fitStage()}catch(e){}}else lbRefresh();return}closeOv()}
   if(!homeHold&&!ovEl&&!ovQ.length&&k&&!busy){ovQ.push({k});flushOv()}
 }
 /* final push: last three league games, rolled one by one in the run pop-up */
@@ -5606,9 +5630,9 @@ function runClick(e){
   if(v==='rroll'){const v1=d(20),v2=d(20),els=[ovEl.querySelector('[data-die="rd0"]'),ovEl.querySelector('[data-die="rd1"]')].filter(Boolean);
     rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovUpdate(runHTML());
       const s2=S.season;if(!isCG(st)&&!s2.stages.some(x=>x.comp==='run'&&!x.res)&&!s2.pendingHeal&&!s2.pickAttr&&!s2.careerOver){busy=true;busySince=Date.now();setTimeout(()=>{busy=false;runFinish()},1500)}});return}
-  if(v==='rdone'){runRes=null;closeOv();commit();return}
-  if(v==='rnext'){const was=isCG(st)?st.comp:'run';nextStage();save();const n=S.season&&S.season.stages[S.season.idx];if(S.phase==='season'&&n&&(was==='run'?n.comp==='run':isCG(n)&&n.comp===was)&&!S.season.pendingHeal&&S.season.out===0&&!(n.ch&&!n.chr)){ovUpdate(runHTML())}else{closeOv();commit()}return}
-  if(v==='rclose'){closeOv();commit();return}
+  if(v==='rdone'){runRes=null;homeHold=true;closeOv();commit();return}
+  if(v==='rnext'){homeHold=true;nextStage();save();closeOv();commit();return}   // every game ends back on the home screen; Play opens the next one
+  if(v==='rclose'){homeHold=true;closeOv();commit();return}
   if(v==='rtable'){runFinish();return}
 }
 function maybeStory(){
@@ -6017,11 +6041,21 @@ function pensLook(p){
     return [true,false].some(g2=>{const r=cp(q);r.opp.push({goal:g2});pensCheck(r);return r.done})});
 }
 const pensMine=p=>!p.done&&pensNext(p)==='me'&&((p.me.length>=11&&p.me.length%11===0)||(!p.me.some(x=>x.you)&&(p.me.length>=4||pensLook(p))));   // the 12th, 23rd, 34th… kick comes round to you again   // one kick: the 5th, or earlier if it could be the last
+/* your penalty: pick a spot; Finishing and Decisions make each spot +1, 0 or −1 */
+const PK_DIRS=['tl','tr','mid','bl','br'];
+function pkDirMod(dir){
+  const f=S.attrs.fin, dc=S.attrs.dec, m=n=>n>=2?1:n===1?0:-1;
+  if(dir==='tl'||dir==='tr')return f>=16?1:f>=12?0:-1;       // the top corners: pure technique
+  if(dir==='bl'||dir==='br')return m((f>=13)+(dc>=13));      // low and hard: a bit of both
+  return dc>=16?1:dc>=12?0:-1;                                // down the middle: pure nerve
+}
+const pkItem=()=>hasItem('spotball')?1:0;
+const pkPct=mod=>{let c=0;for(let v=2;v<=10;v++)if(v+mod>=4)c++;return c*10};
 function pensKick(side,v){
   const p=S.season.pens, mine=side==='me', you=mine&&pensMine(p);
-  const total=you?v+p.bonus:v;
+  const total=you?v+(p.dir?pkDirMod(p.dir)+pkItem():p.bonus):v;
   const goal=v===1?false:total>=(mine?4:(hasItem('gkgloves')?5:4));
-  p[side].push({v,total,goal,you});
+  p[side].push({v,total,goal,you,dir:you?p.dir||null:undefined}); if(you)p.dir=null;
   if(you)p.myFirst=goal;   // your last kick so far
   pensCheck(p);
 }
@@ -6043,7 +6077,7 @@ function pensWiggle(on){
 }
 function pensAuto(){
   const s=S.season, p=s.pens; let g=0;
-  while(!p.done&&g++<60){const side=pensNext(p);pensKick(side,d(10))}
+  while(!p.done&&g++<60){const side=pensNext(p);if(side==='me'&&pensMine(p)&&!p.dir)p.dir=PK_DIRS.slice().sort((a,b)=>pkDirMod(b)-pkDirMod(a))[0];pensKick(side,d(10))}
   pensFinish();
 }
 function pensFinish(){
@@ -6142,7 +6176,8 @@ function pensHTML(){
   const waitMe=pensMine(p), firstN=team(p.first).n;
   let foot='';
   if(p.done)foot=`<div class="verdict result v-${p.won?'good':'bad'}" style="font-size:22px">${p.won?t.pensWon(sc('me'),sc('opp')):t.pensLost(sc('me'),sc('opp'))}</div><button class="btn" data-ov="pdone">${t.runCont}</button>`;
-  else if(waitMe)foot=`<div class="mods" style="justify-content:center"><span class="chip">${t.pensYou}</span><span class="chip">d10 ${sg(p.bonus)} · ${t.pensNeed}</span><span class="chip odds">${(()=>{let c=0;for(let v=2;v<=10;v++)if(v+p.bonus>=4)c++;return c*10})()}%</span></div><button class="btn" data-ov="pkick">${t.pensTake}</button>`;
+  else if(waitMe){const spot=d=>{const m=pkDirMod(d)+pkItem();return `<button class="pkspot ${d} ${p.dir===d?'on':''}" data-ov="pdir" data-d="${d}"><b>${t.pkDir[d]}</b><span class="num">d10 ${sg(m)} · ${pkPct(m)}%</span></button>`};
+    foot=`<div class="pkgoal"><span class="lbl">${t.pensYou} · ${t.pkDirT}</span><div class="pkframe">${PK_DIRS.map(spot).join('')}</div></div><button class="btn" data-ov="pkick" ${p.dir?'':'disabled'}>${p.dir?t.pkShoot+' · '+t.pkDir[p.dir]:t.pkDirT}</button>`}
   else foot=`<div class="muted small">${p.me.length+p.opp.length>=10?t.pensSudden:t.pensGoing}</div>`;
   const toss=`<div class="pktoss ${p.me.length+p.opp.length?'':'flip'}"><span class="coin" aria-hidden="true"></span><span>${t.pensFirst(esc(firstN))}</span></div>`;
   const wa=pensAmp(p);
@@ -6160,7 +6195,8 @@ function pensStep(){
 }
 function pensClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, p=s.pens;
-  if(v==='pkick'){if(!pensMine(p))return;const x=d(10),i=p.me.length,el=ovEl.querySelector(`[data-die="pkme${i}"]`);pensWiggle(true);ovEl.querySelectorAll('[data-ov="pkick"]').forEach(q=>q.disabled=true);
+  if(v==='pdir'){if(!pensMine(p))return;p.dir=b.dataset.d;save();ovUpdate(pensHTML());pensScroll();return}
+  if(v==='pkick'){if(!pensMine(p)||!p.dir)return;const x=d(10),i=p.me.length,el=ovEl.querySelector(`[data-die="pkme${i}"]`);pensWiggle(true);ovEl.querySelectorAll('[data-ov="pkick"]').forEach(q=>q.disabled=true);
     rollDice(el?[el]:[],10,[x],()=>'',()=>{pensKick('me',x);save();ovUpdate(pensHTML());pensScroll();sfx(p.me[i].goal?'pass':'fail');if(!p.done)pensTimer=setTimeout(pensStep,600)});return}
   if(v==='pdone'){pensFinish();closeOv();commit();return}
 }
