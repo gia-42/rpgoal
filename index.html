@@ -1152,6 +1152,29 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .pkspot b{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.pkspot .num{font-size:10.5px;color:#a9adb7}
 .pkspot.tl{grid-column:1;grid-row:1}.pkspot.tr{grid-column:3;grid-row:1}.pkspot.mid{grid-column:2;grid-row:1/3;align-self:center}.pkspot.bl{grid-column:1;grid-row:2}.pkspot.br{grid-column:3;grid-row:2}
 .pkspot.on{border-color:var(--accent,#6b8afd);background:color-mix(in srgb,var(--accent,#6b8afd) 18%,#191c22)}
+/* the World Cup pop-up */
+.wcpop .panel.hero{border-color:#7a5c1c!important;box-shadow:0 0 0 1px rgba(242,193,78,.18),0 18px 50px rgba(0,0,0,.45),0 0 40px rgba(242,193,78,.08)!important;background:linear-gradient(170deg,#211a0b,var(--card) 38%)!important}
+.wctabs{display:flex;gap:4px;justify-content:center;padding:0 0 8px;flex:none}
+.wctabs button{font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid #3a3020;background:#17140d;color:#cdbf9a;cursor:pointer}
+.wctabs button[aria-pressed="true"]{background:#f2c14e;color:#1a1405;border-color:#f2c14e}
+.wcpanel{display:flex;flex-direction:column;gap:10px;padding:16px!important;overflow-y:auto}
+.wcpanel .wck{color:#f2c14e;text-align:center}
+.wch{font-size:20px;text-align:center;margin:0}
+.wctable td.tm b{font-weight:600}
+.wcfxs{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.wcfx{display:grid;grid-template-columns:52px 1fr 48px 1fr;align-items:center;gap:6px;font-size:12.5px;padding:3px 0;border-top:1px solid var(--rule)}
+.wcfx span:nth-child(2){display:flex;gap:5px;align-items:center;justify-content:flex-end;text-align:right}.wcfx span:nth-child(4){display:flex;gap:5px;align-items:center}
+.wcfx b{text-align:center}.wcfx.o{color:var(--ink-3);border-top:0;padding-top:0}
+.wcbr{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.wcbox{border:1px solid var(--rule-2);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;background:var(--card)}
+.wcbox.now{border-color:#f2c14e;box-shadow:0 0 0 1px rgba(242,193,78,.35)}
+.wcbox.w{border-color:color-mix(in srgb,var(--good) 60%,transparent)}.wcbox.l{border-color:color-mix(in srgb,var(--bad) 60%,transparent);opacity:.8}
+.wct{display:flex;align-items:center;gap:6px;font-size:13.5px}.wct b{flex:1}.wcr{font-weight:700}.wcbox.w .wcr{color:var(--good)}.wcbox.l .wcr{color:var(--bad)}
+.wcln{display:block;width:2px;height:12px;background:#7a5c1c;margin:0 auto}
+.wccup{display:flex;justify-content:center;margin-top:4px}.wccup svg{width:44px;height:44px;opacity:.9}
+.ovcard>.ovx{position:absolute;top:10px;right:10px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid #3a3e47;background:#191c22;color:#a9adb7;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.lbpop .lbx{display:none!important}
+@media (max-height:680px){.ovcard.pushpop{gap:3px;padding:12px 14px 8px}.pushpop .ov-kicker{font-size:10px}.pushpop .ov-title{font-size:18px!important}.pushpop .ov-sub2{font-size:11.5px;line-height:1.25}.pushpop .ltmini{font-size:11px}.pushpop .ltmini .ltr{padding-block:0;line-height:1.2}.pushpop .fixd{height:72px}.pushpop .fixd .die{max-width:64px}.pushpop .fixinfo{min-height:64px!important}.pushpop .fixbtn{height:88px}.pushpop .fixins{min-height:18px}}
 /* ---------- iPad layouts ---------- */
 body.ipadL .wrap{max-width:1240px}
 body.ipadP .wrap{max-width:1000px}
@@ -2226,9 +2249,13 @@ function resolveStage(v1,v2){
     const draw=!win&&(r.missed?r.total>=r.dc-3:(nat!==1&&r.total>=r.dc-3));
     const k=win?'W':draw?'D':'L', g=s.wcg=s.wcg||{W:0,D:0,L:0}; g[k]++;
     r.wdl=k; r.win=win; r.tone=win?'good':draw?'mid':'bad'; r.rec={...g};
-    if(g.L>=2||(st.g===2&&!(g.W>=1&&g.L<=1))){r.groupOut=true;s.wcRes=0;s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp==='wc'&&!x.res)x.res={skipped:true}})}
-    else if(st.g===2)r.groupThrough=true;
     st.res={tone:r.tone,wdl:k,missed:!!r.missed};
+    // the World Cup is a real group of four: the top two of the table go through
+    let out,thru;
+    if(isWCup(st)&&wcData()){if(st.g===2){const tb=wcTable(),pos=tb.findIndex(x=>x.c===S.nat)+1;out=pos>2;thru=!out}}
+    else{out=g.L>=2||(st.g===2&&!(g.W>=1&&g.L<=1));thru=!out&&st.g===2}
+    if(out){r.groupOut=true;s.wcRes=0;s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp==='wc'&&!x.res)x.res={skipped:true}})}
+    else if(thru)r.groupThrough=true;
   }else{
     const ko=isKO(st), tie=ko&&!r.missed&&!isCrit(nat)&&nat!==1&&(r.total===r.dc||r.total===r.dc-1);
     if(tie&&r.total===r.dc&&Math.random()<.7){r.pens=1;r.lmc=1;r.tone='mid';s.pendingLMC=true;s.pensStage=s.idx;st.res={tone:'mid',pens:1,pending:1}}
@@ -2309,8 +2336,9 @@ function nextStage(){
   s.idx=idx;
   if(s.idx>=0&&!s.midDone&&s.stages.some(x=>x.comp==='league'&&x.round===2&&!x.res)&&s.stages.every(x=>x.comp!=='league'||x.round>=2||x.res))midCheck(s);
   if(s.idx>=0){activate();return}
-  endSeason();
+  s.endReady=1;   // every game is played: the season review waits until you press "Next season" on the home screen
 }
+function finishSeason(){const s=S.season;if(S.phase==='season'&&s&&s.endReady&&!s.ended){endSeason();return true}return false}
 function grow(){
   const s=S.season, rolls=s.rolls, before={...S.attrs};
   const A=rolls.length?rolls.reduce((a,b)=>a+b,0)/rolls.length:0;
@@ -2527,6 +2555,7 @@ function simRest(){
   let guard=0;
   while(S.phase==='season'&&guard++<300){
     const s=S.season, st=s.stages[s.idx];
+    if(s.endReady||!st){finishSeason();break}
     if(s.careerOver){endCareer();break}
     if(s.pickAttr){autoPick();continue}
     if(s.pendingLMC){lmcAuto();continue}
@@ -2628,9 +2657,10 @@ const aLbl=k=>`<span class="lfull">${t.attrs[k]}</span><span class="lshort">${t.
 const leagueLine=Li=>`${LEAGUES[Li].name} · ${lgCountry(Li)}${LEAGUES[Li].div===2?` · ${t.div2}`:''}`;
 function homeNext(){
   const s=S.season; if(!s)return''; const st=s.stages[s.idx];
-  const nx=st?`${esc(compName(st.comp,S.club.league))} · ${roundShort(st)}${st.opp?` · ${t.vsOpp(esc(oppName(st)))}`:''}`:t.finish;
+  const fin=()=>{const me=s.lt?lgTable(s).find(x=>x.me):null;return me?`${esc(LEAGUES[S.club.league].name)} · ${ord(me.pos)} · ${me.pts} ${t.ptsS}`:t.finish};
+  const nx=st?`${esc(compName(st.comp,S.club.league))} · ${roundShort(st)}${st.opp?` · ${st.comp==='wc'?`${esc(COUNTRY[lang][S.nat])} × ${esc(oppName(st))}`:t.vsOpp(esc(oppName(st)))}`:''}`:fin();
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
-  return `<section class="panel nextp">${inj}<div class="nextrow"><div class="nextt"><span class="lbl">${t.nextUp}</span><b>${nx}</b></div><button class="btn" data-act="play">${t.playNext}</button></div></section>`;
+  return `<section class="panel nextp">${inj}<div class="nextrow"><div class="nextt"><span class="lbl">${st?t.nextUp:t.seasonOver}</span><b>${nx}</b></div><button class="btn" data-act="play">${st?t.playNext:t.nextSeasonBtn}</button></div></section>`;
 }
 function sheet(wide){
   const r=rating(S.attrs), s=S.season;
@@ -2660,7 +2690,7 @@ function seasonStatsPanel(){
 function slotNext(){
   const s=S.season; if(!s)return''; const st=s.stages[s.idx];
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
-  return `<section class="panel matchslot"><div class="slotin">${inj}<span class="lbl">${t.nextUp}</span>${st?`<span class="lbl slotc">${esc(compName(st.comp,S.club.league))}</span><h3>${roundShort(st)}</h3>${st.opp?`<div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>`:''}${s.lt&&lgPlayed(s)?lbNear(s):''}`:`<h3>${t.finish}</h3>`}<button class="btn" data-act="play">${t.playNext}</button></div></section>`;
+  return `<section class="panel matchslot"><div class="slotin">${inj}<span class="lbl">${t.nextUp}</span>${st?`<span class="lbl slotc">${esc(compName(st.comp,S.club.league))}</span><h3>${roundShort(st)}</h3>${st.opp?`<div class="vsline">${crest(myKit(st),20)}<b>${esc(st.comp==='wc'?COUNTRY[lang][S.nat]:S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>`:''}${s.lt&&lgPlayed(s)?lbNear(s):''}`:`<h3>${t.finish}</h3>`}<button class="btn" data-act="play">${st?t.playNext:t.nextSeasonBtn}</button></div></section>`;
 }
 function ipHome(){
   const s=S.season;
@@ -2779,7 +2809,7 @@ function stageCard(){
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie?`<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div>`:''}</div>`;
-    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
+    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
       body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">★ ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
@@ -3008,7 +3038,7 @@ function fitStage(){
   for(const c of L){if(!over())break;st.classList.add(c)}
   if(dm&&dm.clientHeight<die)st.style.setProperty('--die',Math.max(56,dm.clientHeight-4)+'px');
 }
-try{window.addEventListener('resize',()=>{try{if(calcIpad()!==ipMode)render();else dockOv();fitStage()}catch(e){}})}catch(e){}
+try{window.addEventListener('resize',()=>{try{if(calcIpad()!==ipMode)render();else dockOv();fitStage();fitTexts()}catch(e){}})}catch(e){}
 function render(){
   applyMem(); t=curT(); ipMode=calcIpad(); try{document.body.classList.toggle('ipadL',ipMode==='L');document.body.classList.toggle('ipadP',ipMode==='P')}catch(e){}
   const n=loadHof().length;
@@ -3037,6 +3067,7 @@ function render(){
   try{document.body.classList.toggle('fixv',fixv)}catch(e){}
   try{fitStage()}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
   try{document.body.classList.toggle('iphome',!!app.querySelector('.ipgrid'));dockOv()}catch(e){}
+  requestAnimationFrame(()=>fitTexts());
 }
 let lastKey='';
 
@@ -3701,6 +3732,7 @@ function flushOv(){
   if(o.k==='qual')sfx('qual');
   if(o.k==='career'||o.k==='eos')countUp(ovEl);
   try{dockOv()}catch(e){}
+  requestAnimationFrame(()=>fitTexts(ovEl||document));
   if(o.k==='stage')try{fitStage()}catch(e){}
   if(o.k==='eos'){const h=S.history[o.hi];sfx(h&&h.move==='down'?'releg':'seasonEnd')}
   if(o.k==='career'&&o.fresh)sfx('careerEnd');
@@ -3719,7 +3751,7 @@ function flushOv(){
     if(o.k==='lmc'){lmcClick(e);return}
     if(o.k==='run'){runClick(e);return}
     if(o.k==='lb'){lbClick(e);return}
-    if(o.k==='stage'){if(e.target.closest('[data-ov="x"]')){homeHold=true;closeOv();render();return}onClick(e);return}
+    if(o.k==='stage'){if(e.target.closest('[data-ov="x"]')){homeHold=true;closeOv();render();return}const wv=e.target.closest('[data-ov="wcv"]');if(wv){wcView=wv.dataset.v;ovUpdate(stagePopHTML());try{fitStage()}catch(err){}return}onClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
     if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
@@ -3961,10 +3993,28 @@ function refreshLeagueTable(){
   if(reduce)return;
   ot.querySelectorAll('tr[data-k]').forEach(r=>{const b=before[r.dataset.k];if(b==null)return;const dy=b-r.getBoundingClientRect().top;if(dy)r.animate([{transform:`translateY(${dy}px)`},{transform:'none'}],{duration:420,easing:'cubic-bezier(.2,.8,.2,1)'})});
 }
+/* no "…" anywhere: text that would be cut is first made a little smaller, then allowed to wrap */
+let ellSel=null;
+function fitTexts(root){
+  try{
+    if(ellSel===null){const L=[];for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules}catch(e){continue}
+      const walk=list=>{for(const r of list){if(r.cssRules&&!r.selectorText)walk(r.cssRules);else if(r.style&&r.style.textOverflow==='ellipsis')L.push(r.selectorText)}};walk(rs)}
+      ellSel=L.join(',')}
+    if(!ellSel)return; const els=(root||document).querySelectorAll(ellSel);
+    els.forEach(el=>{
+      if(el.dataset.fit)el.style.fontSize='';
+      const w=el.clientWidth; if(!w||el.scrollWidth<=w+1)return;
+      const base=parseFloat(getComputedStyle(el).fontSize)||14, min=Math.max(9,base*.7); let fs=base;
+      while(el.scrollWidth>el.clientWidth+1&&fs>min){fs-=.5;el.style.fontSize=fs+'px'}
+      el.dataset.fit='1';
+      if(el.scrollWidth>el.clientWidth+1){el.style.whiteSpace='normal';el.style.textOverflow='clip';el.style.overflow='visible';el.style.overflowWrap='anywhere'}
+    });
+  }catch(e){}
+}
 function ovUpdate(html){
   if(!ovEl)return; try{setTimeout(refreshLeagueTable,0)}catch(e){} const card=ovEl.querySelector('.ovcard'), tmp=document.createElement('div'); tmp.innerHTML=html; const n=tmp.firstElementChild;
   if(!card||!n){ovEl.innerHTML=html;return}
-  card.className=n.className+' still'; card.innerHTML=n.innerHTML;
+  card.className=n.className+' still'; card.innerHTML=n.innerHTML; requestAnimationFrame(()=>fitTexts(ovEl||document));
 }
 function healRefresh(){ovUpdate(healHTML())}
 function healClick(e){
@@ -3984,7 +4034,7 @@ let autoT=null, fastRoll=false;
 function scheduleAuto(){
   clearTimeout(autoT); autoT=null;
   if(view!=='game'||S.phase!=='season'||!S.season)return;
-  const s=S.season; if(s.pendingHeal||s.careerOver||s.pickAttr||s.out<=0)return;
+  const s=S.season; if(s.pendingHeal||s.careerOver||s.pickAttr||s.out<=0||s.endReady||!s.stages[s.idx])return;
   const fire=fn=>()=>{if(busy||(ovEl&&ovKind!=='stage')){autoT=setTimeout(fire(fn),200);return}fn()};
   if(!s.last){autoT=setTimeout(fire(()=>{fastRoll=true;doRoll()}),1100);return}
   autoT=setTimeout(fire(()=>{nextStage();commit()}),s.last.injury?3200:1900);
@@ -4081,7 +4131,7 @@ function onClick(e){
   else if(act==='wcall'){wcAll=true;fastRoll=true;doRoll();setTimeout(wcTick,allGap('wc'))}
   else if(act==='wcstop'){wcAll=false;playSync()}
   else if(act==='lbgo'){lbGo()}
-  else if(act==='play'){homeHold=false;playSync()}
+  else if(act==='play'){if(finishSeason()){commit();window.scrollTo({top:0});return}homeHold=false;playSync()}
   else if(act==='ssub'){seasonSub=b.dataset.v==='track'?'track':'table';render()}
   else if(act==='lbder'){const s=S.season,st=s&&s.stages[s.idx];if(!st||!lbDerbyDue(st))return;const v=d(DERBY_DIE),el=app.querySelector('[data-die="lb'+(st.mi||0)+'"]'),e=EVMAP.derby;
     rollDice(el?[el]:[],DERBY_DIE,[v],x=>x===DERBY_DIE?'crit':x===1?'fumble':x+evBonus(e)>=derbyTgt()?'win':'lose',()=>{lbDerbyRoll(st,v);sfx(st.ms[st.mi||0].dr.ok?'pass':'fail');commit()})}
@@ -4109,7 +4159,9 @@ function onClick(e){
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(12),c=d(12);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],12,[a],()=>'',()=>{rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'careerInj':I.season||I.out>0?'injury':'pass');commit()})})}
   else if(act==='endcareer'){endCareer();commit();window.scrollTo({top:0})}
-  else if(act==='go'){homeHold=true;nextStage();commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
+  else if(act==='go'){const s0=S.season,cur=s0&&s0.stages[s0.idx];nextStage();const nx=S.phase==='season'&&S.season?S.season.stages[S.season.idx]:null;
+    // World Cup, Copa América, Euro and Club World Cup are played back to back: stay in the pop-up between their games
+    homeHold=!(cur&&nx&&(cur.comp==='wc'||cur.comp==='cwc')&&nx.comp===cur.comp);commit();if(S.phase!=='season')window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='simrest'){view='game';simRest();commit();window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
   else if(act==='sign'){confirmMove({kind:'sign',i:+b.dataset.i})}
   else if(act==='stay'){newSeason(null);commit();window.scrollTo({top:0})}
@@ -5076,7 +5128,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{contract:'Contract',nums:'Numbers',seasons:'Seasons',inv:'Locker room'},invT:'Locker room',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
- pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
+ pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',seasonOver:'Season over',nextSeasonBtn:'Next season',wcTab:{m:'Match',g:'Group',b:'Bracket'},wcTeamH:'Team',wcGrpT:g=>`Group ${g}`,wcRoad:'Road to the final',wcTbd:'To be decided',wcThru:'Top two of the group go through',wcSeeTbl:'see the Group tab',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
  lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
  lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
   ['A cross floats towards the far post with you arriving.',['Head it in','Volley it','Cushion it back for a teammate']],
@@ -5095,7 +5147,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{contract:'Contrato',nums:'Números',seasons:'Temporadas',inv:'Vestiário'},invT:'Vestiário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
- pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
+ pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',seasonOver:'Temporada encerrada',nextSeasonBtn:'Próxima temporada',wcTab:{m:'Partida',g:'Grupo',b:'Chaveamento'},wcTeamH:'Seleção',wcGrpT:g=>`Grupo ${g}`,wcRoad:'Caminho até a final',wcTbd:'A definir',wcThru:'Os dois primeiros do grupo avançam',wcSeeTbl:'veja a aba Grupo',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
  lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
  lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
   ['Um cruzamento viaja para a segunda trave e você chega de frente.',['Cabecear','Pegar de voleio','Ajeitar para um companheiro']],
@@ -5362,7 +5414,7 @@ function lbHTML(){
       :`<div class="mods" style="justify-content:center"><span class="chip">${t.mods} ${sg(mm.mods)}</span>${mm.home?`<span class="chip fit">${t.homeS} +1</span>`:''}${mm.mom?`<span class="chip ${mm.mom>0?'fit':'inj'}">${t.momT} ${sg(mm.mom)}</span>`:''}${mm.hot?`<span class="chip hot">${t.hotChip(s.hot)}</span>`:''}${ev}<span class="chip">${t.dc} ${dc}</span><span class="chip odds">${t.odds(need,Math.round(chanceOf(need,md,true)*100))}</span></div>`;
     btn=lbAll?`<button class="btn" data-ov="lbstop">${t.lbStop}</button>`:`<button class="btn" data-ov="lbroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button><button class="btn ghost" data-ov="lball">${t.rollAll}</button>`;
   }
-  return `<div class="ovcard move lbpop">${head}<div class="lbdie">${die}</div><div class="lbinfo2">${info}</div>${lbNear(s)}<div class="lbbtns">${btn}</div><button class="linkb lbx" data-ov="lbhome">${t.lbHome}</button></div>`;
+  return `<div class="ovcard move lbpop">${head}<div class="lbdie">${die}</div><div class="lbinfo2">${info}</div>${lbNear(s)}<div class="lbbtns">${btn}</div><button class="ovx lbxx" data-ov="lbhome" aria-label="${t.lbHome}">×</button><button hidden class="linkb lbx" data-ov="lbhome">${t.lbHome}</button></div>`;
 }
 /* redraw in place; the small table slides rows to their new places */
 function lbRefresh(){
@@ -5421,7 +5473,53 @@ function playKind(){
   if((isCG(st)||st.comp==='run')&&s.out===0&&!(s.last&&s.last.stage!==s.idx))return'run';
   return'stage';
 }
-function stagePopHTML(){return S.season&&S.season.stages[S.season.idx]?`<div class="ovcard stagepop"><button class="ovx" data-ov="x" aria-label="${t.lbHome}">×</button><div class="wrap">${stageCard()}</div></div>`:''}
+let wcView='m';
+const isWCup=st=>!!st&&st.comp==='wc'&&!intlSeason();
+function stagePopHTML(){
+  const s=S.season, st=s&&s.stages[s.idx]; if(!st)return'';
+  if(!isWCup(st))return `<div class="ovcard stagepop"><button class="ovx" data-ov="x" aria-label="${t.lbHome}">×</button><div class="wrap">${stageCard()}</div></div>`;
+  const tabs=`<div class="wctabs" role="group">${['m','g','b'].map(k=>`<button data-ov="wcv" data-v="${k}" aria-pressed="${wcView===k}">${t.wcTab[k]}</button>`).join('')}</div>`;
+  return `<div class="ovcard stagepop wcpop"><button class="ovx" data-ov="x" aria-label="${t.lbHome}">×</button><div class="wrap">${tabs}${wcView==='m'?stageCard():wcPanel(wcView)}</div></div>`;
+}
+/* ---- the World Cup group (everyone plays everyone once) and the knockout road ---- */
+function wcData(){
+  const s=S.season, gs=s.stages.filter(x=>x.comp==='wc'&&x.round===0&&x.g!=null).sort((a,b)=>a.g-b.g); if(gs.length<3)return null;
+  if(!s.wcT||s.wcT.v!==1){
+    const opp=gs.map(x=>x.opp), str={}; gs.forEach(x=>{str[x.opp]=(x.gdc||16)}); str[S.nat]=16;
+    const sc=(a,b)=>{const g=(str[a]-str[b])*.18, ea=1.25+g, eb=1.25-g, po=l=>{let k=0,p=Math.exp(-Math.max(.2,l)),q=p,u=Math.random();while(u>q&&k<6){k++;p*=Math.max(.2,l)/k;q+=p}return k};return[po(ea),po(eb)]};
+    // matchday g: you play opp[g]; the other two meet
+    const other=[0,1,2].map(g=>{const r=opp.filter((_,i)=>i!==g);return[r[0],r[1],...sc(r[0],r[1])]});
+    s.wcT={v:1,teams:[S.nat].concat(opp),other,my:[],grp:'ABCDEFGH'[Math.floor(Math.random()*8)]};
+  }
+  const T=s.wcT;
+  gs.forEach(x=>{if(x.res&&x.res.wdl&&!T.my[x.g]){const w=x.res.wdl,P={W:[[1,0],[2,0],[2,1],[3,1]],D:[[0,0],[1,1],[2,2]],L:[[0,1],[1,2],[0,2]]}[w];T.my[x.g]=pick(P)}});
+  return{T,gs};
+}
+function wcTable(){
+  const D=wcData(); if(!D)return[]; const {T,gs}=D, row={}; T.teams.forEach(c=>row[c]={c,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0});
+  const add=(a,b,x,y)=>{const A=row[a],B=row[b];A.p++;B.p++;A.gf+=x;A.ga+=y;B.gf+=y;B.ga+=x;if(x>y){A.w++;B.l++;A.pts+=3}else if(x<y){B.w++;A.l++;B.pts+=3}else{A.d++;B.d++;A.pts++;B.pts++}};
+  const played=gs.filter(x=>x.res).length;
+  gs.forEach(x=>{if(x.res&&T.my[x.g])add(S.nat,x.opp,T.my[x.g][0],T.my[x.g][1])});
+  T.other.forEach((m,g)=>{if(g<played)add(m[0],m[1],m[2],m[3])});
+  const tb=Object.values(row).sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+  return tb;
+}
+function wcPanel(v){
+  const s=S.season, D=wcData(); if(!D)return `<section class="panel hero wcpanel"><div class="muted">—</div></section>`;
+  const head=`<span class="ov-kicker wck">★ ${esc(compName('wc'))} · ${S.year}</span>`;
+  if(v==='g'){
+    const tb=wcTable(), played=D.gs.filter(x=>x.res).length;
+    const rows=tb.map((x,i)=>`<tr class="${x.c===S.nat?'me':''} ${i<2&&played===3?'z1':''}"><td class="num">${i+1}</td><td class="tm">${crest(natKit(x.c),14)}<b>${esc(COUNTRY[lang][x.c]||x.c)}</b></td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td><td class="num">${x.gf-x.ga>0?'+':''}${x.gf-x.ga}</td><td class="num pts">${x.pts}</td></tr>`).join('');
+    const fx=D.gs.map(x=>{const r=D.T.my[x.g];return `<div class="wcfx"><span class="lbl">${t.gameN(x.g+1)}</span><span>${crest(natKit(S.nat),12)}${esc(COUNTRY[lang][S.nat])}</span><b class="num">${r?r[0]+' – '+r[1]:'·'}</b><span>${esc(COUNTRY[lang][x.opp]||x.opp)}${crest(natKit(x.opp),12)}</span></div>`+(()=>{const m=D.T.other[x.g];const shown=x.g<played;return `<div class="wcfx o"><span></span><span>${crest(natKit(m[0]),12)}${esc(COUNTRY[lang][m[0]]||m[0])}</span><b class="num">${shown?m[2]+' – '+m[3]:'·'}</b><span>${esc(COUNTRY[lang][m[1]]||m[1])}${crest(natKit(m[1]),12)}</span></div>`})()}).join('');
+    return `<section class="panel hero wcpanel">${head}<h3 class="wch">${t.wcGrpT(D.T.grp)}</h3><table class="ltable wctable"><thead><tr><th>#</th><th class="tm">${t.wcTeamH}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th><th>±</th><th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table><div class="muted small">${t.wcThru}</div><div class="wcfxs">${fx}</div></section>`;
+  }
+  const ko=[1,2,3,4].map(r=>s.stages.find(x=>x.comp==='wc'&&x.round===r));
+  const box=(st,r)=>{const res=st&&st.res, sk=res&&res.skipped, op=st&&st.opp;
+    return `<div class="wcbox ${res&&!sk?(res.win?'w':'l'):''} ${st&&s.stages[s.idx]===st&&!s.last?'now':''}"><span class="lbl">${t.cupR[r-1]}</span>
+      <div class="wct">${crest(natKit(S.nat),14)}<b>${esc(COUNTRY[lang][S.nat])}</b>${res&&!sk?`<span class="wcr">${res.win?'✓':'✕'}</span>`:''}</div>
+      <div class="wct">${op?crest(natKit(op),14)+`<b>${esc(COUNTRY[lang][op]||op)}</b>`:`<span class="muted">${sk?'—':t.wcTbd}</span>`}</div></div>`};
+  return `<section class="panel hero wcpanel">${head}<h3 class="wch">${t.wcRoad}</h3><div class="wcbr">${ko.map((st,i)=>box(st,i+1)).join('<i class="wcln"></i>')}</div><div class="wccup">${trophySVG()}</div></section>`;
+}
 function playSync(){
   const pk=['stage','lb'];
   if(view!=='game'||S.phase!=='season'||!S.season){if(pk.includes(ovKind))closeOv();return}
@@ -5556,7 +5654,7 @@ function cgHTML(){
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
     :cgAll&&left?`<div class="muted small">${t.rollingAll}</div>`:`<button class="btn" data-ov="rnext">${left?t.runNext:t.runCont}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
-  return `<div class="ovcard move runpop cgpop"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${contIsUCL(S.club.league)?t.leaguePhase:t.group}</span><h2 class="ov-title" style="font-size:24px">${t.gameN(st.g+1)} · ${st.ha==='adv'?t.homeG:t.awayG}</h2>
+  return `<div class="ovcard move runpop cgpop"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${contIsUCL(S.club.league)?t.leaguePhase:t.group}</span><h2 class="ov-title" style="font-size:24px">${t.gameN(st.g+1)} · ${st.ha==='adv'?t.homeG:t.awayG}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
     ${cgRec(s,st.comp)}
     <div class="storydie runlie fixd">${dice}</div><div class="fixins">${insp}</div>
@@ -5577,7 +5675,7 @@ function pushHTML(){
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
     :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
-  return `<div class="ovcard move runpop pushpop ${ps.type}"><span class="ov-kicker">${t.pushT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:22px">${roundName(st)} · ${st.lha==='H'?t.homeG:t.awayG}</h2>
+  return `<div class="ovcard move runpop pushpop ${ps.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.pushT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:22px">${roundName(st)} · ${st.lha==='H'?t.homeG:t.awayG}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b>${st.der?' ★':''}</div>
     <div class="ov-sub2">${t.pushSt[ps.type](ord(ps.pos),ps.gapTop)}</div>
     ${lgMini(s)}<div class="grec cgrec" style="justify-content:center">${games}</div>
@@ -5603,7 +5701,7 @@ function runHTML(){
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
     :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
-  return `<div class="ovcard move runpop ${s.run.type}"><span class="ov-kicker">${t.runT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
+  return `<div class="ovcard move runpop ${s.run.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.runT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
     <div class="ov-sub2">${t.runRule(s.run.type,need)}</div>
     <div class="grec" style="justify-content:center">${games}<span class="lbl">${t.runPts(pts,need)}</span></div>
@@ -5631,7 +5729,10 @@ function runClick(e){
     rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovUpdate(runHTML());
       const s2=S.season;if(!isCG(st)&&!s2.stages.some(x=>x.comp==='run'&&!x.res)&&!s2.pendingHeal&&!s2.pickAttr&&!s2.careerOver){busy=true;busySince=Date.now();setTimeout(()=>{busy=false;runFinish()},1500)}});return}
   if(v==='rdone'){runRes=null;homeHold=true;closeOv();commit();return}
-  if(v==='rnext'){homeHold=true;nextStage();save();closeOv();commit();return}   // every game ends back on the home screen; Play opens the next one
+  if(v==='rnext'){const was=isCG(st)?st.comp:'run';nextStage();save();const n=S.season&&S.season.stages[S.season.idx];
+    // the final push is played straight through in one pop-up; group games go back to the home screen
+    if(was==='run'&&S.phase==='season'&&n&&n.comp==='run'&&!S.season.pendingHeal&&S.season.out===0&&!(n.ch&&!n.chr)){ovUpdate(runHTML());return}
+    homeHold=true;closeOv();commit();return}   // every game ends back on the home screen; Play opens the next one
   if(v==='rclose'){homeHold=true;closeOv();commit();return}
   if(v==='rtable'){runFinish();return}
 }
