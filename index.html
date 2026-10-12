@@ -26,7 +26,7 @@
   --bg:#f7f7f5; --card:#ffffff; --sunk:#f2f3f1; --ink:#15171c; --ink-2:#4a4f5c; --ink-3:#8a8f9b; --rule:#e2e3e0; --rule-2:#cfd1cc;
   --accent:#3346d3; --accent-soft:#eceefc; --on-accent:#ffffff;
   --good:#1f63d6; --good-soft:#e8f0fd; --bad:#c23a2e; --bad-soft:#fbeceb; --warn:#a86512; --warn-soft:#fbf1e3;
-  --d20:#2b2e35; --dshade:.3; --dnum:#ffffff; --d10:#ffffff; --d10num:#15171c; --dedge:rgba(21,23,28,.35);
+  --d20:#2b2e35; --dshade:.3; --dshade2:.11; --dlite:.08; --dnum:#ffffff; --d10:#ffffff; --d10num:#15171c; --dedge:rgba(21,23,28,.35);
   --f-ui:"Instrument Sans","Helvetica Neue",Arial,system-ui,sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
 }
@@ -34,13 +34,13 @@
   --bg:#121317; --card:#181a1f; --sunk:#1d1f25; --ink:#eceef2; --ink-2:#b0b4be; --ink-3:#7c818d; --rule:#2a2d34; --rule-2:#3a3e47;
   --accent:#8193ff; --accent-soft:#232842; --on-accent:#0e1018;
   --good:#6ea8ff; --good-soft:#17233a; --bad:#ff7a6e; --bad-soft:#331b1a; --warn:#e3a14d; --warn-soft:#2f2416;
-  --d20:#d5d8de; --dshade:.1; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
+  --d20:#d5d8de; --dshade:.1; --dshade2:.28; --dlite:.22; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121317; --card:#181a1f; --sunk:#1d1f25; --ink:#eceef2; --ink-2:#b0b4be; --ink-3:#7c818d; --rule:#2a2d34; --rule-2:#3a3e47;
   --accent:#8193ff; --accent-soft:#232842; --on-accent:#0e1018;
   --good:#6ea8ff; --good-soft:#17233a; --bad:#ff7a6e; --bad-soft:#331b1a; --warn:#e3a14d; --warn-soft:#2f2416;
-  --d20:#d5d8de; --dshade:.1; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
+  --d20:#d5d8de; --dshade:.1; --dshade2:.28; --dlite:.22; --dnum:#15171c; --d10:#23262d; --d10num:#eceef2; --dedge:rgba(236,238,242,.3);
   color-scheme:dark}
 *{box-sizing:border-box}
 html,body{overscroll-behavior:none}
@@ -230,8 +230,23 @@ html.onepage,body.onepage{margin:0;height:100%;overflow:hidden;box-sizing:border
 .die.lose .face{fill:var(--bad);stroke:var(--bad)} .die.lose text{fill:#fff} .die.lose .edge{stroke:rgba(255,255,255,.35)}
 .die.mid .face{fill:var(--warn);stroke:var(--warn)} .die.mid text{fill:#fff} .die.mid .edge{stroke:rgba(255,255,255,.35)}
 .die.dropped{opacity:.25}
-.d20 .bp{fill:#000;opacity:var(--dshade,.12)}.die.win .bp,.die.lose .bp,.die.mid .bp,.die.fumble .bp,.die.crit .bp{fill:#000;opacity:.13}
+.die .bp{fill:#000;opacity:var(--dshade,.12)}.d10 .bp,.dN .bp{opacity:var(--dshade2,.12)}.die.win .bp,.die.lose .bp,.die.mid .bp,.die.fumble .bp,.die.crit .bp{fill:#000;opacity:.13}
 .d20 .edge{stroke:rgba(128,128,128,.5)}
+.die.crit{animation:critGlow 1.8s ease-in-out infinite;overflow:visible}
+@keyframes critGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(242,193,78,.35)) brightness(1)}50%{filter:drop-shadow(0 0 10px rgba(255,205,90,.85)) drop-shadow(0 0 3px rgba(255,236,170,.7)) brightness(1.08)}}
+@media (prefers-reduced-motion:reduce){.die.crit{animation:none;filter:drop-shadow(0 0 6px rgba(242,193,78,.6))}}
+
+.die .bq{fill:#000;opacity:calc(var(--dshade,.12)*.45)}.d10 .bq,.dN .bq{opacity:calc(var(--dshade2,.12)*.45)}
+.die .bl{fill:#fff;opacity:var(--dlite,.1)}
+.die.win .bq,.die.lose .bq,.die.mid .bq,.die.fumble .bq,.die.crit .bq{opacity:.06}.die.win .bl,.die.lose .bl,.die.mid .bl,.die.fumble .bl,.die.crit .bl{opacity:.12}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) .face{fill:#f2b2c6;stroke:#f2b2c6}
+.die.sdie:not(.crit,.fumble,.win,.lose,.mid) .face{fill:#bba9ef;stroke:#bba9ef}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) text,.die.sdie:not(.crit,.fumble,.win,.lose,.mid) text{fill:#2a2230}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) .edge,.die.sdie:not(.crit,.fumble,.win,.lose,.mid) .edge{stroke:rgba(60,40,70,.28)}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) .bp,.die.sdie:not(.crit,.fumble,.win,.lose,.mid) .bp{opacity:.13}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) .bq,.die.sdie:not(.crit,.fumble,.win,.lose,.mid) .bq{opacity:.06}
+.die.adie:not(.crit,.fumble,.win,.lose,.mid) .bl,.die.sdie:not(.crit,.fumble,.win,.lose,.mid) .bl{opacity:.22}
+
 .die.evd .face{fill:var(--d20);stroke:var(--d20)} .die.evd text{fill:var(--dnum)}
 .dbtn{background:none;border:1px solid transparent;padding:8px 2px;color:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:8px;width:100%}
 .dbtn:not(:disabled):hover{border-color:var(--rule)}
@@ -898,12 +913,14 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .lbha{font-size:9.5px;font-weight:600;color:var(--ink-3);letter-spacing:.04em;line-height:1}
 .lbc.der .lbha{color:#d9a43a}
 .lbinfo{justify-content:center}
+:root{--popw:440px}.ovcard.lbpop,.ovcard.runpop,.ovcard.stagepop,.ovcard.penspop,.ovcard.lmcpop,.ovcard.heal,.ovcard.story:not(.dealpop){width:min(100%,var(--popw));max-width:var(--popw);box-sizing:border-box}
+.ovl-move svg.die,.stage svg.die{cursor:pointer}
 .nextp{flex:none}.nextrow{display:flex;align-items:center;justify-content:space-between;gap:10px}.nextt{display:flex;flex-direction:column;gap:2px;min-width:0}.nextt b{font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nextrow .btn{flex:none;min-width:96px}
-.ovcard.stagepop{background:transparent;border:0;padding:0;width:min(100%,460px);height:min(700px,calc(100dvh - 32px));display:flex;flex-direction:column;position:relative}
-.stagepop>.wrap{height:100%!important;max-width:none;padding:0!important;margin:0;gap:0}
+.ovcard.stagepop{background:transparent;border:0;padding:0;height:min(700px,calc(100dvh - 32px));display:flex;flex-direction:column;position:relative}
+.stagepop>.wrap{height:100%!important;width:100%;max-width:none;align-self:stretch;padding:0!important;margin:0;gap:0}
 .stagepop>.wrap>.panel.hero{flex:1 1 auto!important;min-height:0;box-shadow:0 18px 50px rgba(0,0,0,.45)}
 .stagepop .ovx{position:absolute;top:8px;right:10px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);font-size:18px;line-height:1;cursor:pointer}
-.lbpop{width:min(100%,420px);gap:8px;padding:20px 18px 14px}
+.lbpop{gap:8px;padding:20px 18px 14px}
 .lbpop .lbtitle{font-size:22px;min-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .lbpop .vsline{min-height:24px}
 .lbpop .lbrec{flex-wrap:wrap;justify-content:center;gap:4px;min-height:62px;align-content:center}
@@ -1116,6 +1133,52 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 @keyframes coinflip{0%{transform:rotateY(0) translateY(0)}40%{transform:rotateY(900deg) translateY(-8px)}100%{transform:rotateY(1800deg) translateY(0)}}
 @media (prefers-reduced-motion:reduce){.pktoss.flip .coin{animation:none}}
 .pksc{font-size:22px;font-weight:700;color:#fff;text-align:right}
+
+@media (max-height:760px){.ovcard.pushpop{gap:5px;padding:16px 16px 10px}.pushpop .ov-title{font-size:20px!important}.pushpop .ov-sub2{font-size:12.5px;line-height:1.3}.pushpop .ltmini{font-size:11.5px}.pushpop .ltmini .ltr{padding-block:0}.pushpop .fixd{height:80px}.pushpop .fixd .die{max-width:72px}.pushpop .fixd .pair .die{max-width:66px}.pushpop .fixins{min-height:22px}.pushpop .fixinfo{height:72px}.pushpop .fixbtn{height:94px}}
+@media (max-height:660px){.lbpop .lbinfo2{height:100px}.lbpop .lbrec{min-height:50px}.lbpop .lbdie{height:88px}.lbpop .lbdie .die{max-width:80px}}
+/* ---------- iPad layouts ---------- */
+body.ipadL .wrap{max-width:1240px}
+body.ipadP .wrap{max-width:1000px}
+body.ipadL:not(.iphome) .wrap>*:not(header):not(nav),body.ipadP:not(.iphome) .wrap>*:not(header):not(nav){width:100%;max-width:860px;align-self:center;box-sizing:border-box}
+.ipgrid{display:grid;gap:14px;flex:1 1 auto!important;min-height:0}
+.ipgrid.ipL{grid-template-columns:minmax(0,1fr) 472px minmax(0,1fr)}
+.ipgrid.ipP{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.ipcol{display:flex;flex-direction:column;gap:14px;min-height:0;min-width:0}
+.ipcol>section{flex:none;margin:0}
+.ipcol>section.trackp{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.ipcol>section.trackp .track{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.ipL .ipcol:first-child{overflow-y:auto;overscroll-behavior:contain}
+.ccells{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+.ccells .cc{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:9px 12px;display:flex;flex-direction:column;gap:3px;text-align:left;min-width:0}
+.ccells .cc b{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--f-num)}
+.sstat .ccells .cc b{font-size:26px}.ipP .sstat .ccells .cc{padding:8px 10px}.ipP .sstat .ccells .cc b{font-size:22px}
+.ipL .ccells{grid-template-columns:1fr 1fr}
+.iphome .abil .ab-m{display:none!important}
+.ipL .abil{grid-template-columns:1fr 1fr!important;margin-top:12px!important}
+.ipL .ab-cell{flex-direction:row!important;justify-content:space-between!important;align-items:center!important;padding:8px 12px!important}
+.ipL .ab-cell .lbl{font-size:10.5px!important}
+.ipL .ab-v{font-size:20px!important}
+.ipL .bars{display:grid!important;grid-template-columns:1fr 1fr;gap:12px}
+.ipL .who .row{display:flex!important}
+.iphome .ltable{font-size:14px}.iphome .ltable td{padding:4px 5px}.iphome .ltable th{font-size:10.5px;padding:4px 5px}
+.ltable th.fm,.ltable td.fm{text-align:left;white-space:nowrap}
+.ltable td.fm i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:3px;vertical-align:-1px;background:var(--rule-2)}
+.ltable td.fm i.W{background:var(--good)}.ltable td.fm i.D{background:var(--warn)}.ltable td.fm i.L{background:var(--bad)}
+.ipP .trow{padding-block:7px}
+.matchslot{flex:1 1 auto!important;display:flex;align-items:center;justify-content:center;min-height:0}
+.matchslot.occ>*{visibility:hidden}
+.slotin{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;width:100%;max-width:400px}
+.slotin h3{font-size:26px;margin:0}
+.slotin .slotc{font-size:12px}
+.slotin .vsline{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:nowrap;max-width:100%;font-size:15px}
+.slotin .vsline b{max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slotin .ltmini{margin:6px auto}
+.slotin .btn{min-width:180px;margin-top:8px}
+.ovl.docked{inset:auto;padding:0;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;z-index:30;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ovl.docked .ovcard{max-height:100%;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.ovl.docked .ovcard.stagepop{height:100%;max-height:none}
+.ovl.dockhide{display:none!important}
+@media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -2151,7 +2214,10 @@ function wcCallUp(s,tk){
 }
 function nextStage(){
   if(S.phase!=='season'||!S.season||S.season.ended)return;
-  const s=S.season; if(s.pendingLMC)lmcAuto(); if(s.pendingPens)pensAuto(); s.last=null;
+  const s=S.season; if(s.pendingLMC)lmcAuto(); if(s.pendingPens)pensAuto();
+  // a league block whose last match ended in a pick or an injury check: settle it now (otherwise it stays open forever)
+  {const cur=s.stages[s.idx]; if(cur&&isLB(cur)&&!cur.res&&(cur.mi||0)>=cur.ms.length&&!s.pendingHeal&&!s.pickAttr&&!s.careerOver)lbFinish(cur)}
+  s.last=null;
   if(s.out===0&&s.away&&s.away.length){ovPush({k:'away',items:s.away.slice()});s.away=[]}   // back from injury: what happened
   let idx=s.stages.findIndex(x=>!x.res);
   if((isWCYear(S.year)||(isIntlYear(S.year)&&CONF[S.nat]))&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
@@ -2450,12 +2516,12 @@ function retire(){
 function dieSVG(type,val,cls='',id=''){
   const attr=`class="die d${type} ${type===20||type===10?'':'dN'} ${cls}" ${id?`data-die="${id}"`:''} viewBox="0 0 100 100" aria-hidden="true"`;
   const tx=(y,fs=24)=>`<text x="50" y="${y}" font-size="${fs}">${val}</text>`;
-  if(type===20)return `<svg ${attr}><polygon class="face" points="50,4 90,27 90,73 50,96 10,73 10,27"/><path class="bp" d="M50,4L90,27L50,22Z M10,27L10,73L24,66Z M90,73L50,96L76,66Z"/><path class="edge" d="M50,4L50,22M50,22L90,27M50,22L10,27M90,27L76,66M10,27L24,66M90,73L76,66M10,73L24,66M50,96L76,66M50,96L24,66M50,22L76,66L24,66Z"/>${tx(50)}</svg>`;
-  if(type===10)return `<svg ${attr}><polygon class="face" points="50,4 94,46 50,96 6,46"/><path class="edge" d="M50,4L30,60M50,4L70,60M30,60L50,96M70,60L50,96M30,60L70,60M6,46L30,60M94,46L70,60"/>${tx(40)}</svg>`;
-  if(type===4)return `<svg ${attr}><polygon class="face" points="50,8 94,88 6,88"/><path class="edge" d="M50,8L50,64M50,64L94,88M50,64L6,88"/>${tx(62,22)}</svg>`;
-  if(type===6)return `<svg ${attr}><rect class="face" x="12" y="12" width="76" height="76" rx="12"/>${tx(50,30)}</svg>`;
-  if(type===8)return `<svg ${attr}><polygon class="face" points="50,4 92,50 50,96 8,50"/><path class="edge" d="M20,62L80,62M50,4L20,62M50,4L80,62M20,62L8,50M80,62L92,50M20,62L50,96M80,62L50,96"/>${tx(42,22)}</svg>`;
-  return `<svg ${attr}><polygon class="face" points="50,4 94,36 77,90 23,90 6,36"/><path class="edge" d="M50,22L74,40L65,70L35,70L26,40Z M50,4L50,22M94,36L74,40M77,90L65,70M23,90L35,70M6,36L26,40"/>${tx(48,22)}</svg>`;
+  if(type===20)return `<svg ${attr}><polygon class="face" points="50,4 90,27 90,73 50,96 10,73 10,27"/><path class="bp" d="M50,4L90,27L50,22Z M10,27L10,73L24,66Z M90,73L50,96L76,66Z"/><path class="bq" d="M10,27L24,66L50,22Z M90,27L76,66L50,22Z M10,73L24,66L50,96Z"/><path class="bl" d="M50,4L10,27L50,22Z M90,27L90,73L76,66Z M24,66L76,66L50,96Z"/><path class="edge" d="M50,4L50,22M50,22L90,27M50,22L10,27M90,27L76,66M10,27L24,66M90,73L76,66M10,73L24,66M50,96L76,66M50,96L24,66M50,22L76,66L24,66Z"/>${tx(50)}</svg>`;
+  if(type===10)return `<svg ${attr}><polygon class="face" points="50,4 94,46 50,96 6,46"/><path class="bp" d="M50,4L6,46L30,60Z M70,60L94,46L50,96Z"/><path class="bq" d="M6,46L30,60L50,96Z M30,60L70,60L50,96Z"/><path class="bl" d="M50,4L70,60L94,46Z"/><path class="edge" d="M50,4L30,60M50,4L70,60M30,60L50,96M70,60L50,96M30,60L70,60M6,46L30,60M94,46L70,60"/>${tx(40)}</svg>`;
+  if(type===4)return `<svg ${attr}><polygon class="face" points="50,8 94,88 6,88"/><path class="bp" d="M50,64L94,88L6,88Z"/><path class="bl" d="M50,8L6,88L50,64Z"/><path class="edge" d="M50,8L50,64M50,64L94,88M50,64L6,88"/>${tx(62,22)}</svg>`;
+  if(type===6)return `<svg ${attr}><rect class="face" x="12" y="12" width="76" height="76" rx="12"/><path class="bp" d="M88,30L88,76Q88,88 76,88L30,88L88,30Z"/><path class="bl" d="M12,70L12,24Q12,12 24,12L70,12Z"/>${tx(50,30)}</svg>`;
+  if(type===8)return `<svg ${attr}><polygon class="face" points="50,4 92,50 50,96 8,50"/><path class="bp" d="M50,4L8,50L20,62Z M80,62L92,50L50,96Z"/><path class="bq" d="M8,50L20,62L50,96Z M20,62L80,62L50,96Z"/><path class="bl" d="M50,4L80,62L92,50Z"/><path class="edge" d="M20,62L80,62M50,4L20,62M50,4L80,62M20,62L8,50M80,62L92,50M20,62L50,96M80,62L50,96"/>${tx(42,22)}</svg>`;
+  return `<svg ${attr}><polygon class="face" points="50,4 94,36 77,90 23,90 6,36"/><path class="bp" d="M50,4L94,36L74,40L50,22Z M23,90L6,36L26,40L35,70Z M77,90L65,70L35,70L23,90Z"/><path class="bq" d="M94,36L77,90L65,70L74,40Z"/><path class="bl" d="M6,36L50,4L50,22L26,40Z"/><path class="edge" d="M50,22L74,40L65,70L35,70L26,40Z M50,4L50,22M94,36L74,40M77,90L65,70M23,90L35,70M6,36L26,40"/>${tx(48,22)}</svg>`;
 }
 const dieCls=sides=>v=>v===sides?'crit':v===1?'fumble':'';
 const d10cls=dieCls(10);
@@ -2486,7 +2552,7 @@ function homeNext(){
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
   return `<section class="panel nextp">${inj}<div class="nextrow"><div class="nextt"><span class="lbl">${t.nextUp}</span><b>${nx}</b></div><button class="btn" data-act="play">${t.playNext}</button></div></section>`;
 }
-function sheet(){
+function sheet(wide){
   const r=rating(S.attrs), s=S.season;
   const cyl=S.contract&&!S.contract.loan&&S.phase==='season'?S.contract.until-S.year:null;
   const cchip=cyl===0?`<span class="chip gold">${t.chipFinal}</span>`:S.contract&&S.contract.loan&&S.phase==='season'?`<span class="chip">${t.chipLoan}</span>`:'';
@@ -2494,7 +2560,42 @@ function sheet(){
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:S.phase==='season'&&isIntlYear(S.year)&&CONF[S.nat]?`<span class="chip gold">${t.intl[intlKey()]}</span>`:'';
   return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl agenat">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span><h2>${esc(S.name||t.unnamed)}</h2><div class="muted clubline">${crest(kitOf(S.club.name),14)}<span>${esc(S.club.name)} · ${esc(LEAGUES[S.club.league].name)}</span></div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.phase==='season'&&S.season&&S.season.stages.some(x=>x.comp==='cont'||x.comp==='cont2')?`<span class="chip contq">${qualName(S.season.stages.some(x=>x.comp==='cont2')?'second':'main',S.club.league)}</span>`:''}${wcChip}${S.insp?`<span class="chip gold" title="${t.inspT}">✦ ${S.insp}</span>`:''}</div></div>
   <div class="rating"><div class="lbl"><span class="agebit">${t.yrs(S.age)} · </span>${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
-  <div class="bars">${fanBar()}${teamBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div></section>`;
+  <div class="bars">${fanBar()}${teamBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div>${wide?ccells():''}</section>`;
+}
+/* ---------- iPad layouts: L (landscape, 3 columns) and P (portrait dashboard) ---------- */
+let ipMode='';
+function calcIpad(){try{const w=innerWidth,h=innerHeight;return (w>=1000&&h>=600&&w>h)?'L':(w>=740&&h>=900&&h>w)?'P':''}catch(e){return''}}
+function ccells(){
+  const C=S.contract; if(!C)return'';
+  const n=ITEMS.filter(k=>(S.items||[]).some(i=>i.k===k)).length;
+  const c=(l,v)=>`<div class="cc"><span class="lbl">${l}</span><b class="num">${v}</b></div>`;
+  return `<div class="ccells">${c(t.wageT,wage(C.wage))}${c(t.untilT,C.until)}${c(t.clauseS,C.loan||!C.clause?'—':money(C.clause))}${c(t.itemsT,`${n} / ${ITEMS.length}`)}</div>`;
+}
+function seasonStatsPanel(){
+  const s=S.season; if(!s)return'';
+  const tb=s.lt?lgTable(s):[], me=tb.find(x=>x.me), avg=s.rolls&&s.rolls.length?(s.rolls.reduce((a,b)=>a+b,0)/s.rolls.length).toFixed(1):'—';
+  const c=(l,v)=>`<div class="cc"><span class="lbl">${l}</span><b class="num">${v}</b></div>`;
+  return `<section class="panel sstat"><div class="row between"><span class="lbl">${t.season(S.year)}</span>${me&&me.p?`<span class="lbl">${ord(me.pos)} · ${me.pts} ${t.ptsS}</span>`:''}</div><div class="ccells">${c(t.apps,s.apps||0)}${c(t.goals,s.goals||0)}${c(t.assists,s.assists||0)}${c(t.avgd20,avg)}</div></section>`;
+}
+function slotNext(){
+  const s=S.season; if(!s)return''; const st=s.stages[s.idx];
+  const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
+  return `<section class="panel matchslot"><div class="slotin">${inj}<span class="lbl">${t.nextUp}</span>${st?`<span class="lbl slotc">${esc(compName(st.comp,S.club.league))}</span><h3>${roundShort(st)}</h3>${st.opp?`<div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>`:''}${s.lt&&lgPlayed(s)?lbNear(s):''}`:`<h3>${t.finish}</h3>`}<button class="btn" data-act="play">${t.playNext}</button></div></section>`;
+}
+function ipHome(){
+  const s=S.season;
+  if(ipMode==='L')return `<div class="ipgrid ipL"><div class="ipcol">${sheet(1)}${seasonStatsPanel()}</div><div class="ipcol ipmid">${slotNext()}</div><div class="ipcol">${leagueTableView(s)}</div></div>`;
+  return sheet(1)+homeNext()+`<div class="ipgrid ipP"><div class="ipcol">${leagueTableView(s,1)}</div><div class="ipcol">${tracker()}${seasonStatsPanel()}</div></div>`;
+}
+const DOCK_K=['lb','stage','run','pens','lmc','story','heal','pick'];
+function dockOv(){
+  const sl=app.querySelector('.matchslot');
+  if(!ovEl){if(sl)sl.classList.remove('occ');return}
+  const dk=ipMode==='L'&&DOCK_K.includes(ovKind);
+  if(!dk){if(ovEl.classList.contains('docked')||ovEl.classList.contains('dockhide')){ovEl.classList.remove('docked','dockhide');['left','top','width','height'].forEach(k=>ovEl.style[k]='')}if(sl)sl.classList.remove('occ');return}
+  if(!sl){ovEl.classList.add('dockhide');return}
+  const r=sl.getBoundingClientRect(); ovEl.classList.remove('dockhide'); ovEl.classList.add('docked'); sl.classList.add('occ');
+  Object.assign(ovEl.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
 }
 function offerCard(o,i,act,euro){
   const riv=act==='sign'&&S.club&&isRival(S.club.name,o.name);
@@ -2575,12 +2676,12 @@ function stageCard(){
     else act=`<button class="btn" data-act="runov">${st.lha&&s.v>=6?t.pushPlay:t.runPlay}</button>`;
   }else if(chPending){
     const C=t.chx[st.ch];
-    dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
+    dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd sdie','ev')}</div></div>`;
     body=`<span class="rk sy">${t.rkStory}</span><span class="lbl">${S.year} · ${esc(comp)}</span><h3>${C[0]}</h3><!--split--><div class="evdesc">${C[1]}</div>`;
     act=`<button class="btn" data-act="storyov">${t.storyOpen}</button>`;
   }else if(evPending){
     const e=EVMAP[st.ev];
-    dice=`<div class="dicecol"><div class="dmain">${dieSVG(e.die,'','evd','ev')}</div></div>`;
+    dice=`<div class="dicecol"><div class="dmain">${dieSVG(e.die,'','evd adie','ev')}</div></div>`;
     body=`<span class="rk ck">${t.rkCheck}</span><span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><!--split--><div class="evdesc">${t.ev[st.ev][1]}</div>
       <div class="mods"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>
       <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>`;
@@ -2593,8 +2694,8 @@ function stageCard(){
     const outc=v=>!r?'':v===20?'crit':v===1?'fumble':r.tone==='good'?'win':r.tone==='bad'?'lose':'mid';
     const main=two?`<div class="pair">${[0,1].map(i=>dieSVG(20,vals[i]??'',(r?outc(vals[i]):'')+(r&&i!==kept?' dropped':''),i?'stage2':'stage')).join('')}</div>`
       :dieSVG(20,r?r.nat:'',r?outc(r.nat):'','stage');
-    const chDie=st.chr&&!st.chr.auto?`<div class="dcell">${dieSVG(20,st.chr.nat,(st.chr.nat===20?'crit':st.chr.nat===1?'fumble':st.chr.ok?'win':'lose')+' small','chd')}<span class="lbl">${t.storyT}</span></div>`:'';
-    const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small','ev')}<span class="lbl">${t.moment}</span></div>`:'';
+    const chDie=st.chr&&!st.chr.auto?`<div class="dcell">${dieSVG(20,st.chr.nat,(st.chr.nat===20?'crit':st.chr.nat===1?'fumble':st.chr.ok?'win':'lose')+' small sdie','chd')}<span class="lbl">${t.storyT}</span></div>`:'';
+    const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small adie','ev')}<span class="lbl">${t.moment}</span></div>`:'';
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie?`<div class="row" style="gap:8px;justify-content:center">${chDie}${evDie}${healDie}</div>`:''}</div>`;
@@ -2609,7 +2710,8 @@ function stageCard(){
     if(!r){
       const ex=extraMods(st), od=injured?null:stageOdds(st);
       body+=injured?`<div class="muted">${t.bench}</div>`:`<div class="mods">${modChips(st,pm,cm,kb,fx,teamChip,ex)}<span class="chip odds">${od.league?t.oddsLg(od.need,Math.round(od.p*100)):t.odds(od.need,Math.round(od.p*100))}</span><button class="chip help" data-act="modhelp" aria-expanded="${modHelp}" title="${t.modHelpT}">?</button></div>${modHelp?`<div class="modhelp">${t.modHelp}</div>`:''}`;
-      act=`<button class="btn ${injured?'ghost':''}" data-act="roll">${injured?t.sim:md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`+(!injured&&((S.insp||0)>0||st.insp)?`<button class="btn ghost sm insp" data-act="insp" aria-pressed="${!!st.insp}" title="${t.inspHint}">${t.inspBtn(S.insp||0)}</button>`:'');
+      const wcG=!injured&&st.comp==='wc'&&st.round===0&&st.g!=null&&s.stages.filter(x=>x.comp==='wc'&&x.round===0&&x.g!=null&&!x.res).length>1;
+      act=(wcAll&&wcG?`<button class="btn" data-act="wcstop">${t.lbStop}</button>`:`<button class="btn ${injured?'ghost':''}" data-act="roll">${injured?t.sim:md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`+(wcG?`<button class="btn ghost" data-act="wcall">${t.rollAll}</button>`:''))+(!injured&&!wcAll&&((S.insp||0)>0||st.insp)?`<button class="btn ghost sm insp" data-act="insp" aria-pressed="${!!st.insp}" title="${t.inspHint}">${t.inspBtn(S.insp||0)}</button>`:'');
     }else{
       const parts=r.missed?`d20 <b>${r.nat}</b> ${sg(r.cm)} ${sg(r.team)} ${t.squad}`:`d20 <b>${r.nat}</b> ${sg(r.mods)}${r.mods!==r.raw?` <span class="lbl">(${sg(r.raw)})</span>`:''}${r.hot?` ${sg(r.hot)} ${t.hotShort}`:''}`;
       let verdict;
@@ -2824,9 +2926,9 @@ function fitStage(){
   for(const c of L){if(!over())break;st.classList.add(c)}
   if(dm&&dm.clientHeight<die)st.style.setProperty('--die',Math.max(56,dm.clientHeight-4)+'px');
 }
-try{window.addEventListener('resize',()=>{try{fitStage()}catch(e){}})}catch(e){}
+try{window.addEventListener('resize',()=>{try{if(calcIpad()!==ipMode)render();else dockOv();fitStage()}catch(e){}})}catch(e){}
 function render(){
-  t=curT();
+  t=curT(); ipMode=calcIpad(); try{document.body.classList.toggle('ipadL',ipMode==='L');document.body.classList.toggle('ipadP',ipMode==='P')}catch(e){}
   const n=loadHof().length;
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
   const isDark=effTheme()==='dark';
@@ -2840,7 +2942,7 @@ function render(){
   else if(S.phase==='create')body=createView();
   else if(view==='season')body=seasonView();
   else if(view==='stats')body=statsView();
-  else if(S.phase==='season')body=sheet()+homeNext()+(S.season&&S.season.lt?leagueTableView(S.season):tracker());
+  else if(S.phase==='season')body=ipMode&&S.season&&S.season.lt?ipHome():sheet()+homeNext()+(S.season&&S.season.lt?leagueTableView(S.season):tracker());
   else if(S.phase==='offseason')body=sheet()+offseasonView();
   else body=sheet()+retiredView();
   const key=view+'|'+S.phase+'|'+(S.season?[S.season.idx,S.season.last?S.season.last.stage:'-',(S.season.stages[S.season.idx]||{}).evr?1:0,S.season.pendingHeal?1:0,S.season.inj&&S.season.inj.d10?1:0].join(','):'')+'|'+S.history.length;
@@ -2852,6 +2954,7 @@ function render(){
   const one=view==='game'||fixv;
   try{document.body.classList.toggle('fixv',fixv)}catch(e){}
   try{fitStage()}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
+  try{document.body.classList.toggle('iphome',!!app.querySelector('.ipgrid'));dockOv()}catch(e){}
 }
 let lastKey='';
 
@@ -3243,13 +3346,13 @@ function seasonView(){
   </section>`+(s.lt?`<div class="subtabs ssub" role="group">${['table','track'].map(k=>`<button data-act="ssub" data-v="${k}" aria-pressed="${seasonSub===k}">${t.ssub[k]}</button>`).join('')}</div>`+(seasonSub==='table'?leagueTableView(s):tracker()):tracker());
 }
 let seasonSub='table';
-function leagueTableView(s){
+function leagueTableView(s,form){
   const L=LEAGUES[S.club.league], tb=lgTable(s), n=tb.length, mp=lgPlayed(s);
   const up=L.size<=12?2:4, c1=L.size<=12?(L.cont?2:0):4, c2=L.size<=12?4:8, rel=relSpots(L);
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" title="${esc(x.n)}"><td class="num">${x.pos}</td><td class="tm">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b></td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td><td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" title="${esc(x.n)}"><td class="num">${x.pos}</td><td class="tm">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b></td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
-    <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th><th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
 /* ---------- Stats tab ---------- */
 function statsView(){
@@ -3409,7 +3512,7 @@ function ovHTML(o){
   if(o.k==='final'){
     const wc=o.comp==='wc', st={comp:o.comp,opp:o.opp};
     const opp=o.opp?`${crest(oppKit(st),64)}<b>${esc(oppName(st))}</b>`:`${crest(['#3a3e47','#22252c'],64)}<b>?</b>`;
-    return `<div class="ovcard ${wc?'gold':''}">${wc?trophySVG():''}<span class="ov-kicker">${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc?t.ovWcFinal:t.ovFinal}</h2>
+    return `<div class="ovcard ${wc?'gold':''}">${wc?trophySVG():''}<span class="ov-kicker">${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
       <div class="ov-vs"><div class="ov-team l">${crest(myKit(st),64)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><span class="ov-x">${t.vs}</span><div class="ov-team r">${opp}</div></div>${tap}</div>`;
   }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
@@ -3492,11 +3595,14 @@ function countUp(el){
   el.querySelectorAll('[data-count]').forEach(b=>{const n=+b.dataset.count,t0=performance.now()+700,D=1300;
     const f=ts=>{if(!b.isConnected)return;const p=Math.max(0,Math.min(1,(ts-t0)/D));b.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
 }
+var ovKindPrev=null;
 function closeOv(){
   if(!ovEl)return; clearTimeout(ovTimer);
-  const el=ovEl; ovEl=null; ovKind=null; el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240);
-  flushOv(); if(!ovEl)scheduleAuto();
+  const el=ovEl; ovKindPrev=ovKind; ovEl=null; ovKind=null; el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240);
+  const was=ovKindPrev; flushOv(); if(!ovEl)scheduleAuto(); try{dockOv()}catch(e){}
+  if(!ovEl&&was==='final')setTimeout(()=>{try{if(!ovEl&&!busy)playSync()}catch(e){}},260);
 }
+const DIE_ROLL_SEL='[data-ov="lbroll"],[data-ov="lbmom"],[data-ov="rroll"],[data-ov="pkick"],[data-ov="droll"],[data-ov="roll"],[data-ov="hchk"],[data-ov="h4"],[data-ov="h10"],[data-ov="h10b"],[data-act="roll"],[data-act="inj4"],[data-act="inj10"]';
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
@@ -3507,10 +3613,13 @@ function flushOv(){
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual')sfx('qual');
   if(o.k==='career'||o.k==='eos')countUp(ovEl);
+  try{dockOv()}catch(e){}
   if(o.k==='stage')try{fitStage()}catch(e){}
   if(o.k==='eos')sfx('qual');
   ovEl.addEventListener('click',e=>{
     if(busy&&Date.now()-busySince>6000){busy=false;anims=0}
+    if(o.k!=='deal'&&e.isTrusted!==false&&e.target.closest&&e.target.closest('svg.die,.dicecol,.lbdie,.fixd,.storydie,.healdice')&&!e.target.closest('button,[data-ov],[data-act]')){
+      const rb=[...ovEl.querySelectorAll(DIE_ROLL_SEL)].find(q=>!q.disabled&&q.offsetParent!==null); if(rb){rb.click();return}}
     if(o.k==='heal'){healClick(e);return}
     if(o.k==='eos'){if(e.target.closest('[data-ov="eosdone"]')){closeOv();commit()}return}
     if(o.k==='repos'){const b=e.target.closest('[data-ov]');if(!b)return;const v=b.dataset.ov;
@@ -3557,6 +3666,8 @@ function checkIntro(){
   const s=S.season, st=s.stages[s.idx];
   if(!st||s.last||st.res||st.intro||st.comp==='league'||st.round!==lastRound(st.comp))return;
   st.intro=1; save(); ovQ.unshift({k:'final',comp:st.comp,lg:S.club.league,opp:st.opp||null});
+  // the match pop-up may still be open from the last round: step aside so the build-up shows before the final, not after it
+  if(ovEl&&(ovKind==='stage'||ovKind==='lb'))closeOv();
 }
 
 
@@ -3740,6 +3851,17 @@ function shuffleName(){
     el.value=randomName(S.nat)},45);
 }
 const qd=sel=>(ovEl&&ovKind==='stage'&&ovEl.querySelector(sel))||app.querySelector(sel);
+var wcAll=false;
+const isWCG=st=>!!st&&st.comp==='wc'&&st.round===0&&st.g!=null;
+function wcTick(){
+  if(!wcAll)return; const s=S.season, st=s&&s.stages[s.idx];
+  const stop=()=>{wcAll=false;try{playSync()}catch(e){}};
+  if(S.phase!=='season'||!s||!ovEl||ovKind!=='stage'||!isWCG(st)||s.pendingHeal||s.pickAttr||s.careerOver||s.pendingPens||s.pendingLMC||s.out>0)return stop();
+  if(busy||anims){setTimeout(wcTick,250);return}
+  if(s.last){const nx=s.stages[s.idx+1]; if(!isWCG(nx))return stop(); nextStage();commit();setTimeout(wcTick,650);return}
+  if((st.ev&&!st.evr)||(st.ch&&!st.chr))return stop();
+  doRoll(); setTimeout(wcTick,1200);
+}
 function doRoll(){
   const s=S.season; if(!s||s.last||s.pendingHeal||s.pickAttr)return;
   centerOn(app.querySelector('.stage'));
@@ -3803,7 +3925,9 @@ function onClick(e){
   else if(act==='cpos'){if(S.daily)return;S.cpos=b.dataset.p;if(!styleOf(S.cpos,S.style))S.style=STYLES[S.cpos][0][0];commit()}
   else if(act==='undaily'){S=fresh(S.gender);commit()}
   else if(act==='first'){if(!styleOf(bestPos(S.roll),S.style))return;startCareer(S.startOffers[+b.dataset.i]);commit();window.scrollTo({top:0})}
-  else if(act==='roll'){doRoll()}
+  else if(act==='roll'){wcAll=false;doRoll()}
+  else if(act==='wcall'){wcAll=true;doRoll();setTimeout(wcTick,1200)}
+  else if(act==='wcstop'){wcAll=false;playSync()}
   else if(act==='lbgo'){lbGo()}
   else if(act==='play'){homeHold=false;playSync()}
   else if(act==='ssub'){seasonSub=b.dataset.v==='track'?'track':'table';render()}
@@ -4913,7 +5037,7 @@ const lbStart=(s,k)=>1+s.lt.sz.slice(0,k).reduce((a,b)=>a+b,0);
 const lgPlayed=s=>s.lt?s.lt.me.res.length:0;
 function lgTable(s,k){
   const T=s.lt; if(!T)return[]; if(k==null)k=lgPlayed(s);
-  const row=(n,c,res,me,tb)=>{const r=res.slice(0,k);return{n,c,me,p:r.length,w:r.filter(x=>x===3).length,d:r.filter(x=>x===1).length,l:r.filter(x=>x===0).length,pts:r.reduce((a,b)=>a+b,0),tb}};
+  const row=(n,c,res,me,tb)=>{const r=res.slice(0,k);return{n,c,me,f:r.slice(-5),p:r.length,w:r.filter(x=>x===3).length,d:r.filter(x=>x===1).length,l:r.filter(x=>x===0).length,pts:r.reduce((a,b)=>a+b,0),tb}};
   const rows=T.teams.map(x=>row(x.n,x.c,x.res,false,x.tb)).concat(row(S.club.name,T.codes[S.club.name]||'YOU',T.me.res,true,.5));
   rows.sort((a,b)=>b.pts-a.pts||b.w-a.w||b.tb-a.tb); rows.forEach((r,i)=>r.pos=i+1); return rows;
 }
@@ -5017,7 +5141,7 @@ const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(
   return{mods,home,mom,hot,tot:mods+home+mom+hot,mode,fx}};
 function lbNear(s){
   const tb=lgTable(s), me=tb.find(x=>x.me); if(!me)return'';
-  const rows=tb.filter(x=>Math.abs(x.pos-me.pos)<=1);
+  const lo=Math.max(1,Math.min(me.pos-1,tb.length-2)); const rows=tb.filter(x=>x.pos>=lo&&x.pos<=lo+2);
   return `<div class="ltmini lbnear">${rows.map(x=>`<div class="ltr ${x.me?'me':''}" data-k="${esc(x.c)}"><span class="num">${x.pos}</span>${crest(kitOf(x.n),12)}<b>${esc(x.c)}</b><span class="num">${x.p}</span><span class="num pts">${x.pts}</span></div>`).join('')}</div>`;
 }
 function lbHTML(){
@@ -5038,12 +5162,12 @@ function lbHTML(){
     btn=`<button class="btn" data-ov="lbnext">${t.runCont}</button>`;
   }else if(pd==='der'){
     const e=EVMAP.derby, R=m.dr;
-    die=dieSVG(DERBY_DIE,R?R.nat:'',R?(R.nat===DERBY_DIE?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd','lbm');
+    die=dieSVG(DERBY_DIE,R?R.nat:'',(R?(R.nat===DERBY_DIE?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd')+' adie','lbm');
     info=`<div class="ov-sub2 lbtxt">${t.derbyIntro[m.dtx||0](esc(m.opp),esc(S.club.name))}</div><div class="mods" style="justify-content:center"><span class="chip">d${DERBY_DIE} ${sg(evBonus(e))}</span><span class="chip">${t.target} ${derbyTgt()}</span><span class="chip fit">${t.onOk}: ${t.fx.adv}</span></div>`;
     btn=`<button class="btn" data-ov="lbmom">${t.roll(DERBY_DIE)}</button>`;
   }else if(pd==='mom'){
     const e=lbMomentEv(st,m);
-    die=dieSVG(e.die,'','evd','lbm');
+    die=dieSVG(e.die,'','evd adie','lbm');
     info=`<div class="ov-sub2 lbtxt">${t.ev[e.id][1]}</div><div class="mods" style="justify-content:center"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>`;
     btn=`<button class="btn" data-ov="lbmom">${t.roll(e.die)}</button>`;
   }else{
@@ -5348,7 +5472,7 @@ function storyHTML(){
   const o=R?os[R.i]:null;
   const res=R?`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.auto?C[2][o.k]:R.ok?t.success:t.fail}</div><div class="small">${R.auto?'':`d20 ${R.nat} ${sg(R.bonus)} = ${R.total} ${t.vs} ${R.tgt} · `}${effText(R.auto?o.fx:R.ok?o.ok:o.bad)}</div>`:'';
   return `<div class="ovcard move story"><span class="ov-kicker">${t.storyT} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${C[0]}</h2><div class="ov-sub2">${C[1]}</div>
-    <div class="storydie">${dieSVG(20,R&&!R.auto?R.nat:'',R&&!R.auto?(R.nat===20?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd','sd')}</div>
+    <div class="storydie">${dieSVG(20,R&&!R.auto?R.nat:'',(R&&!R.auto?(R.nat===20?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd')+' sdie','sd')}</div>
     ${R?res:`<div class="chopts">${opts}</div>`}
     ${R?`<button class="btn" data-ov="close">${t.storyBack}</button>`:''}</div>`;
 }
@@ -5607,7 +5731,7 @@ Object.assign(T.en,{curT:'Currency',nextUp:'Next up',playNext:'Play',lbHome:'Bac
  rollD20:'Roll d20',backWindow:'Back to the window',midT:'Mid-season window',midOffersH:'Clubs want you now',midOffersD:'Moving now means you’re cup-tied: you can’t play the cups you already played this season.',midStay:'Stay and finish the season',
  midLoanH:c=>`${c} want to loan you out`,midLoanD:'Go play somewhere for the rest of the season, or refuse and fight for your place from the bench.',loanRefuse:'Refuse and fight for my place',
  mvTerms:(w,y)=>`Contract: ${w} · ${y}.`,mvClause:(c,m)=>`${c} pay your release clause: ${m}.`,mvFee:(c,m,f)=>`${c} pay ${f} ${m}.`,mvLoan:c=>`A season-long loan. Your contract stays with ${c}.`,mvPushed:'You forced this move. Your old fans will remember.',
- contractT:'Contract',wageT:'Wage',clauseT:'Release clause',earnT:'Career earnings',untilY:y=>`until ${y}`,onLoanFrom:c=>`on loan from ${c}`,
+ contractT:'Contract',untilT:'Until',clauseS:'Clause',itemsT:'Items',formT:'Form',slotT:'Match day',wageT:'Wage',clauseT:'Release clause',earnT:'Career earnings',untilY:y=>`until ${y}`,onLoanFrom:c=>`on loan from ${c}`,
  nBidNo:(c,o,m)=>`${c} rejected a ${m} bid for you from ${o}.`,nPushed:c=>`You forced your way out of ${c}. Their fans won’t forget.`,nBigSign:c=>`Presented as a big signing at ${c}: the fans are already on your side.`,nClause:(c,m)=>`${c} paid your ${m} release clause.`,nFee:(c,m)=>`${c} paid ${m} for you.`,
  nLoan:(c,p)=>`On loan at ${c}. Your contract is still with ${p}.`,nLoanPerm:c=>`${c} made your loan permanent.`,nLoanExt:c=>`Another season on loan at ${c}.`,nWatch:c=>`One to watch: ${c} signed you straight away. Huge expectations, and the fans already love you.`});
 Object.assign(T.pt,{curT:'Moeda',nextUp:'Próximo jogo',playNext:'Jogar',lbHome:'Voltar à tabela',lbStop:'Parar',lbDoneT:'Rodadas concluídas',derbyT:'Dia de clássico',mods:'Bônus',goalsN:n=>n>1?`${n} gols seus`:'gol seu',derbyIntro:[(o,c)=>`A cidade inteira para por ${c} contra ${o}. Sinalizadores, cantos e uma semana de provocação. Para a torcida, esse vale o dobro.`,(o,c)=>`A torcida do ${o} passou a semana cantando sobre você. Hora de responder em campo.`,(o,c)=>`Rivalidade antiga, capítulo novo: ${c} e ${o} se enfrentam de novo. Vença e a cidade é sua.`,(o,c)=>`O estádio treme antes do apito. Cada dividida contra o ${o} vai parecer final.`],reposT:'Uma nova posição?',reposD:p=>`O técnico acha que você renderia em outra função. Hoje você joga como ${p}. O treino para a nova posição muda seus atributos.`,reposNow:'Atual',reposGo:p=>`Mudar para ${p}`,reposStay:p=>`Seguir como ${p}`,rnds:(a,b)=>`Rodadas ${a}–${b}`,pushGame:n=>`Rodada ${n}`,pushT:'Reta final',pushPlay:'Jogar a reta final',lbPlay:'Jogar as rodadas',lbCont:'Continuar',lbInj:'Avaliação da lesão antes das próximas rodadas.',momT:'Embalo',ptsS:'pts',pldS:'J',clubT:'Clube',posNowS:'Posição',roundOf:(a,b)=>`Rodada ${a} de ${b}`,ssub:{table:'Tabela',track:'Jogos'},pushQ1:c=>`Vaga na ${c}!`,pushQ2:c=>`Vaga na ${c}`,pushSt:{title:(p,g)=>g<=0?`Você está em ${p}. Três jogos para segurar o título.`:`Você está em ${p}, a ${g} ponto${g>1?'s':''} do líder. Faltam três jogos.`,cont:p=>`Você está em ${p}. O G4 está ao alcance.`,second:p=>`Você está em ${p}. Briga pela vaga na segunda copa continental.`,mid:p=>`Você está em ${p}. Meio da tabela: termine bem.`,releg:p=>`Você está em ${p}. Luta contra o rebaixamento.`,promo:p=>`Você está em ${p}. O acesso está em jogo.`},rollAll:'Rolar todos',rollingAll:'Rolando o próximo jogo…',achHid:'Oculta. Desbloqueie para descobrir.',eosT:'Balanço da temporada',eosK:(y,a)=>`${y} · ${a} anos`,eosS:{apps:'Jogos',goals:'Gols',assists:'Assistências',cs:'Sem sofrer gol'},eosTitles:'Títulos',eosAcc:'Prêmios',eosAttr:'Atributos',eosOvr:'Geral',eosNoAttr:'Nenhuma mudança nesta temporada.',eosMom:'Momentos',eosInj:n=>`${n} lesões na temporada`,fanEv:{rivOut:o=>`Eliminados pelo rival ${o}`,upset:o=>`Zebra contra o ${o}`,rivW:o=>`Vitória sobre o rival ${o}`,giant:o=>`Vitória heroica sobre o ${o}`,rivL:o=>`Derrota para o rival ${o}`,form:(o,n)=>n>0?'Sua grande fase na temporada':'Sua fase ruim na temporada',cupW:'Título da copa',lgW:'Título da liga',top4:'Terminar entre os quatro primeiros',contW:'Título continental',up:'Acesso',down:'Rebaixamento',qual:'Vaga continental na próxima temporada',cupRun:'Chegar à final da copa',escape:'Fuga do rebaixamento',flop:'Uma temporada sem títulos'},perYr:'/ano',per:{wk:'/sem',mo:'/mês',yr:'/ano'},wagePer:{wk:'Semana',mo:'Mês',yr:'Ano'},wagePerT:'Salários',howT:'Como jogar',howOpen:'Abrir',contractLen:n=>`contrato de ${n} ano${n>1?'s':''}`,yrsN:n=>`${n} ano${n>1?'s':''}`,loanLen:'empréstimo',feeClause:m=>`Multa paga · ${m}`,feeDeal:m=>`Taxa ${m}`,feeBlocked:m=>`Proposta recusada · ${m}`,feeFree:'Sem custo',loanTag:'Empréstimo',
@@ -5622,7 +5746,7 @@ Object.assign(T.pt,{curT:'Moeda',nextUp:'Próximo jogo',playNext:'Jogar',lbHome:
  rollD20:'Rolar d20',backWindow:'Voltar à janela',midT:'Janela do meio da temporada',midOffersH:'Clubes te querem agora',midOffersD:'Se mudar agora, você fica impedido de jogar as copas que já disputou nesta temporada.',midStay:'Ficar e terminar a temporada',
  midLoanH:c=>`O ${c} quer te emprestar`,midLoanD:'Vá jogar em outro lugar até o fim da temporada, ou recuse e brigue pela vaga saindo do banco.',loanRefuse:'Recusar e brigar pela vaga',
  mvTerms:(w,y)=>`Contrato: ${w} · ${y}.`,mvClause:(c,m)=>`O ${c} paga sua multa rescisória: ${m}.`,mvFee:(c,m,f)=>`O ${c} paga ${m} ao ${f}.`,mvLoan:c=>`Empréstimo de uma temporada. Seu contrato continua com o ${c}.`,mvPushed:'Você forçou esta saída. A torcida antiga vai lembrar.',
- contractT:'Contrato',wageT:'Salário',clauseT:'Multa rescisória',earnT:'Ganhos na carreira',untilY:y=>`até ${y}`,onLoanFrom:c=>`emprestado pelo ${c}`,
+ contractT:'Contrato',untilT:'Até',clauseS:'Multa',itemsT:'Itens',formT:'Forma',slotT:'Dia de jogo',wageT:'Salário',clauseT:'Multa rescisória',earnT:'Ganhos na carreira',untilY:y=>`até ${y}`,onLoanFrom:c=>`emprestado pelo ${c}`,
  nBidNo:(c,o,m)=>`O ${c} recusou uma proposta de ${m} do ${o} por você.`,nPushed:c=>`Você forçou sua saída do ${c}. A torcida de lá não vai esquecer.`,nBigSign:c=>`Apresentado como grande contratação do ${c}: a torcida já está do seu lado.`,nClause:(c,m)=>`O ${c} pagou sua multa de ${m}.`,nFee:(c,m)=>`O ${c} pagou ${m} por você.`,
  nLoan:(c,p)=>`Emprestado ao ${c}. Seu contrato continua com o ${p}.`,nLoanPerm:c=>`O ${c} comprou você em definitivo.`,nLoanExt:c=>`Mais uma temporada emprestado ao ${c}.`,nWatch:c=>`Promessa: o ${c} te contratou direto. Expectativa enorme, e a torcida já te ama.`});
 T.en.cx.wage=n=>`wage ${n>0?'+':''}${n}%`; T.pt.cx.wage=n=>`salário ${n>0?'+':''}${n}%`; T.en.cx.clause=n=>`release clause ${n>0?'+':''}${n}%`; T.pt.cx.clause=n=>`multa ${n>0?'+':''}${n}%`;
