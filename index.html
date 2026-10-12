@@ -1136,6 +1136,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 
 @media (max-height:760px){.ovcard.pushpop{gap:5px;padding:16px 16px 10px}.pushpop .ov-title{font-size:20px!important}.pushpop .ov-sub2{font-size:12.5px;line-height:1.3}.pushpop .ltmini{font-size:11.5px}.pushpop .ltmini .ltr{padding-block:0}.pushpop .fixd{height:80px}.pushpop .fixd .die{max-width:72px}.pushpop .fixd .pair .die{max-width:66px}.pushpop .fixins{min-height:22px}.pushpop .fixinfo{height:72px}.pushpop .fixbtn{height:94px}}
 @media (max-height:660px){.lbpop .lbinfo2{height:100px}.lbpop .lbrec{min-height:50px}.lbpop .lbdie{height:88px}.lbpop .lbdie .die{max-width:80px}}
+.stage .st-act>.slot.wcpair{display:flex!important;gap:8px;overflow:visible;grid-column:1/-1}.st-act .wcpair .btn{flex:1 1 0!important;width:auto!important;min-width:0;height:44px;max-width:none!important;padding:0 8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0!important}
 /* ---------- iPad layouts ---------- */
 body.ipadL .wrap{max-width:1240px}
 body.ipadP .wrap{max-width:1000px}
@@ -2711,7 +2712,8 @@ function stageCard(){
       const ex=extraMods(st), od=injured?null:stageOdds(st);
       body+=injured?`<div class="muted">${t.bench}</div>`:`<div class="mods">${modChips(st,pm,cm,kb,fx,teamChip,ex)}<span class="chip odds">${od.league?t.oddsLg(od.need,Math.round(od.p*100)):t.odds(od.need,Math.round(od.p*100))}</span><button class="chip help" data-act="modhelp" aria-expanded="${modHelp}" title="${t.modHelpT}">?</button></div>${modHelp?`<div class="modhelp">${t.modHelp}</div>`:''}`;
       const wcG=!injured&&st.comp==='wc'&&st.round===0&&st.g!=null&&s.stages.filter(x=>x.comp==='wc'&&x.round===0&&x.g!=null&&!x.res).length>1;
-      act=(wcAll&&wcG?`<button class="btn" data-act="wcstop">${t.lbStop}</button>`:`<button class="btn ${injured?'ghost':''}" data-act="roll">${injured?t.sim:md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`+(wcG?`<button class="btn ghost" data-act="wcall">${t.rollAll}</button>`:''))+(!injured&&!wcAll&&((S.insp||0)>0||st.insp)?`<button class="btn ghost sm insp" data-act="insp" aria-pressed="${!!st.insp}" title="${t.inspHint}">${t.inspBtn(S.insp||0)}</button>`:'');
+      const rb=`<button class="btn ${injured?'ghost':''}" data-act="roll">${injured?t.sim:md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`;
+      act=(wcAll&&wcG?`<button class="btn" data-act="wcstop">${t.lbStop}</button>`:wcG?`<span class="slot main wcpair">${rb}<button class="btn ghost" data-act="wcall">${t.rollAll}</button></span>`:rb)+(!injured&&!wcAll&&((S.insp||0)>0||st.insp)?`<button class="btn ghost sm insp" data-act="insp" aria-pressed="${!!st.insp}" title="${t.inspHint}">${t.inspBtn(S.insp||0)}</button>`:'');
     }else{
       const parts=r.missed?`d20 <b>${r.nat}</b> ${sg(r.cm)} ${sg(r.team)} ${t.squad}`:`d20 <b>${r.nat}</b> ${sg(r.mods)}${r.mods!==r.raw?` <span class="lbl">(${sg(r.raw)})</span>`:''}${r.hot?` ${sg(r.hot)} ${t.hotShort}`:''}`;
       let verdict;
