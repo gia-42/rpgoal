@@ -48,13 +48,17 @@
   function mergeHof(a, b) {
     const gone = new Set(delIds()), map = new Map();
     [...(a || []), ...(b || [])].forEach(e => { if (e && e.id != null && !gone.has(e.id)) map.set(e.id, e); });
-    return [...map.values()];
+    const all = [...map.values()];
+    return typeof hofDedupe === 'function' ? hofDedupe(all) : all;   // the same career finished on two devices counts once
   }
+  const finished = (c, hof) => typeof careerFinishedIn === 'function' && careerFinishedIn(c, hof);
   async function push() {
     if (!user) return;
     status = 'saving'; refresh();
     // achievements ride along in the hof column as one extra entry, so no database change is needed
     const ach = typeof loadAch === 'function' ? loadAch() : {};
+    // never send an old copy of a career that is already in the Hall of Fame
+    if (finished(S, loadHof())) { S = fresh(S.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} render(); }
     const { error } = await sb.from('rpgoal_saves').upsert({ user_id: user.id, career: S, hof: loadHof().concat([{ id: '__ach', ach }, { id: '__del', ids: delIds() }]), updated_at: new Date().toISOString() });
     status = error ? 'err' : 'ok'; refresh();
   }
@@ -64,9 +68,7 @@
     const { data, error } = await sb.from('rpgoal_saves').select('career,hof,updated_at').eq('user_id', user.id).maybeSingle();
     if (error) { status = 'err'; refresh(); return; }
     if (data) {
-      const cloud = data.career, local = S;
-      const cloudWins = careerWeight(cloud) > careerWeight(local) ||
-        (careerWeight(cloud) === careerWeight(local) && cloud && (cloud.savedAt || 0) > (local.savedAt || 0));
+      const cloud = data.career && typeof fixSave === 'function' ? fixSave(data.career) : data.career, local = S;
       const cloudHof = Array.isArray(data.hof) ? data.hof : [];
       const achRow = cloudHof.find(e => e && e.id === '__ach');
       if (achRow && achRow.ach && typeof loadAch === 'function') {
@@ -78,7 +80,17 @@
       if (delRow && Array.isArray(delRow.ids) && typeof addHofDel === 'function') addHofDel(delRow.ids);
       const hof = mergeHof(loadHof(), cloudHof.filter(e => !(e && (e.id === '__ach' || e.id === '__del'))));
       hofMem = null; try { localStorage.setItem(HOFKEY, JSON.stringify(hof)); } catch (e) {} hofMem = hof.slice();
-      if (cloudWins && cloud) {
+      // which career to keep: a copy of a career that already ended is never kept; the same career keeps its furthest copy;
+      // two different careers keep the one played most recently
+      const lStale = finished(local, hof), cStale = finished(cloud, hof);
+      const same = cloud && local && careerId && careerId(cloud) && careerId(cloud) === careerId(local);
+      let cloudWins;
+      if (lStale && !cStale) cloudWins = true;
+      else if (cStale && !lStale) cloudWins = false;
+      else if (same) cloudWins = careerWeight(cloud) > careerWeight(local) || (careerWeight(cloud) === careerWeight(local) && (cloud.savedAt || 0) > (local.savedAt || 0));
+      else cloudWins = !!cloud && cloud.phase && ((cloud.savedAt || 0) > (local.savedAt || 0) || careerWeight(local) <= 0 && careerWeight(cloud) > 0);
+      if (lStale && cStale) { S = fresh(local.gender); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} note = tt().merged; }
+      else if (cloudWins && cloud) {
         S = fixSave(cloud);
         if (S.phase === 'season' && !S.season) buildSeason();
         try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}

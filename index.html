@@ -1697,6 +1697,7 @@ function fresh(g){g=g||'m';return{phase:'create',gender:g,nat:'BRA',name:randomN
 function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
+  if(!x.cid&&x.phase&&x.phase!=='create'){const id=careerId(x);if(id)x.cid=id}
   const f=o=>{if(!o)return;if(!LEAGUES[o.league])o.league=0;const n=LEAGUES[o.league].tiers.length;if(!(o.tier>=0))o.tier=0;if(o.tier>=n)o.tier=n-1};
   if(!NATIONS[x.nat])x.nat='BRA';
   if(x.gender!=='f')x.gender='m';
@@ -1725,7 +1726,24 @@ function fixSave(x){
 }
 function load(){try{const r=localStorage.getItem(KEY);if(r)return fixSave(JSON.parse(r))}catch(e){}return null}
 let hofMem=null;
-function loadHof(){if(hofMem)return hofMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFKEY)||'[]');hofMem=Array.isArray(r)?r:[]}catch(e){hofMem=[]}return hofMem.slice()}
+/* one career, one Hall of Fame entry: careers carry an id, and a copy of a finished career on another device is stale */
+const careerSig=c=>c&&c.history&&c.history.length?[(c.gender==='f'?'f':'m'),c.name||'',c.nat||'',c.history[0].year].join('|'):null;
+const hofSig=e=>e?[(e.g==='f'?'f':'m'),e.name||'',e.nat||'',e.from].join('|'):null;
+function careerId(c){if(!c)return null;if(c.cid)return c.cid;const sg=careerSig(c);if(!sg)return null;let h=0;const k=sg+'|'+JSON.stringify(c.roll||{});for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))|0;return 'L'+(h>>>0).toString(36)}
+function hofDedupe(list){
+  const by=new Map();
+  (list||[]).forEach(e=>{if(!e||e.id==null)return;const k=e.cid?'c:'+e.cid:e.daily?'i:'+e.id:'s:'+hofSig(e);const o=by.get(k);if(!o||e.id<o.id)by.set(k,e)});
+  // a legacy entry (no id) and a new one for the same career are the same career too
+  const out=[...by.values()], seen=new Map();
+  return out.filter(e=>{const k=hofSig(e);if(!e.cid){if(out.some(o=>o!==e&&o.cid&&hofSig(o)===k&&o.id<=e.id))return false}return true});
+}
+function careerFinishedIn(c,hof){
+  if(!c||c.phase==='create'||c.hofSaved)return false;
+  const id=careerId(c), sg=careerSig(c);
+  const legacy=!!id&&id[0]==='L';
+  return (hof||[]).some(e=>e&&((id&&e.cid===id)||(legacy&&sg&&!e.cid&&hofSig(e)===sg)));
+}
+function loadHof(){if(hofMem)return hofMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFKEY)||'[]');hofMem=Array.isArray(r)?r:[];const d=hofDedupe(hofMem);if(d.length!==hofMem.length){hofMem=d;try{localStorage.setItem(HOFKEY,JSON.stringify(d))}catch(e){}}}catch(e){hofMem=[]}return hofMem.slice()}
 const HOFDEL='rpgoal-hofdel';
 let hofDelMem=null;
 function loadHofDel(){if(hofDelMem)return hofDelMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFDEL)||'[]');hofDelMem=Array.isArray(r)?r:[]}catch(e){hofDelMem=[]}return hofDelMem.slice()}
@@ -1770,7 +1788,7 @@ function legendReady(){
 }
 const capMods=x=>x<=7?x:7+Math.floor((x-7)/2);
 function startCareer(offer){
-  S.attrs={...S.roll}; S.pos=S.cpos&&POS[S.cpos]?S.cpos:bestPos(S.roll); S.age=17; S.year=2027;
+  S.attrs={...S.roll}; S.pos=S.cpos&&POS[S.cpos]?S.cpos:bestPos(S.roll); S.age=17; S.year=2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   const sty=styleOf(S.pos,S.style); if(sty)S.attrs[sty[1]]=Math.min(20,S.attrs[sty[1]]+1); else S.style=null;
   S.club={name:offer.name,league:offer.league,tier:offer.tier};
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
@@ -2382,6 +2400,7 @@ const byPrestige=(a,b)=>trophyWeight(b)-trophyWeight(a);
 function retire(){
   S.phase='retired';
   if(S.hofSaved||!S.history.length)return;
+  if(careerFinishedIn(S,loadHof())){const id=careerId(S),prev=loadHof().find(e=>e&&(e.cid===id||(!e.cid&&hofSig(e)===careerSig(S))));if(prev)S.hofId=prev.id;S.hofSaved=true;return}
   ovPush({k:'career'});
   const H=S.history, top=H.reduce((b,h)=>tierOf(h.league,h.tier).pr>tierOf(b.league,b.tier).pr?h:b,H[0]);
   const clubs=[];H.forEach(h=>{if(clubs[clubs.length-1]!==h.club)clubs.push(h.club)});
@@ -2393,7 +2412,7 @@ function retire(){
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
   const ud=underdogs(H);
   const hid=Date.now(); S.hofId=hid;
-  hof.push({cs,feats:S.feats||[],items:(S.items||[]).map(i=>i.k),daily:S.daily||null,tags:careerTags(),g:S.gender==='f'?'f':'m',ud,oneClub,id:hid,name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
+  hof.push({cid:careerId(S),cs,feats:S.feats||[],items:(S.items||[]).map(i=>i.k),daily:S.daily||null,tags:careerTags(),g:S.gender==='f'?'f':'m',ud,oneClub,id:hid,name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
     forty:!!S.reached40,clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name,w:x.w})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason,awards:(S.awards||[]).map(a=>({k:a.k,p:a.p,g:a.g,c:a.c,t:a.t,lg:a.lg})),kow:S.koW||0,sgoals:Math.max(0,...H.map(h=>h.goals)),earn:S.earn||0,feeMax:S.feeMax||0,wageMax:S.wageMax||0});
   saveHof(hof); S.hofSaved=true;
 }
@@ -5708,6 +5727,7 @@ addEventListener('appinstalled',()=>{installEvt=null;render()});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 function start(data){
   S=(data&&data.phase)?fixSave(data):(load()||fresh());
+  if(careerFinishedIn(S,loadHof())){S=fresh(S.gender);save()}   // this career was finished on another device
   if(S.phase==='season'&&!S.season)buildSeason();
   document.documentElement.lang=lang==='pt'?'pt-BR':'en';
   render(); checkIntro(); maybeWindow(); maybeHeal(); maybePrep(); maybeStory(); flushOv(); checkAch(true); scheduleAuto();
