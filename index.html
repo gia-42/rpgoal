@@ -1446,7 +1446,7 @@ en:{
  finalT:'Final chapter',homeT:'Back where it started',homeDesc:c=>`Return to ${c} for the last years of your career.`,homeBtn:'Go home',anyT:'Pick your last club',anyDesc:'Your career earned it: any club in the world will take you. You can only do this once, and afterwards only your first club and clubs where you’re an idol will call.',anyBtn:'Sign',nHome:c=>`Back home at ${c}. The fans never forgot you.`,nAny:c=>`A final chapter at ${c}.`,scouted:'Scouts watched you this season',
  over:(a,b)=>`Career over · ${a}–${b}`,peak:p=>`Peak rating ${p}.`,enshrined:'Added to the Hall of Fame.',
  career:'Career',th:['Year','Age','Club','League','Pos','Apps','G','A','Rtg','Trophies','World Cup'],
- wcM:'World Cup',wcW:'Women’s World Cup',calledUp:n=>`Called up by ${n} for the World Cup!`,leftOut:(n,need)=>`Left out of the ${n} World Cup squad. The bar was a ${need} rating.`,
+ wcM:'World Cup',wcW:'Women’s World Cup',calledUp:(n,c)=>`Called up by ${n} for the ${c||'World Cup'}!`,leftOut:(n,need)=>`Left out of the ${n} World Cup squad. The bar was a ${need} rating.`,
  wcRes:['Group stage','Round of 16','Quarter-final','Semi-final','Runner-up','Champion'],notCalled:'Not called up',wcYear:'World Cup year',
  gameN:n=>`Match ${n}`,vsOpp:o=>`vs ${o}`,wdl:{W:'Win',D:'Draw',L:'Loss'},wdlS:{W:'W',D:'D',L:'L'},groupT:'Group',drawAt:n=>`draw from ${n}`,
  groupRule:'Three group matches. Win at least one and lose no more than one to go through.',groupOut:'Out of the World Cup in the group stage.',
@@ -1582,7 +1582,7 @@ pt:{
  finalT:'Último capítulo',homeT:'De volta às origens',homeDesc:c=>`Voltar para ${c} nos últimos anos da carreira.`,homeBtn:'Voltar para casa',anyT:'Escolha seu último clube',anyDesc:'Sua carreira permite: qualquer clube do mundo te recebe. Só dá para fazer isso uma vez, e depois só seu primeiro clube e clubes onde você é ídolo vão te procurar.',anyBtn:'Assinar',nHome:c=>`De volta para casa: ${c}. A torcida nunca te esqueceu.`,nAny:c=>`Último capítulo: ${c}.`,scouted:'Olheiros te observaram nesta temporada',
  over:(a,b)=>`Fim de carreira · ${a}–${b}`,peak:p=>`Nível máximo ${p}.`,enshrined:'Adicionado ao Hall da Fama.',
  career:'Carreira',th:['Ano','Idade','Clube','Liga','Pos','J','G','A','Nív','Títulos','Copa'],
- wcM:'Copa do Mundo',wcW:'Copa do Mundo Feminina',calledUp:n=>`Convocado para a Copa do Mundo! (${n})`,leftOut:(n,need)=>`Fora da convocação para a Copa (${n}). Precisava de nível ${need}.`,
+ wcM:'Copa do Mundo',wcW:'Copa do Mundo Feminina',calledUp:(n,c)=>`Convocado para a ${c||'Copa do Mundo'}! (${n})`,leftOut:(n,need)=>`Fora da convocação para a Copa (${n}). Precisava de nível ${need}.`,
  wcRes:['Fase de grupos','Oitavas','Quartas','Semifinal','Vice-campeão','Campeão'],notCalled:'Não convocado',wcYear:'Ano de Copa',
  gameN:n=>`Jogo ${n}`,vsOpp:o=>`contra ${o}`,wdl:{W:'Vitória',D:'Empate',L:'Derrota'},wdlS:{W:'V',D:'E',L:'D'},groupT:'Grupo',drawAt:n=>`empate a partir de ${n}`,
  groupRule:'Três jogos no grupo. Vença pelo menos um e perca no máximo um para avançar.',groupOut:'Eliminado da Copa na fase de grupos.',
@@ -1809,8 +1809,12 @@ function contGroupStages(s,comp){
   for(let i=0;i<3;i++){const o=pickOpp({comp,round:1});if(!o)break;opps.push(o);s.stages.push({opp:o,_tmp:1})}
   s.stages=s.stages.filter(x=>!x._tmp);
   if(opps.length<3)return null;
-  const first=opps.map(()=>Math.random()<.5?'adv':'dis'), o1=[0,1,2].sort(()=>Math.random()-.5), o2=[0,1,2].sort(()=>Math.random()-.5);
-  return o1.map(i=>({opp:opps[i],ha:first[i]})).concat(o2.map(i=>({opp:opps[i],ha:first[i]==='adv'?'dis':'adv'}))).map((x,g)=>({comp,round:0,g,opp:x.opp,ha:x.ha,key:focusKey(),res:null}));
+  // home and away alternate (who starts away is drawn); each club is met once at home and once away
+  const st=Math.random()<.5?'dis':'adv', fl=m=>m==='adv'?'dis':'adv', o1=[0,1,2].sort(()=>Math.random()-.5), ha=g=>g%2?fl(st):st;
+  const legs1=o1.map((i,g)=>({opp:opps[i],ha:ha(g)})), legs2=[3,4,5].map(g=>({ha:ha(g)}));
+  const pool={adv:legs1.filter(x=>x.ha==='dis').map(x=>x.opp).sort(()=>Math.random()-.5),dis:legs1.filter(x=>x.ha==='adv').map(x=>x.opp)};
+  legs2.forEach(x=>{x.opp=pool[x.ha].shift()});
+  return legs1.concat(legs2).map((x,g)=>({comp,round:0,g,opp:x.opp,ha:x.ha,key:focusKey(),res:null}));
 }
 function buildSeason(){
   let q=qualKind(S.qualified)&&!!LEAGUES[S.club.league].cont&&LEAGUES[S.club.league].div===1?qualKind(S.qualified):false;
@@ -1988,7 +1992,8 @@ function resolveStage(v1,v2){
     r.wdl=k; r.win=win; r.tone=win?'good':draw?'mid':'bad'; r.rec={...g};
     const pts=cgPts(s), left=5-st.g;
     if(pts<CG_NEED&&pts+3*left<CG_NEED){r.groupOut=true;s.cgRes=0;s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp===st.comp&&!x.res)x.res={skipped:true}})}
-    else if(pts>=CG_NEED&&before<CG_NEED){r.groupThrough=true;s.cgRes=1}
+    else if(pts>=CG_NEED&&before<CG_NEED){r.groupThrough=true;s.cgRes=1;if(st.g===5)S.flag_lastday=1}
+    if(st.g===5||r.groupOut){const gs=s.stages.filter(x=>isCG(x)&&x.comp===st.comp),hw=m=>gs.filter(x=>x.ha===m).every(x=>x.res&&x.res.wdl==='W');if(hw('adv'))S.flag_fortress=1;if(hw('dis'))S.flag_roadwar=1}
     st.res={tone:r.tone,wdl:k,missed:!!r.missed}; fanMatch(st,r,win,true);
   }else if(st.comp==='wc'&&st.round===0&&st.g!=null){
     const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
@@ -2005,6 +2010,7 @@ function resolveStage(v1,v2){
     else koSettle(st,r,r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc+(ko?1:0))));
   }
   if(!r.missed)addStats(r,gamesFor(st),nat);
+  if(!r.missed&&r.goals>0&&st.opp&&st.comp!=='wc'&&S.history.some(h=>h.club===st.opp)&&st.opp!==S.club.name)S.flag_exgoal=1;
   if(r.crit&&!r.missed)critGood(r);
   if(st.comp==='league'&&s.bench>0&&!r.missed)s.bench--;
   if(r.champ&&!r.missed&&isCrit(nat))s.bootsWon=1;
@@ -2439,7 +2445,7 @@ function stageCard(){
   const recNow=grp?(()=>{const done=s.stages.filter(x=>x.comp===st.comp&&x.round===0&&x.g!=null);return `<div class="grec"><span class="lbl">${st.comp==='run'?t.runT:t.groupT}</span>${done.map(x=>`<span class="wd ${x.res&&x.res.wdl||''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.res&&x.res.skipped?'–':x.g+1}</span>`).join('')}</div>`})():'';
   const race=st.comp==='league'&&(s.v||4)>=5?(()=>{const lg=s.stages.filter(x=>x.comp==='league'),g=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length,f=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
     return `<div class="grec"><span class="lbl">${t.raceT}</span>${lg.map(x=>`<span class="wd ${x.res?(x.res.kind<=1?'W':x.res.kind===4?'L':'D'):''}">${x.res?(x.res.kind<=1?'✓':x.res.kind===4?'✕':'–'):x.round+1}</span>`).join('')}<span class="muted small">${t.race(g,f)}</span></div>`})():'';
-  const banner=st.comp==='run'&&st.g===0&&!r&&!evPending&&s.run?`<div class="banner">${t.runBanner[s.run.type]}</div>`:st.comp==='wc'&&st.round===0&&(st.g==null||st.g===0)&&!r&&!evPending&&s.wc&&s.wc.called?`<div class="banner">${t.calledUp(COUNTRY[lang][S.nat])}</div>`:'';
+  const banner=st.comp==='run'&&st.g===0&&!r&&!evPending&&s.run?`<div class="banner">${t.runBanner[s.run.type]}</div>`:st.comp==='wc'&&st.round===0&&(st.g==null||st.g===0)&&!r&&!evPending&&s.wc&&s.wc.called?`<div class="banner">${t.calledUp(COUNTRY[lang][S.nat],compName('wc'))}</div>`:'';
   let dice='', body='', act;
   const comp=compName(st.comp,S.club.league);
   if(isCG(st)&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
@@ -2871,6 +2877,11 @@ const ACH=[
  {id:'nightmare',bad:1,n:['Nightmare fuel','Pesadelo'],d:['Miss your penalty in a final shootout and lose the final.','Perca o seu pênalti numa disputa de final e perca a taça.'],test:()=>!!S.flag_nightmare},
  {id:'spotmiss',bad:1,n:['Spot of bother','Marca maldita'],d:['Miss three shootout penalties in one career.','Perca três pênaltis em disputas numa carreira.'],test:()=>(S.pensMiss||0)>=3},
  {id:'released',bad:1,n:['Free agent','Sem contrato'],d:['Your club refuses to renew your contract.','Seu clube se recusa a renovar seu contrato.'],test:()=>(S.releasedN||0)>=1},
+ {id:'leidoex',n:['Revenge of the ex','Lei do Ex'],d:['Score against one of your former clubs.','Marque um gol contra um dos seus ex-clubes.'],test:()=>!!S.flag_exgoal},
+ {id:'fortress',n:['Fortress','Caldeirão'],d:['Win all three home games of a continental group stage.','Vença os três jogos em casa de uma fase de grupos continental.'],test:()=>!!S.flag_fortress},
+ {id:'roadwar',n:['Road warriors','Guerreiros fora de casa'],d:['Win all three away games of a continental group stage.','Vença os três jogos fora de casa de uma fase de grupos continental.'],test:()=>!!S.flag_roadwar},
+ {id:'lastday',n:['Last-day drama','Drama na última rodada'],d:['Go through a continental group stage in its final game.','Classifique-se na fase de grupos continental no último jogo.'],test:()=>!!S.flag_lastday},
+ {id:'changeheart',n:['Change of heart','Mudança de ideia'],d:['Ask to leave, then let them talk you into staying.','Peça para sair e depois se deixe convencer a ficar.'],test:()=>(S.stayedFor||0)>=1},
  {id:'cruel',bad:1,n:['Cruel game','Jogo cruel'],d:['Have your career ended by an injury.','Tenha a carreira encerrada por uma lesão.'],test:()=>!!S.endReason}
 ];
 let achMem=null;
@@ -3005,9 +3016,9 @@ const ACH_ICON={
 const achIcon=(a,on)=>`<svg class="achi ${on?'on':''} ${a.bad?'bad':''}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><g transform="translate(9 9) scale(.917)"><path d="${ACH_ICON[a.id]||ACH_ICON.wc}"/></g></svg>`;
 let achF='all', achSort='std';
 const ACH_GROUP={awards:['awpos','awgrp','awyoung','mvp','mvp3','awards10','skipper'],contracts:['firstmil','bigmoney','recordfee','clause','loanperm','renew3','holdout','nextbig','bigsign'],titles:['smallclub','cont2small','invincible','giantkill','globetrot','firsttitle','wonderkid','promoted','league','double','treble','cont2','ucl','lib','cwc','cwcdavid','cont3','cupking','fairytale','oddswin'],
- world:['contking','wccall','wc','wc2','wc3','bdo','bdo3','perfectgroup'],
+ world:['fortress','roadwar','lastday','contking','wccall','wc','wc2','wc3','bdo','bdo3','perfectgroup'],
  personal:['goals30','assists20','goals300','ironman','worldclass','goat','stillgotit','forty'],
- clubs:['galactico','barca','abroad3','idol','legend','twohomes','decade','homecoming','oneclub','friends','bigbucks'],
+ clubs:['leidoex','changeheart','galactico','barca','abroad3','idol','legend','twohomes','decade','homecoming','oneclub','friends','bigbucks'],
  moments:['nat20','hothand','derby','penalty','perfect','luckyten'],
  penalties:['screamer','icecold','pens3','sudden','perfectpens','nightmare','spotmiss'],
  campaign:['stories10','seen20','silver','covstar','leadrole','bestteach','torch','items10','ultras','qstreak','items4','quests10','inspfinal','miracle'],
@@ -3015,7 +3026,7 @@ const ACH_GROUP={awards:['awpos','awgrp','awyoung','mvp','mvp3','awards10','skip
  multi:['g1000','apps5000','t100','careers10','pantheon','bothwc','bothbdo','bothleague']};
 const achGroupOf=a=>a.bad&&!ACH_GROUP.penalties.includes(a.id)?'bad':(Object.keys(ACH_GROUP).find(g=>ACH_GROUP[g].includes(a.id))||'personal');
 /* how many careers unlock each one (simulated, %) */
-const ACH_RATE={"abroad3": 49.7, "apps5000": 3, "assists20": 26.4, "barca": 11.0, "bdo": 21.1, "bdo3": 2.4, "bigbucks": 6.3, "bothbdo": 0.5, "bothleague": 3, "bothwc": 0.5, "careers10": 6, "cont2": 17.4, "cont3": 13.1, "cruel": 3.9, "cupking": 61.4, "cwc": 35.8, "cwcdavid": 8.8, "decade": 55.5, "derby": 84.3, "double": 55.8, "earlyflight": 16.8, "fairytale": 2.4, "fired": 4.8, "firsttitle": 97.8, "forty": 0.4, "friends": 1.9, "g1000": 3, "galactico": 10.6, "goals30": 18.0, "goals300": 18.7, "goat": 2.8, "hated": 4.0, "homecoming": 6, "hothand": 77.7, "idol": 98.7, "inspfinal": 65.0, "ironman": 63.5, "items4": 49.6, "judas": 4.1, "league": 81.3, "legend": 8.6, "lib": 10.2, "libf": 0.8, "longroad": 16.9, "luckyten": 3.5, "merc": 27.9, "nat1s": 84.4, "nat20": 99.4, "nemesis": 28.6, "nwsl": 4.7, "oddswin": 0.9, "oneclub": 3, "ouch": 97.6, "pantheon": 4, "party": 80.4, "penalty": 95.3, "perfect": 99.6, "perfectgroup": 68.2, "promoted": 28.7, "qstreak": 47.7, "quests10": 39.9, "relegated": 11.8, "snub": 47.9, "soclose": 85.5, "stillgotit": 6.7, "t100": 3, "tooshort": 1.5, "treble": 15.6, "twohomes": 0.5, "ucl": 41.0, "unwanted": 0.2, "uwcl": 29.7, "wc": 26.3, "wc2": 3.4, "wc3": 0.1, "wccall": 95.9, "wcfinal": 13.5, "wcwc": 21.7, "wonderkid": 27.9, "worldclass": 27.3};
+const ACH_RATE={"leidoex":45,"fortress":12,"roadwar":4,"lastday":18,"changeheart":30,"abroad3": 49.7, "apps5000": 3, "assists20": 26.4, "barca": 11.0, "bdo": 21.1, "bdo3": 2.4, "bigbucks": 6.3, "bothbdo": 0.5, "bothleague": 3, "bothwc": 0.5, "careers10": 6, "cont2": 17.4, "cont3": 13.1, "cruel": 3.9, "cupking": 61.4, "cwc": 35.8, "cwcdavid": 8.8, "decade": 55.5, "derby": 84.3, "double": 55.8, "earlyflight": 16.8, "fairytale": 2.4, "fired": 4.8, "firsttitle": 97.8, "forty": 0.4, "friends": 1.9, "g1000": 3, "galactico": 10.6, "goals30": 18.0, "goals300": 18.7, "goat": 2.8, "hated": 4.0, "homecoming": 6, "hothand": 77.7, "idol": 98.7, "inspfinal": 65.0, "ironman": 63.5, "items4": 49.6, "judas": 4.1, "league": 81.3, "legend": 8.6, "lib": 10.2, "libf": 0.8, "longroad": 16.9, "luckyten": 3.5, "merc": 27.9, "nat1s": 84.4, "nat20": 99.4, "nemesis": 28.6, "nwsl": 4.7, "oddswin": 0.9, "oneclub": 3, "ouch": 97.6, "pantheon": 4, "party": 80.4, "penalty": 95.3, "perfect": 99.6, "perfectgroup": 68.2, "promoted": 28.7, "qstreak": 47.7, "quests10": 39.9, "relegated": 11.8, "snub": 47.9, "soclose": 85.5, "stillgotit": 6.7, "t100": 3, "tooshort": 1.5, "treble": 15.6, "twohomes": 0.5, "ucl": 41.0, "unwanted": 0.2, "uwcl": 29.7, "wc": 26.3, "wc2": 3.4, "wc3": 0.1, "wccall": 95.9, "wcfinal": 13.5, "wcwc": 21.7, "wonderkid": 27.9, "worldclass": 27.3};
 Object.assign(ACH_RATE,{icecold:25,pens3:20,sudden:15,perfectpens:15,invincible:25,giantkill:10,globetrot:6,screamer:10,nightmare:5,spotmiss:8,stories10:55,seen20:8,silver:41,covstar:21,leadrole:20,bestteach:4,torch:12,items10:9,ultras:7,plottwist:6,items4:56});
 const live=()=>S&&S.phase!=='create';
 const bestSeason=k=>Math.max(0,...S.history.map(h=>h[k]||0),S.phase==='season'&&S.season?S.season[k]||0:0);
@@ -4745,9 +4756,9 @@ function cgHTML(){
   if(!r){const od=stageOdds(st);body=`<div class="mods" style="justify-content:center"><span class="chip ${st.ha==='adv'?'fit':'inj'}">${st.ha==='adv'?t.homeAdv:t.awayDis}</span><span class="chip">${t.dc} ${dcFor(st)}</span><span class="chip odds">${t.odds(od.need,Math.round(chanceOf(od.need,md,true)*100))}</span></div>`}
   else body=`<div class="sum num">d20 <b>${r.nat}</b> ${sg(r.mods)}${r.hot?` ${sg(r.hot)}`:''} = <b>${r.total}</b> ${t.vs} ${t.dc} ${r.dc} <span class="lbl">(${t.drawAt(r.dc-3)})</span></div><div class="verdict result v-${r.tone}" style="font-size:22px">${t.wdl[r.wdl]}</div>${r.groupOut?`<div class="small" style="color:var(--bad)">${t.cgOut}</div>`:r.groupThrough?`<div class="small" style="color:var(--good)">${t.throughGroup}</div>`:''}${r.fan?fanLine(r.fan):''}${r.ct?`<div class="small ctline ${r.ct.good?'up':'down'}">${t.critD6(r.ct.v)} · ${r.ct.good?t.ctG[r.ct.v]:r.ct.v<=3?t.nat1:t.ctB[r.ct.v]}</div>`:''}`;
   const left=s.stages.filter(x=>isCG(x)&&x.comp===st.comp&&!x.res).length;
-  const btn=!r?`<button class="btn" data-ov="rroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>`
+  const btn=!r?`<button class="btn" data-ov="rroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button>${left>1?`<button class="btn ghost" data-ov="rall">${t.rollAll}</button>`:''}`
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
-    :`<button class="btn" data-ov="rnext">${left?t.runNext:t.runCont}</button>`;
+    :cgAll&&left?`<div class="muted small">${t.rollingAll}</div>`:`<button class="btn" data-ov="rnext">${left?t.runNext:t.runCont}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
   return `<div class="ovcard move runpop cgpop"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${contIsUCL(S.club.league)?t.leaguePhase:t.group}</span><h2 class="ov-title" style="font-size:24px">${t.gameN(st.g+1)} · ${st.ha==='adv'?t.homeG:t.awayG}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
@@ -4780,9 +4791,23 @@ function runHTML(){
     <div class="storydie runlie">${dice}</div>${insp}
     ${body}${btn}</div>`;
 }
+/* group stage: one roll, or every remaining game one after another (stops for an injury) */
+let cgAll=false;
+function cgRoll(){
+  if(!ovEl||ovKind!=='run')return; const s=S.season, st=s.stages[s.idx]; if(!isCG(st)||(s.last&&s.last.stage===s.idx))return;
+  const v1=d(20),v2=d(20),els=[ovEl.querySelector('[data-die="rd0"]'),ovEl.querySelector('[data-die="rd1"]')].filter(Boolean);
+  ovEl.querySelectorAll('[data-ov="rroll"],[data-ov="rall"]').forEach(q=>q.disabled=true);
+  rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovUpdate(runHTML());
+    const s2=S.season, left=s2.stages.some(x=>isCG(x)&&x.comp===st.comp&&!x.res);
+    if(cgAll&&left&&!s2.pendingHeal&&!s2.pickAttr&&!s2.careerOver){busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(!ovEl||ovKind!=='run'){cgAll=false;return}nextStage();save();const n=S.season.stages[S.season.idx];
+      if(S.phase==='season'&&isCG(n)&&n.comp===st.comp&&S.season.out===0&&!S.season.pendingHeal){ovUpdate(runHTML());setTimeout(cgRoll,350)}else{cgAll=false;closeOv();commit()}},850)}
+    else cgAll=false});
+}
 function runClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, st=s.stages[s.idx];
   if(v==='rinsp'){if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}save();ovUpdate(runHTML());return}
+  if(v==='rall'&&isCG(st)){cgAll=true;cgRoll();return}
+  if(v==='rroll'&&isCG(st)){cgAll=false;cgRoll();return}
   if(v==='rroll'){const v1=d(20),v2=d(20),els=[ovEl.querySelector('[data-die="rd0"]'),ovEl.querySelector('[data-die="rd1"]')].filter(Boolean);
     rollDice(els,20,[v1,v2].slice(0,els.length||1),()=>'',()=>{resolveStage(v1,v2);sfxStage();save();ovUpdate(runHTML());
       const s2=S.season;if(!isCG(st)&&!s2.stages.some(x=>x.comp==='run'&&!x.res)&&!s2.pendingHeal&&!s2.pickAttr&&!s2.careerOver){busy=true;busySince=Date.now();setTimeout(()=>{busy=false;runFinish()},1500)}});return}
@@ -5053,7 +5078,7 @@ Object.assign(ACH_RATE,{nat1s:30,invincible:35,giantkill:8,twohomes:3,friends:2,
 Object.assign(T.en.items,{goldpen:['Golden pen','+2 on contract negotiations.','Win three contract negotiations.'],unveil:['Unveiling shirt','+1 fan support every time you join a new club.','Arrive at a new club as a big signing.']});
 Object.assign(T.pt.items,{goldpen:['Caneta de ouro','+2 nas negociações de contrato.','Vença três negociações de contrato.'],unveil:['Camisa da apresentação','+1 de apoio da torcida sempre que você chega a um clube novo.','Chegue a um clube novo como grande contratação.']});
 Object.assign(ITEM_ICON,{goldpen:'M15 4l5 5-9 9-6 1 1-6z M13 6l5 5 M5 19l3-3',unveil:'M8 4l-4 3 2 3 2-1v11h8V9l2 1 2-3-4-3-2 2h-4z M10 12h4 M12 10v4'});
-Object.assign(T.en,{curT:'Currency',achHid:'Hidden. Unlock it to see how.',eosT:'Season review',eosK:(y,a)=>`${y} · ${a} years old`,eosS:{apps:'Apps',goals:'Goals',assists:'Assists',cs:'Clean sheets'},eosTitles:'Titles',eosAcc:'Accolades',eosAttr:'Attributes',eosOvr:'Overall',eosNoAttr:'No changes this season.',eosMom:'Moments',eosInj:n=>`${n} injuries this season`,fanEv:{rivOut:o=>`Knocked out by rivals ${o}`,upset:o=>`Upset by ${o}`,rivW:o=>`Beat rivals ${o}`,giant:o=>`Giant-killing against ${o}`,rivL:o=>`Lost to rivals ${o}`,form:(o,n)=>n>0?'Your form this season':'Your poor form this season',cupW:'Cup title',lgW:'League title',top4:'A top-four finish',contW:'Continental title',up:'Promotion',down:'Relegation',qual:'Continental football next season',cupRun:'Reaching the cup final',escape:'Survived the drop',flop:'A season without a trophy'},perYr:'/yr',per:{wk:'/wk',mo:'/mo',yr:'/yr'},wagePer:{wk:'Week',mo:'Month',yr:'Year'},wagePerT:'Wages',howT:'How to play',howOpen:'Open',contractLen:n=>`${n}-year contract`,yrsN:n=>`${n} yr${n>1?'s':''}`,loanLen:'loan',feeClause:m=>`Clause paid · ${m}`,feeDeal:m=>`Fee ${m}`,feeBlocked:m=>`Bid rejected · ${m}`,feeFree:'Free transfer',loanTag:'Loan',
+Object.assign(T.en,{curT:'Currency',rollAll:'Roll all',rollingAll:'Rolling the next game…',achHid:'Hidden. Unlock it to see how.',eosT:'Season review',eosK:(y,a)=>`${y} · ${a} years old`,eosS:{apps:'Apps',goals:'Goals',assists:'Assists',cs:'Clean sheets'},eosTitles:'Titles',eosAcc:'Accolades',eosAttr:'Attributes',eosOvr:'Overall',eosNoAttr:'No changes this season.',eosMom:'Moments',eosInj:n=>`${n} injuries this season`,fanEv:{rivOut:o=>`Knocked out by rivals ${o}`,upset:o=>`Upset by ${o}`,rivW:o=>`Beat rivals ${o}`,giant:o=>`Giant-killing against ${o}`,rivL:o=>`Lost to rivals ${o}`,form:(o,n)=>n>0?'Your form this season':'Your poor form this season',cupW:'Cup title',lgW:'League title',top4:'A top-four finish',contW:'Continental title',up:'Promotion',down:'Relegation',qual:'Continental football next season',cupRun:'Reaching the cup final',escape:'Survived the drop',flop:'A season without a trophy'},perYr:'/yr',per:{wk:'/wk',mo:'/mo',yr:'/yr'},wagePer:{wk:'Week',mo:'Month',yr:'Year'},wagePerT:'Wages',howT:'How to play',howOpen:'Open',contractLen:n=>`${n}-year contract`,yrsN:n=>`${n} yr${n>1?'s':''}`,loanLen:'loan',feeClause:m=>`Clause paid · ${m}`,feeDeal:m=>`Fee ${m}`,feeBlocked:m=>`Bid rejected · ${m}`,feeFree:'Free transfer',loanTag:'Loan',
  keenTag:'They really want you',bigSignTag:'Big signing',watchTag:'One to watch',askLeave:'Ask to leave',negoBtn:'Negotiate',loanGo:'Go on loan',renewBtn:'Renew',
  renewOffer:(w,y)=>`New contract offered: ${w} · ${y}`,underContract:(y,w)=>`Under contract until ${y} · ${w}`,
  loanBack:'Go back',loanBackD:c=>`Your loan at ${c} is over.`,stayLoanQ:'Ask to stay on: the loan club decides.',askStay:'Ask to stay',loanPermD:'They signed you permanently.',loanExtD:'One more season on loan.',
@@ -5068,7 +5093,7 @@ Object.assign(T.en,{curT:'Currency',achHid:'Hidden. Unlock it to see how.',eosT:
  contractT:'Contract',wageT:'Wage',clauseT:'Release clause',earnT:'Career earnings',untilY:y=>`until ${y}`,onLoanFrom:c=>`on loan from ${c}`,
  nBidNo:(c,o,m)=>`${c} rejected a ${m} bid for you from ${o}.`,nPushed:c=>`You forced your way out of ${c}. Their fans won’t forget.`,nBigSign:c=>`Presented as a big signing at ${c}: the fans are already on your side.`,nClause:(c,m)=>`${c} paid your ${m} release clause.`,nFee:(c,m)=>`${c} paid ${m} for you.`,
  nLoan:(c,p)=>`On loan at ${c}. Your contract is still with ${p}.`,nLoanPerm:c=>`${c} made your loan permanent.`,nLoanExt:c=>`Another season on loan at ${c}.`,nWatch:c=>`One to watch: ${c} signed you straight away. Huge expectations, and the fans already love you.`});
-Object.assign(T.pt,{curT:'Moeda',achHid:'Oculta. Desbloqueie para descobrir.',eosT:'Balanço da temporada',eosK:(y,a)=>`${y} · ${a} anos`,eosS:{apps:'Jogos',goals:'Gols',assists:'Assistências',cs:'Sem sofrer gol'},eosTitles:'Títulos',eosAcc:'Prêmios',eosAttr:'Atributos',eosOvr:'Geral',eosNoAttr:'Nenhuma mudança nesta temporada.',eosMom:'Momentos',eosInj:n=>`${n} lesões na temporada`,fanEv:{rivOut:o=>`Eliminados pelo rival ${o}`,upset:o=>`Zebra contra o ${o}`,rivW:o=>`Vitória sobre o rival ${o}`,giant:o=>`Vitória heroica sobre o ${o}`,rivL:o=>`Derrota para o rival ${o}`,form:(o,n)=>n>0?'Sua grande fase na temporada':'Sua fase ruim na temporada',cupW:'Título da copa',lgW:'Título da liga',top4:'Terminar entre os quatro primeiros',contW:'Título continental',up:'Acesso',down:'Rebaixamento',qual:'Vaga continental na próxima temporada',cupRun:'Chegar à final da copa',escape:'Fuga do rebaixamento',flop:'Uma temporada sem títulos'},perYr:'/ano',per:{wk:'/sem',mo:'/mês',yr:'/ano'},wagePer:{wk:'Semana',mo:'Mês',yr:'Ano'},wagePerT:'Salários',howT:'Como jogar',howOpen:'Abrir',contractLen:n=>`contrato de ${n} ano${n>1?'s':''}`,yrsN:n=>`${n} ano${n>1?'s':''}`,loanLen:'empréstimo',feeClause:m=>`Multa paga · ${m}`,feeDeal:m=>`Taxa ${m}`,feeBlocked:m=>`Proposta recusada · ${m}`,feeFree:'Sem custo',loanTag:'Empréstimo',
+Object.assign(T.pt,{curT:'Moeda',rollAll:'Rolar todos',rollingAll:'Rolando o próximo jogo…',achHid:'Oculta. Desbloqueie para descobrir.',eosT:'Balanço da temporada',eosK:(y,a)=>`${y} · ${a} anos`,eosS:{apps:'Jogos',goals:'Gols',assists:'Assistências',cs:'Sem sofrer gol'},eosTitles:'Títulos',eosAcc:'Prêmios',eosAttr:'Atributos',eosOvr:'Geral',eosNoAttr:'Nenhuma mudança nesta temporada.',eosMom:'Momentos',eosInj:n=>`${n} lesões na temporada`,fanEv:{rivOut:o=>`Eliminados pelo rival ${o}`,upset:o=>`Zebra contra o ${o}`,rivW:o=>`Vitória sobre o rival ${o}`,giant:o=>`Vitória heroica sobre o ${o}`,rivL:o=>`Derrota para o rival ${o}`,form:(o,n)=>n>0?'Sua grande fase na temporada':'Sua fase ruim na temporada',cupW:'Título da copa',lgW:'Título da liga',top4:'Terminar entre os quatro primeiros',contW:'Título continental',up:'Acesso',down:'Rebaixamento',qual:'Vaga continental na próxima temporada',cupRun:'Chegar à final da copa',escape:'Fuga do rebaixamento',flop:'Uma temporada sem títulos'},perYr:'/ano',per:{wk:'/sem',mo:'/mês',yr:'/ano'},wagePer:{wk:'Semana',mo:'Mês',yr:'Ano'},wagePerT:'Salários',howT:'Como jogar',howOpen:'Abrir',contractLen:n=>`contrato de ${n} ano${n>1?'s':''}`,yrsN:n=>`${n} ano${n>1?'s':''}`,loanLen:'empréstimo',feeClause:m=>`Multa paga · ${m}`,feeDeal:m=>`Taxa ${m}`,feeBlocked:m=>`Proposta recusada · ${m}`,feeFree:'Sem custo',loanTag:'Empréstimo',
  keenTag:'Te querem muito',bigSignTag:'Grande contratação',watchTag:'Promessa',askLeave:'Pedir para sair',negoBtn:'Negociar',loanGo:'Ir emprestado',renewBtn:'Renovar',
  renewOffer:(w,y)=>`Proposta de renovação: ${w} · ${y}`,underContract:(y,w)=>`Contrato até ${y} · ${w}`,
  loanBack:'Voltar',loanBackD:c=>`Seu empréstimo no ${c} terminou.`,stayLoanQ:'Pedir para ficar: o clube decide.',askStay:'Pedir para ficar',loanPermD:'Eles te contrataram em definitivo.',loanExtD:'Mais uma temporada emprestado.',
@@ -5363,7 +5388,7 @@ const FEM={pt:{
  'styles.destroyer':'Destruidora','styles.metronome':'Maestrina','styles.defensivefb':'Lateral marcadora','styles.invertedfb':'Lateral construtora','styles.stopper':'Marcadora','styles.ballplayer':'Zagueira construtora',
  autoPlay:'Lesionada · jogos simulados automaticamente',seasonOutChip:'Lesionada · fora da temporada',n40:'Você jogou até os 40. Uma jogadora que não envelhece.',
  throughTo:r=>`Classificada: ${r}`,throughGroup:'Classificada na fase de grupos',outIn:r=>`Eliminada · ${r}`,winners:c=>`Campeã: ${c}!`,won:'Campeã',
- calledUp:n=>`Convocada para a Copa do Mundo! (${n})`,'wcRes.4':'Vice-campeã','wcRes.5':'Campeã',notCalled:'Não convocada',groupOut:'Eliminada da Copa na fase de grupos.',cgOut:'Eliminada na fase de grupos.',
+ calledUp:(n,c)=>`Convocada para a ${c||'Copa do Mundo'}! (${n})`,'wcRes.4':'Vice-campeã','wcRes.5':'Campeã',notCalled:'Não convocada',groupOut:'Eliminada da Copa na fase de grupos.',cgOut:'Eliminada na fase de grupos.',
  ovChamps:'Campeã!',ovLeague:'Campeã da liga!',ovBdoSub:y=>`A melhor jogadora do mundo em ${y}`,leagueChamp:l=>`Campeã: ${l}!`,
  fired:c=>`Dispensada: o ${c} encerrou seu contrato depois da má fase.`,firedShort:'Dispensada',
  'fanScale.0':'Odiada','fanScale.1':'Neutra','fanStatus.0':'Odiada','fanStatus.1':'Mal-vista','fanStatus.2':'Neutra','fanStatus.3':'Querida','fanStatus.4':'Amada',
