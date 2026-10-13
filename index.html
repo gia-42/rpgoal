@@ -950,7 +950,8 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .ltable th{font-size:10px;font-weight:500;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:2px 4px;position:sticky;top:0;background:var(--card)}
 .ltable td{text-align:right;padding:2.5px 4px;border-top:1px solid var(--rule)}
 .ltable th:first-child,.ltable td:first-child{text-align:left;width:22px;color:var(--ink-3);border-left:3px solid transparent;padding-left:5px}
-.ltable .tm{text-align:left;width:auto}.ltable.full td.tm b{letter-spacing:0;white-space:normal;line-height:1.2}.ltable td.tm svg{flex:none}.ltable td.tm{display:flex;align-items:center;gap:6px}.ltable td.tm b{font-weight:600;letter-spacing:.03em}
+.ltable .tm{text-align:left;width:auto}.ltable td.tm svg{flex:none}.ltable td.tm .fn{display:none}
+@media (min-width:740px) and (min-height:600px){.ltable{table-layout:fixed;width:100%}.ltable th{width:27px}.ltable th:first-child{width:28px}.ltable th.tm{width:auto}.ltable th.fm{width:74px}.ltable td.tm{min-width:0;overflow:hidden}.ltable td.tm b{min-width:0;overflow:hidden}.ltable td.tm .cn{display:none}.ltable td.tm .fn{display:block;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}.ltable td.tm{display:flex;align-items:center;gap:6px}.ltable td.tm b{font-weight:600;letter-spacing:.03em}
 .ltable .pts{font-weight:700;color:var(--ink)}
 .ltable tr.me td{background:color-mix(in srgb,var(--good) 14%,transparent);font-weight:600}
 .ltable tr.zc td:first-child{border-left-color:#d9a43a}.ltable tr.z1 td:first-child{border-left-color:var(--good)}.ltable tr.z2 td:first-child{border-left-color:color-mix(in srgb,var(--good) 45%,transparent)}.ltable tr.zr td:first-child{border-left-color:var(--bad)}
@@ -3471,9 +3472,9 @@ function leagueTableView(s,form){
   const mv=S.lgMv&&S.lgMv.year===S.year-1?S.lgMv:null, nm={};
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" ${ipMode?'':`data-nm="${esc(x.n)}"`}>${crest(kitOf(x.n),13)}<b>${ipMode?esc(x.n):esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b><span class="cn">${esc(x.c)}</span><span class="fn">${esc(x.n)}</span></b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
-    <div class="track"><table class="ltable ${ipMode?'full':''}"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
 /* ---------- Stats tab ---------- */
 function statsView(){
@@ -3929,8 +3930,9 @@ function nmTip(w,txt,keep){
 }
 let lastPtr='';
 document.addEventListener('pointerdown',e=>{lastPtr=e.pointerType||''},true);
-document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('[data-nm]');if(!w||lastPtr==='mouse')return;nmTip(w,w.dataset.nm)},true);
-document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w)nmTip(w,w.dataset.nm,true)});
+const nmShort=w=>{const f=w.querySelector('.fn');return !f||getComputedStyle(f).display==='none'||f.scrollWidth>f.clientWidth+1};
+document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('[data-nm]');if(!w||lastPtr==='mouse'||!nmShort(w))return;nmTip(w,w.dataset.nm)},true);
+document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&nmShort(w))nmTip(w,w.dataset.nm,true)});
 document.addEventListener('pointerout',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget))&&wdTipEl){wdTipEl.remove();wdTipEl=null}});
 document.addEventListener('scroll',()=>{if(wdTipEl){wdTipEl.remove();wdTipEl=null}},{passive:true,capture:true});
 /* iPhone: let the game's sounds play even with the ring/silent switch on (iOS 17+); older iOS keeps the switch's say */
@@ -4036,6 +4038,7 @@ function fitTexts(root){
       ellSel=L.join(',')}
     if(!ellSel)return; const els=(root||document).querySelectorAll(ellSel);
     els.forEach(el=>{
+      if(el.classList.contains('fn'))return;
       if(el.dataset.fit)el.style.fontSize='';
       const w=el.clientWidth; if(!w||el.scrollWidth<=w+1)return;
       const base=parseFloat(getComputedStyle(el).fontSize)||14, min=Math.max(9,base*.7); let fs=base;
@@ -5416,7 +5419,7 @@ function lbMissedRun(){
 const lbGo=()=>{homeHold=false;playSync()};
 let lbRunning=false;
 /* ---------- the league pop-up: one big die per match, the boxes light up, the small table moves ---------- */
-let lbLast=null, lbAll=false;
+let lbLast=null, lbAll=false, lbResume=false;
 const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(S.attrs))+teamMod(st)+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
   const mods=capMods(raw), home=m.ha==='H'?1:0, mom=lgMom(s), hot=s.hot>0?2:0;let mode=fx.mode||null;if(st.red&&i===0)mode=mode==='adv'?null:'dis';
   return{mods,home,mom,hot,tot:mods+home+mom+hot,mode,fx}};
@@ -5479,7 +5482,7 @@ function lbRefresh(){
 function lbRoll(){
   const s=S.season, st=s.stages[s.idx]; if(!isLB(st)||busy||!ovEl)return;
   if((st.mi||0)>=st.ms.length)return;
-  if(lbPending(st)){lbAll=false;lbRefresh();return}
+  if(lbPending(st)){if(lbAll){lbMomAuto();return}lbAll=false;lbRefresh();return}
   const i=st.mi||0, m=st.ms[i], mm=lbMods(st,i,m), v1=d(20), v2=d(20);
   lbLast=null; lbRefresh();
   const els=[ovEl.querySelector('[data-die="lbd0"]'),ovEl.querySelector('[data-die="lbd1"]')].filter(Boolean);
@@ -5487,12 +5490,14 @@ function lbRoll(){
   rollDice(els,20,mm.mode?[v1,v2]:[v1],()=>'',()=>{
     const r=lbResolveOne(st,v1,mm.mode?v2:null); lbLast={stage:s.idx,i,r}; save();
     sfx(r.nat===20?'nat20':r.nat===1?'nat1':r.w==='W'?'pass':r.w==='L'?'fail':'click');
-    if(r.inj||s.pickAttr||s.careerOver){lbAll=false;lbLast=null;closeOv();commit();return}
+    if(r.inj||s.pickAttr||s.careerOver){lbResume=lbAll&&s.pickAttr&&!r.inj&&!s.careerOver;lbAll=false;lbLast=null;closeOv();commit();return}
     if((st.mi||0)>=st.ms.length){lbAll=false;lbFinish(st);save();lbRefresh();return}
     lbRefresh();
-    if(lbAll){if(lbPending(st)){lbAll=false;setTimeout(()=>{lbLast=null;lbRefresh()},900);return}busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(lbAll&&ovKind==="lb")lbRoll()},allGap('lb'))}
+    if(lbAll){if(lbPending(st)){busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(!lbAll||ovKind!=='lb'){lbLast=null;lbRefresh();return}lbLast=null;lbRefresh();lbMomAuto()},allGap('lb'));return}busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(lbAll&&ovKind==="lb")lbRoll()},allGap('lb'))}
   });
 }
+/* roll all: the advantage and derby dice roll themselves too, until Stop */
+function lbMomAuto(){const b=ovEl&&ovEl.querySelector('[data-ov="lbmom"]');if(!b){lbAll=false;lbRefresh();return}fastRoll=true;lbClick({target:b})}
 function lbClick(e){
   const b=e.target.closest('[data-ov]'); if(!b)return; const v=b.dataset.ov, s=S.season, st=s&&s.stages[s.idx];
   if(v==='lbstop'){lbAll=false;lbRefresh();return}
@@ -5507,7 +5512,8 @@ function lbClick(e){
       // show the outcome on the die for a moment, then on to the match
       ovEl.querySelectorAll('.lbinfo2').forEach(q=>{q.innerHTML=`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.ok?t.success:t.fail}</div><div class="ov-sub2">${pd==='der'?t.ev.derby[R.ok?2:3]:t.ev[m.mev][R.ok?2:3]}</div>`});
       ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbmgo">${t.lbCont}</button>`});
-      const dd=ovEl.querySelector('[data-die="lbm"]');if(dd)dd.classList.add(R.ok?'win':'lose')});return}
+      const dd=ovEl.querySelector('[data-die="lbm"]');if(dd)dd.classList.add(R.ok?'win':'lose');
+      if(lbAll&&!s.pendingHeal){ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbstop">${t.lbStop}</button>`});busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(!ovEl||ovKind!=='lb')return;lbRefresh();if(lbAll)lbRoll()},allGap('lb')+500)}});return}
   if(v==='lbmgo'){lbRefresh();return}
   if(v==='lbnext'){lbLast=null;homeHold=true;closeOv();nextStage();commit();return}
 }
@@ -5906,7 +5912,10 @@ function prepClick(e){
     ovEl.querySelectorAll('.pickbtn').forEach(q=>{q.disabled=true;if(q!==b)q.classList.add('dim')});
     b.classList.add('chosen'); busy=true; busySince=Date.now(); sfx('pass');
     setTimeout(()=>{const n=b.querySelector('b');if(n)n.innerHTML=`${to}<i class="plus1">+1</i>`;b.classList.add('up')},380);
-    setTimeout(()=>{busy=false;pickAttr(k);closeOv();commit()},reduce?400:1500);return}
+    setTimeout(()=>{busy=false;pickAttr(k);closeOv();
+      // a crit during roll all: pick the attribute, then the block carries on by itself
+      if(lbResume){lbResume=false;const s=S.season,st=s&&s.stages[s.idx];if(st&&isLB(st)&&(st.mi||0)<st.ms.length&&!s.pendingHeal&&!s.careerOver){lbLast=null;homeHold=false;lbAll=true;ovQ.push({k:'lb'});commit();setTimeout(()=>{if(ovKind==='lb'&&lbAll&&!busy)lbRoll()},600);return}}
+      commit()},reduce?400:1500);return}
   if(v==='feat'){pickFeat(b.dataset.k);closeOv();commit();return}
   if(v==='camp'){const k=b.dataset.k;
     if(k.startsWith('tr:')&&!reduce){const x=k.slice(3), from=S.attrs[x];doCamp(k);const h=S.history[S.history.length-1], n=(h.campGot||[]).length;
