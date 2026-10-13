@@ -1261,6 +1261,9 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.docked{inset:auto;padding:0;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;z-index:30;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .ovl.docked .ovcard{max-height:100%;box-shadow:0 10px 40px rgba(0,0,0,.35)}
 .ovl.docked .ovcard.stagepop{height:100%;max-height:none}
+/* iPad and computer: the middle column is part of the page, not a pop-up. No entrance or exit animation, no floating shadow */
+.ovl.docked,.ovl.docked.out,.ovl.docked>.ovcard,.ovl.docked>.ovcard.still,.ovl.docked .stagepop>.wrap>.panel.hero{animation:none!important;transition:none!important}
+.ovl.docked .ovcard,.ovl.docked .stagepop>.wrap>.panel.hero{box-shadow:none!important}
 /* docked in the middle column: every pop-up fills it and its main button sits where Play and Roll sit */
 .ovl.docked .ovcard:not(.stagepop){height:100%;max-height:none;overflow-y:auto;justify-content:flex-start}
 .ovl.docked .ovcard:not(.stagepop)>button.btn:last-of-type,.ovl.docked .lbpop .lbbtns{margin-top:auto!important}
@@ -3844,7 +3847,9 @@ function countUp(el){
 var ovKindPrev=null;
 function closeOv(){
   if(!ovEl)return; clearTimeout(ovTimer);
-  const el=ovEl; ovKindPrev=ovKind; ovEl=null; ovKind=null; el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240);
+  const el=ovEl; ovKindPrev=ovKind; ovEl=null; ovKind=null;
+  if(el.classList.contains('docked'))el.remove();   // part of the page on iPad and computer: it just goes, no fade
+  else{el.classList.add('out'); setTimeout(()=>el.remove(),reduce?0:240)}
   const was=ovKindPrev; flushOv(); if(!ovEl)scheduleAuto(); try{dockOv()}catch(e){}
   if(!ovEl&&was==='final')setTimeout(()=>{try{if(!ovEl&&!busy)playSync()}catch(e){}},260);
 }
