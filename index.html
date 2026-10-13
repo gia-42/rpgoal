@@ -108,7 +108,9 @@ h1,h2,h3{font-family:var(--f-ui);margin:0;text-wrap:balance;letter-spacing:-.015
 .fb-track{position:relative;height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--rule);overflow:hidden}
 .fb-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;transition:width .6s ease,background .3s}
 .fb-tick{position:absolute;top:0;bottom:0;width:1px;background:var(--bg);opacity:.9}
-.fb-scale{position:relative;height:15px;font-size:10.5px;color:var(--ink-3)}.fb-scale span{position:absolute;top:0;white-space:nowrap}.fb-scale span:nth-child(2){transform:translateX(-50%)}.fb-scale span:last-child{right:0}
+.fb-scale{position:relative;height:28px;font-size:10.5px;color:var(--ink-3)}.fb-scale span{position:absolute;top:0;white-space:nowrap;transform:translateX(-50%)}.fb-scale span.r2{top:13px}.fb-scale span.first,.fb-scale span.last{transform:none}.fb-scale span.cur{color:var(--ink);font-weight:600}
+.fb-seg{position:absolute;top:-6px;bottom:-6px;cursor:help}
+.fanbar.full{margin-top:2px}.onepage .fanbar.full .fb-scale{display:block}
 .teambar{margin-top:10px}
 .bars .teambar{margin-top:10px}
 .sv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1916,15 +1918,14 @@ function makeStartOffers(avg,nat){
   return out.slice(0,3);
 }
 /* 0 hated · 1 disliked · 2 neutral · 3 liked · 4 loved · 5 club idol · 6 legend */
-const fanTierOf=L=>L<=-6?0:L<=-2?1:L<3?2:L<7?3:L<12?4:5;
+const fanTierOf=L=>L<=-6?0:L<=-2?1:L<3?2:L<9?3:L<14?4:5;
 const fanTier=()=>S.legend&&S.club&&S.legend===S.club.name?6:fanTierOf(S.loyalty||0);
-const loyBonus=()=>[-1,0,0,0,1,1,1][fanTier()];   // the fans help a little; how you play moves them a lot more
+const loyBonus=()=>[-2,-1,0,0,1,1,1][fanTier()];   // the fans help a little; how you play moves them a lot more
 function legendReady(){
   if(S.legend===S.club.name||(S.tenure||0)<12||(S.loyalty||0)<20||rating(S.attrs)<13)return false;
   const rows=S.history.slice(-S.tenure).filter(h=>h.club===S.club.name);
   const pts=rows.reduce((a,h)=>a+h.trophies.reduce((b,x)=>b+({league:LEAGUES[x.lg]&&LEAGUES[x.lg].div===1?2:0,cont:3,cwc:2,cup:.5,cont2:.5}[x.kind]||0),0),0);
-  const form=rows.slice(-5).filter(h=>h.pos<=3&&LEAGUES[h.league].div===1).length;
-  return pts>=20&&form>=4;
+  return pts>=20;
 }
 // bonuses stack: past +7 they count for half in the league, past +8 a third in cups (where the opponents scout you)
 const capMods=(x,st)=>st&&st.comp!=='league'&&st.comp!=='run'?(x<=8?x:8+Math.floor((x-8)/3)):(x<=7?x:7+Math.floor((x-7)/2));
@@ -2666,13 +2667,16 @@ function teamBar(){
   return `<div class="fanbar teambar tl${lv}" aria-label="${t.teamT}: ${t.teamLv[lv]}"><div class="fb-head"><span class="lbl">${t.teamT}</span><span class="fb-state">${t.teamLv[lv]}</span></div>
     <div class="fb-track"><span class="fb-fill" style="width:${w.toFixed(1)}%"></span></div></div>`;
 }
-function fanBar(){
+function fanBar(full){
   const L=S.loyalty||0, lv=fanTier(), min=-8, max=24, pos=v=>((clamp(v,min,max)-min)/(max-min)*100).toFixed(1);
-  const ticks=[-6,-2,3,7,12,18].map(v=>`<span class="fb-tick" style="left:${pos(v)}%"></span>`).join('');
-  return `<div class="fanbar fl${lv}" role="meter" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${clamp(L,min,max)}" aria-label="${t.fanSupport(t.fanStatus[lv])}">
+  const B=[-6,-2,3,9,14,20], ticks=B.map(v=>`<span class="fb-tick" style="left:${pos(v)}%"></span>`).join('');
+  const edges=[min].concat(B,[max]), segs=t.fanStatus.map((nm,i)=>{const a=pos(edges[i]),b=pos(edges[i+1]);return{nm,a:+a,b:+b,c:(+a + +b)/2}});
+  const seg=segs.map((x,i)=>`<span class="fb-seg" data-nm="${x.nm}" style="left:${x.a}%;width:${(x.b-x.a).toFixed(1)}%"></span>`).join('');
+  const lbls=segs.map((x,i)=>`<span class="${i===lv?'cur':''} ${i%2?'r2':''} ${i===0?'first':i===segs.length-1?'last':''}" style="${i===segs.length-1?'right:0':`left:${i===0?0:x.c.toFixed(1)}%`}">${x.nm}</span>`).join('');
+  return `<div class="fanbar fl${lv}${full?' full':''}" role="meter" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${clamp(L,min,max)}" aria-label="${t.fanSupport(t.fanStatus[lv])}">
     <div class="fb-head"><span class="lbl">${t.fanSupport('').replace(/ · $/,'')}</span><span class="fb-state">${lv===6?'★ ':''}${t.fanStatus[lv]}</span></div>
-    <div class="fb-track"><span class="fb-fill" style="width:${lv===6?100:Math.min(Math.max(3,pos(L)),lv===5?78:100)}%"></span>${ticks}</div>
-    <div class="fb-scale"><span style="left:0">${t.fanScale[0]}</span><span style="left:${pos(0)}%">${t.fanScale[1]}</span><span>${t.fanScale[2]}</span></div></div>`;
+    <div class="fb-track"><span class="fb-fill" style="width:${lv===6?100:Math.min(Math.max(3,pos(L)),lv===5?pos(19.5):100)}%"></span>${ticks}${seg}</div>
+    <div class="fb-scale">${lbls}</div></div>`;
 }
 const aLbl=k=>`<span class="lfull">${t.attrs[k]}</span><span class="lshort">${t.attrsS[k]}</span><span class="l3">${t.attrs3[k]}</span>`;
 const leagueLine=Li=>`${LEAGUES[Li].name} · ${lgCountry(Li)}${LEAGUES[Li].div===2?` · ${t.div2}`:''}`;
@@ -4957,6 +4961,7 @@ function contractView(){
   const fees=(S.fees||[]).slice().reverse().map(f=>`<div class="crow"><span class="yr">${f.year}</span><span class="cl">${crest(kitOf(f.to),13)}<b>${esc(f.to)}</b><span class="muted">${t.fromClub(esc(f.from))}</span></span><span class="nm">${f.kind==='clause'?t.clauseShort:''}${money(f.fee)}</span></div>`).join('');
   return `<section class="panel stack trackp ctab" style="gap:8px">
     <div class="ctop">${crest(kitOf(S.club.name),30)}<div><b>${esc(S.club.name)}</b><span class="muted small">${C.loan?t.onLoanFrom(esc(C.loan.name)):esc(LEAGUES[S.club.league].name)}${S.capt?` · ${t.captT}`:''}</span></div></div>
+    ${S.phase!=='retired'?fanBar(1):''}
     <div class="sv-list">
       ${row(t.wageT,wage(C.wage))}
       ${row(t.contractT,`${t.untilY(C.until)} · ${yl<=1?`<span class="warn">${t.finalYear}</span>`:t.seasonsLeft(yl)}`)}
