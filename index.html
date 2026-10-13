@@ -4319,7 +4319,7 @@ function doRoll(){
   const s=S.season; if(!s||s.last||s.pendingHeal||s.pickAttr)return;
   centerOn(app.querySelector('.stage'));
   const st=s.stages[s.idx];
-  if(st.ch&&!st.chr)return;
+  if(st.ch&&!st.chr&&!st.chPost)return;   // a story saved for after the match doesn't hold the roll
   if(st.ev==='pen'&&!st.evr){pkMoment(k=>{pkForce=k;try{resolveEvent(k.v)}finally{pkForce=null}const r=st.evr;sfx(r.perfect?'nat20':r.ok?'pass':'fail');commit()});return}
   if(st.ev&&!st.evr){
     const e=EVMAP[st.ev], v=d(e.die), el=qd('[data-die="ev"]');
