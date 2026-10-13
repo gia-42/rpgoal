@@ -1458,6 +1458,9 @@ const RIVAL_PAIRS=[['Al Ahly','Zamalek'],['Wydad Casablanca','Raja Casablanca'],
  ['Cape Town City','Stellenbosch'],['AmaZulu','Golden Arrows'],['SuperSport United','Mamelodi Sundowns'],['Kaizer Chiefs','Mamelodi Sundowns'],
  ['FC Tokyo','Tokyo Verdy'],['Kawasaki Frontale','Yokohama F. Marinos'],['Avispa Fukuoka','Sagan Tosu'],['Vissel Kobe','Gamba Osaka'],['Machida Zelvia','Tokyo Verdy'],['Shonan Bellmare','Yokohama F. Marinos'],
  ['FC Seoul','Incheon United'],['Jeonbuk Hyundai Motors','Ulsan HD'],];
+// a club's main rivals: its first two or three pairs on the list (the list puts the biggest derby first)
+const mainRivals=c=>RIVAL_PAIRS.filter(([x,y])=>x===c||y===c).slice(0,3).map(([x,y])=>x===c?y:x);
+const isMainRival=(c,o)=>!!o&&mainRivals(c).includes(o);
 const isRival=(a,b)=>RIVAL_PAIRS.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
 const NATIONS={
  JPN:{mod:1,first:['Haruto','Ren','Sota','Yuto','Takumi','Kaito','Daichi','Riku','Kota','Shota','Hiroki','Kenta','Ryo','Yuki','Takuma','Kaoru','Wataru','Ritsu','Junya','Ao'],last:['Sato','Suzuki','Takahashi','Tanaka','Ito','Watanabe','Yamamoto','Nakamura','Kobayashi','Kato','Yoshida','Yamada','Sasaki','Mitoma','Endo','Kubo','Doan','Minamino']},
@@ -2026,6 +2029,10 @@ function activate(){
   if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;}
   if(st.ev!==undefined)return;
   if(st.atm===undefined)st.atm=bigMatch(st)?d(6):0;
+  // a derby outside the league: any of your main rivals, in the cup or on the continent, is derby day
+  if(st.comp!=='league'&&st.comp!=='run'&&st.comp!=='wc'&&!isLB(st)&&S.club&&isMainRival(S.club.name,st.opp)){st.der=1;
+    if(isCG(st)){st.ev=null;return}
+    if(s.out===0){st.ev='derby';s.used.push('derby');return}}
   if(s.boss===1&&st.comp==='league'&&s.out===0){s.boss=2;st.ev=null;st.ch='boss';st.chPost=1;s.used.push('c_boss');return}
   if(st.comp==='run'||isCG(st)){st.ev=null;return}
   if(isLB(st)&&s.out>0){st.ev=null;return}
@@ -2898,7 +2905,7 @@ function stageCard(){
   const evPending=st.ev&&!st.evr&&!r, chPending=st.ch&&!st.chr&&!r&&!st.chPost;
   const fx=st.fx||{mode:null,buff:0};
   const kv=kitVars(myKit(st));
-  const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>`)}</span>${st.comp!=='wc'?`<button class="mtag mt${oppTier(st)}" data-act="mtag">${t.oppTier[oppTier(st)]}</button>`:''}</div>${nemTag(st)}`:'';
+  const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>${st.der?' ★':''}`)}</span>${st.comp!=='wc'?`<button class="mtag mt${oppTier(st)}" data-act="mtag">${t.oppTier[oppTier(st)]}</button>`:''}</div>${nemTag(st)}`:'';
   const grp=(st.comp==='wc'&&st.round===0&&st.g!=null)||st.comp==='run'||isCG(st);
   const recNow=grp?(()=>{const done=s.stages.filter(x=>x.comp===st.comp&&x.round===0&&x.g!=null);return `<div class="grec"><span class="lbl">${st.comp==='run'?t.runT:t.groupT}</span>${done.map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.res&&x.res.skipped?'–':x.g+1}</span>`).join('')}</div>`})():'';
   const race=st.comp==='league'&&(s.v||4)>=5?(()=>{const lg=s.stages.filter(x=>x.comp==='league'),g=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length,f=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
