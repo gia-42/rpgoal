@@ -1906,14 +1906,14 @@ function legendReady(){
 const capMods=(x,st)=>st&&st.comp!=='league'&&st.comp!=='run'?(x<=8?x:8+Math.floor((x-8)/3)):(x<=7?x:7+Math.floor((x-7)/2));
 function startCareer(offer){
   delete S.mem; delete S.lgMv; applyMem();
-  S.attrs={...S.roll}; if(S.parent&&S.parent.best&&S.attrs[S.parent.best]!=null)S.attrs[S.parent.best]=Math.min(20,S.attrs[S.parent.best]+1); S.pos=S.cpos&&POS[S.cpos]?S.cpos:bestPos(S.roll); S.age=17; S.year=2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  S.attrs={...S.roll}; if(S.parent&&S.parent.best&&S.attrs[S.parent.best]!=null)S.attrs[S.parent.best]=Math.min(20,S.attrs[S.parent.best]+1); S.pos=S.cpos&&POS[S.cpos]?S.cpos:bestPos(S.roll); S.age=17; S.year=S.startYear||2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   const sty=styleOf(S.pos,S.style); if(sty)S.attrs[sty[1]]=Math.min(20,S.attrs[sty[1]]+1); else S.style=null;
   S.club={name:offer.name,league:offer.league,tier:offer.tier};
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
   S.loyalty=0; S.tenure=0; S.hops=0; S.milestones=[]; S.rivalMoves=0; S.notes=[];
   S.pot=S.pot||d(10); S.startAvg=rating(S.roll); S.feats=[]; S.items=[]; S.mates=[]; S.insp=0; S.quests=0;
   S.contract=null; S.earn=0; S.interest={}; S.fees=[]; S.feeMax=0; S.wageMax=0; S.renewals={}; S.loans=0; S.loanPerm=0; S.bigSign=0; S.clausePaid=0; S.negoWins=0; S.releasedN=0;
-  signContract(offer,wageFor(offer.league,offer.tier,{mult:offer.watch?1.5:.8}),offer.watch?4:3,2027);
+  signContract(offer,wageFor(offer.league,offer.tier,{mult:offer.watch?1.5:.8}),offer.watch?4:3,S.year);
   if(offer.watch){S.watch=1;S.loyalty=3;S.notes=[['nWatch',offer.name]]}
   if(S.parent&&(S.parent.idols||[]).includes(offer.name)){S.loyalty=Math.max(S.loyalty||0,6);S.notes=(S.notes||[]).concat([['nHeir',offer.name]])}
   S.season=buildSeason(); S.phase='season';
@@ -2597,7 +2597,7 @@ function underdogs(H){
 const udChip=(u,extra='')=>`<span class="chip ud ud${u.lv} ${extra}">${t.ud[u.lv-1](esc(u.club))}</span>`;
 const byPrestige=(a,b)=>trophyWeight(b)-trophyWeight(a);
 function retire(){
-  S.phase='retired';
+  S.phase='retired'; decideKids();
   if(S.hofSaved||!S.history.length)return;
   if(careerFinishedIn(S,loadHof())){const id=careerId(S),prev=loadHof().find(e=>e&&(e.cid===id||(!e.cid&&hofSig(e)===careerSig(S))));if(prev)S.hofId=prev.id;S.hofSaved=true;return}
   ovPush({k:'career',fresh:1});
@@ -2948,8 +2948,8 @@ function retiredView(){
   const wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
   return `<section class="panel hero offs retd"><div class="offh"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2>${esc(S.name||t.unnamed)}</h2><span class="muted small">${t.peak(fmt(peak))}</span></div>
   <div class="statline sm"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.length}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
-  <div class="offnotes">${S.endReason?`<div class="on bad">${t.endedInjury(S.endReason.age)}</div>`:''}${S.reached40?`<div class="on gold">${t.n40}</div>`:''}${S.hofSaved?`<div class="on gold">${t.enshrined}</div>`:''}</div>
-  <div class="offact wrapb"><button class="btn" data-act="reset">${t.newCareer}</button>${H.length>=3?`<button class="btn ghost" data-act="heir" data-g="m">${t.heirSon}</button>${NATIONS[S.nat]&&NATIONS[S.nat].firstW?`<button class="btn ghost" data-act="heir" data-g="f">${t.heirDau}</button>`:''}`:''}<button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronT}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}</div></section>`;
+  <div class="offnotes">${S.endReason?`<div class="on bad">${t.endedInjury(S.endReason.age)}</div>`:''}${S.reached40?`<div class="on gold">${t.n40}</div>`:''}${S.hofSaved?`<div class="on gold">${t.enshrined}</div>`:''}${S.parent?`<div class="on">${t.heirOf(esc(S.parent.name))}</div>`:''}${(S.kids||[]).length?`<div class="on gold">${t.kidsYes(S.kids)}</div>`:S.kids?`<div class="on dim">${t.kidsNo}</div>`:''}</div>
+  <div class="offact wrapb"><button class="btn" data-act="reset">${t.newCareer}</button>${(decideKids(),S.kids||[]).includes('m')?`<button class="btn ghost" data-act="heir" data-g="m">${t.heirSon}</button>`:''}${(S.kids||[]).includes('f')?`<button class="btn ghost" data-act="heir" data-g="f">${t.heirDau}</button>`:''}<button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronT}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}</div></section>`;
 }
 function careerView(){
   if(!S.history.length)return'';
@@ -4192,7 +4192,7 @@ function onClick(e){
   else if(act==='retire'){ovQ.unshift({k:'retire'});flushOv()}
   else if(act==='hangup'){if(farewellDue()){ovQ.unshift({k:'farewell'});flushOv();return}retire();commit();window.scrollTo({top:0})}
   else if(act==='intlret'){if(!intlArm){intlArm=true;render();return}intlArm=false;S.intlRet=S.year;addLoy(1);save();render()}
-  else if(act==='heir'){if(S.phase!=='retired')return;const par=heirOf(S),g=b.dataset.g==='f'&&NATIONS[par.nat].firstW?'f':'m';ovQ=[];while(ovEl)closeOv();S=fresh(g);S.nat=par.nat;S.parent=par;S.name=heirName(g);S.rerolls=(S.rerolls||1)+1;view='game';commit();window.scrollTo({top:0})}
+  else if(act==='heir'){if(S.phase!=='retired'||!(S.kids||[]).includes(b.dataset.g))return;const par=heirOf(S),g=b.dataset.g==='f'&&NATIONS[par.nat].firstW?'f':'m';ovQ=[];while(ovEl)closeOv();S=fresh(g);S.nat=par.nat;S.parent=par;S.startYear=par.childYear;S.name=heirName(g);S.rerolls=(S.rerolls||1)+1;view='game';commit();window.scrollTo({top:0})}
   else if(act==='agechk'){centerOn(app.querySelector('.agechk'));const v=d(CHK_DIE),el=app.querySelector('[data-die="agechk"]');rollDice(el?[el]:[],CHK_DIE,[v],x=>{const ok=x===CHK_DIE||(x!==1&&x+ageBonus()>=c12(AGE_DC[S.age]));return x===CHK_DIE?'crit':x===1?'fumble':ok?'win':'lose'},()=>{ageCheck(v);const k=S.history[S.history.length-1].ageCheck;sfx(v===CHK_DIE?'nat20':v===1?'nat1':k.ok?'pass':'fail');commit()})}
   else if(act==='home'){confirmMove({kind:'home'})}
   else if(act==='anyclub'){const v=(document.getElementById('anyclub')||{}).value;if(!v)return;const [Li,ti,...n]=v.split('|');confirmMove({kind:'any',club:{name:n.join('|'),league:+Li,tier:+ti,mode:'any'}})}
@@ -6459,7 +6459,8 @@ function femCopy(base,over){
 }
 /* ================= the board, its targets, new managers, press conferences, big-match atmosphere, late career and the next generation ================= */
 const APP_VER='0.56';
-Object.assign(T.en,{verT:'Version'});Object.assign(T.pt,{verT:'Versão'});
+Object.assign(T.en,{verT:'Version',kidsNo:'None of your children went into football.',kidsYes:k=>k.length>1?'Your son and your daughter both want to follow in your footsteps.':k[0]==='f'?'Your daughter wants to follow in your footsteps.':'Your son wants to follow in your footsteps.'});
+Object.assign(T.pt,{verT:'Versão',kidsNo:'Nenhum dos seus filhos seguiu no futebol.',kidsYes:k=>k.length>1?'Seu filho e sua filha querem seguir seus passos.':k[0]==='f'?'Sua filha quer seguir seus passos.':'Seu filho quer seguir seus passos.'});
 const addBoard=n=>{S.board=clamp((S.board||0)+n,-5,5)};
 const boardMood=()=>{const b=S.board||0;return b<=-3?0:b<=0?1:b<=2?2:3};
 /* the board's target for the season, from where the squad ranks in its league */
@@ -6584,8 +6585,13 @@ function heirOf(P){
   const A=P.attrs||{}, best=AK.slice().sort((a,b)=>(A[b]||0)-(A[a]||0))[0];
   const nm=String(P.name||'').trim().split(/\s+/);
   return{name:P.name||'',g:P.gender==='f'?'f':'m',nat:P.nat,last:nm.length>1?nm[nm.length-1]:pick((NATIONS[P.nat]||NATIONS.BRA).last),idols:[...idols],best,gen:((P.parent&&P.parent.gen)||1)+1,
-    clubs:[...new Set((P.history||[]).map(h=>h.club))].slice(0,6),peak:Math.max(...(P.history||[{rating:0}]).map(h=>h.rating))};
+    childYear:heirYear(P),clubs:[...new Set((P.history||[]).map(h=>h.club))].slice(0,6),peak:Math.max(...(P.history||[{rating:0}]).map(h=>h.rating))};
 }
+/* born when the parent was somewhere between 24 and 36, and never before the parent has retired */
+function heirYear(P){const H=P.history||[], born=(H.length?H[0].year:(P.startYear||2027))-17, last=H.length?H[H.length-1].year:2027;return Math.max(last+1,born+24+Math.floor(Math.random()*13)+17)}
+/* roughly one career in four ends with a child who plays: a son, a daughter, now and then both */
+function decideKids(){if(S.kids!==undefined||S.phase!=='retired'||!S.history||!S.history.length)return;const r=Math.random(), w=!!(NATIONS[S.nat]&&NATIONS[S.nat].firstW);
+  S.kids=r<.25?[w&&Math.random()<.4?'f':'m']:r<.28&&w?['m','f']:[];if(typeof save==='function')try{save()}catch(e){}}
 function heirName(g){const N=NATIONS[S.nat]||NATIONS.BRA, list=(g==='f'&&N.firstW)?N.firstW:N.first;return pick(list)+(S.parent&&S.parent.last?' '+S.parent.last:'')}
 function heirOffers(out){
   if(!S.parent||!out)return out;
