@@ -6576,6 +6576,7 @@ const pkTgt=dir=>dir==='chip'?6:4;
 const pkPct=(mod,tgt=4)=>{let c=0;for(let v=2;v<=10;v++)if(v+mod>=tgt)c++;return c*10};
 const pkOdds=dir=>pkPct(pkDirMod(dir)+pkItem(),pkTgt(dir));
 function pensKick(side,v){
+  {const q=S.season.pens;if(!q||q.done||pensNext(q)!==side)return false}
   const p=S.season.pens, mine=side==='me', you=mine&&pensMine(p);
   const chipK=you&&p.dir==='chip';
   const total=you?v+(p.dir?pkDirMod(p.dir)+pkItem():p.bonus):v;
@@ -6686,7 +6687,7 @@ function lmcClick(e){
 }
 let pensTimer=null;
 // a shootout must never freeze: if no kick has moved for a while and none is waiting on you, take the next one
-setInterval(()=>{try{const s=S&&S.season,p=s&&s.pens;if(ovKind!=='pens'||!p||p.done||busy||anims||Date.now()-pensAt<2500)return;if(pensNext(p)==='me'&&pensMine(p)){if(!document.querySelector('.pklayer:not(.out)'))pkLayer();return}pensStep()}catch(e){}},1000);
+setInterval(()=>{try{const s=S&&S.season,p=s&&s.pens;if(ovKind!=='pens'||!p||p.done||busy||anims||pensRolling||Date.now()-pensAt<2500)return;if(pensNext(p)==='me'&&pensMine(p)){if(!document.querySelector('.pklayer:not(.out)'))pkLayer();return}pensStep()}catch(e){}},1000);
 /* a penalty during a match: the same goal, the same odds as your kick in a shootout */
 let pkForce=null, pkM=null;
 function pkBest(){return PK_DIRS.slice().sort((a,b)=>pkOdds(b)-pkOdds(a))[0]}
@@ -6697,7 +6698,7 @@ function pkMoment(cb){
   const draw=()=>{el.innerHTML=pkCardHTML(pkM.res?pkM.res.dir:pkM.dir,pkM.res,t.ev.pen[0])};
   draw();
   el.addEventListener('click',e=>{const b=e.target.closest('[data-ov]');if(!b||busy||!pkM||pkM.res)return;const v=b.dataset.ov;
-    if(v==='pdir'){if(b.dataset.d==='chip'&&!pkCanChip())return;pkM.dir=b.dataset.d;draw();return}
+    if(v==='pdir'){if(b.dataset.d==='chip'&&!pkCanChip())return;pkM.dir=b.dataset.d;draw();const k=el.querySelector('[data-ov="pkick"]');if(k)k.click();return}
     if(v==='pkback'){pkM.dir=null;draw();return}
     if(v==='pkick'&&pkM.dir){const dir=pkM.dir,x=d(10),de=el.querySelector('[data-die="pkbig"]');el.querySelectorAll('[data-ov="pkick"],[data-ov="pkback"]').forEach(q=>q.disabled=true);
       rollDice(de?[de]:[],10,[x],y=>y===10?'crit':y===1?'fumble':'',()=>{const m=pkDirMod(dir)+pkItem(),goal=x!==1&&x+m>=pkTgt(dir);pkM.res={v:x,goal,dir};sfx(goal?'pass':'fail');draw();
@@ -6748,24 +6749,24 @@ function pkLayer(res){
   if(!L){L=document.createElement('div');L.className='pklayer';ovEl.appendChild(L)}
   L.innerHTML=pkLayerHTML(res);
 }
-let pensAt=0;
+let pensAt=0, pensRolling=false;
 function pensStep(){
   clearTimeout(pensTimer); pensAt=Date.now();
-  const s=S.season, p=s&&s.pens; if(!p||p.done||ovKind!=='pens')return;
+  const s=S.season, p=s&&s.pens; if(!p||p.done||ovKind!=='pens'||pensRolling)return;
   const side=pensNext(p);
   if(side==='me'&&pensMine(p)){ovUpdate(pensHTML());pensScroll();pkLayer();return}      // your own kick waits for you
   const i=p[side].length, v=d(10), el=ovEl.querySelector(`[data-die="pk${side}${i}"]`);
-  pensWiggle(true);
-  rollDice(el?[el]:[],10,[v],()=>'',()=>{pensKick(side,v);save();ovUpdate(pensHTML());pensScroll();sfx('click');if(p.done){if(p.won)sfx('pass');else koLossSfx(S.season.last?S.season.last.stage:-1)}else pensTimer=setTimeout(pensStep,420)});
+  pensWiggle(true); pensRolling=true;
+  rollDice(el?[el]:[],10,[v],()=>'',()=>{pensRolling=false;pensAt=Date.now();pensKick(side,v);save();ovUpdate(pensHTML());pensScroll();sfx('click');if(p.done){if(p.won)sfx('pass');else koLossSfx(S.season.last?S.season.last.stage:-1)}else pensTimer=setTimeout(pensStep,420)});
 }
 function pensClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season, p=s.pens;
-  if(v==='pdir'){if(!pensMine(p))return;if(b.dataset.d==='chip'&&!pkCanChip())return;p.dir=b.dataset.d;save();pkLayer();return}
+  if(v==='pdir'){if(!pensMine(p))return;if(b.dataset.d==='chip'&&!pkCanChip())return;p.dir=b.dataset.d;save();pkLayer();const k=ovEl&&ovEl.querySelector('[data-ov="pkick"]');if(k)pensClick({target:k});return}   // the spot is the shot
   if(v==='pkback'){if(!pensMine(p))return;p.dir=null;save();pkLayer();return}
-  if(v==='pkick'){if(!pensMine(p)||!p.dir)return;const x=d(10),i=p.me.length,el=ovEl.querySelector('[data-die="pkbig"]');pensWiggle(true);ovEl.querySelectorAll('[data-ov="pkick"],[data-ov="pkback"]').forEach(q=>q.disabled=true);
-    rollDice(el?[el]:[],10,[x],y=>y===10?'crit':y===1?'fumble':'',()=>{pensKick('me',x);save();const k=p.me[i];sfx(k.goal?'pass':'fail');pkLayer({v:x,goal:k.goal,dir:k.dir});
+  if(v==='pkick'){if(!pensMine(p)||!p.dir)return;pensAt=Date.now();clearTimeout(pensTimer);const x=d(10),i=p.me.length,el=ovEl.querySelector('[data-die="pkbig"]');pensWiggle(true);ovEl.querySelectorAll('[data-ov="pkick"],[data-ov="pkback"]').forEach(q=>q.disabled=true);
+    rollDice(el?[el]:[],10,[x],y=>y===10?'crit':y===1?'fumble':'',()=>{pensAt=Date.now();if(pensKick('me',x)===false){busy=false;pkLayer();ovUpdate(pensHTML());return}save();const k=p.me[i];sfx(k.goal?'pass':'fail');pkLayer({v:x,goal:k.goal,dir:k.dir});
       // a moment to take it in, then back to the shootout
-      busy=true;busySince=Date.now();setTimeout(()=>{busy=false;pkLayer();ovUpdate(pensHTML());pensScroll();if(!p.done)pensTimer=setTimeout(pensStep,600);else{if(p.won)sfx('pass');else koLossSfx(S.season.last?S.season.last.stage:-1)}},1400)});return}
+      busy=true;busySince=Date.now();setTimeout(()=>{busy=false;pensAt=Date.now();pkLayer();ovUpdate(pensHTML());pensScroll();if(!p.done)pensTimer=setTimeout(pensStep,600);else{if(p.won)sfx('pass');else koLossSfx(S.season.last?S.season.last.stage:-1)}},1400)});return}
   if(v==='pdone'){pensFinish();closeOv();commit();return}
 }
 

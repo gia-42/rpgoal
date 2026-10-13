@@ -1,5 +1,5 @@
 // RPGoal offline support. Change VERSION whenever you upload new files.
-const VERSION = 'rpgoal-0.58m';
+const VERSION = 'rpgoal-0.58n';
 const CORE = ['./', './index.html', './config.js', './cloud.js', './manifest.webmanifest', './favicon.svg',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
