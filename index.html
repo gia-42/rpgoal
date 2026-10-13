@@ -2284,7 +2284,7 @@ function resolveStage(v1,v2){
     const dw=s.v>=6&&st.lha?LB_DRAW:3;
     const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
     const draw=!win&&(r.missed?r.total>=r.dc-dw:(nat!==1&&r.total>=r.dc-dw));
-    if(s.v>=6&&st.lha)lgRecord(s,win?'W':draw?'D':'L',r.missed);
+    if(s.v>=6&&st.lha){lgRecord(s,win?'W':draw?'D':'L',r.missed);if(!r.missed&&isCrit(nat)){mom20(s);r.mom20=1}}
     const k=win?'W':draw?'D':'L', g=s.rung=s.rung||{W:0,D:0,L:0}; g[k]++;
     r.wdl=k; r.win=win; r.tone=win?'good':draw?'mid':'bad'; r.rec={...g};
     st.res={tone:r.tone,wdl:k,missed:!!r.missed}; fanMatch(st,r,win,true);
@@ -5569,7 +5569,7 @@ function lgBuild(s){
   halves.forEach(hf=>{for(const bi of hf){const m=blocks[bi].find(m=>m.opp===riv);if(m){m.der=1;m.dtx=Math.floor(Math.random()*4);break}}});
   }
   // a moment or two inside every block
-  blocks.slice(0,4).forEach(b=>{const c=b.map((m,j)=>j).filter(j=>!b[j].der).sort(()=>Math.random()-.5).slice(0,1+(Math.random()<.6?1:0));c.forEach(j=>{b[j].mq=1})});
+  blocks.slice(0,4).forEach(b=>{const c=b.map((m,j)=>j).filter(j=>j>0&&!b[j].der).sort(()=>Math.random()-.5).slice(0,1+(Math.random()<.6?1:0));c.forEach(j=>{b[j].mq=1})});
   s.lt={M,sz,codes,teams,me:{res:[],wdl:[]},riv,fx};
   return blocks;
 }
@@ -5585,7 +5585,11 @@ const lgMyPos=s=>{const t0=lgTable(s);const m=t0.find(x=>x.me);return m?m.pos:nu
 const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];let wins=0,losses=0;
   for(let i=w.length-1;i>=0&&w[i]==='W';i--)wins++;
   if(!wins)for(let i=w.length-1;i>=0&&w[i]!=='W';i--)if(w[i]==='L')losses++;   // a winless run: every loss in it weighs more, draws don't stop it
-  return wins>=5?2:wins>=3?1:losses>=4?-3:losses>=3?-2:losses>=2?-1:0};
+  const base=wins>=7?3:wins>=5?2:wins>=3?1:losses>=4?-3:losses>=3?-2:losses>=2?-1:0;
+  return clamp(base+(s.momB||0),-MOM_CAP,MOM_CAP)};
+const MOM_CAP=3;
+// a natural 20 in the league lifts the dressing room: +1 momentum that stacks, until the next defeat
+const mom20=s=>{s.momB=Math.min(MOM_CAP,(s.momB||0)+1)};
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
   const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?(m.ha==='H'?-1:0):([0,0,0,1,2][tl]||0);   // the favourites face packed defences; small clubs fight for every point
@@ -5593,7 +5597,7 @@ function lbDC(m){
 }
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
-  const T=s.lt; if(!T)return; const r=T.me.res.length; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w);
+  const T=s.lt; if(!T)return; const r=T.me.res.length; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w); if(w==='L'&&!missed)s.momB=0;
   if(T.fx&&T.fx[r]){const q=T.teams.find(x=>x.n===T.fx[r]);if(q)q.res[r]=w==='W'?0:w==='D'?1:3}   // the other side of your match
 }
 function lbBlockFx(st,i,m){
@@ -5623,7 +5627,7 @@ function lbResolveOne(st,v1,v2){
   if(!r.missed){
     const g={goals:0,assists:0,apps:0,cs:0};addStats(g,1,nat,true);r.g=g.goals;r.a=g.assists;
     if(g.goals>0&&m.opp&&S.history.some(h=>h.club===m.opp)&&m.opp!==S.club.name)S.flag_exgoal=1;
-    if(crit){r.crit=1;s.hot=2;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
+    if(crit){r.crit=1;s.hot=2;mom20(s);r.mom20=1;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(injTrig(nat)){r.inj=1;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null,relapse:s.relapseHit?1:0}}
   }
   if(m.der&&!r.missed){if(r.w==='W')fanAdd('rivW',1,m.opp,null);else if(r.w==='L')fanAdd('rivL',-1,m.opp,null)}
@@ -5643,7 +5647,7 @@ function lbFinish(st){
 }
 /* things that stop a block before a match: the derby (with its own build-up) and a match moment */
 const lbDerbyDue=st=>{const m=st.ms[st.mi||0];return m&&m.der&&!m.dr&&S.season.out===0?m:null};
-const lbPending=st=>{const m=st.ms[st.mi||0];if(!m||S.season.out>0)return null;if(m.der&&!m.dr)return'der';if(m.mq&&!m.mr)return'mom';return null};
+const lbPending=st=>{const m=st.ms[st.mi||0];if(!m||S.season.out>0)return null;if(m.der&&!m.dr)return'der';if(m.mq&&!m.mr&&(st.mi||0)>0)return'mom';return null};   // never a moment before a batch's first game (seasons already built too)
 const DERBY_DIE=12, derbyTgt=()=>7+LEAGUES[S.club.league].lvl;
 function lbDerbyRoll(st,v){
   const m=lbDerbyDue(st); if(!m)return; const e=EVMAP.derby, b=evBonus(e), tgt=derbyTgt(), tot=v+b, ok=v===DERBY_DIE||(v!==1&&tot>=tgt);
@@ -6307,7 +6311,7 @@ Object.assign(T.en,{mtagT:'Matchup',mtagD:n=>n>0?`Their squad is stronger: the D
  howTo:[['Your player','Roll 8d10 for your attributes and choose a position. The colors show how well each position suits your dice; playing out of position costs a point in every match.'],
   ['Matches','Each phase of the season is one d20 roll plus your bonuses against a DC. The panel shows what you need and your chance. A natural 20 always wins; a natural 1 is an injury scare.'],
   ['Moments and stories','Before some matches a moment or a story appears. Pick an option and roll: success gives you advantage or a bonus, failure the opposite.'],
-  ['The league','The league is played in blocks of rounds (10, 9, 8 and 8 matches): the dice roll one after another and turn blue for a win, yellow for a draw and red for a loss. Home games give +1, three wins in a row give +1 momentum (three losses, −1), and two rivalry matches stop for a derby check. The last three rounds are the final push, rolled one by one with the table in front of you. Win 3 points, draw 1: the Season tab shows the full table.'],
+  ['The league','The league is played in blocks of rounds (10, 9, 8 and 8 matches): the dice roll one after another and turn blue for a win, yellow for a draw and red for a loss. Home games give +1. Momentum builds with a run: three wins in a row +1, five +2, seven +3, and every natural 20 adds +1 more until your next defeat; a winless run costs up to −3. It never goes past ±3, and two rivalry matches stop for a derby check. The last three rounds are the final push, rolled one by one with the table in front of you. Win 3 points, draw 1: the Season tab shows the full table.'],
   ['Cups','Cups and continental knockouts are single rolls: ties go to a last-minute chance and penalties. Continental group stages are six quick games, home and away.'],
   ['Growth','You improve each season until your late twenties, longer with a strong body, up to a ceiling set by your dice and your potential. At the third level-up you may retrain in a new position. From 32, the body decides each summer whether you go on.'],
   ['Transfers','Every summer clubs make offers with a wage and a contract. Under contract, they must pay your club. You can negotiate, ask to leave, or ask for a new deal from the Contract tab.'],
@@ -6317,7 +6321,7 @@ Object.assign(T.pt,{mtagT:'Confronto',mtagD:n=>n>0?`O elenco deles é mais forte
  howTo:[['Seu jogador','Role 8d10 para os atributos e escolha a posição. As cores mostram o quanto cada posição combina com seus dados; jogar fora de posição tira um ponto em todo jogo.'],
   ['Jogos','Cada fase da temporada é uma rolagem de d20 mais seus bônus contra uma CD. O painel mostra o que você precisa e sua chance. Um 20 natural sempre vence; um 1 natural é um susto de lesão.'],
   ['Momentos e histórias','Antes de alguns jogos aparece um momento ou uma história. Escolha uma opção e role: o sucesso dá vantagem ou bônus, a falha o contrário.'],
-  ['A liga','A liga é jogada em blocos de rodadas (10, 9, 8 e 8 jogos): os dados rolam um depois do outro e ficam azuis na vitória, amarelos no empate e vermelhos na derrota. Jogos em casa dão +1, três vitórias seguidas dão +1 de embalo (três derrotas, −1), e dois clássicos param para um teste de clássico. As três últimas rodadas são a reta final, roladas uma a uma com a tabela à vista. Vitória vale 3 pontos, empate 1: a aba Temporada mostra a tabela completa.'],
+  ['A liga','A liga é jogada em blocos de rodadas (10, 9, 8 e 8 jogos): os dados rolam um depois do outro e ficam azuis na vitória, amarelos no empate e vermelhos na derrota. Jogos em casa dão +1. O embalo cresce com a sequência: três vitórias seguidas +1, cinco +2, sete +3, e cada 20 natural soma +1 até a próxima derrota; uma sequência sem vitórias tira até −3. Nunca passa de ±3, e dois clássicos param para um teste de clássico. As três últimas rodadas são a reta final, roladas uma a uma com a tabela à vista. Vitória vale 3 pontos, empate 1: a aba Temporada mostra a tabela completa.'],
   ['Copas','Copas e mata-matas continentais são uma rolagem só: empates vão para uma chance no último minuto e para os pênaltis. As fases de grupos continentais são seis jogos rápidos, em casa e fora.'],
   ['Evolução','Você melhora a cada temporada até perto dos 30, mais tempo com um corpo forte, até um teto definido pelos dados e pelo seu potencial. No terceiro nível você pode mudar de posição. A partir dos 32, o corpo decide a cada verão se você continua.'],
   ['Transferências','Todo verão clubes fazem propostas com salário e contrato. Com contrato, eles precisam pagar ao seu clube. Dá para negociar, pedir para sair ou pedir um contrato novo na aba Contrato.'],
