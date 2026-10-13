@@ -1276,6 +1276,23 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.dockhide{display:none!important}
 @media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
 .swi{width:1.05em;height:1.05em;display:inline-block;vertical-align:-.16em;margin-left:.12em;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.pgachart{margin:4px 0 10px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.pga-box{padding:0 6px 0 30px}
+.pga-plot{position:relative;height:130px;margin:8px 0 4px}
+.pga-plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pga-gl{position:absolute;left:0;right:0;border-top:1px solid var(--rule)}
+.pga-gl i{position:absolute;right:calc(100% + 8px);top:-8px;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.pgachart polyline{fill:none;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.pga-dot{position:absolute;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 1.5px var(--card)}
+.pga-dot.pga-a{background:var(--ink-3)}.pga-dot.pga-g{background:var(--accent)}.pga-dot.pga-s{background:var(--warn)}
+polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.pga-s{stroke:var(--warn)}
+.pga-yrs{position:relative;height:16px}
+.pga-yr.first{transform:none}.pga-yr.last{transform:translateX(-100%)}
+.pga-yr{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.pga-leg{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.pga-leg span{display:inline-flex;align-items:center;gap:6px}
+.pga-leg span::before{content:'';width:14px;height:3px;border-radius:2px;background:currentColor}
+.pga-leg .pga-a::before{background:var(--ink-3)}.pga-leg .pga-g::before{background:var(--accent)}.pga-leg .pga-s::before{background:var(--warn)}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -3116,6 +3133,18 @@ function retiredView(){
   <div class="offnotes">${S.endReason?`<div class="on ${S.endReason.kind==='quit'?'':'bad'}">${S.endReason.kind==='quit'?t.endedQuit(S.endReason.age):t.endedInjury(S.endReason.age)}</div>`:''}${S.reached40?`<div class="on gold">${t.n40}</div>`:''}${S.hofSaved?`<div class="on gold">${t.enshrined}</div>`:''}${S.parent?`<div class="on">${t.heirOf(esc(S.parent.name))}</div>`:''}${(S.kids||[]).length?`<div class="on gold">${t.kidsYes(S.kids)}</div>`:S.kids?`<div class="on dim">${t.kidsNo}</div>`:''}</div>
   <div class="offact wrapb"><button class="btn" data-act="reset">${t.newCareer}</button>${(decideKids(),S.kids||[]).includes('m')?`<button class="btn ghost" data-act="heir" data-g="m">${t.heirSon}</button>`:''}${(S.kids||[]).includes('f')?`<button class="btn ghost" data-act="heir" data-g="f">${t.heirDau}</button>`:''}<button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronT}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}</div></section>`;
 }
+/* games, goals and assists season by season: three lines on one scale (lines stretch to the width, labels and dots stay crisp) */
+function pgaChart(H){
+  if(H.length<2)return'';
+  const ser=[['apps','pga-a'],['goals','pga-g'],['assists','pga-s']];
+  const mx=Math.max(5,...H.map(h=>Math.max(h.apps||0,h.goals||0,h.assists||0))), top=Math.ceil(mx/10)*10||10;
+  const x=i=>100*i/(H.length-1), y=v=>100*(1-(v||0)/top);
+  const grid=[0,.5,1].map(f=>{const v=Math.round(top*f);return `<span class="pga-gl" style="top:${y(v)}%"><i>${v}</i></span>`}).join('');
+  const n=H.length-1, step=Math.max(1,Math.ceil(H.length/5)), yrs=H.map((h,i)=>(i===n||(i%step===0&&n-i>=step*.6))?`<span class="pga-yr ${i===0?'first':i===n?'last':''}" style="left:${x(i)}%">${h.year}</span>`:'').join('');
+  const lines=ser.map(([k,c])=>`<polyline class="${c}" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h[k]).toFixed(2)).join(' ')}"/>`).join('');
+  const dots=ser.map(([k,c])=>H.map((h,i)=>`<span class="pga-dot ${c}" style="left:${x(i)}%;top:${y(h[k])}%" title="${h.year} · ${t[k]} ${h[k]||0}"></span>`).join('')).join('');
+  return `<div class="pgachart"><div class="pga-leg"><span class="pga-a">${t.apps}</span><span class="pga-g">${t.goals}</span><span class="pga-s">${t.assists}</span></div><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.pgaL}">${lines}</svg>${dots}</div><div class="pga-yrs">${yrs}</div></div></div>`;
+}
 function careerView(){
   if(!S.history.length)return'';
   const rows=S.history.slice().reverse().map(h=>{
@@ -3126,7 +3155,7 @@ function careerView(){
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
     return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${fmt(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
-  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${rows}</div>${quitRow()}</section>`;
+  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${pgaChart(S.history)}${rows}</div>${quitRow()}</section>`;
 }
 let hofSub='players';
 let hofTab='players';
