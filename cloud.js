@@ -127,7 +127,9 @@
     const { data, error } = await sb.from('rpgoal_saves').select('career,hof,updated_at').eq('user_id', user.id).maybeSingle();
     if (error) { status = 'err'; refresh(); return; }
     if (data) {
-      const cloud = data.career && typeof fixSave === 'function' ? fixSave(data.career) : data.career, local = S;
+      // a career saved by an older version (before the 0.58 restart) is left behind: this device's copy wins and replaces it
+      const old = data.career && data.career.phase && typeof window.SAVE_ERA !== 'undefined' && data.career.era !== window.SAVE_ERA;
+      const cloud = old ? null : data.career && typeof fixSave === 'function' ? fixSave(data.career) : data.career, local = S;
       const cloudHof = Array.isArray(data.hof) ? data.hof : [];
       const achRow = cloudHof.find(e => e && e.id === '__ach');
       if (achRow && achRow.ach && typeof loadAch === 'function') {
