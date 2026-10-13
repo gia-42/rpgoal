@@ -4263,7 +4263,7 @@ function ovUpdate(html){
   if(!card||!n){ovEl.innerHTML=html;return}
   card.className=n.className+' still'; card.innerHTML=n.innerHTML; requestAnimationFrame(()=>fitTexts(ovEl||document));
 }
-function healRefresh(){ovUpdate(healHTML())}
+function healRefresh(){if(ovKind==='heal')ovUpdate(healHTML())}   // never paint the recovery card into another pop-up
 function healClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov, s=S.season;
   if(v==='hchk'){const x=d(4),el=ovEl.querySelector('[data-die="hchk"]'),sp=hasItem('shinpads')?1:0;ovEl.querySelectorAll('[data-ov="hchk"]').forEach(q=>q.disabled=true);
@@ -4315,8 +4315,16 @@ function wcTick(){
   if((st.ev&&!st.evr)||(st.ch&&!st.chr))return stop();
   fastRoll=true; doRoll(); setTimeout(wcTick,allGap('wc'));
 }
+// something is waiting (a recovery roll, a +1 pick, a finished match): bring it up instead of leaving the screen dead
+function unstick(){
+  const s=S.season; if(S.phase!=='season'||!s)return;
+  if(!s.pendingHeal&&!s.pickAttr){if(s.postCh!=null&&!ovEl){maybeStory();flushOv()}return}
+  if(ovEl&&['stage','lb','run'].includes(ovKind)&&(s.pendingHeal||s.pickAttr))closeOv();
+  if(s.pendingHeal){if(!ovHas('heal'))healOpen=false;maybeHeal()} else maybePick();
+  flushOv();
+}
 function doRoll(){
-  const s=S.season; if(!s||s.last||s.pendingHeal||s.pickAttr)return;
+  const s=S.season; if(!s)return; if(s.last)return; if(s.pendingHeal||s.pickAttr){unstick();return}
   centerOn(app.querySelector('.stage'));
   const st=s.stages[s.idx];
   if(st.ch&&!st.chr&&!st.chPost)return;   // a story saved for after the match doesn't hold the roll
@@ -4385,7 +4393,7 @@ function onClick(e){
   else if(act==='wcall'){wcAll=true;fastRoll=true;doRoll();setTimeout(wcTick,allGap('wc'))}
   else if(act==='wcstop'){wcAll=false;playSync()}
   else if(act==='lbgo'){lbGo()}
-  else if(act==='play'){if(finishSeason()){commit();window.scrollTo({top:0});return}homeHold=false;if(S.season&&S.season.press&&!S.season.press.done){maybePress();flushOv();return}playSync()}
+  else if(act==='play'){if(finishSeason()){commit();window.scrollTo({top:0});return}homeHold=false;if(S.season&&S.season.press&&!S.season.press.done){maybePress();flushOv();return}unstick();playSync()}
   else if(act==='ssub'){seasonSub=b.dataset.v==='track'?'track':'table';render()}
   else if(act==='lbder'){const s=S.season,st=s&&s.stages[s.idx];if(!st||!lbDerbyDue(st))return;const v=d(DERBY_DIE),el=app.querySelector('[data-die="lb'+(st.mi||0)+'"]'),e=EVMAP.derby;
     rollDice(el?[el]:[],DERBY_DIE,[v],x=>x===DERBY_DIE?'crit':x===1?'fumble':x+evBonus(e)>=derbyTgt()?'win':'lose',()=>{lbDerbyRoll(st,v);sfx(st.ms[st.mi||0].dr.ok?'pass':'fail');commit()})}
@@ -5748,7 +5756,8 @@ function lbRoll(){
   const els=[ovEl.querySelector('[data-die="lbd0"]'),ovEl.querySelector('[data-die="lbd1"]')].filter(Boolean);
   if(lbAll)fastRoll=true;
   rollDice(els,20,mm.mode?[v1,v2]:[v1],()=>'',()=>{
-    const r=lbResolveOne(st,v1,mm.mode?v2:null); lbLast={stage:s.idx,i,r}; save();
+    const r=lbResolveOne(st,v1,mm.mode?v2:null); if(!r){busy=false;lbAll=false;closeOv();commit();return}   // nothing left to play in this block
+    lbLast={stage:s.idx,i,r}; save();
     sfx(r.nat===20?'nat20':r.nat===1?'nat1':r.w==='W'?'pass':r.w==='L'?'fail':'click');
     if(r.inj||s.pickAttr||s.careerOver){lbResume=lbAll&&s.pickAttr&&!r.inj&&!s.careerOver;lbAll=false;lbLast=null;closeOv();commit();return}
     if((st.mi||0)>=st.ms.length){lbAll=false;lbFinish(st);save();lbRefresh();return}
@@ -5765,7 +5774,8 @@ function lbClick(e){
   if(v==='lbhome'){lbAll=false;homeHold=true;closeOv();commit();return}
   if(v==='lbroll'){lbAll=false;lbRoll();return}
   if(v==='lball'){lbAll=true;lbRoll();return}
-  if(v==='lbmom'){const pd=lbPending(st);if(!pd)return;const m=st.ms[st.mi||0], die=pd==='der'?DERBY_DIE:lbMomentEv(st,m).die, x=d(die), el=ovEl.querySelector('[data-die="lbm"]');
+  if(v==='lbmom'){const pd=lbPending(st);if(!pd){lbAll=false;closeOv();commit();return}   // nothing left to roll here (you got hurt): back to whatever comes next
+    const m=st.ms[st.mi||0], die=pd==='der'?DERBY_DIE:lbMomentEv(st,m).die, x=d(die), el=ovEl.querySelector('[data-die="lbm"]');
     const after=()=>{const R=m.dr||m.mr;sfx(x===1?'nat1':R.ok?'pass':'fail');save();lbLast=null;
       if(s.pendingHeal){lbAll=false;busy=true;busySince=Date.now();setTimeout(()=>{busy=false;closeOv();commit()},1300)}   // hurt in the moment: the injury check comes first
       // show the outcome on the die for a moment, then on to the match
@@ -6635,6 +6645,8 @@ function lmcClick(e){
   if(v==='ldone'){lmcShown=null;closeOv();commit();return}
 }
 let pensTimer=null;
+// a shootout must never freeze: if no kick has moved for a while and none is waiting on you, take the next one
+setInterval(()=>{try{const s=S&&S.season,p=s&&s.pens;if(ovKind!=='pens'||!p||p.done||busy||anims||Date.now()-pensAt<2500)return;if(pensNext(p)==='me'&&pensMine(p)){if(!document.querySelector('.pklayer:not(.out)'))pkLayer();return}pensStep()}catch(e){}},1000);
 /* a penalty during a match: the same goal, the same odds as your kick in a shootout */
 let pkForce=null, pkM=null;
 function pkBest(){return PK_DIRS.slice().sort((a,b)=>pkOdds(b)-pkOdds(a))[0]}
@@ -6696,8 +6708,9 @@ function pkLayer(res){
   if(!L){L=document.createElement('div');L.className='pklayer';ovEl.appendChild(L)}
   L.innerHTML=pkLayerHTML(res);
 }
+let pensAt=0;
 function pensStep(){
-  clearTimeout(pensTimer);
+  clearTimeout(pensTimer); pensAt=Date.now();
   const s=S.season, p=s&&s.pens; if(!p||p.done||ovKind!=='pens')return;
   const side=pensNext(p);
   if(side==='me'&&pensMine(p)){ovUpdate(pensHTML());pensScroll();pkLayer();return}      // your own kick waits for you
