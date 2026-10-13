@@ -1215,7 +1215,9 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ipgrid.ipL{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr)}
 .ipL .ipcol:first-child>section:last-child{flex:1 1 auto}
 .matchslot.full{align-items:stretch;justify-content:flex-start}
-.slotin.full{max-width:none;height:100%;align-items:stretch;gap:16px;overflow-y:auto;overscroll-behavior:contain}
+.slotin.full{max-width:none;height:100%;align-items:stretch;gap:0;overflow:hidden}
+.ms-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:16px}
+.ms-foot{flex:none;display:flex;justify-content:center;padding-top:12px;margin-bottom:-4px}.slotin .ms-foot .btn{width:min(340px,100%);height:42px;margin:0}
 .ms-head{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:10px 0 14px;border-bottom:1px solid var(--rule)}
 .ms-head .btn{min-width:200px}
 .vsline.big{font-size:17px;gap:10px}
@@ -1259,6 +1261,11 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.docked{inset:auto;padding:0;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;z-index:30;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .ovl.docked .ovcard{max-height:100%;box-shadow:0 10px 40px rgba(0,0,0,.35)}
 .ovl.docked .ovcard.stagepop{height:100%;max-height:none}
+/* docked in the middle column: every pop-up fills it and its main button sits where Play and Roll sit */
+.ovl.docked .ovcard:not(.stagepop){height:100%;max-height:none;overflow-y:auto;justify-content:flex-start}
+.ovl.docked .ovcard:not(.stagepop)>button.btn:last-of-type,.ovl.docked .lbpop .lbbtns{margin-top:auto!important}
+.ovl.docked .ovcard:not(.stagepop)>button.btn:last-of-type{width:min(340px,100%);height:42px;min-height:42px;flex:none;margin-bottom:-18px}
+.ovl.docked .lbpop{padding-bottom:0}.ovl.docked .lbpop .lbbtns{margin-bottom:10px;min-height:42px}.ovl.docked .lbpop .lbbtns .btn{height:42px}
 .ovl.dockhide{display:none!important}
 @media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
 </style>
@@ -2758,7 +2765,8 @@ function slotNext(){
   let odds='';
   if(!lg&&s.out===0&&!s.last){try{const od=stageOdds(st);odds=`<span class="chip odds">${t.odds(od.need,Math.round(od.p*100))}</span>`}catch(e){}}
   const vs=st.opp?`<div class="vsline big">${crest(myKit(st),30)}<b>${esc(st.comp==='wc'?COUNTRY[lang][S.nat]:S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),30)}<b>${esc(oppName(st))}</b></div>`:'';
-  const head=`<div class="ms-head">${inj}<span class="lbl slotc">${t.nextUp} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h3>${roundName(st)}</h3>${vs}${odds||atmChip(st)?`<div class="mods" style="justify-content:center">${atmChip(st)}${odds}</div>`:''}${injBtn(s)||`<button class="btn" data-act="play">${t.playNext}</button>`}</div>`;
+  const head=`<div class="ms-head">${inj}<span class="lbl slotc">${t.nextUp} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h3>${roundName(st)}</h3>${vs}${odds||atmChip(st)?`<div class="mods" style="justify-content:center">${atmChip(st)}${odds}</div>`:''}</div>`;
+  const foot=`<div class="ms-foot">${injBtn(s)||`<button class="btn" data-act="play">${t.playNext}</button>`}</div>`;
   let ctx='';
   if(lg){const ob=s.obj, op=ob&&s.lt?lgMyPos(s):null;
     ctx=`<div class="ms-sec"><span class="lbl">${esc(LEAGUES[S.club.league].name)}</span>${s.lt?(lgPlayed(s)?lbNear(s):lgMini(s)):''}${ob?`<div class="sv-row msobj"><span>${t.objL}: ${objText(ob)}</span><span class="res ${op&&op<=ob.pos?'w':'p'}">${op?ord(op):'—'}</span></div>`:''}</div>`}
@@ -2766,7 +2774,7 @@ function slotNext(){
   const up=s.stages.filter((x,i)=>i>s.idx&&!x.res&&x.comp!==st.comp).slice(0,3);
   const done=s.stages.filter((x,i)=>i<s.idx&&x.res&&!x.res.skipped).slice(-3).reverse();
   const list=(l,title)=>l.length?`<div class="ms-sec"><span class="lbl">${title}</span><div class="track mtrack">${l.map(x=>mRow(s,x)).join('')}</div></div>`:'';
-  return `<section class="panel matchslot full"><div class="slotin full">${head}${ctx}${list(up,t.comingUpT)}${list(done,t.recentT)}</div></section>`;
+  return `<section class="panel matchslot full"><div class="slotin full"><div class="ms-scroll">${head}${ctx}${list(up,t.comingUpT)}${list(done,t.recentT)}</div>${foot}</div></section>`;
 }
 function ipHome(){
   const s=S.season;
