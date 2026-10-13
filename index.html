@@ -4255,15 +4255,18 @@ function scheduleAuto(){
 }
 let shuffleTimer=null;
 function shuffleName(){
-  clearInterval(shuffleTimer);
-  let final,k=0;do{final=S.parent?heirName(S.gender):randomName(S.nat)}while(final===S.name&&k++<20);
-  S.name=final;save();
-  const inp=document.getElementById('pname'); if(!inp)return;
-  if(reduce){inp.value=final;return}
-  let n=0;
-  shuffleTimer=setInterval(()=>{const el=document.getElementById('pname');if(!el){clearInterval(shuffleTimer);return}
-    if(++n>=7){el.value=final;clearInterval(shuffleTimer);return}
-    el.value=randomName(S.nat)},45);
+  cancelAnimationFrame(shuffleTimer);
+  let final,k=0;do{final=S.parent?heirName(S.gender):randomName(S.nat,S.gender)}while(final===S.name&&k++<20);
+  const done=()=>{shuffleTimer=null;S.name=final;const el=document.getElementById('pname');if(el)el.value=final;save()};   // saved once, at the end, so nothing redraws mid-shuffle
+  const inp=document.getElementById('pname'); if(!inp||reduce){done();return}
+  // a quick flicker that slows down and lands on the name
+  const steps=[0,40,85,135,195,265,350], t0=performance.now(); let i=0;
+  const tick=now=>{const el=document.getElementById('pname');if(!el){done();return}
+    const e=now-t0;
+    if(e>=steps[steps.length-1]){done();return}
+    if(e>=steps[i]){el.value=S.parent?heirName(S.gender):randomName(S.nat,S.gender);i++}
+    shuffleTimer=requestAnimationFrame(tick)};
+  shuffleTimer=requestAnimationFrame(tick);
 }
 const qd=sel=>(ovEl&&ovKind==='stage'&&ovEl.querySelector(sel))||app.querySelector(sel);
 var wcAll=false;
