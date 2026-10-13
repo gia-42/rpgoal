@@ -74,6 +74,8 @@
   let chain = Promise.resolve();
   const serial = fn => (chain = chain.then(fn).catch(() => { status = 'err'; refresh(); }));
   // swap in a copy from the account in the middle of a session: close what is open and show it
+  // a career saved by an older version (before the 0.58 restart) is left behind: this device's copy wins and replaces it
+  const staleEra = c => !!(c && c.phase && typeof window.SAVE_ERA !== 'undefined' && c.era !== window.SAVE_ERA);
   function adopt(cloud, msg) {
     S = fixSave(cloud); S.syncSid = S.sid;
     if (S.phase === 'season' && !S.season) buildSeason();
@@ -101,7 +103,7 @@
       var { data, error } = await sb.from('rpgoal_saves').select('career,updated_at').eq('user_id', user.id).maybeSingle();
       if (error) { status = 'err'; refresh(); return; }
       var seenAt = data ? data.updated_at : null;
-      const c = data && data.career, d = c ? decide(c, S, loadHof()) : 'local';
+      const c = data && data.career && !staleEra(data.career) ? data.career : null, d = c ? decide(c, S, loadHof()) : 'local';
       if (d === 'cloud') { adopt(c, tt().newer); status = 'ok'; refresh(); return; }
       if (d === 'same') { status = 'ok'; refresh(); return; }
     }
@@ -128,8 +130,7 @@
     if (error) { status = 'err'; refresh(); return; }
     if (data) {
       // a career saved by an older version (before the 0.58 restart) is left behind: this device's copy wins and replaces it
-      const old = data.career && data.career.phase && typeof window.SAVE_ERA !== 'undefined' && data.career.era !== window.SAVE_ERA;
-      const cloud = old ? null : data.career && typeof fixSave === 'function' ? fixSave(data.career) : data.career, local = S;
+      const cloud = staleEra(data.career) ? null : data.career && typeof fixSave === 'function' ? fixSave(data.career) : data.career, local = S;
       const cloudHof = Array.isArray(data.hof) ? data.hof : [];
       const achRow = cloudHof.find(e => e && e.id === '__ach');
       if (achRow && achRow.ach && typeof loadAch === 'function') {
