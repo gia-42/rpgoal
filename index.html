@@ -702,7 +702,9 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .cpos2{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}.cpos2 b{font-size:14.5px}.cpos2 .small{font-size:11px;line-height:1.3}
 .cfoot{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;border:1px solid var(--rule-2);background:var(--card);color:var(--ink);font:inherit;cursor:pointer;text-align:left}
 .cfoot:disabled{cursor:default;opacity:1}.cfoot .die{width:40px;height:40px;flex:none}
-.footp{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+.footp{display:inline-flex;align-items:center;gap:7px;color:var(--ink-2)}
+.feet{display:inline-flex;gap:3px;align-items:center}.feet .boot{width:22px;height:14px;fill:var(--ink-2);opacity:.28}.feet .boot.on{fill:var(--ink);opacity:1}
+.pkfoot .feet .boot{fill:#e6e7ea}.pkfoot{display:flex;align-items:center;justify-content:center;gap:8px}
 .wfd{display:inline-flex;gap:2px}.wfd i{width:5px;height:5px;border-radius:50%;background:var(--rule-2)}.wfd i.on{background:var(--ink-2)}
 .styles.cst{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:none}
 .styles.cst .stylebtn{padding:7px 6px;text-align:center}
@@ -1184,6 +1186,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .ovcard>.ovx{position:absolute;top:10px;right:10px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid #3a3e47;background:#191c22;color:#a9adb7;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .lbpop .lbx{display:none!important}
 @media (max-height:680px){.ovcard.pushpop{gap:3px;padding:12px 14px 8px}.pushpop .ov-kicker{font-size:10px}.pushpop .ov-title{font-size:18px!important}.pushpop .ov-sub2{font-size:11.5px;line-height:1.25}.pushpop .ltmini{font-size:11px}.pushpop .ltmini .ltr{padding-block:0;line-height:1.2}.pushpop .fixd{height:72px}.pushpop .fixd .die{max-width:64px}.pushpop .fixinfo{min-height:64px!important}.pushpop .fixbtn{height:88px}.pushpop .fixins{min-height:18px}}
+.pklayer.pkm{position:fixed;z-index:60}.pklayer.pkm.out{opacity:0;transition:opacity .2s}
 .pklayer{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,9,12,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:ovIn .2s ease-out both}
 .ovcard.pkshot{width:min(100%,var(--popw));max-width:var(--popw);gap:12px;border-color:var(--accent,#6b8afd);box-shadow:0 20px 60px rgba(0,0,0,.55)}
 .pkbig{height:150px;display:flex;align-items:center;justify-content:center}.pkbig .die{width:130px;height:130px;cursor:pointer}
@@ -1529,7 +1532,7 @@ en:{
  tag:'A football career in dice',seasonAge:(y,a)=>`Season ${y} · age ${a}`,retired:'Retired',newCareer:'New career',wipe:'Tap again to wipe',
  themeDark:'Dark',themeLight:'Light',installIOS:'Install: tap Share, then Add to Home Screen',installBtn:'Install app',
  tabGame:'Game',tabSeason:'Season',tabStats:'Career',tabHof:n=>`Hall of Fame${n?` (${n})`:''}`,
- attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Decisions',lead:'Leadership'},attrs3:{spd:'SPD',fin:'FIN',ski:'SKL',pas:'PAS',def:'DEF',str:'PHY',dec:'DEC',lead:'LDR'},attrsS:{spd:'Speed',fin:'Finish.',ski:'Skills',pas:'Passing',def:'Defend.',str:'Physical',dec:'Decis.',lead:'Leader.'},
+ attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Mentality',lead:'Leadership'},attrs3:{spd:'SPD',fin:'FIN',ski:'SKL',pas:'PAS',def:'DEF',str:'PHY',dec:'MEN',lead:'LDR'},attrsS:{spd:'Speed',fin:'Finish.',ski:'Skills',pas:'Passing',def:'Defend.',str:'Physical',dec:'Mental.',lead:'Leader.'},
  unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 20 · mod ${m}`,
  div2:'2nd division',
  newRoll:'New career · 8d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
@@ -1665,7 +1668,7 @@ pt:{
  tag:'Uma carreira no futebol, nos dados',seasonAge:(y,a)=>`Temporada ${y} · ${a} anos`,retired:'Aposentado',newCareer:'Nova carreira',wipe:'Toque de novo para apagar',
  themeDark:'Escuro',themeLight:'Claro',installIOS:'Instalar: toque em Compartilhar e depois em Adicionar à Tela de Início',installBtn:'Instalar app',
  tabGame:'Jogo',tabSeason:'Temporada',tabStats:'Carreira',tabHof:n=>`Hall da Fama${n?` (${n})`:''}`,
- attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Liderança'},attrs3:{spd:'VEL',fin:'FIN',ski:'HAB',pas:'PAS',def:'DEF',str:'FÍS',dec:'DEC',lead:'LID'},attrsS:{spd:'Veloc.',fin:'Final.',ski:'Habil.',pas:'Passe',def:'Defesa',str:'Físico',dec:'Decisões',lead:'Lider.'},
+ attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Mentalidade',lead:'Liderança'},attrs3:{spd:'VEL',fin:'FIN',ski:'HAB',pas:'PAS',def:'DEF',str:'FÍS',dec:'MEN',lead:'LID'},attrsS:{spd:'Veloc.',fin:'Final.',ski:'Habil.',pas:'Passe',def:'Defesa',str:'Físico',dec:'Mental.',lead:'Lider.'},
  unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 20 · mod ${m}`,
  div2:'2ª divisão',
  newRoll:'Nova carreira · 8d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
@@ -2191,12 +2194,13 @@ function addStats(r,games,nat,sto){
 }
 function resolveEvent(v){
   const s=S.season, st=s.stages[s.idx], e=EVMAP[st.ev];
-  const bonus=evBonus(e), tgt=evTarget(e), total=v+bonus;
-  const perfect=v===e.die, ok=perfect||(v!==1&&total>=tgt);
+  let bonus=evBonus(e), tgt=evTarget(e), total=v+bonus;
+  let perfect=v===e.die, ok=perfect||(v!==1&&total>=tgt), die=e.die;
+  if(e.id==='pen'&&pkForce){const k=pkForce;v=k.v;bonus=k.m;tgt=pkTgt(k.dir);total=v+bonus;ok=k.goal;perfect=k.goal&&v===10;die=10;if(k.dir==='chip'){addLoy(k.goal?2:-2);if(k.goal)S.chips=(S.chips||0)+1}}
   let fx={...(ok?e.ok:e.bad)};
   if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1);if(st.ev==='training')s.train++}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
-  st.evr={nat:v,bonus,tgt,total,ok,perfect}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
+  st.evr={nat:v,bonus,tgt,total,ok,perfect,die}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
   if(v===1&&ONPITCH_EV.includes(st.ev))injuryScare();
   if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=3)giveItem('scarf')}
 }
@@ -2843,9 +2847,9 @@ function stageCard(){
     const e=EVMAP[st.ev];
     dice=`<div class="dicecol"><div class="dmain">${dieSVG(e.die,'','evd adie','ev')}</div></div>`;
     body=`<span class="rk ck">${t.rkCheck}</span><span class="lbl">${S.year} · ${t.moment} · d${e.die}</span><h3>${t.ev[st.ev][0]}</h3><!--split--><div class="evdesc">${t.ev[st.ev][1]}</div>
-      <div class="mods"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>
+      <div class="mods">${st.ev==='pen'?`<span class="chip yel">${t.pkPickInfo}</span>`:`<span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span>`}</div>
       <div class="lbl">${t.momentFor(`${comp} · ${roundName(st)}`)}</div>`;
-    act=`<button class="btn" data-act="roll">${t.roll(e.die)}</button>`;
+    act=`<button class="btn" data-act="roll">${st.ev==='pen'?t.pensTake:t.roll(e.die)}</button>`;
   }else{
     const md=r?(r.pair?(r.mode||effMode(st)):null):effMode(st);
     const two=!!md&&!injured&&!(r&&r.missed);
@@ -2855,7 +2859,7 @@ function stageCard(){
     const main=two?`<div class="pair">${[0,1].map(i=>dieSVG(20,vals[i]??'',(r?outc(vals[i]):'')+(r&&i!==kept?' dropped':''),i?'stage2':'stage')).join('')}</div>`
       :dieSVG(20,r?r.nat:'',r?outc(r.nat):'','stage');
     const chDie=st.chr&&!st.chr.auto?`<div class="dcell">${dieSVG(st.chr.die||20,st.chr.nat,(st.chr.nat===(st.chr.die||20)?'crit':st.chr.nat===1?'fumble':st.chr.ok?'win':'lose')+' small sdie','chd')}<span class="lbl">${t.storyT}</span></div>`:'';
-    const evDie=st.evr?`<div class="dcell">${dieSVG(EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small adie','ev')}<span class="lbl">${t.moment}</span></div>`:'';
+    const evDie=st.evr?`<div class="dcell">${dieSVG(st.evr.die||EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small adie','ev')}<span class="lbl">${t.moment}</span></div>`:'';
     const atmDie=st.atm?`<div class="dcell">${dieSVG(6,st.atm,(st.atm>=5?'win':st.atm<=2?'lose':'evd')+' small adie','atm')}<span class="lbl">${t.atmL}</span></div>`:'';
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
@@ -2866,7 +2870,7 @@ function stageCard(){
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
       body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">★ ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
     else if(st.evr){const e=EVMAP[st.ev];
-      body+=`<div class="evbox result ${st.evr.ok?'ok':'bad'}"><span class="lbl">${t.ev[st.ev][0]} · d${e.die} ${st.evr.nat} ${sg(st.evr.bonus)} = ${st.evr.total} ${t.vs} ${st.evr.tgt} · ${st.evr.ok?t.success:t.fail}</span><div>${t.ev[st.ev][st.evr.ok?2:3]}</div>${st.evr.perfect?`<div class="small" style="color:var(--good)">${t.perfect('d'+e.die,t.attrs[e.at[0]])}</div>`:''}${fxLine(fx)}</div>`}
+      body+=`<div class="evbox result ${st.evr.ok?'ok':'bad'}"><span class="lbl">${t.ev[st.ev][0]} · d${st.evr.die||e.die} ${st.evr.nat} ${sg(st.evr.bonus)} = ${st.evr.total} ${t.vs} ${st.evr.tgt} · ${st.evr.ok?t.success:t.fail}</span><div>${t.ev[st.ev][st.evr.ok?2:3]}</div>${st.evr.perfect?`<div class="small" style="color:var(--good)">${t.perfect('d'+e.die,t.attrs[e.at[0]])}</div>`:''}${fxLine(fx)}</div>`}
     const cm=teamMod(st), pm=pmod(rating(S.attrs)), kb=keyBonus(S.attrs[st.key]);
     const teamChip=st.comp==='wc'?`${t.chNation} ${sg(cm)}`:`${t.chClub} ${sg(cm)}`;
     if(!r){
@@ -3540,7 +3544,7 @@ function leagueTableView(s,form){
 /* ---------- Stats tab ---------- */
 function statsView(){
   const H=S.history;
-  if(!H.length)return `<section class="panel"><div class="muted">${t.noStats}</div></section><div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`;
+  if(!H.length)return `<section class="panel stack" style="gap:8px"><div class="muted">${t.noStats}</div>${S.attrs&&S.phase!=='create'?`<div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>`:''}</section><div class="row"><button class="btn ghost sm" data-act="reset">${resetArm?t.wipe:t.newCareer}</button></div>`;
   const sub=`<div class="subtabs csub" role="group">${['nums','seasons','inv','contract'].map(k=>`<button data-act="csub" data-v="${k}" aria-pressed="${careerSub===k}">${t.careerSubs[k]}</button>`).join('')}</div>`;
   if(careerSub==='seasons')return sub+careerView();
   if(careerSub==='inv')return sub+inventoryView();
@@ -3556,6 +3560,7 @@ function statsView(){
     <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,fmt(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
     ${cab?`<div class="cabinet oneline">${cab}</div>`:''}
     ${awCab(S.awards)}
+    <div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>
     <div class="cgrid">${radar()}${campaignView()}</div>
     ${sparkline()}
     <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div></section>`;
@@ -4171,6 +4176,7 @@ function doRoll(){
   centerOn(app.querySelector('.stage'));
   const st=s.stages[s.idx];
   if(st.ch&&!st.chr)return;
+  if(st.ev==='pen'&&!st.evr){pkMoment(k=>{pkForce=k;try{resolveEvent(k.v)}finally{pkForce=null}const r=st.evr;sfx(r.perfect?'nat20':r.ok?'pass':'fail');commit()});return}
   if(st.ev&&!st.evr){
     const e=EVMAP[st.ev], v=d(e.die), el=qd('[data-die="ev"]');
     rollDice(el?[el]:[],e.die,[v],x=>x===e.die?'crit':x===1?'fumble':x+evBonus(e)>=evTarget(e)?'win':'lose',()=>{resolveEvent(v);const r=st.evr;sfx(r.perfect?'nat20':r.nat===1?'nat1':r.ok?'pass':'fail');commit()});
@@ -5243,7 +5249,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{contract:'Contract',nums:'Numbers',seasons:'Seasons',inv:'Locker room'},invT:'Locker room',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
- pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkGoal:'Goal!',pkMiss:'Missed!',pkOther:'Pick another spot',foot:{R:'Right-footed',L:'Left-footed',B:'Two-footed'},footS:{R:'Right foot',L:'Left foot',B:'Both feet'},footL:'Dominant foot',footRoll:'Tap to roll',footOdds:'d20 · 1–15 right · 16–19 left · 20 both',wfL:'Weak foot',posAuto:'Set by your dice. You can change position later in your career.',campWf:'Train your weaker foot',campWfD:(a,b)=>`Weak foot ${a}/5 → ${b}/5. Better penalties to the side that opens your body.`,pkChipD:'High risk. The fans will love it, or never forget it.',pensNeedC:'goal on 6+',pkChipGoal:'Chipped in! The crowd goes wild',pkChipMiss:'The keeper stood still and caught it',pkChipUp:'Fan support up',pkChipDown:'Fan support down',seasonOver:'Season over',nextSeasonBtn:'Next season',wcTab:{m:'Match',g:'Group',b:'Bracket'},wcTeamH:'Team',wcGrpT:g=>`Group ${g}`,wcRoad:'Road to the final',wcTbd:'To be decided',wcThru:'Top two of the group go through',wcSeeTbl:'see the Group tab',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle',chip:'Chip it down the middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
+ pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkGoal:'Goal!',pkMiss:'Missed!',pkOther:'Pick another spot',pkPickInfo:'Pick your spot · the same odds as a shootout kick',foot:{R:'Right-footed',L:'Left-footed',B:'Two-footed'},footS:{R:'Right foot',L:'Left foot',B:'Both feet'},footL:'Dominant foot',footRoll:'Tap to roll',footOdds:'d20 · 1–15 right · 16–19 left · 20 both',wfL:'Weak foot',posAuto:'Set by your dice. You can change position later in your career.',campWf:'Train your weaker foot',campWfD:(a,b)=>`Weak foot ${a}/5 → ${b}/5. Better penalties to the side that opens your body.`,pkChipD:'High risk. The fans will love it, or never forget it.',pensNeedC:'goal on 6+',pkChipGoal:'Chipped in! The crowd goes wild',pkChipMiss:'The keeper stood still and caught it',pkChipUp:'Fan support up',pkChipDown:'Fan support down',seasonOver:'Season over',nextSeasonBtn:'Next season',wcTab:{m:'Match',g:'Group',b:'Bracket'},wcTeamH:'Team',wcGrpT:g=>`Group ${g}`,wcRoad:'Road to the final',wcTbd:'To be decided',wcThru:'Top two of the group go through',wcSeeTbl:'see the Group tab',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle',chip:'Chip it down the middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
  lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
  lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
   ['A cross floats towards the far post with you arriving.',['Head it in','Volley it','Cushion it back for a teammate']],
@@ -5262,7 +5268,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{contract:'Contrato',nums:'Números',seasons:'Temporadas',inv:'Vestiário'},invT:'Vestiário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
- pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkGoal:'Gol!',pkMiss:'Perdeu!',pkOther:'Escolher outro canto',foot:{R:'Destro',L:'Canhoto',B:'Ambidestro'},footS:{R:'Pé direito',L:'Pé esquerdo',B:'Dois pés'},footL:'Pé dominante',footRoll:'Toque para rolar',footOdds:'d20 · 1–15 direito · 16–19 esquerdo · 20 os dois',wfL:'Pé fraco',posAuto:'Definida pelos dados. Dá para mudar de posição mais adiante na carreira.',campWf:'Treinar o pé fraco',campWfD:(a,b)=>`Pé fraco ${a}/5 → ${b}/5. Pênaltis melhores no canto que abre o corpo.`,pkChipD:'Alto risco. A torcida vai amar, ou nunca vai esquecer.',pensNeedC:'gol com 6+',pkChipGoal:'Cavadinha! A torcida vai à loucura',pkChipMiss:'O goleiro ficou parado e pegou',pkChipUp:'Apoio da torcida sobe',pkChipDown:'Apoio da torcida cai',seasonOver:'Temporada encerrada',nextSeasonBtn:'Próxima temporada',wcTab:{m:'Partida',g:'Grupo',b:'Chaveamento'},wcTeamH:'Seleção',wcGrpT:g=>`Grupo ${g}`,wcRoad:'Caminho até a final',wcTbd:'A definir',wcThru:'Os dois primeiros do grupo avançam',wcSeeTbl:'veja a aba Grupo',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio',chip:'Cavadinha no meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
+ pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkGoal:'Gol!',pkMiss:'Perdeu!',pkOther:'Escolher outro canto',pkPickInfo:'Escolha o canto · as mesmas chances de uma cobrança na disputa',foot:{R:'Destro',L:'Canhoto',B:'Ambidestro'},footS:{R:'Pé direito',L:'Pé esquerdo',B:'Dois pés'},footL:'Pé dominante',footRoll:'Toque para rolar',footOdds:'d20 · 1–15 direito · 16–19 esquerdo · 20 os dois',wfL:'Pé fraco',posAuto:'Definida pelos dados. Dá para mudar de posição mais adiante na carreira.',campWf:'Treinar o pé fraco',campWfD:(a,b)=>`Pé fraco ${a}/5 → ${b}/5. Pênaltis melhores no canto que abre o corpo.`,pkChipD:'Alto risco. A torcida vai amar, ou nunca vai esquecer.',pensNeedC:'gol com 6+',pkChipGoal:'Cavadinha! A torcida vai à loucura',pkChipMiss:'O goleiro ficou parado e pegou',pkChipUp:'Apoio da torcida sobe',pkChipDown:'Apoio da torcida cai',seasonOver:'Temporada encerrada',nextSeasonBtn:'Próxima temporada',wcTab:{m:'Partida',g:'Grupo',b:'Chaveamento'},wcTeamH:'Seleção',wcGrpT:g=>`Grupo ${g}`,wcRoad:'Caminho até a final',wcTbd:'A definir',wcThru:'Os dois primeiros do grupo avançam',wcSeeTbl:'veja a aba Grupo',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio',chip:'Cavadinha no meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
  lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
  lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
   ['Um cruzamento viaja para a segunda trave e você chega de frente.',['Cabecear','Pegar de voleio','Ajeitar para um companheiro']],
@@ -5456,7 +5462,9 @@ function lbDerbyRoll(st,v){
 function lbMomentEv(st,m){if(!m.mev){let id=pickEvent(st);if(!id||id==='derby'||id==='night'&&Math.random()<.5)id=pick(['counter','through','header','oneone','fk','pen']);m.mev=id}return EVMAP[m.mev]}
 function lbMomentRoll(st,v){
   const s=S.season, m=st.ms[st.mi||0]; if(!m||!m.mq||m.mr)return; const e=lbMomentEv(st,m);
-  const b=evBonus(e), tgt=evTarget(e), tot=v+b, perfect=v===e.die, ok=perfect||(v!==1&&tot>=tgt), fx={...(ok?e.ok:e.bad)};
+  let b=evBonus(e), tgt=evTarget(e), tot=v+b, perfect=v===e.die, ok=perfect||(v!==1&&tot>=tgt);
+  if(e.id==='pen'&&pkForce){const k=pkForce;v=k.v;b=k.m;tgt=pkTgt(k.dir);tot=v+b;ok=k.goal;perfect=k.goal&&v===10;if(k.dir==='chip'){addLoy(k.goal?2:-2);if(k.goal)S.chips=(S.chips||0)+1}}
+  const fx={...(ok?e.ok:e.bad)};
   if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1)}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   m.mr={nat:v,b,tgt,tot,ok,perfect,fx:{mode:fx.mode||null,buff:fx.buff||0}};
@@ -5517,8 +5525,8 @@ function lbHTML(){
   }else if(pd==='mom'){
     const e=lbMomentEv(st,m);
     die=dieSVG(e.die,'','evd adie','lbm');
-    info=`<div class="ov-sub2 lbtxt">${t.ev[e.id][1]}</div><div class="mods" style="justify-content:center"><span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span></div>`;
-    btn=`<button class="btn" data-ov="lbmom">${t.roll(e.die)}</button>`;
+    info=`<div class="ov-sub2 lbtxt">${t.ev[e.id][1]}</div><div class="mods" style="justify-content:center">${e.id==='pen'?`<span class="chip yel">${t.pkPickInfo}</span>`:`<span class="chip yel">${evChip(e)}</span><span class="chip">${t.target} ${evTarget(e)}</span>`}</div>`;
+    btn=`<button class="btn" data-ov="lbmom">${e.id==='pen'?t.pensTake:t.roll(e.die)}</button>`;
   }else{
     const mm=lbMods(st,i,m), dc=lbDC(m), need=dc-mm.tot, md=mm.mode;
     const vals=shown?(shown.r.pair||[shown.r.nat]):[], kept=shown&&shown.r.pair?(shown.r.mode==='adv'?(vals[0]>=vals[1]?0:1):(vals[0]<=vals[1]?0:1)):0;
@@ -5571,14 +5579,16 @@ function lbClick(e){
   if(v==='lbroll'){lbAll=false;lbRoll();return}
   if(v==='lball'){lbAll=true;lbRoll();return}
   if(v==='lbmom'){const pd=lbPending(st);if(!pd)return;const m=st.ms[st.mi||0], die=pd==='der'?DERBY_DIE:lbMomentEv(st,m).die, x=d(die), el=ovEl.querySelector('[data-die="lbm"]');
-    ovEl.querySelectorAll('[data-ov="lbmom"]').forEach(q=>q.disabled=true);
-    rollDice(el?[el]:[],die,[x],y=>y===die?'crit':y===1?'fumble':'',()=>{if(pd==='der')lbDerbyRoll(st,x);else lbMomentRoll(st,x);const R=m.dr||m.mr;sfx(x===1?'nat1':R.ok?'pass':'fail');save();lbLast=null;
+    const after=()=>{const R=m.dr||m.mr;sfx(x===1?'nat1':R.ok?'pass':'fail');save();lbLast=null;
       if(s.pendingHeal){lbAll=false;busy=true;busySince=Date.now();setTimeout(()=>{busy=false;closeOv();commit()},1300)}   // hurt in the moment: the injury check comes first
       // show the outcome on the die for a moment, then on to the match
       ovEl.querySelectorAll('.lbinfo2').forEach(q=>{q.innerHTML=`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.ok?t.success:t.fail}</div><div class="ov-sub2">${pd==='der'?t.ev.derby[R.ok?2:3]:t.ev[m.mev][R.ok?2:3]}</div>`});
       ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbmgo">${t.lbCont}</button>`});
       const dd=ovEl.querySelector('[data-die="lbm"]');if(dd)dd.classList.add(R.ok?'win':'lose');
-      if(lbAll&&!s.pendingHeal){ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbstop">${t.lbStop}</button>`});busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(!ovEl||ovKind!=='lb')return;lbRefresh();if(lbAll)lbRoll()},allGap('lb')+500)}});return}
+      if(lbAll&&!s.pendingHeal){ovEl.querySelectorAll('.lbbtns').forEach(q=>{q.innerHTML=`<button class="btn" data-ov="lbstop">${t.lbStop}</button>`});busy=true;busySince=Date.now();setTimeout(()=>{busy=false;if(!ovEl||ovKind!=='lb')return;lbRefresh();if(lbAll)lbRoll()},allGap('lb')+500)}};
+    if(pd==='mom'&&lbMomentEv(st,m).id==='pen'){pkMoment(k=>{if(!ovEl||ovKind!=='lb')return;pkForce=k;try{lbMomentRoll(st,k.v)}finally{pkForce=null}after()});return}
+    ovEl.querySelectorAll('[data-ov="lbmom"]').forEach(q=>q.disabled=true);
+    rollDice(el?[el]:[],die,[x],y=>y===die?'crit':y===1?'fumble':'',()=>{if(pd==='der')lbDerbyRoll(st,x);else lbMomentRoll(st,x);after()});return}
   if(v==='lbmgo'){lbRefresh();return}
   if(v==='lbnext'){lbLast=null;homeHold=true;closeOv();nextStage();commit();return}
 }
@@ -6299,7 +6309,10 @@ function footOf(v){return v<=15?'R':v<=19?'L':'B'}
 function startWF(f,ski){return f==='B'?5:ski>=8?3:2}
 function rollFoot(){const el=app.querySelector('[data-die="foot"]'),v=d(20);if(!el){S.footR=v;commit();return}
   rollDice([el],20,[v],x=>x===20?'crit':'',()=>{S.footR=v;sfx(v===20?'nat20':'click');commit()})}
-function footTag(){const w=S.wf||2;return `<span class="footp" data-nm="${t.wfL} ${w}/5">${t.footS[S.foot]}${S.foot==='B'?'':`<span class="wfd" aria-label="${t.wfL} ${w}/5">${[1,2,3,4,5].map(i=>`<i class="${i<=w?'on':''}"></i>`).join('')}</span>`}</span>`}
+const BOOT='<path d="M3 3.5h6.2l1.6 3.1 7.6 1.6c3 .6 4.6 1.8 4.4 3.6l-.1.7H3z"/><rect x="4.6" y="12.9" width="2.2" height="1.6" rx=".5"/><rect x="11" y="12.9" width="2.2" height="1.6" rx=".5"/><rect x="17.4" y="12.9" width="2.2" height="1.6" rx=".5"/>';
+function feetSVG(f,w){f=f||'R';const on=k=>f==='B'||f===k?'on':'';
+  return `<span class="feet" role="img" aria-label="${t.foot[f]}${f!=='B'?` · ${t.wfL} ${w||2}/5`:''}"><svg viewBox="0 0 24 15" class="boot ${on('L')}"><g transform="translate(24 0) scale(-1 1)">${BOOT}</g></svg><svg viewBox="0 0 24 15" class="boot ${on('R')}">${BOOT}</svg></span>`}
+function footTag(){const w=S.wf||2;return `<span class="footp" data-nm="${t.foot[S.foot]}${S.foot==='B'?'':` · ${t.wfL} ${w}/5`}">${feetSVG(S.foot,w)}${S.foot==='B'?'':`<span class="wfd">${[1,2,3,4,5].map(i=>`<i class="${i<=w?'on':''}"></i>`).join('')}</span>`}</span>`}
 const pkT=(v,hi,mid)=>v>=hi?1:v>=mid?0:-1;
 // the side that opens your body: a right-footer going to the right, a left-footer to the left
 const footOpen=d=>{const f=S.foot||'R';return f==='B'?false:f==='R'?(d==='tr'||d==='br'):(d==='tl'||d==='bl')};
@@ -6324,7 +6337,7 @@ function pensKick(side,v){
   const total=you?v+(p.dir?pkDirMod(p.dir)+pkItem():p.bonus):v;
   const goal=v===1?false:total>=(mine?(chipK?6:4):(hasItem('gkgloves')?5:4));
   p[side].push({v,total,goal,you,dir:you?p.dir||null:undefined,chip:chipK?1:undefined}); if(you)p.dir=null; if(you&&v===1)injuryScare();
-  if(chipK){if(goal){addLoy(2);S.chips=(S.chips||0)+1}else{addLoy(-1);S.chipsMiss=(S.chipsMiss||0)+1}}
+  if(chipK){if(goal){addLoy(2);S.chips=(S.chips||0)+1}else{addLoy(-2);S.chipsMiss=(S.chipsMiss||0)+1}}
   if(you)p.myFirst=goal;   // your last kick so far
   pensCheck(p);
 }
@@ -6428,6 +6441,22 @@ function lmcClick(e){
   if(v==='ldone'){lmcShown=null;closeOv();commit();return}
 }
 let pensTimer=null;
+/* a penalty during a match: the same goal, the same odds as your kick in a shootout */
+let pkForce=null, pkM=null;
+function pkBest(){return PK_DIRS.slice().sort((a,b)=>pkOdds(b)-pkOdds(a))[0]}
+function pkMoment(cb){
+  if(lbAll||wcAll){const dir=pkBest(),m=pkDirMod(dir)+pkItem(),v=d(10);cb({v,dir,m,goal:v!==1&&v+m>=pkTgt(dir)});return}
+  const el=document.createElement('div'); el.className='pklayer pkm'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); document.body.appendChild(el);
+  pkM={el,dir:null,res:null,cb};
+  const draw=()=>{el.innerHTML=pkCardHTML(pkM.res?pkM.res.dir:pkM.dir,pkM.res,t.ev.pen[0])};
+  draw();
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-ov]');if(!b||busy||!pkM||pkM.res)return;const v=b.dataset.ov;
+    if(v==='pdir'){if(b.dataset.d==='chip'&&!pkCanChip())return;pkM.dir=b.dataset.d;draw();return}
+    if(v==='pkback'){pkM.dir=null;draw();return}
+    if(v==='pkick'&&pkM.dir){const dir=pkM.dir,x=d(10),de=el.querySelector('[data-die="pkbig"]');el.querySelectorAll('[data-ov="pkick"],[data-ov="pkback"]').forEach(q=>q.disabled=true);
+      rollDice(de?[de]:[],10,[x],y=>y===10?'crit':y===1?'fumble':'',()=>{const m=pkDirMod(dir)+pkItem(),goal=x!==1&&x+m>=pkTgt(dir);pkM.res={v:x,goal,dir};sfx(goal?'pass':'fail');draw();
+        busy=true;busySince=Date.now();setTimeout(()=>{busy=false;const M=pkM;pkM=null;el.classList.add('out');setTimeout(()=>el.remove(),200);M.cb({v:x,dir,m,goal})},1500)})}});
+}
 function maybePens(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingPens||ovHas('pens'))return;
   ovQ.push({k:'pens'});
@@ -6453,17 +6482,18 @@ function pensHTML(){
     <div class="pkboard ${Math.max(p.me.length,p.opp.length)>=5&&(p.me.length>=5&&p.opp.length>=5)?'sd':''}">${order.map(row).join('')}</div>${foot}</div>`;
 }
 /* your penalty: its own pop-up over the shootout. Pick a spot, then roll the big die */
-function pkLayerHTML(res){
-  const p=S.season.pens; const spot=d=>{const m=pkDirMod(d)+pkItem();return `<button class="pkspot ${d}${footOpen(d)?' open':''}" data-ov="pdir" data-d="${d}"><b>${t.pkDir[d]}</b><span class="num">d10 ${sg(m)} · ${pkOdds(d)}%</span></button>`};
-  const fl=S.foot?`<div class="pkfoot">${t.foot[S.foot]}${S.foot!=='B'?` · ${t.wfL} ${S.wf||2}/5`:''}</div>`:'';
+function pkLayerHTML(res){const p=S.season.pens;return pkCardHTML(res?res.dir:p.dir,res,t.pensYou)}
+function pkCardHTML(dir,res,kick){
+  const spot=d=>{const m=pkDirMod(d)+pkItem();return `<button class="pkspot ${d}${footOpen(d)?' open':''}" data-ov="pdir" data-d="${d}"><b>${t.pkDir[d]}</b><span class="num">d10 ${sg(m)} · ${pkOdds(d)}%</span></button>`};
+  const fl=S.foot?`<div class="pkfoot">${feetSVG(S.foot,S.wf)}<span>${t.foot[S.foot]}${S.foot!=='B'?` · ${t.wfL} ${S.wf||2}/5`:''}</span></div>`:'';
   const chip=pkCanChip()?(()=>{const m=pkDirMod('chip')+pkItem();return `<button class="pkspot pkchip" data-ov="pdir" data-d="chip"><b>${t.pkDir.chip}</b><span class="num">d10 ${sg(m)} · ${t.pensNeedC} · ${pkOdds('chip')}%</span><span class="pkcd">${t.pkChipD}</span></button>`})():'';
-  let body; const dir=res?res.dir:p.dir;
+  let body;
   if(!dir)body=`<h2 class="ov-title" style="font-size:22px">${t.pkDirT}</h2>${fl}<div class="pkgoal"><div class="pkframe">${PK_DIRS.map(spot).join('')}</div>${chip}</div>`;
   else{const m=pkDirMod(dir)+pkItem(), ch=dir==='chip';
     body=`<h2 class="ov-title" style="font-size:22px">${t.pkDir[dir]}</h2><div class="pkbig">${dieSVG(10,res?res.v:'',res?(res.goal?'win':'lose'):'','pkbig')}</div>
       <div class="pkres">${res?`<div class="verdict result v-${res.goal?'good':'bad'}" style="font-size:22px">${ch?(res.goal?t.pkChipGoal:t.pkChipMiss):res.goal?t.pkGoal:t.pkMiss}</div>${ch?`<div class="small muted">${res.goal?t.pkChipUp:t.pkChipDown}</div>`:''}`:`<div class="mods" style="justify-content:center"><span class="chip">d10 ${sg(m)}</span><span class="chip">${ch?t.pensNeedC:t.pensNeed}</span><span class="chip odds">${pkOdds(dir)}%</span></div>`}</div>
       ${res?'':`<button class="btn" data-ov="pkick">${t.pkShoot}</button><button class="linkb" data-ov="pkback">${t.pkOther}</button>`}`}
-  return `<div class="ovcard pkshot"><span class="ov-kicker">${t.pensYou}</span>${body}</div>`;
+  return `<div class="ovcard pkshot"><span class="ov-kicker">${kick}</span>${body}</div>`;
 }
 function pkLayer(res){
   if(!ovEl||ovKind!=='pens')return; const p=S.season&&S.season.pens; let L=ovEl.querySelector('.pklayer');
