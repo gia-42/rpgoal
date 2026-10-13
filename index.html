@@ -950,7 +950,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .ltable th{font-size:10px;font-weight:500;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:2px 4px;position:sticky;top:0;background:var(--card)}
 .ltable td{text-align:right;padding:2.5px 4px;border-top:1px solid var(--rule)}
 .ltable th:first-child,.ltable td:first-child{text-align:left;width:22px;color:var(--ink-3);border-left:3px solid transparent;padding-left:5px}
-.ltable .tm{text-align:left;width:auto}.ltable td.tm{display:flex;align-items:center;gap:6px}.ltable td.tm b{font-weight:600;letter-spacing:.03em}
+.ltable .tm{text-align:left;width:auto}.ltable.full td.tm b{letter-spacing:0;white-space:normal;line-height:1.2}.ltable td.tm svg{flex:none}.ltable td.tm{display:flex;align-items:center;gap:6px}.ltable td.tm b{font-weight:600;letter-spacing:.03em}
 .ltable .pts{font-weight:700;color:var(--ink)}
 .ltable tr.me td{background:color-mix(in srgb,var(--good) 14%,transparent);font-weight:600}
 .ltable tr.zc td:first-child{border-left-color:#d9a43a}.ltable tr.z1 td:first-child{border-left-color:var(--good)}.ltable tr.z2 td:first-child{border-left-color:color-mix(in srgb,var(--good) 45%,transparent)}.ltable tr.zr td:first-child{border-left-color:var(--bad)}
@@ -3471,9 +3471,9 @@ function leagueTableView(s,form){
   const mv=S.lgMv&&S.lgMv.year===S.year-1?S.lgMv:null, nm={};
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" ${ipMode?'':`data-nm="${esc(x.n)}"`}>${crest(kitOf(x.n),13)}<b>${ipMode?esc(x.n):esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
-    <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    <div class="track"><table class="ltable ${ipMode?'full':''}"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
 /* ---------- Stats tab ---------- */
 function statsView(){
@@ -3820,6 +3820,7 @@ function ac(){
       const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3800;lp.Q.value=.4;
       master=actx.createGain();master.gain.value=.16;master.connect(lp);lp.connect(comp);comp.connect(actx.destination)}
     if(actx.state==='suspended')actx.resume();
+    try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(e){}
     return actx;
   }catch(e){return null}
 }
@@ -3926,11 +3927,14 @@ function nmTip(w,txt,keep){
   const tw=el.offsetWidth, top=r.top-el.offsetHeight-6; el.style.left=Math.round(clamp(r.left+r.width/2-tw/2,8,innerWidth-tw-8))+'px'; el.style.top=Math.round(top<8?r.bottom+6:top)+'px';
   wdTipEl=el; if(!keep)wdTipT=setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200)},1800);
 }
-const hoverDev=(()=>{try{return matchMedia('(hover:hover) and (pointer:fine)').matches}catch(e){return false}})();
-document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('[data-nm]');if(!w||hoverDev)return;nmTip(w,w.dataset.nm)},true);
-document.addEventListener('mouseover',e=>{if(!hoverDev)return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w)nmTip(w,w.dataset.nm,true)});
-document.addEventListener('mouseout',e=>{if(!hoverDev)return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget))&&wdTipEl){wdTipEl.remove();wdTipEl=null}});
+let lastPtr='';
+document.addEventListener('pointerdown',e=>{lastPtr=e.pointerType||''},true);
+document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('[data-nm]');if(!w||lastPtr==='mouse')return;nmTip(w,w.dataset.nm)},true);
+document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w)nmTip(w,w.dataset.nm,true)});
+document.addEventListener('pointerout',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget))&&wdTipEl){wdTipEl.remove();wdTipEl=null}});
 document.addEventListener('scroll',()=>{if(wdTipEl){wdTipEl.remove();wdTipEl=null}},{passive:true,capture:true});
+/* iPhone: let the game's sounds play even with the ring/silent switch on (iOS 17+); older iOS keeps the switch's say */
+try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 // some browsers only let sound start on a full tap: wake the audio there too
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{try{if(soundOn&&actx&&actx.state==='suspended')actx.resume()}catch(e){}},{passive:true}));
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
