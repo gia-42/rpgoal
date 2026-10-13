@@ -1276,6 +1276,7 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.docked .lbpop{padding-bottom:0}.ovl.docked .lbpop .lbbtns{margin-bottom:10px;min-height:42px}.ovl.docked .lbpop .lbbtns .btn{height:42px}
 .ovl.dockhide{display:none!important}
 @media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
+.swi{width:1.05em;height:1.05em;display:inline-block;vertical-align:-.16em;margin-left:.12em;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex:none}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -2343,7 +2344,7 @@ const rushOut=n=>Math.max(1,Math.ceil(n/2));
 // the longer you were out, the likelier your replacement keeps the shirt
 function awaySummary(s){
   const items=[...new Set(s.away)];let w=0,dd=0,l=0;
-  items.forEach(i=>{const st=s.stages[i];if(!st||!st.res)return;
+  items.forEach(i=>{const st=s.stages[i];if(!st||(!st.res&&!isLB(st)))return;
     if(isLB(st)){(st.ms||[]).forEach(m=>{if(m.r&&m.r.missed){if(m.r.w==='W')w++;else if(m.r.w==='D')dd++;else l++}});return}
     const r=st.res, k=r.wdl||(r.tone==='good'?'W':r.tone==='bad'?'L':'D');if(k==='W')w++;else if(k==='D')dd++;else l++});
   const n=w+dd+l, ppg=n?(3*w+dd)/n:0, lv=teamLevel(clubRank(S.club.name,S.club.league).frac), exp=[2.2,1.9,1.5,1.2,1][lv]||1.5;
@@ -2905,7 +2906,7 @@ function stageCard(){
   const evPending=st.ev&&!st.evr&&!r, chPending=st.ch&&!st.chr&&!r&&!st.chPost;
   const fx=st.fx||{mode:null,buff:0};
   const kv=kitVars(myKit(st));
-  const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>${st.der?' ★':''}`)}</span>${st.comp!=='wc'?`<button class="mtag mt${oppTier(st)}" data-act="mtag">${t.oppTier[oppTier(st)]}</button>`:''}</div>${nemTag(st)}`:'';
+  const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>${st.der?' '+swI():''}`)}</span>${st.comp!=='wc'?`<button class="mtag mt${oppTier(st)}" data-act="mtag">${t.oppTier[oppTier(st)]}</button>`:''}</div>${nemTag(st)}`:'';
   const grp=(st.comp==='wc'&&st.round===0&&st.g!=null)||st.comp==='run'||isCG(st);
   const recNow=grp?(()=>{const done=s.stages.filter(x=>x.comp===st.comp&&x.round===0&&x.g!=null);return `<div class="grec"><span class="lbl">${st.comp==='run'?t.runT:t.groupT}</span>${done.map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.res&&x.res.skipped?'–':x.g+1}</span>`).join('')}</div>`})():'';
   const race=st.comp==='league'&&(s.v||4)>=5?(()=>{const lg=s.stages.filter(x=>x.comp==='league'),g=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind<=1).length,f=lg.filter(x=>x.res&&!x.res.skipped&&x.res.kind===4).length;
@@ -2917,13 +2918,13 @@ function stageCard(){
   if(isLB(st)&&!chPending&&!evPending&&!(r&&!r.block)){lbCard=true;
     const n=st.ms.length, cols=lbCols(n), mi=st.mi||0, der=lbDerbyDue(st), tb=s.lt?lgTable(s):[], me=tb.find(x=>x.me), mom=lgMom(s);
     const dc=m=>m.r?(m.r.crit?'crit':m.r.w==='W'?'win':m.r.w==='D'?'mid':'lose'):'';
-    dice=`<div class="lbgrid" style="--c:${cols}">${st.ms.map((m,i)=>`<div class="lbc ${m.der?'der':''} ${m.r&&m.r.missed?'miss':''} ${i===mi&&!r?'nx':''}" title="${esc(m.opp)}">${dieSVG(20,m.r?m.r.nat:'',dc(m),'lb'+i)}<span class="lbha">${m.ha==='H'?t.homeS:t.awayS}${m.der?'★':''}</span></div>`).join('')}</div>`;
+    dice=`<div class="lbgrid" style="--c:${cols}">${st.ms.map((m,i)=>`<div class="lbc ${m.der?'der':''} ${m.r&&m.r.missed?'miss':''} ${i===mi&&!r?'nx':''}" title="${esc(m.opp)}">${dieSVG(20,m.r?m.r.nat:'',dc(m),'lb'+i)}<span class="lbha">${m.ha==='H'?t.homeS:t.awayS}${m.der?swI():''}</span></div>`).join('')}</div>`;
     const rs=st.ms.filter(m=>m.r), w=rs.filter(m=>m.r.w==='W').length, dr=rs.filter(m=>m.r.w==='D').length, l=rs.length-w-dr;
     body=`<span class="rk mt">${t.rkMatch} · ${n}d20</span><span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3><!--split-->`
       +`<div class="mods lbinfo">${me&&me.p?`<span class="chip">${ord(me.pos)} · ${me.pts} ${t.ptsS}</span>`:''}<span class="chip ${mom>0?'fit':mom<0?'inj':''}">${t.momT} ${sg(mom)}</span><span class="chip">${t.homeS} +1</span>${rs.length?`<span class="chip num">${w}${t.wdlS.W} ${dr}${t.wdlS.D} ${l}${t.wdlS.L}</span>`:''}</div>`;
-    if(der&&!der.dr){const e=EVMAP.derby;body+=`<div class="evbox"><span class="lbl">★ ${t.ev.derby[0]} · ${t.vsOpp(esc(der.opp))} · d${DERBY_DIE} ${sg(evBonus(e))} · ${t.target} ${derbyTgt()}</span><div>${t.ev.derby[1]}</div></div>`;
+    if(der&&!der.dr){const e=EVMAP.derby;body+=`<div class="evbox"><span class="lbl">${swI()} ${t.ev.derby[0]} · ${t.vsOpp(esc(der.opp))} · d${DERBY_DIE} ${sg(evBonus(e))} · ${t.target} ${derbyTgt()}</span><div>${t.ev.derby[1]}</div></div>`;
       act=`<button class="btn" data-act="lbder">${t.roll(20)}</button>`}
-    else if(der&&der.dr&&!der.r){const e=EVMAP.derby;body+=`<div class="evbox result ${der.dr.ok?'ok':'bad'}"><span class="lbl">★ ${t.ev.derby[0]} · d${DERBY_DIE} ${der.dr.nat} ${sg(der.dr.b)} = ${der.dr.tot} ${t.vs} ${der.dr.tgt} · ${der.dr.ok?t.success:t.fail}</span><div>${t.ev.derby[der.dr.ok?2:3]}</div><span class="fx ${der.dr.ok?'up':'down'}">${der.dr.ok?t.fx.adv:t.fx.dis}</span></div>`;
+    else if(der&&der.dr&&!der.r){const e=EVMAP.derby;body+=`<div class="evbox result ${der.dr.ok?'ok':'bad'}"><span class="lbl">${swI()} ${t.ev.derby[0]} · d${DERBY_DIE} ${der.dr.nat} ${sg(der.dr.b)} = ${der.dr.tot} ${t.vs} ${der.dr.tgt} · ${der.dr.ok?t.success:t.fail}</span><div>${t.ev.derby[der.dr.ok?2:3]}</div><span class="fx ${der.dr.ok?'up':'down'}">${der.dr.ok?t.fx.adv:t.fx.dis}</span></div>`;
       act=`<button class="btn" data-act="lbgo">${t.lbCont}</button>`}
     else if(s.careerOver)act=`<button class="btn danger" data-act="endcareer">${t.endCareer}</button>`;
     else if(s.pickAttr)act=`<button class="btn" data-act="pickov">${t.pickT}</button>`;
@@ -2975,7 +2976,7 @@ function stageCard(){
     if(st.atm)body+=`<div class="evline ${st.atm>=5?'ok':st.atm<=2?'bad':''}">${t.atmTx[st.atm]}</div>`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
-      body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">★ ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
+      body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">${st.ev==='derby'?swI():'★'} ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
     else if(st.evr){const e=EVMAP[st.ev];
       body+=`<div class="evbox result ${st.evr.ok?'ok':'bad'}"><span class="lbl">${t.ev[st.ev][0]} · d${st.evr.die||e.die} ${st.evr.nat} ${sg(st.evr.bonus)} = ${st.evr.total} ${t.vs} ${st.evr.tgt} · ${st.evr.ok?t.success:t.fail}</span><div>${t.ev[st.ev][st.evr.ok?2:3]}</div>${st.evr.perfect?`<div class="small" style="color:var(--good)">${t.perfect('d'+e.die,t.attrs[e.at[0]])}</div>`:''}${fxLine(fx)}</div>`}
     const cm=teamMod(st), pm=pmod(rating(S.attrs)), kb=keyBonus(S.attrs[st.key]);
@@ -3042,7 +3043,7 @@ function tracker(){
       const word=st.res.pending?t.pensShort:st.comp==='league'?(st.res.w!=null?`${st.res.w}${t.wdlS.W} ${st.res.d}${t.wdlS.D} ${st.res.l}${t.wdlS.L}`:t.kindShort[st.res.kind]):st.res.wdl?t.wdl[st.res.wdl]:st.res.champ?t.won:st.res.win?t.through:t.out;
       res=`<span class="res ${st.res.tone==='good'?'w':st.res.tone==='bad'?'l':'m'}">${st.res.missed?t.inj+' · ':''}${word}</span>`;
     }else if(i===s.idx)res=`<span class="res m">${t.upNext}</span>`;
-    const ev=(st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">★ ${t.ev[st.ev][0]}</span>`:'')+(st.ch&&(st.chr||i===s.idx)?`<span class="evtag ${st.chr?(st.chr.ok?'ok':'bad'):''}">${t.chx[st.ch][0]}</span>`:'')+(st.nem&&st.opp?`<span class="evtag nem">${t.nemT}</span>`:'');
+    const ev=(st.ev&&(st.evr||i===s.idx)?`<span class="evtag ${st.evr?(st.evr.ok?'ok':'bad'):''}">${st.ev==='derby'?swI():'★'} ${t.ev[st.ev][0]}</span>`:'')+(st.ch&&(st.chr||i===s.idx)?`<span class="evtag ${st.chr?(st.chr.ok?'ok':'bad'):''}">${t.chx[st.ch][0]}</span>`:'')+(st.nem&&st.opp?`<span class="evtag nem">${t.nemT}</span>`:'');
     const name=`${st.comp==='league'?'':compName(st.comp,S.club.league)+' · '}${roundShort(st)}`;
     return `<div class="trow ${now?'now':''} ${st.res&&st.res.skipped?'skip':''}"><span class="tag ${st.comp==='wc'?'wc':''}">${compTag(st.comp)}</span><span>${name}${st.opp?`<span class="topp"> · ${t.vsOpp(esc(oppName(st)))}</span>`:''}${ev}</span>${res}</div>`}).join('');
   const sim=S.phase==='season'&&!s.pendingHeal&&!s.careerOver&&!s.pickAttr?`<button class="btn ghost sm" data-act="simrest">${t.simShort}</button>`:`<span class="lbl num">${t.gaApps(s.goals,s.assists,s.apps)}</span>`;
@@ -3254,6 +3255,8 @@ const ACHKEY='rpgoal-ach';
 const allTrophies=()=>S.trophies.concat(S.phase==='season'&&S.season?S.season.trophies:[]);
 const seasonsT=()=>S.history.map(h=>h.trophies).concat(S.phase==='season'&&S.season?[S.season.trophies]:[]);
 const careerSum=k=>S.history.reduce((a,h)=>a+(h[k]||0),0)+(S.phase==='season'&&S.season?S.season[k]||0:0);
+// every title, grouped by the club that won it (all spells at a club together)
+const clubTitles=()=>{const m={},add=(c,x)=>{if(c)(m[c]=m[c]||[]).push(x)};S.history.forEach(h=>(h.trophies||[]).forEach(x=>add(h.club,x)));if(S.phase==='season'&&S.season&&S.club)(S.season.trophies||[]).forEach(x=>add(S.club.name,x));return m};
 const isDiv1=x=>LEAGUES[x.lg]&&LEAGUES[x.lg].div===1;
 const evWon=id=>!!(S.season&&S.season.stages.some(x=>x.ev===id&&x.evr&&x.evr.ok));
 /* every career together: the Hall of Fame plus the one in progress */
@@ -3529,6 +3532,8 @@ const ACH_ICON={
  party:'M5 4h14l-7 8z M12 12v7.5 M8 20h8',
  cruel:'M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z M12 7.4l-1.6 4 3 2.2-1.4 3.4'
 };
+// rivalry mark: two crossed swords, drawn in the same thin-stroke style as the other icons
+const swI=(c='')=>`<svg class="swi ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5L15.5 15.5 M13 18l5-5 M16 16l3.5 3.5 M19.5 4.5L8.5 15.5 M6 13l5 5 M8 16l-3.5 3.5"/></svg>`;
 const achIcon=(a,on)=>`<svg class="achi ${on?'on':''} ${a.bad?'bad':''}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/><g transform="translate(9 9) scale(.917)"><path d="${ACH_ICON[a.id]||ACH_ICON.wc}"/></g></svg>`;
 let achF='all', achSort='std';
 const ACH_GROUP={awards:['reinvent','bothends','twoway','bdopos','newrole','awpos','awgrp','awyoung','mvp','mvp3','awards10','skipper'],contracts:['firstmil','bigmoney','recordfee','clause','loanperm','renew3','holdout','nextbig','bigsign'],titles:['smallclub','cont2small','invincible','giantkill','globetrot','firsttitle','wonderkid','promoted','league','double','treble','cont2','ucl','lib','cwc','cwcdavid','cont3','cupking','fairytale','oddswin'],
@@ -4201,7 +4206,15 @@ function rollDice(els,sides,finals,clsFn,done){
 }
 
 /* ---------- interaction ---------- */
-function commit(){ensureContract();save();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
+// back from injury in the middle of a league batch: the report comes now, not when the batch ends
+function awayCheck(any){
+  const s=S.season; if(S.phase!=='season'||!s||s.out>0||s.seasonOut||s.pendingHeal)return;
+  const st=s.stages[s.idx]; if(!st||!isLB(st)||s.awaySkip===s.idx||!(st.ms||[]).some(m=>m.r&&m.r.missed))return;
+  if(!any&&(st.mi||0)>=st.ms.length)return;   // a finished batch reports through the normal route
+  benchBack(s);s.away=(s.away||[]).concat(s.idx);const o=awaySummary(s);s.away=[];s.awaySkip=s.idx;s.benchInj=0;ovQ=ovQ.filter(x=>x.k!=='away');ovQ.unshift(o);
+  if(ovEl&&['lb','stage'].includes(ovKind)){lbAll=false;closeOv()}
+}
+function commit(){ensureContract();save();awayCheck();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -4416,8 +4429,7 @@ function onClick(e){
   else if(act==='insp'){const s=S.season,st=s&&s.stages[s.idx];if(!st||s.last)return;if(st.insp){st.insp=0;gainInsp(1)}else if((S.insp||0)>0){st.insp=1;S.insp--}commit()}
   else if(act==='skipinj'){clearTimeout(autoT);autoT=null;if(ovEl&&ovKind==='stage')closeOv();simHeal();homeHold=true;
     // back mid-block: report now, not when the block ends
-    const s=S.season, st=s&&s.stages[s.idx];
-    if(s&&s.out<=0&&st&&isLB(st)&&(st.ms||[]).some(m=>m.r&&m.r.missed)){benchBack(s);s.away=(s.away||[]).concat(s.idx);const o=awaySummary(s);s.away=[];s.awaySkip=s.idx;s.benchInj=0;ovQ=ovQ.filter(x=>x.k!=='away');ovQ.unshift(o)}
+    awayCheck(true);
     commit();window.scrollTo({top:0})}
   else if(act==='simnext'){view='game';simNext();commit()}
   else if(act==='feat'){pickFeat(b.dataset.k);commit()}
@@ -5601,7 +5613,9 @@ const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];let wins=0,losses=0;
   return clamp(base+(s.momB||0),-MOM_CAP,MOM_CAP)};
 const MOM_CAP=3;
 // a natural 20 in the league lifts the dressing room: +1 momentum that stacks, until the next defeat
-const mom20=s=>{s.momB=Math.min(MOM_CAP,(s.momB||0)+1)};
+const mom20=s=>{s.momB=Math.min(MOM_CAP,(s.momB||0)+1);momFlags(s)};
+const momFlags=s=>{const m=lgMom(s);if(m>=MOM_CAP)S.flag_mom3=1;if(m<=-MOM_CAP)S.flag_freefall=1;if((s.momB||0)>=MOM_CAP)S.flag_lift=1;
+  const w=(s.lt&&s.lt.me.wdl)||[];if(w.length>=3&&w.slice(-3).every(x=>x==='D'))S.flag_stalemate=1};
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
   const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?(m.ha==='H'?-1:0):([0,0,0,1,2][tl]||0);   // the favourites face packed defences; small clubs fight for every point
@@ -5610,6 +5624,7 @@ function lbDC(m){
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
   const T=s.lt; if(!T)return; const r=T.me.res.length; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w); if(w!=='W')s.momB=0;   // a draw or a defeat resets momentum to zero
+  momFlags(s);
   if(T.fx&&T.fx[r]){const q=T.teams.find(x=>x.n===T.fx[r]);if(q)q.res[r]=w==='W'?0:w==='D'?1:3}   // the other side of your match
 }
 function lbBlockFx(st,i,m){
@@ -5716,11 +5731,11 @@ function lbHTML(){
   const s=S.season, st=s&&s.stages[s.idx]; if(!st||!isLB(st))return'';
   const n=st.ms.length, i=Math.min(st.mi||0,n-1), done=(st.mi||0)>=n, m=st.ms[i], pd=done?null:lbPending(st), comp=compName('league',S.club.league);
   const L=lbLast&&lbLast.stage===s.idx?lbLast:null, shown=L&&!pd?L:null;
-  const boxes=st.ms.map((x,j)=>`<span class="wd ${x.r?x.r.w:''} ${j===(st.mi||0)&&!done?'cur':''}" title="${esc(x.opp)}">${x.r?t.wdlS[x.r.w]:lbStart(s,st.round)+j}<i>${x.ha==='H'?t.homeS:t.awayS}${x.der?'★':''}</i></span>`).join('');
+  const boxes=st.ms.map((x,j)=>`<span class="wd ${x.r?x.r.w:''} ${j===(st.mi||0)&&!done?'cur':''}" title="${esc(x.opp)}">${x.r?t.wdlS[x.r.w]:lbStart(s,st.round)+j}<i>${x.ha==='H'?t.homeS:t.awayS}${x.der?swI():''}</i></span>`).join('');
   const om=shown?st.ms[shown.i]:m, rd=lbStart(s,st.round)+(shown?shown.i:i);
   const head=`<span class="ov-kicker">${esc(comp)} · ${roundName(st)}</span>
     <h2 class="ov-title lbtitle">${pd==='der'?t.derbyT:pd==='mom'?t.ev[lbMomentEv(st,m).id][0]:done?t.lbDoneT:`${t.pushGame(rd)} · ${om.ha==='H'?t.homeG:t.awayG}`}</h2>
-    <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(kitOf(om.opp),20)}<b>${esc(om.opp)}</b>${om.der?' ★':''}</div>
+    <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(kitOf(om.opp),20)}<b>${esc(om.opp)}</b>${om.der?' '+swI():''}</div>
     <div class="grec cgrec lbrec">${boxes}</div>`;
   let die='', info='', btn='';
   if(done){
@@ -5906,7 +5921,7 @@ function runCheck(){
     s.runChecked=1; const P=s.lpush||[];
     const at=s.stages.findIndex(x=>!x.res), idx=at<0?s.stages.length:at;
     s.stages.splice(idx,0,...P.map((m,g)=>({comp:'run',round:0,g,opp:m.opp,lha:m.ha,der:m.der||0,key:focusKey(),res:null})));
-    s.run={...lgPushStatus(s)}; return;
+    s.run={...lgPushStatus(s)}; if(s.run.cl==='clTitle')S.flag_clinch=1; if(s.run.cl==='clDown')S.flag_doomed=1; return;
   }
   const lg=s.stages.filter(x=>x.comp==='league'); if(!lg.length||lg.some(x=>!x.res))return;
   s.runChecked=1;
@@ -6029,7 +6044,7 @@ function pushHTML(){
     :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
   return `<div class="ovcard move runpop pushpop ${ps.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.pushT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:22px">${roundName(st)} · ${st.lha==='H'?t.homeG:t.awayG}</h2>
-    <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b>${st.der?' ★':''}</div>
+    <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b>${st.der?' '+swI():''}</div>
     <div class="ov-sub2">${t.pushSt[ps.cl||ps.type](ord(ps.pos),ps.gapTop)+' '+t.pushLeft(ps.left)}</div>
     ${lgMini(s)}<div class="grec cgrec" style="justify-content:center">${games}</div>
     <div class="storydie runlie fixd">${dice}</div><div class="fixins">${insp}</div>
@@ -6461,6 +6476,7 @@ function fanAdd(k,n,opp,r){addLoy(n);const s=S.season;if(s)(s.fanLog=s.fanLog||[
 function fanMatch(st,r,win,grp){
   if(!st||st.comp==='wc'||!st.opp||r.missed||!S.club)return;
   const riv=isRival(S.club.name,st.opp), tr=oppTier(st);
+  if(st.der&&st.comp!=='league'&&st.comp!=='run'&&(grp?r.wdl==='W':win))S.flag_cupderby=1;
   if(grp){if(r.wdl==='L'){if(riv)fanAdd('rivL',-1,st.opp,r)}else if(r.wdl==='W'&&riv)fanAdd('rivW',1,st.opp,r);return}
   if(!win){if(riv)fanAdd('rivOut',st.round===lastRound(st.comp)?-3:-2,st.opp,r);else if(tr===0)fanAdd('upset',-1,st.opp,r)}
   else if(riv)fanAdd('rivW',r.champ?2:1,st.opp,r);else if(tr===4)fanAdd('giant',1,st.opp,r);
@@ -6815,6 +6831,7 @@ const FEM={pt:{
  'lmcD.0.0':'Stoppage time. Their striker is through on goal and only you can catch her.','lmcD.1.1.1':'Man-mark her tight','lmcD.3.1.0':'Chase her down','lmcD.3.1.1':'Shoulder her off the ball'
 }};
 const ACH_FEM={
+ doomed:[null,'Entre nas três últimas rodadas já rebaixada.'],
  awgrp:[null,'Seja eleita Melhor Atacante, Meio-campista ou Defensora.'],awyoung:[null,'Ganhe o prêmio de Melhor Jogadora Jovem.'],mvp:['A craque','Seja eleita a craque de uma competição.'],mvp3:[null,'Seja a craque de três competições diferentes.'],contking:['Rainha do continente'],skipper:['Capitã de verdade'],
  firstmil:['Milionária'],recordfee:[null,'Seja transferida por $100M ou mais.'],
  league:['Campeã!'],wccall:['Convocada','Seja convocada para a Copa do Mundo.'],wc:['Campeã do mundo'],bdo:[null,'Seja eleita a melhor jogadora do mundo.'],
@@ -7081,6 +7098,25 @@ ACH.push(
  {id:'toofine',bad:1,n:['Not so indispensable','Nem tão indispensável'],d:['Come back from injury to find the team did just fine without you.','Volte de lesão e descubra que o time foi muito bem sem você.'],test:()=>!!S.flag_toofine},
  {id:'grpwin',n:['Top of the group','Primeiro do grupo'],d:['Win your continental group with 13 points or more.','Vença o seu grupo continental com 13 pontos ou mais.'],test:()=>!!S.flag_grpwin},
  {id:'walkaway',bad:1,n:['Walked away','Saída precoce'],d:['Retire by choice before you turn 30.','Aposente-se por escolha antes dos 30.'],test:()=>!!S.endReason&&S.endReason.kind==='quit'&&S.endReason.age<30});
+ACH.push(
+ {id:'clubgrand',n:['Conquered it all','Conquistou tudo'],d:['Win every major title open to one club: league, national cup, main continental cup and Club World Cup. Separate spells at the club count.','Ganhe todos os grandes títulos possíveis por um mesmo clube: liga, copa nacional, principal copa continental e Mundial de Clubes. Passagens diferentes pelo clube contam.'],test:()=>Object.entries(clubTitles()).some(([c,T])=>{const lg=T.find(x=>x.kind==='league'&&isDiv1(x));if(!lg)return false;const L=LEAGUES[lg.lg];return(!L.cup||T.some(x=>x.kind==='cup'))&&(!L.cont||(T.some(x=>x.kind==='cont')&&T.some(x=>x.kind==='cwc')))})},
+ {id:'triplecrown',n:['Triple crowned','Coroa tripla'],d:['Win the league, the national cup and the main continental cup with one club, in any seasons. Separate spells count.','Ganhe a liga, a copa nacional e a principal copa continental por um mesmo clube, em qualquer temporada. Passagens diferentes contam.'],test:()=>Object.values(clubTitles()).some(T=>T.some(x=>x.kind==='league'&&isDiv1(x))&&T.some(x=>x.kind==='cup')&&T.some(x=>x.kind==='cont'))},
+ {id:'worldcont',n:['World and continent','Mundo e continente'],d:['Win the World Cup and your continent’s national-team tournament.','Ganhe a Copa do Mundo e o torneio continental de seleções.'],test:()=>allTrophies().some(x=>x.kind==='wc')&&allTrophies().some(x=>x.kind==='intl')},
+ {id:'mom3',n:['Unstoppable','Imparável'],d:['Reach +3 momentum in the league.','Chegue a +3 de embalo na liga.'],test:()=>!!S.flag_mom3},
+ {id:'freefall',bad:1,n:['Freefall','Queda livre'],d:['Sink to −3 momentum in the league.','Caia para −3 de embalo na liga.'],test:()=>!!S.flag_freefall},
+ {id:'lift',n:['Dressing-room lift','Vestiário inflamado'],d:['Stack +3 momentum from natural 20s before a draw or a defeat.','Acumule +3 de embalo vindo de 20 naturais antes de um empate ou derrota.'],test:()=>!!S.flag_lift},
+ {id:'stalemate',bad:1,n:['Stalemate','Empate em série'],d:['Draw three league games in a row.','Empate três jogos seguidos na liga.'],test:()=>!!S.flag_stalemate},
+ {id:'clinch',n:['Wrapped up early','Título antecipado'],d:['Go into the final three league games with the title already won.','Entre nas três últimas rodadas com o título já garantido.'],test:()=>!!S.flag_clinch},
+ {id:'doomed',bad:1,n:['Play for pride','Pela honra'],d:['Go into the final three league games already relegated.','Entre nas três últimas rodadas já rebaixado.'],test:()=>!!S.flag_doomed},
+ {id:'cupderby',n:['Derby beyond the league','Clássico fora da liga'],d:['Beat a main rival in the cup or on the continent.','Vença um grande rival na copa ou no continente.'],test:()=>!!S.flag_cupderby});
+ACH_GROUP.titles.push('clubgrand','triplecrown','clinch');
+ACH_GROUP.world.push('worldcont');
+ACH_GROUP.campaign.push('mom3','freefall','lift','stalemate','doomed');
+ACH_GROUP.moments.push('cupderby');
+Object.assign(ACH_RATE,{clubgrand:3,triplecrown:12,worldcont:3,mom3:25,freefall:15,lift:5,stalemate:20,clinch:15,doomed:5,cupderby:20});
+Object.assign(ACH_ICON,{clubgrand:'M5 20h14 M8 20v-3h8v3 M7 4h10v5a5 5 0 0 1-10 0z M4 5h3 M17 5h3 M9 2l1 2 M15 2l-1 2 M12 1v3',triplecrown:'M4 18h16 M4 18l-1-10 5 4 4-7 4 7 5-4-1 10',worldcont:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M3 12h18 M12 3c3 3 3 15 0 18 M12 3c-3 3-3 15 0 18',
+ mom3:'M4 18l5-5 4 3 7-8 M15 8h5v5',freefall:'M4 6l5 5 4-3 7 8 M15 16h5v-5',lift:'M12 3l2 5 5 .5-4 3.5 1.5 5-4.5-3-4.5 3 1.5-5-4-3.5 5-.5z M4 21h16',stalemate:'M5 9h14 M5 15h14',
+ clinch:'M7 4h10v5a5 5 0 0 1-10 0z M12 14v4 M8 20h8 M9 8l2 2 4-4',doomed:'M12 4v12 M7 11l5 5 5-5 M5 20h14',cupderby:'M6 4l5 5-5 5 M18 4l-5 5 5 5 M4 20h16'});
 ACH_GROUP.penalties.push('panenka','panenka3','chipmiss');
 ACH_GROUP.personal.push('twofooted','bornboth','walkaway');
 ACH_GROUP.moments.push('benchback','missed','toofine');
