@@ -3874,7 +3874,12 @@ function ovHTML(o){
   if(o.k==='deal')return dealHTML(o);
   if(o.k==='mid')return midHTML();
   if(o.k==='away'){
-    const s=S.season, rows=o.items.map(i=>s.stages[i]).filter(Boolean).map(st=>{const r=st.res||{};const word=st.comp==='league'?t.kindShort[r.kind]:r.wdl?t.wdl[r.wdl]:r.champ?t.won:r.win?t.through:t.out;
+    const s=S.season, rows=o.items.map(i=>s.stages[i]).filter(Boolean).map(st=>{const r=st.res||{};
+      // a league batch: the record of the games you missed in it (or of the whole batch)
+      if(isLB(st)){const ms=(st.ms||[]).filter(m=>m.r), mm=ms.some(m=>m.r.missed)?ms.filter(m=>m.r.missed):ms, c={W:0,D:0,L:0};mm.forEach(m=>c[m.r.w]++);
+        const tone=c.W>c.L?'w':c.L>c.W?'l':'m';
+        return `<div class="sv-row"><span>${roundShort(st)}</span><span class="res ${tone}">${c.W}${t.wdlS.W} ${c.D}${t.wdlS.D} ${c.L}${t.wdlS.L}</span></div>`}
+      const word=st.comp==='league'?(t.kindShort[r.kind]||''):r.wdl?t.wdl[r.wdl]:r.champ?t.won:r.win?t.through:t.out;
       return `<div class="sv-row"><span>${st.comp==='league'?'':esc(compName(st.comp,S.club.league))+' · '}${roundShort(st)}${st.opp?` <span class="topp">· ${t.vsOpp(esc(oppName(st)))}</span>`:''}</span><span class="res ${r.tone==='good'?'w':r.tone==='bad'?'l':'m'}">${word}</span></div>`}).join('');
     const n=(o.w||0)+(o.d||0)+(o.l||0), V=o.v||'ok';
     const top=n?`<div class="verdict result v-${V==='bad'?'bad':'mid'}" style="font-size:20px;text-align:center">${t.awayV[V]}</div><div class="mods" style="justify-content:center"><span class="chip num">${o.w}${t.wdlS.W} ${o.d}${t.wdlS.D} ${o.l}${t.wdlS.L}</span>${o.p0&&o.p1?`<span class="chip num ${o.p1<o.p0?'fit':o.p1>o.p0?'inj':''}">${t.awayPos(ord(o.p0),ord(o.p1))}</span>`:''}</div>`:'';
