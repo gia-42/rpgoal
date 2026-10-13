@@ -1938,7 +1938,7 @@ function makeStartOffers(avg,nat){
   return out.slice(0,3);
 }
 /* 0 hated · 1 disliked · 2 neutral · 3 liked · 4 loved · 5 club idol · 6 legend */
-const fanTierOf=L=>L<=-6?0:L<=-2?1:L<3?2:L<9?3:L<14?4:5;
+const fanTierOf=L=>L<=-6?0:L<=-2?1:L<3?2:L<9?3:L<17?4:5;
 const fanTier=()=>S.legend&&S.club&&S.legend===S.club.name?6:fanTierOf(S.loyalty||0);
 const loyBonus=()=>[-2,-1,0,0,1,1,1][fanTier()];   // the fans help a little; how you play moves them a lot more
 function legendReady(){
@@ -2175,11 +2175,11 @@ const roundShort=st=>st.comp==='league'&&(S.season&&S.season.v||4)<5?t.halfShort
 // stars get marked: from an 18 rating every cup opponent plans around you
 const starDC=()=>{const r=rating(S.attrs);return r>=18?1:0};
 /* league difficulty for match rolls: the gap between leagues is kept small, the rival clubs' strength sets the rest */
-const lgDC=L=>L.div===1&&L.dc<=12?13:Math.min(L.dc,L.w?15:16);   // the toughest leagues stop at 16 (15 for women); the easiest top flights start at 13
+const lgDC=L=>L.div===1&&L.dc<=12?14:Math.min(L.dc,L.w?15:16);   // the toughest leagues stop at 16 (15 for women); the easiest top flights start at 13
 function dcFor(st){return dcBase(st)+(st.comp==='league'||st.comp==='run'?0:starDC())}
 function dcBase(st){
   const L=LEAGUES[S.club.league];
-  if(st.comp==='run')return st.lha&&S.season&&S.season.v>=6?lbDC({opp:st.opp}):runDC();
+  if(st.comp==='run')return st.lha&&S.season&&S.season.v>=6?lbDC({opp:st.opp,ha:st.lha}):runDC();
   if(st.comp==='league')return lgDC(L);
   if(st.comp==='cup')return lgDC(L)+st.round+(st.round>=2?2:0)+(isW()?1:0)+matchupDC(st);
   if(st.comp==='wc')return st.round===0&&st.gdc?st.gdc:(intlSeason()?INTL_DC:WC_DC)[st.round];
@@ -2223,7 +2223,7 @@ function resolveEvent(v){
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   st.evr={nat:v,bonus,tgt,total,ok,perfect,die}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
   if(v===1&&ONPITCH_EV.includes(st.ev))injuryScare();
-  if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=3)giveItem('scarf')}
+  if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=25)giveItem('scarf')}
 }
 function resolveStage(v1,v2){
   if(isLB(S.season.stages[S.season.idx])){lbAuto(S.season.stages[S.season.idx]);return}
@@ -2328,7 +2328,7 @@ function injuryScare(){const s=S.season;if(!s||s.pendingHeal||s.careerOver||s.ou
 function injChk(v){
   const s=S.season, i=s.inj, r=s.last, tot=v+(hasItem('shinpads')?1:0);
   i.chk=v; i.chkTot=tot;
-  if(tot>=injNeed()){i.ok=1;s.pendingHeal=false;if(r){r.injury=false;r.scare=1}S.scares=(S.scares||0)+1;if(S.scares>=5)giveItem('shinpads')}
+  if(tot>=injNeed()){i.ok=1;s.pendingHeal=false;if(r){r.injury=false;r.scare=1}S.scares=(S.scares||0)+1;if(S.scares>=16)giveItem('shinpads')}
   else{i.hurt=1;s.injuries++}
 }
 function injD4(v){const s=S.season;s.inj.d4=v;s.inj.adv=v>=3||hasFeat('ironlungs')||!!s.rested;if(s.rested&&!(v>=3))s.inj.restUsed=1;s.rested=0}
@@ -2348,7 +2348,7 @@ function injD10(a,b){
     // 12: shake it off · 9–11: 1 match · 6–8: 2 · 3–5: 3 · 2: 4–6 · 1: 7–12 (or the rest of the season, above)
     i.out=kept>=12?0:kept>=9?1:kept>=6?2:kept>=3?3:kept===2?4+Math.floor(Math.random()*3):7+Math.floor(Math.random()*6); s.out=i.out; if(i.out>=2)i.cb='ask'}
   // medium injuries (2–3 matches) cost 1 Physical, serious ones (4+ or the season) cost 2
-  if(!i.career){const loss=i.season||i.out>=4?2:i.out>=2?1:0;if(loss){const b=S.attrs.str;S.attrs.str=Math.max(1,b-loss);i.strLoss=b-S.attrs.str}}
+  if(!i.career){const loss=i.season||i.out>=4?2:i.out>=2&&Math.random()<.5?1:0;if(loss){const b=S.attrs.str;S.attrs.str=Math.max(1,b-loss);i.strLoss=b-S.attrs.str}}
   s.injOut=i.season?0:i.out; if(!(s.away&&s.away.length))s.awayPos0=s.lt&&lgPlayed(s)>0?lgMyPos(s):null;
   const sev=i.career?'career':i.season?'season':'s'+Math.min(3,i.out), n=INJ_N[sev];
   i.ty=sev; i.tyi=Math.floor(Math.random()*n); i.tw=i.adv?(Math.random()<.5?0:1):(Math.random()<.5?2:3);
@@ -2456,8 +2456,8 @@ function settleLeague(s){
     else if(s.run.type==='promo'){const up=upSpots(L)||2;pos=s.run.ok?Math.min(pos,up):Math.max(pos,up+1)}
     else if(s.run.type==='releg')pos=s.run.ok?Math.min(pos,L.size-3):Math.max(pos,L.size-2)}
   if(pos===1){s.trophies.unshift({kind:'league',lg:S.club.league,year:S.year,ud:udLv()});ovPush({k:'league',lg:S.club.league,year:S.year});
-    s.lgLoy=2+Math.round(cr.frac*8);S.loyalty=Math.min(25,(S.loyalty||0)+s.lgLoy)}       // the smaller the club, the more the fans love you for it
-  else if(L.div===1&&pos<=4&&cr.frac>.45){s.lgLoy=1+Math.round((cr.frac-.45)*5);S.loyalty=Math.min(25,(S.loyalty||0)+s.lgLoy)}
+    s.lgLoy=2+Math.round(cr.frac*8);addLoy(s.lgLoy)}       // the smaller the club, the more the fans love you for it
+  else if(L.div===1&&pos<=4&&cr.frac>.45){s.lgLoy=1+Math.round((cr.frac-.45)*5);addLoy(s.lgLoy)}
   let move=null;
   if(L.div===2&&pos<=(upSpots(L)||2))move='up';
   else if(L.div===1&&L.down!=null&&(v6?pos>L.size-relSpots(L):v5?((fails>=4&&!shieldUsed)||(S.club.tier===0&&fails>=3&&pos>=L.size-2)):(S.club.tier===0&&pos>=L.size-2)))move='down';
@@ -2491,7 +2491,7 @@ function endSeason(){
   if(!fired&&s.seasonOut&&!S.endReason&&Math.random()<.75){S.benchNext=1;S.benchInjNext=1}
   S.badStreak=fired?0:bad?(S.badStreak||0)+1:0;
   S.tenure=(S.tenure||0)+1; let milestone=null;
-  if(S.tenure%5===0){milestone=S.tenure;S.loyalty=(S.loyalty||0)+3;S.milestones.push({club:S.club.name,years:S.tenure,year:S.year})}
+  if(S.tenure%5===0){milestone=S.tenure;addLoy(3);S.milestones.push({club:S.club.name,years:S.tenure,year:S.year})}
   const g=grow();
   const h={teamRank:cr.rank,teamOf:cr.of,size:L.size,qual,shieldUsed,shieldBack,fired,bdo,milestone,year:S.year,age:S.age,club:S.club.name,league:S.club.league,tier:S.club.tier,pos,move,goals:s.goals,assists:s.assists,apps:s.apps,
     p:myPos(),trophies:s.trophies.slice(),lgPts:s.lgPts!=null?s.lgPts:undefined,rating:+rating(S.attrs).toFixed(1),injuries:s.injuries,scout:s.scout,ext:s.ext?1:0,recs:s.recs||[],
@@ -2609,9 +2609,9 @@ function newSeason(club){
     else signContract(club,club.wage||wageFor(club.league,club.tier),club.years||lenFor(),S.year+1);
   }else if(!ln||last.loanStay==='perm'||last.loanStay==='ext'){
     const curPr=tierOf(S.club.league,S.club.tier).pr, best=(S.offers||[]).filter(o=>!o.loan).reduce((b,o)=>o.pr>(b?b.pr:-99)?o:b,null);
-    S.hops=0; S.loyalty=(S.loyalty||0)+1+(S.attrs.lead>=14?1:0)+(hasFeat('captain')?1:0)+(S.capt?1:0);
-    if(best&&best.pr-curPr>=0.8){S.loyalty+=Math.min(3,Math.round(best.pr-curPr));notes.push(['nRefused',best.name])}
-    S.loyalty=Math.min(25,S.loyalty);
+    S.hops=0; addLoy(1+(S.attrs.lead>=14?1:0)+(hasFeat('captain')?1:0)+(S.capt?1:0));
+    if(best&&best.pr-curPr>=0.8){addLoy(Math.min(3,Math.round(best.pr-curPr)));notes.push(['nRefused',best.name])}
+    if((S.loyalty||0)>9)S.loyalty=Math.round((S.loyalty-((S.loyalty||0)>17?2:1))*10)/10;   // over a summer, the fans' excitement settles a little
     S.club=clubAfterMove(last);
     if(S.renew&&!S.renew.none)signContract(S.club,S.renew.wage,S.renew.years,S.year+1);
     else if(!S.contract||S.contract.until<=S.year)signContract(S.club,wageFor(S.club.league,S.club.tier),lenFor(),S.year+1);
@@ -2722,7 +2722,7 @@ function teamBar(){
 }
 function fanBar(full){
   const L=S.loyalty||0, lv=fanTier(), min=-8, max=24, pos=v=>((clamp(v,min,max)-min)/(max-min)*100).toFixed(1);
-  const B=[-6,-2,3,9,14,20], ticks=B.map(v=>`<span class="fb-tick" style="left:${pos(v)}%"></span>`).join('');
+  const B=[-6,-2,3,9,17,20], ticks=B.map(v=>`<span class="fb-tick" style="left:${pos(v)}%"></span>`).join('');
   const edges=[min].concat(B,[max]), segs=t.fanStatus.map((nm,i)=>{const a=pos(edges[i]),b=pos(edges[i+1]);return{nm,a:+a,b:+b,c:(+a + +b)/2}});
   const seg=segs.map((x,i)=>`<span class="fb-seg" data-nm="${x.nm}" style="left:${x.a}%;width:${(x.b-x.a).toFixed(1)}%"></span>`).join('');
   const lbls=segs.map((x,i)=>`<span class="${i===lv?'cur':''} ${i%2?'r2':''} ${i===0?'first':i===segs.length-1?'last':''}" style="${i===segs.length-1?'right:0':`left:${i===0?0:x.c.toFixed(1)}%`}">${x.nm}</span>`).join('');
@@ -3667,7 +3667,7 @@ function careerTags(){
   if(rs.n20>=12)out.push(['nat20s']);
   if(fin.w>=6&&fin.w>=fin.l*2)out.push(['biggame']); else if(fin.l>=4&&fin.l>fin.w)out.push(['bottler']);
   if(clubs.length>=8)out.push(['journeyman']);
-  if(H.length>=10&&inj<=1)out.push(['iron']); else if(inj>=12)out.push(['glass']);
+  if(H.length>=10&&inj<=8)out.push(['iron']); else if(inj>=24)out.push(['glass']);
   const at25=H.find(h=>h.age===25);if(at25&&at25.rating<12&&peakAt.rating>=15)out.push(['late']); else if(H.some(h=>h.age<=21&&h.rating>=13.5))out.push(['prodigy']);
   if(H.length>=8&&goals/H.length>=20)out.push(['scorer']); else if(assists>=150&&assists>goals*1.5)out.push(['creator']);
   if((S.hatedAt&&(S.clubPeak||{})[S.hatedAt]>=4))out.push(['redemption']);
@@ -4404,8 +4404,8 @@ const isCrit=n=>n===20||(n===19&&hasFeat('lucky'));
 const CSW={CB:1,FB:.8,DM:.7,CM:.35,AM:0,W:0,ST:0};
 const csW=p=>CSW[p||myPos()]||0;
 /* legacy: each position's output counts the same in the Hall of Fame */
-const OUTF={ST:.95,W:1.4,AM:1.45,CM:1.6,DM:1.4,FB:1.35,CB:1.15};
-const outputScore=(g,a,cs,pos)=>Math.round((g+a*0.6+cs*1.4)*(OUTF[pos]||1));
+const OUTF={ST:1,W:1.5,AM:1.6,CM:1.8,DM:1.4,FB:1.35,CB:1.15};
+const outputScore=(g,a,cs,pos)=>Math.round((g+a*0.6+cs*1.05)*(OUTF[pos]||1));
 /* the ceiling: rolled in secret at the start, revealed by the scouts at 21 */
 const NAT_POT={BRA:2,ARG:2,FRA:2.2,ESP:2,POR:1.1,ENG:.9,ITA:1.5,GER:.9,NED:.6,URU:-.1,MAR:-.8,JPN:-.9,KOR:-1.1,EGY:-1,RSA:-.9,KSA:-1.1,USA:-1.6}, NAT_POT_W={USA:1.5,ESP:1.5,ENG:1.2,BRA:1,FRA:1,GER:1,NED:.6,ITA:.3,POR:0,ARG:0,URU:-.3};
 const natPot=()=>(isW()?NAT_POT_W:NAT_POT)[S.nat]||0;
@@ -4416,7 +4416,7 @@ const critCap=()=>Math.min(potCap()+2,Math.max(potCap(),19.5));
 const capLv=c=>c>=19?4:c>=17?3:c>=15?2:c>=13.5?1:0;
 const inspMax=()=>hasItem('kidshirt')?3:2;
 const gainInsp=n=>{S.insp=clamp((S.insp||0)+n,0,inspMax())};
-const addLoy=n=>{S.loyalty=clamp((S.loyalty||0)+n,-10,25)};
+const addLoy=n=>{const L=S.loyalty||0;if(n>0)n*=L>=17?.3:L>=9?.55:1;S.loyalty=clamp(Math.round((L+n)*10)/10,-10,25)};   // past Loved, each new cheer counts for less
 
 /* extra match modifiers from feats, items, companions and form */
 function extraMods(st){
@@ -4725,6 +4725,7 @@ function wageFor(Li,ti,opts={}){
   const L=LEAGUES[Li], tr=tierOf(Li,ti), r=opts.rating!=null?opts.rating:rating(S.attrs);
   let base=L.w?6e3*Math.pow(1.9,tr.pr):50e3*Math.pow(2.2,tr.pr);
   if(L.exotic)base*=L.c==='KSA'?40:16;
+  if(L.c==='USA'&&!L.w)base*=.55;   // the MLS pays well, but below Europe's biggest leagues
   let f=clamp(Math.pow(1.45,r-(tr.min+1.5)),.3,4)*(1+Math.min(.5,.15*S.trophies.filter(x=>x.kind==='bdo').length));
   if(S.age>=32)f*=.85;
   return roundMoney(base*f*.75*(opts.mult||1));
@@ -5299,7 +5300,7 @@ en:{
  qx:{goals:n=>`Score ${n} goals`,assists:n=>`Make ${n} assists`,cs:n=>`Keep ${n} clean sheets`,title:'Win the league',top4:'Finish in the top 4',half:'Finish in the top half',promo:'Win promotion',cupsemi:'Reach the cup semi-final'},
  qRw:{attr:'+1 attribute',fans:'fans +3',insp:'+1 inspiration'},questT:'Quest',questDone:'Quest complete',questFail:'Quest failed',
  items:{boots:['Lucky boots','+1 in every final.','Roll a natural 20 in a final you win.'],armband:['Captain’s armband','+1 in league stretches for this club.','Play eight seasons in a row at one club.'],shirt:['Iconic shirt','+1 in cup matches for this club.','Become a club idol after six seasons there and win a title that year.'],goldboot:['Golden boot','Goals +10%.','Score 30 goals in a season.'],ball:['The golden ball','+1 in World Cup matches.','Win the Ballon d’Or.'],
-  medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win three derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 12 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
+  medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win twenty-five derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 12 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
  newItem:n=>`New item: ${n}`,
  feats:{clutch:['Clutch','+2 in finals.'],bigstage:['Big stage','+1 in continental, Club World Cup and World Cup matches.'],workhorse:['Workhorse','+1 in every league stretch.'],poacher:['Poacher','Goals +25%.'],maestro:['Maestro','Assists +25%.'],wall:['The wall','+1 when the focus is Defending or Physical; clean sheets +25%.'],ironlungs:['Iron lungs','Always roll the recovery d10s with advantage.'],ageless:['Ageless','+3 on the age checks.'],lucky:['Lucky','A natural 19 counts as a critical.'],captain:['Born leader','Fans warm to you faster: +1 support every season.'],inspiring:['Inspiring','Start every season with 1 inspiration.'],latebloomer:['Late bloomer','Ceiling +2 and you keep improving until 35.']},
  featT:'Level up! Choose a feat',featSub:a=>`At ${a} you have learned something about your game. Pick one; it lasts the whole career.`,featGot:k=>`New feat: ${k}`,
@@ -5338,7 +5339,7 @@ pt:{
  qx:{goals:n=>`Marque ${n} gols`,assists:n=>`Dê ${n} assistências`,cs:n=>`Termine ${n} jogos sem sofrer gol`,title:'Ganhe a liga',top4:'Termine no top 4',half:'Termine na metade de cima',promo:'Conquiste o acesso',cupsemi:'Chegue à semifinal da copa'},
  qRw:{attr:'+1 atributo',fans:'torcida +3',insp:'+1 inspiração'},questT:'Missão',questDone:'Missão cumprida',questFail:'Missão falhou',
  items:{boots:['Chuteira da sorte','+1 em todas as finais.','Tire um 20 natural numa final vencida.'],armband:['Braçadeira de capitão','+1 nas fases da liga por este clube.','Jogue oito temporadas seguidas num clube.'],shirt:['Camisa histórica','+1 nos jogos de copa por este clube.','Vire ídolo de um clube depois de seis temporadas e ganhe um título naquele ano.'],goldboot:['Chuteira de ouro','Gols +10%.','Marque 30 gols numa temporada.'],ball:['A bola dourada','+1 nos jogos de Copa do Mundo.','Ganhe a Bola de Ouro.'],
-  medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença três momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 12 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
+  medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença vinte e cinco momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 12 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
  newItem:n=>`Novo item: ${n}`,
  feats:{clutch:['Decisivo','+2 em finais.'],bigstage:['Palco grande','+1 em jogos continentais, do Mundial e da Copa do Mundo.'],workhorse:['Incansável','+1 em toda fase da liga.'],poacher:['Matador','Gols +25%.'],maestro:['Maestro','Assistências +25%.'],wall:['A muralha','+1 quando o foco é Defesa ou Físico; jogos sem sofrer gol +25%.'],ironlungs:['Pulmão de aço','Sempre rola os d10 de recuperação com vantagem.'],ageless:['Sem idade','+3 nos testes de idade.'],lucky:['Sortudo','Um 19 natural conta como crítico.'],captain:['Líder nato','A torcida te abraça mais rápido: +1 de apoio por temporada.'],inspiring:['Inspirador','Começa toda temporada com 1 inspiração.'],latebloomer:['Tardio','Teto +2 e você continua evoluindo até os 35.']},
  featT:'Subiu de nível! Escolha um talento',featSub:a=>`Aos ${a} você aprendeu algo sobre o seu jogo. Escolha um; ele vale pela carreira toda.`,featGot:k=>`Novo talento: ${k}`,
@@ -5525,7 +5526,7 @@ const lgMyPos=s=>{const t0=lgTable(s);const m=t0.find(x=>x.me);return m?m.pos:nu
 const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];if(w.length<3)return 0;const l3=w.slice(-3);return l3.every(x=>x==='W')?1:l3.every(x=>x==='L')?-1:0};
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
-  const grit=[-1,0,0,1,2][teamLevel(clubRank(S.club.name,S.club.league).frac)]||0;   // the favourites face packed defences; small clubs fight for every point
+  const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?(m.ha==='H'?-1:0):([0,0,0,1,2][tl]||0);   // the favourites face packed defences; small clubs fight for every point
   return lgDC(L)+LB_OFF+Math.round(rel)+(L.w?1:0)-grit;
 }
 /* one league match (block die or final-push game): shared bookkeeping */
@@ -5585,7 +5586,7 @@ const DERBY_DIE=12, derbyTgt=()=>7+LEAGUES[S.club.league].lvl;
 function lbDerbyRoll(st,v){
   const m=lbDerbyDue(st); if(!m)return; const e=EVMAP.derby, b=evBonus(e), tgt=derbyTgt(), tot=v+b, ok=v===DERBY_DIE||(v!==1&&tot>=tgt);
   m.dr={nat:v,b,tgt,tot,ok,fx:{mode:ok?'adv':'dis',buff:0}}; if(v===1)injuryScare();
-  if(ok){S.derbyW=(S.derbyW||0)+1;S.flag_derby=1;if(S.derbyW>=3)giveItem('scarf')}
+  if(ok){S.derbyW=(S.derbyW||0)+1;S.flag_derby=1;if(S.derbyW>=25)giveItem('scarf')}
 }
 function lbMomentEv(st,m){if(!m.mev){let id=pickEvent(st);if(!id||id==='derby'||id==='night'&&Math.random()<.5)id=pick(['counter','through','header','oneone','fk','pen']);m.mev=id}return EVMAP[m.mev]}
 function lbMomentRoll(st,v){
@@ -6336,8 +6337,8 @@ Object.assign(T.pt.chx,{
  bidleak:['A proposta vaza','Um jornal diz que um gigante fez uma oferta por você. A torcida observa cada passo seu.',{kiss:'Beijar o escudo',quiet:'Não dizer nada',flirt:'Insinuar que está ouvindo'}],
  clausetalk:['Conversa sobre a multa','Seu empresário diz que a diretoria te pagaria mais se você baixasse a multa rescisória.',{lower:'Baixar a multa em troca de aumento',raise:'Pedir mais dinheiro e uma multa maior',keep:'Deixar como está'}]});
 
-Object.assign(T.en.items,{shinpads:['Lucky shin guards','+1 on the injury check.','Shake off five injury scares.']});
-Object.assign(T.pt.items,{shinpads:['Caneleira da sorte','+1 no teste de lesão.','Escape de cinco sustos de lesão.']});
+Object.assign(T.en.items,{shinpads:['Lucky shin guards','+1 on the injury check.','Shake off sixteen injury scares.']});
+Object.assign(T.pt.items,{shinpads:['Caneleira da sorte','+1 no teste de lesão.','Escape de dezesseis sustos de lesão.']});
 Object.assign(T.en,{scareT:'Injury scare',scareSub:'You go down after a heavy challenge and stay down. Roll a d4: 3 or 4 and you shake it off.',scareSubOld:'You go down after a heavy challenge. At your age the body forgives less: only a 4 shakes it off.',
  scareRoll:'Roll the injury check',scareOk:'Just a knock. You play on.',scareBad:'It doesn’t look good. The medical team takes over.',scareMed:'See the medical report',scareBack:'Back to the match',scareHint:'Injury scare: roll a d4 to see if it’s serious.',
  injTy:{
