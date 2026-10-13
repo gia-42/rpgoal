@@ -981,6 +981,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 /* overlays: finals, titles, Ballon d'Or, career recap */
 .ovl{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);background:rgba(8,9,12,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);overflow:hidden;overscroll-behavior:contain;animation:ovIn .25s ease-out;cursor:pointer;font-family:var(--f-ui)}
 .ovl.out{animation:ovOut .25s ease-in forwards}
+.ovl.howtop{z-index:95}
 .ovl-career,.ovl-move{overflow-y:auto;cursor:default}
 .ovl-career{align-items:flex-start}
 .ovcard.window{max-width:460px;align-items:stretch;text-align:left}
@@ -1432,12 +1433,31 @@ const HOME={JPN:[34,34],KOR:[35,35],KSA:[21,21],EGY:[31,31],MAR:[32,32],RSA:[33,
 const HOME_W={BRA:22,ARG:22,URU:22,ENG:23,NED:23,ESP:24,POR:24,FRA:25,GER:26,ITA:27,USA:28};
 const REGION={JPN:'oth',KOR:'oth',KSA:'oth',EGY:'oth',MAR:'oth',RSA:'oth',USA:'mid',BRA:'sa',ARG:'sa',URU:'sa',POR:'mid',NED:'mid',ITA:'top',FRA:'top',GER:'top',ESP:'top',ENG:'top'};
 const ENTRY={oth:[3.5,4.5,6],sa:[4,5,6.5],mid:[5,6.5,7.5],top:[6.5,7.5,8.5]};
-const RIVAL_PAIRS=[['Al Ahly','Zamalek'],['Wydad Casablanca','Raja Casablanca'],['Orlando Pirates','Kaizer Chiefs'],['Ulsan HD','Pohang Steelers'],['FC Seoul','Suwon FC'],['Urawa Red Diamonds','Kashima Antlers'],['Gamba Osaka','Cerezo Osaka'],['Corinthians','Palmeiras'],['Corinthians','São Paulo'],['Palmeiras','São Paulo'],['Corinthians','Santos'],['Flamengo','Fluminense'],['Flamengo','Vasco da Gama'],['Botafogo','Flamengo'],['Grêmio','Internacional'],['Cruzeiro','Atlético Mineiro'],['Bahia','Vitória'],['Ceará','Fortaleza'],
+const RIVAL_PAIRS=[['Al Ahly','Zamalek'],['Wydad Casablanca','Raja Casablanca'],['Orlando Pirates','Kaizer Chiefs'],['Ulsan HD','Pohang Steelers'],['Urawa Red Diamonds','Kashima Antlers'],['Gamba Osaka','Cerezo Osaka'],['Corinthians','Palmeiras'],['Corinthians','São Paulo'],['Palmeiras','São Paulo'],['Corinthians','Santos'],['Flamengo','Fluminense'],['Flamengo','Vasco da Gama'],['Botafogo','Flamengo'],['Grêmio','Internacional'],['Cruzeiro','Atlético Mineiro'],['Bahia','Vitória'],['Ceará','Fortaleza'],
  ['Boca Juniors','River Plate'],['Racing Club','Independiente'],['Rosario Central',"Newell's Old Boys"],['San Lorenzo','Boca Juniors'],['Peñarol','Nacional'],
  ['Benfica','Porto'],['Benfica','Sporting CP'],['Porto','Sporting CP'],['Ajax','Feyenoord'],['Ajax','PSV'],
  ['Real Madrid','Barcelona'],['Real Madrid','Atlético Madrid'],['Sevilla','Real Betis'],['Athletic Club','Real Sociedad'],['Inter','Milan'],['Roma','Lazio'],['Juventus','Inter'],['Juventus','Torino'],
  ['Manchester United','Manchester City'],['Manchester United','Liverpool'],['Liverpool','Everton'],['Arsenal','Tottenham'],['Chelsea','Tottenham'],
- ['Borussia Dortmund','Schalke 04'],['Bayern Munich','Borussia Dortmund'],['Hamburger SV','Werder Bremen'],['Paris Saint-Germain','Marseille'],['Lyon','Saint-Étienne']];
+ ['Borussia Dortmund','Schalke 04'],['Bayern Munich','Borussia Dortmund'],['Hamburger SV','Werder Bremen'],['Paris Saint-Germain','Marseille'],['Lyon','Saint-Étienne'],
+ ['Ponte Preta','Guarani'],['Goiás','Vila Nova'],['Goiás','Atlético Goianiense'],['Atlético Goianiense','Vila Nova'],['Paysandu','Remo'],['Coritiba','Athletico Paranaense'],
+ ['Fluminense','Vasco da Gama'],['Botafogo','Fluminense'],['Botafogo','Vasco da Gama'],['Santos','Palmeiras'],['Santos','São Paulo'],['Atlético Mineiro','América Mineiro'],['Cruzeiro','América Mineiro'],
+ ['Estudiantes','Gimnasia La Plata'],['Huracán','San Lorenzo'],['Banfield','Lanús'],['Vélez Sarsfield','Ferro Carril Oeste'],['Tigre','Platense'],['Chacarita Juniors','Atlanta'],['All Boys','Atlanta'],['Quilmes','Arsenal de Sarandí'],['Temperley','Banfield'],
+ ['Defensor Sporting','Danubio'],['Cerro','Rampla Juniors'],['Montevideo Wanderers','River Plate Montevideo'],
+ ['Braga','Vitória de Guimarães'],['Boavista','Porto'],['Marítimo','CD Nacional'],['Rio Ave','Varzim'],
+ ['Feyenoord','Sparta Rotterdam'],['Feyenoord','Excelsior'],['Twente','Heracles'],['Groningen','Heerenveen'],['NEC','Vitesse'],['PSV','FC Eindhoven'],['Go Ahead Eagles','PEC Zwolle'],['Willem II','NAC Breda'],['Roda JC','Fortuna Sittard'],['MVV','Fortuna Sittard'],
+ ['Barcelona','Espanyol'],['Valencia','Levante'],['Valencia','Villarreal'],['Celta Vigo','Deportivo La Coruña'],['Sporting Gijón','Real Oviedo'],['Las Palmas','Costa Adeje Tenerife'],['Las Palmas','Tenerife'],['Real Zaragoza','Huesca'],['Getafe','Leganés'],['Málaga','Granada'],
+ ['Genoa','Sampdoria'],['Atalanta','Brescia'],['Bologna','Fiorentina'],['Roma','Napoli'],['Bari','Lecce'],['Parma','Reggiana'],['Modena','Reggiana'],['Sassuolo','Modena'],['Napoli','Salernitana'],
+ ['Nice','Monaco'],['Lens','Lille'],['Rennes','Nantes'],['Brest','Guingamp'],['Bordeaux','Toulouse'],['Paris Saint-Germain','Paris FC'],['Strasbourg','Metz'],['Bastia','AC Ajaccio'],['Le Havre','Caen'],['Lorient','Rennes'],
+ ['Bayern Munich','1860 München'],['Köln','Borussia Mönchengladbach'],['Köln','Fortuna Düsseldorf'],['Bayer Leverkusen','Köln'],['Hamburger SV','St. Pauli'],['Union Berlin','Hertha BSC'],['Eintracht Frankfurt','Darmstadt'],['Eintracht Frankfurt','Mainz'],['Stuttgart','Karlsruher SC'],['1. FC Nürnberg','Greuther Fürth'],['Schalke 04','VfL Bochum'],['Hannover 96','Eintracht Braunschweig'],['Arminia Bielefeld','Preußen Münster'],
+ ['Newcastle','Sunderland'],['Newcastle United','Sunderland'],['Durham','Sunderland'],['West Ham','Millwall'],['Crystal Palace','Brighton'],['Nottingham Forest','Derby County'],['Leicester City','Nottingham Forest'],['Burnley','Blackburn Rovers'],['Preston North End','Blackburn Rovers'],['Cardiff City','Swansea City'],['Southampton','Portsmouth'],['Norwich City','Ipswich Town'],['Middlesbrough','Sunderland'],['West Brom','Wolverhampton'],['Leeds United','Manchester United'],['Fulham','Chelsea'],['QPR','Brentford'],['Bournemouth','Southampton'],['Aston Villa','Birmingham City'],['Charlton Athletic','Crystal Palace'],['Bristol City','Cardiff City'],
+ ['LA Galaxy','LAFC'],['New York Red Bulls','New York City FC'],['Seattle Sounders','Portland Timbers'],['Vancouver Whitecaps','Seattle Sounders'],['Portland Timbers','Vancouver Whitecaps'],['Toronto FC','CF Montréal'],['Orlando City','Inter Miami'],['Columbus Crew','FC Cincinnati'],['Atlanta United','Charlotte FC'],['Philadelphia Union','New York Red Bulls'],
+ ['Portland Thorns','Seattle Reign'],['Angel City','San Diego Wave'],
+ ['Al-Hilal','Al-Nassr'],['Al-Ittihad','Al-Ahli'],['Al-Hilal','Al-Shabab'],['Al-Nassr','Al-Shabab'],['Al-Ettifaq','Al-Qadsiah'],['Al-Taawoun','Al-Raed'],
+ ['Al Masry','Ismaily'],['Al Ittihad Alexandria','Smouha'],['Pyramids','Zamalek'],
+ ['AS FAR','FUS Rabat'],['Moghreb Tétouan','Ittihad Tanger'],['Difaâ El Jadidi','Olympique Safi'],
+ ['Cape Town City','Stellenbosch'],['AmaZulu','Golden Arrows'],['SuperSport United','Mamelodi Sundowns'],['Kaizer Chiefs','Mamelodi Sundowns'],
+ ['FC Tokyo','Tokyo Verdy'],['Kawasaki Frontale','Yokohama F. Marinos'],['Avispa Fukuoka','Sagan Tosu'],['Vissel Kobe','Gamba Osaka'],['Machida Zelvia','Tokyo Verdy'],['Shonan Bellmare','Yokohama F. Marinos'],
+ ['FC Seoul','Incheon United'],['Jeonbuk Hyundai Motors','Ulsan HD'],];
 const isRival=(a,b)=>RIVAL_PAIRS.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
 const NATIONS={
  JPN:{mod:1,first:['Haruto','Ren','Sota','Yuto','Takumi','Kaito','Daichi','Riku','Kota','Shota','Hiroki','Kenta','Ryo','Yuki','Takuma','Kaoru','Wataru','Ritsu','Junya','Ao'],last:['Sato','Suzuki','Takahashi','Tanaka','Ito','Watanabe','Yamamoto','Nakamura','Kobayashi','Kato','Yoshida','Yamada','Sasaki','Mitoma','Endo','Kubo','Doan','Minamino']},
@@ -3974,6 +3994,7 @@ function flushOv(){
       return}
     if(o.k!=='career'||e.target.closest('[data-ov="close"]'))closeOv()});
 }
+document.addEventListener('keydown',e=>{if(howtoEl&&howtoEl.isConnected&&e.key==='Escape'){e.stopImmediatePropagation();const el=howtoEl;howtoEl=null;el.remove();return}},true);
 document.addEventListener('keydown',e=>{if(ovEl&&['heal','story','agechk','feat','camp','pick','run','pens','lmc'].includes(ovKind))return;if(ovEl&&(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&!ovEl.classList.contains('ovl-move')))){e.preventDefault();if(ovEl.classList.contains('ovl-move'))pendingMove=null;closeOv()}});
 function checkIntro(){
   if(S.phase!=='season'||view!=='game'||!S.season)return;
@@ -4117,6 +4138,15 @@ try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{try{if(soundOn&&actx&&actx.state==='suspended')actx.resume()}catch(e){}},{passive:true}));
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
 let settingsOpen=false;
+/* how to play: its own layer above everything, matches and moments included; only one at a time */
+let howtoEl=null;
+function openHowto(){
+  if(howtoEl&&howtoEl.isConnected)return;
+  const el=document.createElement('div'); el.className='ovl ovl-howto ovl-move howtop'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+  el.innerHTML=ovHTML({k:'howto'}); document.body.appendChild(el); howtoEl=el;
+  el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-ov="close"]')){howtoEl=null;el.classList.add('out');setTimeout(()=>el.remove(),reduce?0:240)}});
+  requestAnimationFrame(()=>fitTexts(el));
+}
 let diceFast=(()=>{try{return localStorage.getItem('rpgoal-dice')==='fast'}catch(e){return false}})();
 // "roll all" pace: n = normal (the old pace), f = fast, s = super fast
 let allSpd=(()=>{try{return localStorage.getItem('rpgoal-allspd')||'f'}catch(e){return'f'}})();
@@ -4314,7 +4344,7 @@ function onClick(e){
   if(act==='allspd'){allSpd=b.dataset.v;try{localStorage.setItem('rpgoal-allspd',allSpd)}catch(e){}render();return}
   if(act==='dicespd'){diceFast=b.dataset.v==='f';try{localStorage.setItem('rpgoal-dice',diceFast?'fast':'normal')}catch(e){}render();return}
   if(act==='quitask'){settingsOpen=false;render();ovQ=ovQ.filter(o=>o.k!=='quit');ovQ.unshift({k:'quit',v:Math.floor(Math.random()*3)});if(ovEl&&ovEl.classList.contains('docked'))closeOv();flushOv();return}
-  if(act==='howto'){settingsOpen=false;render();ovQ.unshift({k:'howto'});flushOv();return}
+  if(act==='howto'){settingsOpen=false;render();openHowto();return}
   if(settingsOpen&&!['theme','lang','sound','haptics','wageper','dicespd','allspd','cur'].includes(act))settingsOpen=false;
   if(act!=='reset'&&resetArm){resetArm=false}
   if(act!=='retire'&&retireArm){retireArm=false}
@@ -5478,15 +5508,22 @@ function lgBuild(s){
     return{n,c:codes[n],res,tb:Math.random(),ppg}});
   const sz=lbSizes(M), n=others.length;
   // the rivalry: once in each half of the season
-  const riv=others.find(x=>isRival(me,x))||others.slice().sort((x,y)=>teamStr(y)-teamStr(x))[Math.floor(Math.random()*Math.min(4,others.length))];
+  const rp=RIVAL_PAIRS.find(([x,y])=>(x===me&&others.includes(y))||(y===me&&others.includes(x))), riv=rp?(rp[0]===me?rp[1]:rp[0]):null;   // your real rival, first in the list; no rival in this league means no derby
   let blocks, fx=null;
   if(M===2*n&&(n+1)%2===0){
     // the whole league's fixture list: a double round robin (everyone once in rounds 1–n, again in n+1–2n with home and away swapped),
     // and every match between other clubs is played out from the two clubs' strength, so the table is one consistent season
-    const N=n+1, sh=a=>a.slice().sort(()=>Math.random()-.5), arr=sh([me].concat(others)), base=[];
+    const N=n+1, sh=a=>a.slice().sort(()=>Math.random()-.5), arr=[me].concat(sh(others)), base=[];   // you sit at the pivot of the circle, so your home and away games alternate round by round
     for(let r=0;r<N-1;r++){const pr=[];for(let i=0;i<N/2;i++){const x=arr[i],y=arr[N-1-i];pr.push((r+i)%2?[y,x]:[x,y])}base.push(pr);arr.splice(1,0,arr.pop())}
-    const o1=sh(base.map((_,i)=>i)); let o2=sh(base.map((_,i)=>i));
-    if(o2[0]===o1[N-2]&&o2.length>1){const t0=o2[0];o2[0]=o2[1];o2[1]=t0}   // never the same opponent twice in a row
+    // your home and away games alternate through each half, so every batch is split evenly
+    const myH=i=>base[i].some(([x])=>x===me);
+    const spread=(hs,as,first)=>{const big=hs.length>as.length||(hs.length===as.length&&first==='H')?hs:as, sm=big===hs?as:hs, n=big.length+sm.length, o=[];let bi=0,si=0;
+      for(let k=0;k<n;k++){if(si>=sm.length||(bi<big.length&&k%2===0))o.push(big[bi++]);else o.push(sm[si++])}return o};
+    const idx=sh(base.map((_,i)=>i)), hs1=idx.filter(myH), as1=idx.filter(i=>!myH(i));
+    const o1=spread(hs1,as1,Math.random()<.5?'H':'A');
+    const idx2=sh(base.map((_,i)=>i)), hs2=idx2.filter(i=>!myH(i)), as2=idx2.filter(myH);   // the return legs: home and away swap
+    const o2=spread(hs2,as2,myH(o1[N-2])?'A':'H');   // half one ended at home → the second half starts away
+    if(o2[0]===o1[N-2]){const j=o2.findIndex((x,k)=>k>1&&myH(x)===myH(o2[0]));if(j>0){const t0=o2[0];o2[0]=o2[j];o2[j]=t0}}   // never the same opponent twice in a row
     const rounds=o1.map(i=>base[i]).concat(o2.map(i=>base[i].map(([x,y])=>[y,x])));
     const ppg={}; others.forEach(x=>{ppg[x]=teams.find(q=>q.n===x).ppg}); ppg[me]=1.38;
     // one match: the gap in strength (plus a little home edge) shifts the odds; upsets and draws always possible
