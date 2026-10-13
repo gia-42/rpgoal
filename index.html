@@ -1276,9 +1276,9 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.dockhide{display:none!important}
 @media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
 .swi{width:1.05em;height:1.05em;display:inline-block;vertical-align:-.16em;margin-left:.12em;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.pgachart{margin:4px 0 10px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.pgachart{margin:2px 0 6px}
 .pga-box{padding:0 6px 0 30px}
-.pga-plot{position:relative;height:130px;margin:8px 0 4px}
+.pga-plot{position:relative;height:96px;margin:8px 0 4px}
 .pga-plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .pga-gl{position:absolute;left:0;right:0;border-top:1px solid var(--rule)}
 .pga-gl i{position:absolute;right:calc(100% + 8px);top:-8px;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
@@ -1289,7 +1289,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .pga-yrs{position:relative;height:16px}
 .pga-yr.first{transform:none}.pga-yr.last{transform:translateX(-100%)}
 .pga-yr{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.pga-leg{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-bottom:4px}
+.pga-leg{display:flex;gap:14px;font-size:12px;color:var(--ink-2)}
 .pga-leg span{display:inline-flex;align-items:center;gap:6px}
 .pga-leg span::before{content:'';width:14px;height:3px;border-radius:2px;background:currentColor}
 .pga-leg .pga-a::before{background:var(--ink-3)}.pga-leg .pga-g::before{background:var(--accent)}.pga-leg .pga-s::before{background:var(--warn)}
@@ -1628,7 +1628,7 @@ en:{
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
  settingsT:'Settings',hapT:'Vibration',onT:'On',offT:'Off',soundT:'Sound',themeT:'Theme',langT:'Language',
- bySeason:'Season by season',seasonsShort:n=>`${n} ${n>1?'yrs':'yr'}`,
+ bySeason:'Season by season',pgaBySeason:'Apps, goals and assists by season',seasonsShort:n=>`${n} ${n>1?'yrs':'yr'}`,
  noTitles:'No titles',wcN:n=>`${n} World Cup${n>1?'s':''}`,bdoNs:n=>`${n} Ballon${n>1?'s':''} d’Or`,appsS:'apps',ratingS:'rating',majorN:n=>`${n} major${n>1?'s':''}`,
  tag:{legend:c=>`Legend · ${c}`,idol:c=>`Club idol · ${c}`,oneclub:c=>`One-club · ${c}`,forty:()=>'Played until 40',injury:()=>'Ended by injury',rival:()=>'Crossed to a rival',
   blessed:()=>'Blessed by the dice',cursed:()=>'Cursed by the dice',nat20s:()=>'Natural 20 collector',biggame:()=>'Big-game player',bottler:()=>'Bottled the finals',
@@ -1764,7 +1764,7 @@ pt:{
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
  settingsT:'Ajustes',hapT:'Vibração',onT:'Ligada',offT:'Desligada',soundT:'Som',themeT:'Tema',langT:'Idioma',
- bySeason:'Por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
+ bySeason:'Por temporada',pgaBySeason:'Jogos, gols e assistências por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
  noTitles:'Sem títulos',wcN:n=>`${n} Copa${n>1?'s':''} do Mundo`,bdoNs:n=>`${n} Bola${n>1?'s':''} de Ouro`,appsS:'jogos',ratingS:'nível',majorN:n=>`${n} grande${n>1?'s':''}`,
  tag:{legend:c=>`Lenda · ${c}`,idol:c=>`Ídolo · ${c}`,oneclub:c=>`Um clube só · ${c}`,forty:()=>'Jogou até os 40',injury:()=>'Encerrada por lesão',rival:()=>'Trocou pelo rival',
   blessed:()=>'Abençoado pelos dados',cursed:()=>'Amaldiçoado pelos dados',nat20s:()=>'Colecionador de 20',biggame:()=>'Jogador de decisão',bottler:()=>'Amarelou nas finais',
@@ -3143,7 +3143,7 @@ function pgaChart(H){
   const n=H.length-1, step=Math.max(1,Math.ceil(H.length/5)), yrs=H.map((h,i)=>(i===n||(i%step===0&&n-i>=step*.6))?`<span class="pga-yr ${i===0?'first':i===n?'last':''}" style="left:${x(i)}%">${h.year}</span>`:'').join('');
   const lines=ser.map(([k,c])=>`<polyline class="${c}" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h[k]).toFixed(2)).join(' ')}"/>`).join('');
   const dots=ser.map(([k,c])=>H.map((h,i)=>`<span class="pga-dot ${c}" style="left:${x(i)}%;top:${y(h[k])}%" title="${h.year} · ${t[k]} ${h[k]||0}"></span>`).join('')).join('');
-  return `<div class="pgachart"><div class="pga-leg"><span class="pga-a">${t.apps}</span><span class="pga-g">${t.goals}</span><span class="pga-s">${t.assists}</span></div><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.pgaL}">${lines}</svg>${dots}</div><div class="pga-yrs">${yrs}</div></div></div>`;
+  return `<div class="pgachart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.pgaBySeason}</span><div class="pga-leg"><span class="pga-a">${t.apps}</span><span class="pga-g">${t.goals}</span><span class="pga-s">${t.assists}</span></div></div><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.pgaL}">${lines}</svg>${dots}</div><div class="pga-yrs">${yrs}</div></div></div>`;
 }
 function careerView(){
   if(!S.history.length)return'';
@@ -3155,7 +3155,7 @@ function careerView(){
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
     return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${fmt(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
-  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${pgaChart(S.history)}${rows}</div>${quitRow()}</section>`;
+  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${rows}</div>${quitRow()}</section>`;
 }
 let hofSub='players';
 let hofTab='players';
@@ -3719,6 +3719,7 @@ function statsView(){
     <div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>
     <div class="cgrid">${radar()}${campaignView()}</div>
     ${sparkline()}
+    ${pgaChart(H)}
     <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div>${quitRow()}</section>`;
 }
 
