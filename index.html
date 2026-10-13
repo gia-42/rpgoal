@@ -5827,7 +5827,7 @@ function storyClick(e){
 }
 function ageHTML(){
   const h=S.history[S.history.length-1], ac=h.ageCheck;
-  const btn=!ac?`<button class="btn" data-ov="roll">${t.roll(CHK_DIE)}</button>`:ac.ok?`<button class="btn" data-ov="close">${t.ageGo}</button>`:`<button class="btn danger" data-ov="hang">${t.ageHang}</button>`;
+  const btn=!ac?`<button class="btn" data-ov="roll">${t.roll(CHK_DIE)}</button><button class="btn ghost danger" data-ov="retnow">${t.retNow}</button>`:ac.ok?`<button class="btn" data-ov="close">${t.ageGo}</button>`:`<button class="btn danger" data-ov="hang">${t.ageHang}</button>`;
   return `<div class="ovcard move agepop ${ac?(ac.ok?'ok':'bad'):''}"><span class="ov-kicker">${t.ageT} · ${t.yrs(S.age)}</span><h2 class="ov-title" style="font-size:24px">${t.ageQ}</h2><div class="ov-sub2">${t.ageDesc(S.age)}</div>
     <div class="storydie">${dieSVG(ac&&!ac.die?20:CHK_DIE,ac?ac.nat:'',ac?(ac.nat===(ac.die||20)?'crit':ac.nat===1?'fumble':ac.ok?'win':'lose'):'evd','ad')}</div>
     <div class="mods" style="justify-content:center"><span class="chip">d${CHK_DIE} + ${t.attrs.str} ${sg(ageBonus())}</span><span class="chip">${t.dc} ${c12(AGE_DC[S.age])}</span><span class="chip odds">${Math.round(pctN(c12(AGE_DC[S.age])-ageBonus(),CHK_DIE)*100)}%</span></div>
@@ -5839,7 +5839,7 @@ function ageClick(e){
   if(v==='roll'){const x=d(CHK_DIE),el=ovEl.querySelector('[data-die="ad"]');
     rollDice(el?[el]:[],CHK_DIE,[x],y=>{const ok=y===CHK_DIE||(y!==1&&y+ageBonus()>=c12(AGE_DC[S.age]));return y===CHK_DIE?'crit':y===1?'fumble':ok?'win':'lose'},()=>{ageCheck(x);const k=S.history[S.history.length-1].ageCheck;sfx(x===CHK_DIE?'nat20':x===1?'nat1':k.ok?'pass':'fail');save();ovUpdate(ageHTML())});return}
   if(v==='close'){closeOv();commit();return}
-  if(v==='hang'){closeOv();retire();commit();window.scrollTo({top:0});return}
+  if(v==='hang'||v==='retnow'){const h=S.history[S.history.length-1];if(v==='retnow'&&h.ageCheck)return;if(v==='retnow')h.ageCheck={ok:false,chose:1,nat:0,bonus:0,dc:0};closeOv();if(farewellDue()){ovQ.unshift({k:'farewell'});flushOv();return}retire();commit();window.scrollTo({top:0});return}
 }
 function featHTML(){
   const h=S.history[S.history.length-1];
@@ -6459,8 +6459,8 @@ function femCopy(base,over){
 }
 /* ================= the board, its targets, new managers, press conferences, big-match atmosphere, late career and the next generation ================= */
 const APP_VER='0.56';
-Object.assign(T.en,{verT:'Version',kidsNo:'None of your children went into football.',kidsYes:k=>k.length>1?'Your son and your daughter both want to follow in your footsteps.':k[0]==='f'?'Your daughter wants to follow in your footsteps.':'Your son wants to follow in your footsteps.'});
-Object.assign(T.pt,{verT:'Versão',kidsNo:'Nenhum dos seus filhos seguiu no futebol.',kidsYes:k=>k.length>1?'Seu filho e sua filha querem seguir seus passos.':k[0]==='f'?'Sua filha quer seguir seus passos.':'Seu filho quer seguir seus passos.'});
+Object.assign(T.en,{verT:'Version',retNow:'Retire now, without rolling',kidsNo:'None of your children went into football.',kidsYes:k=>k.length>1?'Your son and your daughter both want to follow in your footsteps.':k[0]==='f'?'Your daughter wants to follow in your footsteps.':'Your son wants to follow in your footsteps.'});
+Object.assign(T.pt,{verT:'Versão',retNow:'Aposentar agora, sem rolar',kidsNo:'Nenhum dos seus filhos seguiu no futebol.',kidsYes:k=>k.length>1?'Seu filho e sua filha querem seguir seus passos.':k[0]==='f'?'Sua filha quer seguir seus passos.':'Seu filho quer seguir seus passos.'});
 const addBoard=n=>{S.board=clamp((S.board||0)+n,-5,5)};
 const boardMood=()=>{const b=S.board||0;return b<=-3?0:b<=0?1:b<=2?2:3};
 /* the board's target for the season, from where the squad ranks in its league */
@@ -6589,9 +6589,9 @@ function heirOf(P){
 }
 /* born when the parent was somewhere between 24 and 36, and never before the parent has retired */
 function heirYear(P){const H=P.history||[], born=(H.length?H[0].year:(P.startYear||2027))-17, last=H.length?H[H.length-1].year:2027;return Math.max(last+1,born+24+Math.floor(Math.random()*13)+17)}
-/* roughly one career in four ends with a child who plays: a son, a daughter, now and then both */
+/* roughly one career in ten ends with a child who plays: a son, a daughter, now and then both */
 function decideKids(){if(S.kids!==undefined||S.phase!=='retired'||!S.history||!S.history.length)return;const r=Math.random(), w=!!(NATIONS[S.nat]&&NATIONS[S.nat].firstW);
-  S.kids=r<.25?[w&&Math.random()<.4?'f':'m']:r<.28&&w?['m','f']:[];if(typeof save==='function')try{save()}catch(e){}}
+  S.kids=r<.1?[w&&Math.random()<.4?'f':'m']:r<.11&&w?['m','f']:[];if(typeof save==='function')try{save()}catch(e){}}
 function heirName(g){const N=NATIONS[S.nat]||NATIONS.BRA, list=(g==='f'&&N.firstW)?N.firstW:N.first;return pick(list)+(S.parent&&S.parent.last?' '+S.parent.last:'')}
 function heirOffers(out){
   if(!S.parent||!out)return out;
