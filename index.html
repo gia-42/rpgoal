@@ -1136,7 +1136,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 @media (max-height:660px){.lbpop .lbinfo2{height:100px}.lbpop .lbrec{min-height:50px}.lbpop .lbdie{height:88px}.lbpop .lbdie .die{max-width:80px}}
 .stage .st-act>.slot.wcpair{display:flex!important;gap:8px;overflow:visible;grid-column:1/-1}.st-act .wcpair .btn{flex:1 1 0!important;width:auto!important;min-width:0;height:44px;max-width:none!important;padding:0 8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0!important}
 .lgnew{font-size:8px;margin-left:2px;line-height:1}.lgnew.up{color:var(--good)}.lgnew.down{color:var(--bad)}
-.wd[title]:not([title=""]){cursor:pointer}
+.wd[title]:not([title=""]),[data-nm]{cursor:pointer}
 .wdtip{position:fixed;z-index:80;background:#f3f4f6;color:#15171c;font-size:12.5px;font-weight:600;padding:5px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:wdtipIn .14s ease-out both}
 .wdtip.out{opacity:0;transition:opacity .2s}
 @keyframes wdtipIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
@@ -3471,7 +3471,7 @@ function leagueTableView(s,form){
   const mv=S.lgMv&&S.lgMv.year===S.year-1?S.lgMv:null, nm={};
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" title="${esc(x.n)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b>${esc(x.c)}</b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
     <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
@@ -3919,6 +3919,18 @@ document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest
   const r=w.getBoundingClientRect(), el=document.createElement('div'); el.className='wdtip'; el.textContent=w.title; document.body.appendChild(el);
   const tw=el.offsetWidth; el.style.left=Math.round(clamp(r.left+r.width/2-tw/2,8,innerWidth-tw-8))+'px'; el.style.top=Math.round(r.top-el.offsetHeight-6)+'px';
   wdTipEl=el; wdTipT=setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200)},1800)},true);
+/* club initials in the tables: tap (or hover with a mouse) to see the full name */
+function nmTip(w,txt,keep){
+  clearTimeout(wdTipT); if(wdTipEl)wdTipEl.remove();
+  const r=w.getBoundingClientRect(), el=document.createElement('div'); el.className='wdtip'; el.textContent=txt; document.body.appendChild(el);
+  const tw=el.offsetWidth, top=r.top-el.offsetHeight-6; el.style.left=Math.round(clamp(r.left+r.width/2-tw/2,8,innerWidth-tw-8))+'px'; el.style.top=Math.round(top<8?r.bottom+6:top)+'px';
+  wdTipEl=el; if(!keep)wdTipT=setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200)},1800);
+}
+const hoverDev=(()=>{try{return matchMedia('(hover:hover) and (pointer:fine)').matches}catch(e){return false}})();
+document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('[data-nm]');if(!w||hoverDev)return;nmTip(w,w.dataset.nm)},true);
+document.addEventListener('mouseover',e=>{if(!hoverDev)return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w)nmTip(w,w.dataset.nm,true)});
+document.addEventListener('mouseout',e=>{if(!hoverDev)return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget))&&wdTipEl){wdTipEl.remove();wdTipEl=null}});
+document.addEventListener('scroll',()=>{if(wdTipEl){wdTipEl.remove();wdTipEl=null}},{passive:true,capture:true});
 // some browsers only let sound start on a full tap: wake the audio there too
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{try{if(soundOn&&actx&&actx.state==='suspended')actx.resume()}catch(e){}},{passive:true}));
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
@@ -5577,7 +5589,7 @@ function lgMini(s,full){
   const tb=lgTable(s), me=tb.find(x=>x.me); if(!me)return'';
   let rows=full?tb:tb.filter(x=>x.pos<=2||Math.abs(x.pos-me.pos)<=2||x.pos===tb.length);
   let prev=0;
-  return `<div class="ltmini">${rows.map(x=>{const gap=x.pos-prev>1?`<div class="ltgap">···</div>`:'';prev=x.pos;return gap+`<div class="ltr ${x.me?'me':''}"><span class="num">${x.pos}</span>${crest(kitOf(x.n),12)}<b>${esc(x.c)}</b><span class="num">${x.p}</span><span class="num pts">${x.pts}</span></div>`}).join('')}</div>`;
+  return `<div class="ltmini">${rows.map(x=>{const gap=x.pos-prev>1?`<div class="ltgap">···</div>`:'';prev=x.pos;return gap+`<div class="ltr ${x.me?'me':''}"><span class="num">${x.pos}</span>${crest(kitOf(x.n),12)}<b data-nm="${esc(x.n)}">${esc(x.c)}</b><span class="num">${x.p}</span><span class="num pts">${x.pts}</span></div>`}).join('')}</div>`;
 }
 
 function runCheck(){
