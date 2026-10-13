@@ -75,7 +75,7 @@
   const serial = fn => (chain = chain.then(fn).catch(() => { status = 'err'; refresh(); }));
   // swap in a copy from the account in the middle of a session: close what is open and show it
   // a career saved by an older version (before the 0.58 restart) is left behind: this device's copy wins and replaces it
-  const staleEra = c => !!(c && c.phase && typeof window.SAVE_ERA !== 'undefined' && c.era !== window.SAVE_ERA);
+  const staleEra = c => !!(c && c.phase && ((typeof window.SAVE_ERA !== 'undefined' && c.era !== window.SAVE_ERA) || c.phase === 'create'));
   function adopt(cloud, msg) {
     S = fixSave(cloud); S.syncSid = S.sid;
     if (S.phase === 'season' && !S.season) buildSeason();
@@ -96,7 +96,7 @@
   const finished = (c, hof) => typeof careerFinishedIn === 'function' && careerFinishedIn(c, hof);
   const push = () => serial(pushNow);
   async function pushNow(tries) {
-    if (!user) return; tries = tries || 0;
+    if (!user || !S || S.phase === 'create') return; tries = tries || 0;
     status = 'saving'; refresh();
     // look before writing: if another device moved on since we last agreed, decide instead of overwriting
     {

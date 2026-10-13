@@ -1849,12 +1849,12 @@ function randomName(nat,g){g=g||(typeof S!=='undefined'&&S&&S.gender)||'m';const
 
 let S=fresh();
 // 0.58 started every career over: a save without era 58 opens on the new-player screen (the account sync checks SAVE_ERA too)
-try{window.SAVE_ERA=58}catch(e){}
-function fresh(g){g=g||'m';return{phase:'create',era:58,gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
-function save(){S.savedAt=Date.now();S.rev=(S.rev||0)+1;S.sid=S.savedAt.toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
+try{window.SAVE_ERA=59}catch(e){}
+function fresh(g){g=g||'m';return{phase:'create',era:59,gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
+function save(){if(S.phase==='create'){try{localStorage.removeItem(KEY)}catch(e){}return}S.savedAt=Date.now();S.rev=(S.rev||0)+1;S.sid=S.savedAt.toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
-  if(x.era!==58)return fresh(x.gender==='f'?'f':'m');
+  if(x.era!==59)return fresh(x.gender==='f'?'f':'m');
   if(!x.cid&&x.phase&&x.phase!=='create'){const id=careerId(x);if(id)x.cid=id}
   const f=o=>{if(!o)return;if(!LEAGUES[o.league])o.league=0;const n=LEAGUES[o.league].tiers.length;if(!(o.tier>=0))o.tier=0;if(o.tier>=n)o.tier=n-1};
   if(!NATIONS[x.nat])x.nat='BRA';
