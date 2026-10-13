@@ -1163,9 +1163,9 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .wch{font-size:20px;text-align:center;margin:0}
 .wctable td.tm b{font-weight:600}
 .wcfxs{display:flex;flex-direction:column;gap:2px;margin-top:4px}
-.wcfx{display:grid;grid-template-columns:52px 1fr 48px 1fr;align-items:center;gap:6px;font-size:12.5px;padding:3px 0;border-top:1px solid var(--rule)}
+.wcfx{display:grid;grid-template-columns:64px 1fr 48px 1fr;align-items:center;gap:6px;font-size:12.5px;padding:3px 0;border-top:1px solid var(--rule)}
 .wcfx span:nth-child(2){display:flex;gap:5px;align-items:center;justify-content:flex-end;text-align:right}.wcfx span:nth-child(4){display:flex;gap:5px;align-items:center}
-.wcfx b{text-align:center}.wcfx.o{color:var(--ink-3);border-top:0;padding-top:0}
+.wcfx b{text-align:center}.wcfx>.lbl{white-space:nowrap}.wcfx svg{flex:none}.wcfx.o{color:var(--ink-3);border-top:0;padding-top:0}
 .wcbr{display:flex;flex-direction:column;align-items:stretch;gap:0}
 .wcbox{border:1px solid var(--rule-2);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;background:var(--card)}
 .wcbox.now{border-color:#f2c14e;box-shadow:0 0 0 1px rgba(242,193,78,.35)}
@@ -1979,7 +1979,7 @@ function activate(){
   st.ev=(s.out===0&&Math.random()<p)?pickEvent(st):null;
   if(st.ev==='derby'&&isLB(st))st.ev=null;
   if(st.ev)s.used.push(st.ev);
-  else if(s.out===0&&!final&&Math.random()<.33){const ids=Object.keys(CHOICES).filter(k=>!s.used.includes('c_'+k)&&(isLB(st)?!MATCH_CH.has(k):true)&&(!CHOICES[k].cond||CHOICES[k].cond()));if(ids.length){const seen=S.chSeen||{},w=ids.map(k=>1/(1+3*(seen[k]||0)));let r=Math.random()*w.reduce((a,b)=>a+b,0),pk=ids[ids.length-1];for(let j=0;j<ids.length;j++){r-=w[j];if(r<=0){pk=ids[j];break}}st.ch=pk;if(!MATCH_CH.has(pk))st.chPost=1;s.used.push('c_'+pk)}}
+  else if(s.out===0&&!final&&Math.random()<.33){const ids=Object.keys(CHOICES).filter(k=>!s.used.includes('c_'+k)&&(isLB(st)?!MATCH_CH.has(k):st.comp==='wc'?MATCH_CH.has(k):true)&&(!CHOICES[k].cond||CHOICES[k].cond()));if(ids.length){const seen=S.chSeen||{},w=ids.map(k=>1/(1+3*(seen[k]||0)));let r=Math.random()*w.reduce((a,b)=>a+b,0),pk=ids[ids.length-1];for(let j=0;j<ids.length;j++){r-=w[j];if(r<=0){pk=ids[j];break}}st.ch=pk;if(!MATCH_CH.has(pk))st.chPost=1;s.used.push('c_'+pk)}}
 }
 /* continental group stage: three opponents, home and away (the order is drawn every season), 6 quick rolls */
 const isCG=st=>!!st&&(st.comp==='cont'||st.comp==='cont2')&&st.round===0&&st.g!=null;
@@ -2325,7 +2325,7 @@ function nextStage(){
   const s=S.season; if(s.pendingLMC)lmcAuto(); if(s.pendingPens)pensAuto();
   // a league block whose last match ended in a pick or an injury check: settle it now (otherwise it stays open forever)
   {const cur=s.stages[s.idx]; if(cur&&isLB(cur)&&!cur.res&&(cur.mi||0)>=cur.ms.length&&!s.pendingHeal&&!s.pickAttr&&!s.careerOver)lbFinish(cur)}
-  {const cur=s.stages[s.idx];if(cur&&cur.ch&&cur.chPost&&!cur.chr&&cur.res&&s.out===0&&!s.seasonOut)s.postCh=s.idx}
+  {const cur=s.stages[s.idx];if(cur&&cur.ch&&cur.chPost&&!cur.chr&&cur.res){if(cur.comp==='wc'||s.out>0||s.seasonOut)cur.ch=null;else s.postCh=s.idx}}
   s.last=null;
   if(s.out===0&&s.away&&s.away.length)s.away=[];
   let idx=s.stages.findIndex(x=>!x.res);
@@ -2781,7 +2781,7 @@ function fxLine(fx){
 }
 function stageCard(){
   const s=S.season, st=s.stages[s.idx], r=s.last, injured=s.out>0&&!r;
-  const evPending=st.ev&&!st.evr&&!r, chPending=st.ch&&!st.chr&&!r;
+  const evPending=st.ev&&!st.evr&&!r, chPending=st.ch&&!st.chr&&!r&&!st.chPost;
   const fx=st.fx||{mode:null,buff:0};
   const kv=kitVars(myKit(st));
   const oppLine=st.opp?`<div class="vsline">${crest(oppKit(st),20)}<span>${t.vsOpp(`<b>${esc(oppName(st))}</b>`)}</span>${st.comp!=='wc'?`<button class="mtag mt${oppTier(st)}" data-act="mtag">${t.oppTier[oppTier(st)]}</button>`:''}</div>${nemTag(st)}`:'';
@@ -5611,7 +5611,7 @@ function wcPanel(v){
   if(v==='g'){
     const tb=wcTable(), played=D.gs.filter(x=>x.res).length;
     const rows=tb.map((x,i)=>`<tr class="${x.c===S.nat?'me':''} ${i<2&&played===3?'z1':''}"><td class="num">${i+1}</td><td class="tm">${crest(natKit(x.c),14)}<b>${esc(COUNTRY[lang][x.c]||x.c)}</b></td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td><td class="num">${x.gf-x.ga>0?'+':''}${x.gf-x.ga}</td><td class="num pts">${x.pts}</td></tr>`).join('');
-    const fx=D.gs.map(x=>{const r=D.T.my[x.g];return `<div class="wcfx"><span class="lbl">${t.gameN(x.g+1)}</span><span>${crest(natKit(S.nat),12)}${esc(COUNTRY[lang][S.nat])}</span><b class="num">${r?r[0]+' – '+r[1]:'·'}</b><span>${esc(COUNTRY[lang][x.opp]||x.opp)}${crest(natKit(x.opp),12)}</span></div>`+(()=>{const m=D.T.other[x.g];const shown=x.g<played;return `<div class="wcfx o"><span></span><span>${crest(natKit(m[0]),12)}${esc(COUNTRY[lang][m[0]]||m[0])}</span><b class="num">${shown?m[2]+' – '+m[3]:'·'}</b><span>${esc(COUNTRY[lang][m[1]]||m[1])}${crest(natKit(m[1]),12)}</span></div>`})()}).join('');
+    const fx=D.gs.map(x=>{const r=D.T.my[x.g];return `<div class="wcfx"><span class="lbl">${t.gameN(x.g+1)}</span><span>${esc(COUNTRY[lang][S.nat])}${crest(natKit(S.nat),12)}</span><b class="num">${r?r[0]+' – '+r[1]:'·'}</b><span>${crest(natKit(x.opp),12)}${esc(COUNTRY[lang][x.opp]||x.opp)}</span></div>`+(()=>{const m=D.T.other[x.g];const shown=x.g<played;return `<div class="wcfx o"><span></span><span>${esc(COUNTRY[lang][m[0]]||m[0])}${crest(natKit(m[0]),12)}</span><b class="num">${shown?m[2]+' – '+m[3]:'·'}</b><span>${crest(natKit(m[1]),12)}${esc(COUNTRY[lang][m[1]]||m[1])}</span></div>`})()}).join('');
     return `<section class="panel hero wcpanel">${head}<h3 class="wch">${t.wcGrpT(D.T.grp)}</h3><table class="ltable wctable"><thead><tr><th>#</th><th class="tm">${t.wcTeamH}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th><th>±</th><th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table><div class="muted small">${t.wcThru}</div><div class="wcfxs">${fx}</div></section>`;
   }
   const ko=[1,2,3,4].map(r=>s.stages.find(x=>x.comp==='wc'&&x.round===r));
