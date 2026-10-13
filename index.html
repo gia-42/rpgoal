@@ -1276,9 +1276,9 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ovl.dockhide{display:none!important}
 @media (max-width:1100px){.ipL .lfull{display:none!important}.ipL .l3{display:inline!important}}
 .swi{width:1.05em;height:1.05em;display:inline-block;vertical-align:-.16em;margin-left:.12em;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.pgachart{margin:2px 0 6px}
+.pgachart{margin:2px 0 8px;padding-bottom:10px;border-bottom:1px solid var(--rule);flex:none}
 .pga-box{padding:0 6px 0 30px}
-.pga-plot{position:relative;height:96px;margin:8px 0 4px}
+.pga-plot{position:relative;height:110px;margin:8px 0 4px}
 .pga-plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .pga-gl{position:absolute;left:0;right:0;border-top:1px solid var(--rule)}
 .pga-gl i{position:absolute;right:calc(100% + 8px);top:-8px;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
@@ -3155,7 +3155,7 @@ function careerView(){
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
     return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${fmt(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
-  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div><div class="scrollbox">${rows}</div>${quitRow()}</section>`;
+  return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div>${pgaChart(S.history)}<div class="scrollbox">${rows}</div>${quitRow()}</section>`;
 }
 let hofSub='players';
 let hofTab='players';
@@ -3719,7 +3719,6 @@ function statsView(){
     <div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>
     <div class="cgrid">${radar()}${campaignView()}</div>
     ${sparkline()}
-    ${pgaChart(H)}
     <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div>${quitRow()}</section>`;
 }
 
