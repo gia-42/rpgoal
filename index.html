@@ -1416,7 +1416,7 @@ const NATIONS={
  POR:{mod:2,firstW:['Inês','Beatriz','Ana','Catarina','Mariana','Francisca','Joana','Rita','Tatiana','Carolina','Andreia','Diana','Matilde','Sara','Lúcia','Kika'],first:['João','Bruno','Pedro','Nélson','Hugo','Fábio','Ricardo','Renato','Vasco','Samuel','Afonso','Tomás','Diogo','Rúben','Tiago','Gonçalo','Rafael','André','Nuno','Bernardo','Francisco','Rui','Miguel','Duarte'],last:['Silva','Santos','Ferreira','Pereira','Costa','Rodrigues','Martins','Sousa','Fernandes','Gonçalves','Neves','Carvalho','Mendes']},
  ITA:{mod:2,firstW:['Martina','Giulia','Sara','Valentina','Alice','Chiara','Elena','Arianna','Cristiana','Barbara','Manuela','Lisa','Aurora','Sofia','Federica','Benedetta','Elisa','Laura'],first:['Sandro','Ciro','Leonardo','Gianluca','Stefano','Mattia','Emanuele','Daniele','Fabio','Paolo','Tommaso','Gabriele','Marco','Lorenzo','Alessandro','Federico','Matteo','Nicolò','Davide','Andrea','Riccardo','Giacomo','Simone','Luca'],last:['Rossi','Russo','Ferrari','Esposito','Bianchi','Romano','Colombo','Ricci','Marino','Greco','Bruno','Conti','De Luca','Gianesi']},
  NED:{mod:2,firstW:['Lieke','Jill','Jackie','Victoria','Esmee','Wieke','Romée','Damaris','Kerstin','Fenna','Lotte','Sanne','Merel','Iris','Daniëlle','Sherida'],first:['Cody','Denzel','Jurriën','Xavi','Wout','Micky','Stefan','Kenneth','Jeremie','Mats','Quinten','Sven','Daan','Sem','Lucas','Milan','Jesse','Thijs','Bram','Luuk','Stijn','Ruben','Joris','Teun'],last:['de Jong','Jansen','de Vries','van den Berg','Bakker','Visser','Smit','Meijer','de Boer','Mulder','Bos','Vos','Peters']},
- USA:{mod:2,first:['Christian','Weston','Tyler','Brenden','Josh','Matt','Jordan','Kellyn','Walker','Chris','Zack','Brandon','Malik','Cameron','Luca','Gianluca','Ricardo','Haji','Jesús','Mark'],firstW:['Emma','Olivia','Ava','Sophia','Mia','Madison','Abby','Alex','Mallory','Lindsey','Rose','Trinity','Jaedyn','Naomi','Kelley','Crystal','Ashley','Emily','Taylor','Savannah'],last:['Smith','Johnson','Williams','Brown','Jones','Miller','Davis','Wilson','Anderson','Thomas','Moore','Jackson','Martin','Lee','Harris','Clark','Lewis','Walker','Young','Allen','Reyna','Morgan','Horan','Lavelle']},
+ USA:{mod:1,first:['Christian','Weston','Tyler','Brenden','Josh','Matt','Jordan','Kellyn','Walker','Chris','Zack','Brandon','Malik','Cameron','Luca','Gianluca','Ricardo','Haji','Jesús','Mark'],firstW:['Emma','Olivia','Ava','Sophia','Mia','Madison','Abby','Alex','Mallory','Lindsey','Rose','Trinity','Jaedyn','Naomi','Kelley','Crystal','Ashley','Emily','Taylor','Savannah'],last:['Smith','Johnson','Williams','Brown','Jones','Miller','Davis','Wilson','Anderson','Thomas','Moore','Jackson','Martin','Lee','Harris','Clark','Lewis','Walker','Young','Allen','Reyna','Morgan','Horan','Lavelle']},
  URU:{mod:1,firstW:['Valentina','Camila','Sofía','Florencia','Agustina','Carolina','Esperanza','Pamela','Yamila','Belén','Lucía','Fiorella','Wendy','Ximena','Stephanie','Nicol'],first:['Luis','Ronald','Manuel','Joaquín','Martín','Lucas','Brian','Emiliano','Guillermo','Cristian','Nahitan','Mathías','Federico','Rodrigo','Facundo','Nicolás','Agustín','Maximiliano','Diego','Matías','Sebastián','Gastón','Bruno','Santiago'],last:['Rodríguez','González','Pérez','Fernández','Silva','Sosa','Cáceres','Olivera','Pereira','Álvarez','Méndez','Laxalt']}
 };
 const POS={
@@ -1801,7 +1801,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const fmt=n=>lang==='pt'?n.toFixed(1).replace('.',','):n.toFixed(1);
 const tierOf=(Li,ti)=>LEAGUES[Li].tiers[Math.min(ti,LEAGUES[Li].tiers.length-1)];
 const lgCountry=Li=>COUNTRY[lang][LEAGUES[Li].c];
-const NATMOD_W={USA:3,ESP:3,ENG:3,GER:3,FRA:2,BRA:2,NED:2,ITA:1,POR:1,ARG:0,URU:0};
+const NATMOD_W={USA:3,ESP:3,ENG:3,FRA:3,BRA:3,GER:2,NED:2,ITA:1,POR:1,ARG:0,URU:0};
 const natMod=nat=>isW()?(NATMOD_W[nat]??1):NATIONS[nat].mod;
 const wcNeed=nat=>12+natMod(nat);
 function randomName(nat,g){g=g||(typeof S!=='undefined'&&S&&S.gender)||'m';const N=NATIONS[nat],w=g==='f',nick=w?N.nickW:N.nick;if(nick&&Math.random()<.18)return pick(nick);return pick(w?N.firstW:N.first)+' '+pick(N.last)}
@@ -2125,12 +2125,14 @@ function roundName(st){
 const roundShort=st=>st.comp==='league'&&(S.season&&S.season.v||4)<5?t.halfShort[st.round]:isCG(st)?t.gameN(st.g+1):roundName(st);
 // stars get marked: from an 18 rating every cup opponent plans around you
 const starDC=()=>{const r=rating(S.attrs);return r>=18?1:0};
+/* league difficulty for match rolls: the gap between leagues is kept small, the rival clubs' strength sets the rest */
+const lgDC=L=>L.div===1&&L.dc<=12?13:Math.min(L.dc,L.w?15:16);   // the toughest leagues stop at 16 (15 for women); the easiest top flights start at 13
 function dcFor(st){return dcBase(st)+(st.comp==='league'||st.comp==='run'?0:starDC())}
 function dcBase(st){
   const L=LEAGUES[S.club.league];
   if(st.comp==='run')return st.lha&&S.season&&S.season.v>=6?lbDC({opp:st.opp}):runDC();
-  if(st.comp==='league')return L.dc;
-  if(st.comp==='cup')return L.dc+st.round+(st.round>=2?2:0)+(isW()?1:0)+matchupDC(st);
+  if(st.comp==='league')return lgDC(L);
+  if(st.comp==='cup')return lgDC(L)+st.round+(st.round>=2?2:0)+(isW()?1:0)+matchupDC(st);
   if(st.comp==='wc')return st.round===0&&st.gdc?st.gdc:(intlSeason()?INTL_DC:WC_DC)[st.round];
   if(st.comp==='cwc')return [17,19][st.round]+matchupDC(st);
   const b=st.comp==='cont2'?(contIsUCL(S.club.league)?15:11):(contIsUCL(S.club.league)?18:13);
@@ -2248,7 +2250,7 @@ function resolveStage(v1,v2){
 function pickAttr(k){const s=S.season;if(!s.pickAttr||S.attrs[k]>=20)return;S.attrs[k]++;s.pickAttr=false;if(s.last)s.last.picked=k}
 function autoPick(){const w=POS[myPos()].w,ks=AK.filter(k=>S.attrs[k]<20).sort((a,b)=>(w[b]||0)-(w[a]||0));pickAttr(ks[0]||AK[0])}
 /* the injury check: one d4, no bonuses except the shin guards. 3+ shakes it off (only a 4 past 30) */
-const injNeed=()=>S.age>30?4:3;
+const injNeed=()=>{const p=S.attrs&&S.attrs.str||0;return S.age>=36||(S.age>=34&&p<17)||(S.age>=31&&p<14)?4:3};   // the body starts to complain after 30, later for the physically strong
 // a natural 1 on any roll on the pitch (the match, a moment, a last-minute chance, your penalty) brings out the injury check
 const ONPITCH_EV=['pen','fk','oneone','tackle','through','counter','header','derby','training','cwcgap'];
 const INJ_P=.7;   // a natural 1 in a match is a scare most of the time, not every time
@@ -5273,7 +5275,7 @@ const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];if(w.length<3)return 0;const l3=
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
   const grit=[-1,0,0,1,2][teamLevel(clubRank(S.club.name,S.club.league).frac)]||0;   // the favourites face packed defences; small clubs fight for every point
-  return L.dc+LB_OFF+Math.round(rel)+(L.w?1:0)-grit;
+  return lgDC(L)+LB_OFF+Math.round(rel)+(L.w?1:0)-grit;
 }
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
@@ -5573,7 +5575,7 @@ function runCheck(){
 }
 const runPts=s=>s.stages.filter(x=>x.comp==='run'&&x.res&&x.res.wdl).reduce((a,x)=>a+(x.res.wdl==='W'?3:x.res.wdl==='D'?1:0),0);
 const runNeed=s=>!s.run?0:s.run.type==='title'?(s.run.pr===1?7:9):s.run.type==='miracle'?9:s.run.type==='releg'?4:5;
-function runDC(){const s=S.season,L=LEAGUES[S.club.league],lv=teamLevel(clubRank(S.club.name,S.club.league).frac);return L.dc+(s.run&&s.run.type==='title'?3+(isW()?1:0)+Math.min(2,lv):s.run&&s.run.type==='miracle'?4:0)}
+function runDC(){const s=S.season,L=LEAGUES[S.club.league],lv=teamLevel(clubRank(S.club.name,S.club.league).frac);return lgDC(L)+(s.run&&s.run.type==='title'?3+(isW()?1:0)+Math.min(2,lv):s.run&&s.run.type==='miracle'?4:0)}
 
 /* ---- pop-up queue for the off-season and the story moments ---- */
 let ovKind=null;
