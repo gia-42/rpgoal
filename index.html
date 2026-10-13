@@ -3084,7 +3084,15 @@ function fitStage(){
   if(dm&&dm.clientHeight<die)st.style.setProperty('--die',Math.max(56,dm.clientHeight-4)+'px');
 }
 try{window.addEventListener('resize',()=>{try{if(calcIpad()!==ipMode)render();else dockOv();fitStage();fitTexts()}catch(e){}})}catch(e){}
+function fixCh(){
+  const s=S&&S.season; if(!s||!s.stages)return;
+  s.stages.forEach(st=>{if(!st||!st.ch||st.chr||st.res)return;const m=MATCH_CH.has(st.ch);
+    if(isLB(st)&&m){st.ch=null;return}
+    if(!m&&!st.chPost){if(st.comp==='wc'||isLB(st))st.ch=null;else st.chPost=1}
+    if(st.comp==='wc'&&!m)st.ch=null});
+}
 function render(){
+  try{fixCh()}catch(e){}
   applyMem(); t=curT(); ipMode=calcIpad(); try{document.body.classList.toggle('ipadL',ipMode==='L');document.body.classList.toggle('ipadP',ipMode==='P')}catch(e){}
   const n=loadHof().length;
   const lt=`<div class="langs" role="group" aria-label="Language"><button data-act="lang" data-l="en" aria-pressed="${lang==='en'}">EN</button><button data-act="lang" data-l="pt" aria-pressed="${lang==='pt'}">PT-BR</button></div>`;
@@ -4233,7 +4241,7 @@ function onClick(e){
   else if(act==='chron'){ovQ.push({k:'chron'});flushOv()}
   else if(act==='share'){const p=loadHof().find(x=>x.id===+b.dataset.id);if(p)shareCard(p)}
   else if(act==='hofcmp'){const id=+b.dataset.id;if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}render()}
-  else if(act==='storyov'){maybeStory();flushOv()}
+  else if(act==='storyov'){homeHold=false;if(ovEl&&ovKind!=='story')closeOv();ovQ=ovQ.filter(o=>o.k!=='story');const s0=S.season,st0=s0&&s0.stages[s0.idx];if(st0&&st0.ch&&!st0.chr){ovQ.unshift({k:'story'});flushOv()}else{render();playSync()}}
   else if(act==='pensov'){maybePens();flushOv()}
   else if(act==='lmcov'){maybeLMC();flushOv()}
   else if(act==='runov'){maybeRun();flushOv()}
