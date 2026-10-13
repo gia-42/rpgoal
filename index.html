@@ -1848,10 +1848,12 @@ const wcNeed=nat=>12+natMod(nat);
 function randomName(nat,g){g=g||(typeof S!=='undefined'&&S&&S.gender)||'m';const N=NATIONS[nat],w=g==='f',nick=w?N.nickW:N.nick;if(nick&&Math.random()<.18)return pick(nick);return pick(w?N.firstW:N.first)+' '+pick(N.last)}
 
 let S=fresh();
-function fresh(g){g=g||'m';return{phase:'create',gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
+// 0.58 started every career over: a save without era 58 opens on the new-player screen
+function fresh(g){g=g||'m';return{phase:'create',era:58,gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
 function save(){S.savedAt=Date.now();S.rev=(S.rev||0)+1;S.sid=S.savedAt.toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
+  if(x.era!==58)return fresh(x.gender==='f'?'f':'m');
   if(!x.cid&&x.phase&&x.phase!=='create'){const id=careerId(x);if(id)x.cid=id}
   const f=o=>{if(!o)return;if(!LEAGUES[o.league])o.league=0;const n=LEAGUES[o.league].tiers.length;if(!(o.tier>=0))o.tier=0;if(o.tier>=n)o.tier=n-1};
   if(!NATIONS[x.nat])x.nat='BRA';
@@ -2117,10 +2119,13 @@ function lgSwap(h,s){
 /* ---------- team strength: every club has a level that drifts a little each season ---------- */
 const clubInfoMap=w=>{const m={};LEAGUES.forEach((L,Li)=>{if(!!L.w!==w)return;L.tiers.forEach((tr,ti)=>tr.clubs.forEach(n=>{if(!m[n]||L.div===1&&LEAGUES[m[n].league].div!==1)m[n]={league:Li,tier:ti,pr:tr.pr}}))});return m};
 const CLUB_INFO_M=clubInfoMap(false), CLUB_INFO_W=clubInfoMap(true);
-const baseStr=n=>50+5*(((isW()?CLUB_INFO_W:CLUB_INFO_M)[n])||{pr:0}).pr;
+/* the Brasileirão's order by default: Corinthians just ahead of Flamengo, then four close pairs and trios a touch below, then everyone else */
+let BR_DC=2;   // the Brasileirão is a dogfight every week
+const BR_STR={'Corinthians':67.8,'Flamengo':67.6,'Palmeiras':66.9,'São Paulo':66.9,'Santos':66.9,'Cruzeiro':66.6,'Atlético Mineiro':66.6,'Grêmio':66.3,'Internacional':66.3,'Botafogo':66.0,'Fluminense':66.0,'Vasco da Gama':66.0};
+const baseStr=n=>!isW()&&BR_STR[n]!=null?BR_STR[n]:50+5*(((isW()?CLUB_INFO_W:CLUB_INFO_M)[n])||{pr:0}).pr;
 function teamStr(n){
   S.teams=S.teams||{};
-  if(S.teams[n]==null){const b=baseStr(n);S.teams[n]=+(b+(Math.random()*6-3)).toFixed(1)}
+  if(S.teams[n]==null){const b=baseStr(n);S.teams[n]=+(b+(Math.random()*(parityClub(n)?2:6)-(parityClub(n)?1:3))).toFixed(1)}
   return S.teams[n];
 }
 /* clubs currently in a league: its own list plus your club if it arrived by promotion */
@@ -2142,16 +2147,17 @@ const teamLevel=fr=>TEAM_LV.findIndex(x=>fr<=x+1e-9);
 /* end of season: everyone drifts a little toward their usual level; your club follows you */
 /* the Brasileirão's twelve big clubs are always close: their level swings a lot from year to year but never runs away */
 const parityClub=n=>{const i=CLUB_INFO_M[n];return !isW()&&!!i&&LEAGUES[i.league].c==='BRA'&&LEAGUES[i.league].div===1&&i.pr>=3};
+let LIFT_MAX=1.5, LIFT_CAP=8;   // your club grows with you, but slowly and only so far
 function evolveTeams(h){
   // a player better than the club is used to lifts it a little more every season he stays
   const exc=rating(S.attrs)-(tierMinOf(h.league,h.tier)+1);
-  const lift=clamp(.3*exc+.15*Math.min(S.tenure||0,6)+(h.pos<=4?.6:0)+.6*h.trophies.filter(x=>x.kind!=='bdo').length-(h.pos>h.size*.75?.8:0),-2,3);
+  const lift=clamp(.3*exc+.15*Math.min(S.tenure||0,6)+(h.pos<=4?.6:0)+.6*h.trophies.filter(x=>x.kind!=='bdo').length-(h.pos>h.size*.75?.8:0),-2,LIFT_MAX);
   Object.keys(S.teams||{}).forEach(n=>{
     const b=baseStr(n);let v=S.teams[n];
-    if(n!==h.club&&parityClub(n)){v+=.45*(b-v)+(Math.random()*7-3.5);S.teams[n]=+clamp(v,b-5,b+5).toFixed(1);return}
+    if(n!==h.club&&parityClub(n)){v+=.5*(b-v)+(Math.random()*3-1.5);S.teams[n]=+clamp(v,b-2.5,b+2.5).toFixed(1);return}
     v+=(n===h.club?.05:.08)*(b-v)+(Math.random()*4.4-2.2);
     if(n===h.club)v+=lift;
-    S.teams[n]=+clamp(v,b-10,b+14).toFixed(1);
+    S.teams[n]=+clamp(v,b-10,b+LIFT_CAP).toFixed(1);
   });
 }
 
@@ -2228,16 +2234,16 @@ function resolveEvent(v){
 function resolveStage(v1,v2){
   if(isLB(S.season.stages[S.season.idx])){lbAuto(S.season.stages[S.season.idx]);return}
   const s=S.season, st=s.stages[s.idx], fx=st.fx||{mode:null,buff:0};
-  const cm=teamMod(st), r={stage:s.idx,cm,buff:0};
+  const lgRun=st.comp==='run'&&st.lha&&s.v>=6, cm=lgRun?0:teamMod(st), r={stage:s.idx,cm,buff:0};
   let nat=v1;
   const md=effMode(st);
   if(md&&v2!=null){r.pair=[v1,v2];r.mode=md;nat=md==='adv'?Math.max(v1,v2):Math.min(v1,v2)}
   r.nat=nat;
-  const lx=st.comp==='run'&&st.lha&&s.v>=6?(st.lha==='H'?1:0)+lgMom(s):0; r.lx=lx;
+  const lx=lgRun?(st.lha==='H'?1:0)+lgMom(s)+squadLg():0; r.lx=lx;
   if(s.out>0){r.missed=true;r.pm=0;r.kb=0;r.team=squadMod();r.total=nat+cm+r.team+lx;s.out--;(s.away=s.away||[]).push(s.idx)}
   else{
     r.pm=pmod(rating(S.attrs)); r.kb=keyBonus(S.attrs[st.key]); r.buff=fx.buff; r.loy=st.comp==='wc'?0:loyBonus();
-    r.ex=extraSum(st); r.raw=r.pm+cm+r.kb+r.buff+r.loy+r.ex; r.mods=capMods(r.raw,st); r.hot=s.hot>0?2:0; if(s.hot>0)s.hot--;
+    r.ex=extraSum(st); r.raw=r.pm+cm+r.kb+r.buff+r.loy+r.ex; r.mods=lgRun?Math.max(LG_FLOOR,capMods(r.raw,st)):capMods(r.raw,st); r.hot=s.hot>0?2:0; if(s.hot>0)s.hot--;
     r.total=nat+r.mods+r.hot+lx;
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
@@ -4453,8 +4459,8 @@ function chanceOf(need,mode,critWin){
   p/=20; if(mode==='adv')return 1-(1-p)*(1-p); if(mode==='dis')return p*p; return p;
 }
 function stageOdds(st){
-  const s=S.season, cm=teamMod(st), pm=pmod(rating(S.attrs)), kb=keyBonus(S.attrs[st.key]), fx=st.fx||{buff:0};
-  const raw=pm+cm+kb+(fx.buff||0)+(st.comp==='wc'?0:loyBonus())+extraSum(st), mods=capMods(raw,st)+(s.hot>0?2:0), dc=dcFor(st), mode=effMode(st);
+  const s=S.season, lgRun=st.comp==='run'&&st.lha&&s.v>=6, cm=lgRun?0:teamMod(st), pm=pmod(rating(S.attrs)), kb=keyBonus(S.attrs[st.key]), fx=st.fx||{buff:0};
+  const raw=pm+cm+kb+(fx.buff||0)+(st.comp==='wc'?0:loyBonus())+extraSum(st), mods=(lgRun?Math.max(LG_FLOOR,capMods(raw,st)):capMods(raw,st))+(s.hot>0?2:0)+(lgRun?(st.lha==='H'?1:0)+lgMom(s)+squadLg():0), dc=dcFor(st), mode=effMode(st);
   if(st.comp==='league'){const need=dc+3-mods;return{need,p:chanceOf(need,mode,false),league:1}}
   const need=dc-mods;return{need,p:chanceOf(need,mode,true)};
 }
@@ -5377,7 +5383,7 @@ Object.assign(T.en,{runRelegated:'Relegated',runEscaped:'Escaped relegation!',ru
  runRes:{miracle:['The miracle fell short, but nobody will forget the chase.','A historic comeback! Champions against all odds!'],title:['The title slipped away on the final day.','Champions on the final day!'],releg:['Relegated on the final day.','Survived on the final day!'],promo:['Promotion slipped away on the final day.','Promoted on the final day!']},
  ageGo:'Keep playing',ageQ:'One more season?',attrsT:'Attributes',featKick:'Level up',storyBack:'Back to the match',storyOpen:'Open the story',rkMatch:'Match roll',rkCheck:'Moment check · sets up the match roll',rkStory:'Story',pS:'P',
  mostChip:(n,c)=>`${n} seasons at ${c}`,nNemDerby:(n,c)=>`Derby week. ${n} of ${c} makes it personal: you have a nemesis.`,careerSubs:{contract:'Contract',nums:'Numbers',seasons:'Seasons',inv:'Locker room'},invT:'Locker room',invHave:(n,m)=>`${n} of ${m} items`,invHow:'How to get it',invGot:(y,c)=>`Found in ${y}${c?` · ${c}`:''}`,profT:'Profile',featsT:'Feats',noFeats:'Feats unlock at 20, 24, 28 and 32.',prepBtn:'Pre-season',ageBtn:'Age check',chooseClub:'Choose your club',
- pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkGoal:'Goal!',pkMiss:'Missed!',pkOther:'Pick another spot',skipInj:n=>'Skip to your return',skipSeason:'Skip to season’s end',grp1:'Group winners',grp2:'Through in second',grpOut:'Out in the group stage',awaySubM:n=>`You missed ${n} match${n>1?'es':''}. Here’s how the team did:`,awayV:{good:'They did fine without you. Maybe too fine.',ok:'They held on, but you were missed.',bad:'You were missed. The team struggled without you.'},awayPos:(a,b)=>`League ${a} → ${b}`,awayBench:'And your replacement has kept the shirt. Time to fight for your place.',injStr:n=>`−${n} Physical`,benchRisk:p=>`Chance of losing your place: ${p}%`,nBenchInj:'Back from injury, but the coach is sticking with your replacement. Fight for your place: −2 in the league until you win it back (a natural 20 wins it on the spot).',nBenchWon:'A natural 20 from the bench. The shirt is yours again.',pkPickInfo:'Pick your spot · the same odds as a shootout kick',foot:{R:'Right-footed',L:'Left-footed',B:'Two-footed'},footS:{R:'Right foot',L:'Left foot',B:'Both feet'},footL:'Dominant foot',footRoll:'Tap to roll',footOdds:'d20 · 1–15 right · 16–19 left · 20 both',wfL:'Weak foot',posAuto:'Set by your dice. You can change position later in your career.',campWf:'Train your weaker foot',campWfD:(a,b)=>`Weak foot ${a}/5 → ${b}/5. Better penalties to the side that opens your body.`,pkChipD:'High risk. The fans will love it, or never forget it.',pensNeedC:'goal on 6+',pkChipGoal:'Chipped in! The crowd goes wild',pkChipMiss:'The keeper stood still and caught it',pkChipUp:'Fan support up',pkChipDown:'Fan support down',seasonOver:'Season over',nextSeasonBtn:'Next season',wcTab:{m:'Match',g:'Group',b:'Bracket'},wcTeamH:'Team',wcGrpT:g=>`Group ${g}`,wcRoad:'Road to the final',wcTbd:'To be decided',wcThru:'Top two of the group go through',wcSeeTbl:'see the Group tab',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle',chip:'Chip it down the middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
+ pensT:'Penalty shootout',pensWon:(a,b)=>`Won ${a}–${b} on penalties!`,pensLost:(a,b)=>`Lost ${a}–${b} on penalties`,pensYou:'Your penalty',pensFirst:n=>`Coin toss: ${n} kick first`,pensNeed:'goal on 4+',pensTake:'Take your penalty',pkGoal:'Goal!',pkMiss:'Missed!',pkOther:'Pick another spot',squadT:'Squad',skipInj:n=>'Skip to your return',skipSeason:'Skip to season’s end',grp1:'Group winners',grp2:'Through in second',grpOut:'Out in the group stage',awaySubM:n=>`You missed ${n} match${n>1?'es':''}. Here’s how the team did:`,awayV:{good:'They did fine without you. Maybe too fine.',ok:'They held on, but you were missed.',bad:'You were missed. The team struggled without you.'},awayPos:(a,b)=>`League ${a} → ${b}`,awayBench:'And your replacement has kept the shirt. Time to fight for your place.',injStr:n=>`−${n} Physical`,benchRisk:p=>`Chance of losing your place: ${p}%`,nBenchInj:'Back from injury, but the coach is sticking with your replacement. Fight for your place: −2 in the league until you win it back (a natural 20 wins it on the spot).',nBenchWon:'A natural 20 from the bench. The shirt is yours again.',pkPickInfo:'Pick your spot · the same odds as a shootout kick',foot:{R:'Right-footed',L:'Left-footed',B:'Two-footed'},footS:{R:'Right foot',L:'Left foot',B:'Both feet'},footL:'Dominant foot',footRoll:'Tap to roll',footOdds:'d20 · 1–15 right · 16–19 left · 20 both',wfL:'Weak foot',posAuto:'Set by your dice. You can change position later in your career.',campWf:'Train your weaker foot',campWfD:(a,b)=>`Weak foot ${a}/5 → ${b}/5. Better penalties to the side that opens your body.`,pkChipD:'High risk. The fans will love it, or never forget it.',pensNeedC:'goal on 6+',pkChipGoal:'Chipped in! The crowd goes wild',pkChipMiss:'The keeper stood still and caught it',pkChipUp:'Fan support up',pkChipDown:'Fan support down',seasonOver:'Season over',nextSeasonBtn:'Next season',wcTab:{m:'Match',g:'Group',b:'Bracket'},wcTeamH:'Team',wcGrpT:g=>`Group ${g}`,wcRoad:'Road to the final',wcTbd:'To be decided',wcThru:'Top two of the group go through',wcSeeTbl:'see the Group tab',pkDirT:'Pick your spot',pkShoot:'Shoot',pkDir:{tl:'Top left',tr:'Top right',bl:'Bottom left',br:'Bottom right',mid:'Middle',chip:'Chip it down the middle'},pensGoing:'Penalties…',pensSudden:'Sudden death',pensDraw:'Level after extra time: penalties!',pensWonV:(a,b)=>`Won ${a}–${b} on penalties`,pensLostV:(a,b)=>`Lost ${a}–${b} on penalties`,pensShort:'Pens',lmcT:'Last-minute chance!',lmcTD:'Last-ditch defending!',lmcGoal:'GOAL! You win it at the death!',lmcAssist:'Your teammate buries it! Winner!',lmcMiss:'It doesn\'t go in. Penalties it is.',lmcHeld:'Snuffed out! Penalties it is.',lmcBeaten:'They score. Knocked out at the death.',lmcCounter:'You win it and lead the counter: WINNER!',
  lmcOkA:'you win the tie',lmcBadA:'penalties',lmcOkD:'penalties (natural 20: counter-attack winner)',lmcBadD:'you lose the tie',lmcV:'Last-minute winner!',lmcCounterV:'Counter-attack winner at the death!',lmcConcV:'Beaten by a last-minute goal',lmcPend:'Level at the death: one last chance!',lmcPendD:'Level at the death: they have one last attack!',
  lmcA:[['Stoppage time. The ball falls to you at the edge of the box.',['Shoot','Pass to the open teammate','Take on the last defender']],
   ['A cross floats towards the far post with you arriving.',['Head it in','Volley it','Cushion it back for a teammate']],
@@ -5396,7 +5402,7 @@ Object.assign(T.pt,{runRelegated:'Rebaixado',runEscaped:'Escapou do rebaixamento
  runRes:{miracle:['O milagre não veio, mas ninguém esquece a arrancada.','Virada histórica! Campeão contra todas as probabilidades!'],title:['O título escapou na última rodada.','Campeão na última rodada!'],releg:['Rebaixado na última rodada.','Salvo na última rodada!'],promo:['O acesso escapou na última rodada.','Acesso na última rodada!']},
  ageGo:'Seguir jogando',ageQ:'Mais uma temporada?',attrsT:'Atributos',featKick:'Subiu de nível',storyBack:'Voltar ao jogo',storyOpen:'Abrir a história',rkMatch:'Rolagem do jogo',rkCheck:'Teste de momento · antes do jogo',rkStory:'História',pS:'J',
  mostChip:(n,c)=>`${n} temporadas no ${c}`,nNemDerby:(n,c)=>`Semana de clássico. ${n}, do ${c}, leva para o lado pessoal: você ganhou um nêmesis.`,careerSubs:{contract:'Contrato',nums:'Números',seasons:'Temporadas',inv:'Vestiário'},invT:'Vestiário',invHave:(n,m)=>`${n} de ${m} itens`,invHow:'Como conseguir',invGot:(y,c)=>`Conquistado em ${y}${c?` · ${c}`:''}`,profT:'Perfil',featsT:'Talentos',noFeats:'Talentos chegam aos 20, 24, 28 e 32 anos.',prepBtn:'Pré-temporada',ageBtn:'Teste de idade',chooseClub:'Escolher o clube',
- pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkGoal:'Gol!',pkMiss:'Perdeu!',pkOther:'Escolher outro canto',skipInj:n=>'Pular até a volta',skipSeason:'Pular até o fim',grp1:'Primeiro do grupo',grp2:'Classificado em segundo',grpOut:'Eliminado na fase de grupos',awaySubM:n=>`Você perdeu ${n} jogo${n>1?'s':''}. Veja como o time foi:`,awayV:{good:'O time se virou bem sem você. Bem até demais.',ok:'O time segurou as pontas, mas sentiu sua falta.',bad:'Você fez falta. O time sofreu sem você.'},awayPos:(a,b)=>`Liga ${a} → ${b}`,awayBench:'E o substituto ficou com a camisa. Hora de lutar pela vaga.',injStr:n=>`−${n} de Físico`,benchRisk:p=>`Chance de perder a vaga: ${p}%`,nBenchInj:'De volta da lesão, mas o técnico manteve o substituto. Lute pela vaga: −2 na liga até reconquistá-la (um 20 natural devolve a vaga na hora).',nBenchWon:'Um 20 natural vindo do banco. A camisa é sua de novo.',pkPickInfo:'Escolha o canto · as mesmas chances de uma cobrança na disputa',foot:{R:'Destro',L:'Canhoto',B:'Ambidestro'},footS:{R:'Pé direito',L:'Pé esquerdo',B:'Dois pés'},footL:'Pé dominante',footRoll:'Toque para rolar',footOdds:'d20 · 1–15 direito · 16–19 esquerdo · 20 os dois',wfL:'Pé fraco',posAuto:'Definida pelos dados. Dá para mudar de posição mais adiante na carreira.',campWf:'Treinar o pé fraco',campWfD:(a,b)=>`Pé fraco ${a}/5 → ${b}/5. Pênaltis melhores no canto que abre o corpo.`,pkChipD:'Alto risco. A torcida vai amar, ou nunca vai esquecer.',pensNeedC:'gol com 6+',pkChipGoal:'Cavadinha! A torcida vai à loucura',pkChipMiss:'O goleiro ficou parado e pegou',pkChipUp:'Apoio da torcida sobe',pkChipDown:'Apoio da torcida cai',seasonOver:'Temporada encerrada',nextSeasonBtn:'Próxima temporada',wcTab:{m:'Partida',g:'Grupo',b:'Chaveamento'},wcTeamH:'Seleção',wcGrpT:g=>`Grupo ${g}`,wcRoad:'Caminho até a final',wcTbd:'A definir',wcThru:'Os dois primeiros do grupo avançam',wcSeeTbl:'veja a aba Grupo',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio',chip:'Cavadinha no meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
+ pensT:'Disputa de pênaltis',pensWon:(a,b)=>`Venceu por ${a}–${b} nos pênaltis!`,pensLost:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensYou:'Seu pênalti',pensFirst:n=>`Cara ou coroa: ${n} começa batendo`,pensNeed:'gol com 4+',pensTake:'Bater o seu pênalti',pkGoal:'Gol!',pkMiss:'Perdeu!',pkOther:'Escolher outro canto',squadT:'Elenco',skipInj:n=>'Pular até a volta',skipSeason:'Pular até o fim',grp1:'Primeiro do grupo',grp2:'Classificado em segundo',grpOut:'Eliminado na fase de grupos',awaySubM:n=>`Você perdeu ${n} jogo${n>1?'s':''}. Veja como o time foi:`,awayV:{good:'O time se virou bem sem você. Bem até demais.',ok:'O time segurou as pontas, mas sentiu sua falta.',bad:'Você fez falta. O time sofreu sem você.'},awayPos:(a,b)=>`Liga ${a} → ${b}`,awayBench:'E o substituto ficou com a camisa. Hora de lutar pela vaga.',injStr:n=>`−${n} de Físico`,benchRisk:p=>`Chance de perder a vaga: ${p}%`,nBenchInj:'De volta da lesão, mas o técnico manteve o substituto. Lute pela vaga: −2 na liga até reconquistá-la (um 20 natural devolve a vaga na hora).',nBenchWon:'Um 20 natural vindo do banco. A camisa é sua de novo.',pkPickInfo:'Escolha o canto · as mesmas chances de uma cobrança na disputa',foot:{R:'Destro',L:'Canhoto',B:'Ambidestro'},footS:{R:'Pé direito',L:'Pé esquerdo',B:'Dois pés'},footL:'Pé dominante',footRoll:'Toque para rolar',footOdds:'d20 · 1–15 direito · 16–19 esquerdo · 20 os dois',wfL:'Pé fraco',posAuto:'Definida pelos dados. Dá para mudar de posição mais adiante na carreira.',campWf:'Treinar o pé fraco',campWfD:(a,b)=>`Pé fraco ${a}/5 → ${b}/5. Pênaltis melhores no canto que abre o corpo.`,pkChipD:'Alto risco. A torcida vai amar, ou nunca vai esquecer.',pensNeedC:'gol com 6+',pkChipGoal:'Cavadinha! A torcida vai à loucura',pkChipMiss:'O goleiro ficou parado e pegou',pkChipUp:'Apoio da torcida sobe',pkChipDown:'Apoio da torcida cai',seasonOver:'Temporada encerrada',nextSeasonBtn:'Próxima temporada',wcTab:{m:'Partida',g:'Grupo',b:'Chaveamento'},wcTeamH:'Seleção',wcGrpT:g=>`Grupo ${g}`,wcRoad:'Caminho até a final',wcTbd:'A definir',wcThru:'Os dois primeiros do grupo avançam',wcSeeTbl:'veja a aba Grupo',pkDirT:'Escolha o canto',pkShoot:'Chutar',pkDir:{tl:'Alto à esquerda',tr:'Alto à direita',bl:'Baixo à esquerda',br:'Baixo à direita',mid:'No meio',chip:'Cavadinha no meio'},pensGoing:'Pênaltis…',pensSudden:'Alternadas',pensDraw:'Empate na prorrogação: pênaltis!',pensWonV:(a,b)=>`Venceu por ${a}–${b} nos pênaltis`,pensLostV:(a,b)=>`Perdeu por ${a}–${b} nos pênaltis`,pensShort:'Pên.',lmcT:'Chance no último minuto!',lmcTD:'Defesa desesperada!',lmcGoal:'GOL! Você decide no último lance!',lmcAssist:'Seu companheiro empurra pra rede! Vitória!',lmcMiss:'Não entrou. Vai para os pênaltis.',lmcHeld:'Neutralizado! Vai para os pênaltis.',lmcBeaten:'Eles marcam. Eliminado no último lance.',lmcCounter:'Você rouba e puxa o contra-ataque: GOL DA VITÓRIA!',
  lmcOkA:'você vence o confronto',lmcBadA:'pênaltis',lmcOkD:'pênaltis (20 natural: contra-ataque da vitória)',lmcBadD:'você perde o confronto',lmcV:'Gol da vitória no fim!',lmcCounterV:'Gol de contra-ataque no último lance!',lmcConcV:'Derrota com gol no último minuto',lmcPend:'Empate no fim: uma última chance!',lmcPendD:'Empate no fim: eles têm um último ataque!',
  lmcA:[['Acréscimos. A bola sobra para você na entrada da área.',['Chutar','Tocar para o companheiro livre','Partir para cima do último zagueiro']],
   ['Um cruzamento viaja para a segunda trave e você chega de frente.',['Cabecear','Pegar de voleio','Ajeitar para um companheiro']],
@@ -5523,11 +5529,14 @@ function lgTable(s,k){
   rows.sort((a,b)=>b.pts-a.pts||b.w-a.w||b.tb-a.tb); rows.forEach((r,i)=>r.pos=i+1); return rows;
 }
 const lgMyPos=s=>{const t0=lgTable(s);const m=t0.find(x=>x.me);return m?m.pos:null};
-const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];if(w.length<3)return 0;const l3=w.slice(-3);return l3.every(x=>x==='W')?1:l3.every(x=>x==='L')?-1:0};
+const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];let wins=0,losses=0;
+  for(let i=w.length-1;i>=0&&w[i]==='W';i--)wins++;
+  if(!wins)for(let i=w.length-1;i>=0&&w[i]!=='W';i--)if(w[i]==='L')losses++;   // a winless run: every loss in it weighs more, draws don't stop it
+  return wins>=5?2:wins>=3?1:losses>=4?-3:losses>=3?-2:losses>=2?-1:0};
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
   const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?(m.ha==='H'?-1:0):([0,0,0,1,2][tl]||0);   // the favourites face packed defences; small clubs fight for every point
-  return lgDC(L)+LB_OFF+Math.round(rel)+(L.w?1:0)-grit;
+  return lgDC(L)+LB_OFF+Math.round(rel)+(L.w?1:0)+(L.c==='BRA'&&L.div===1&&!L.w?BR_DC:0)-grit;
 }
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
@@ -5542,15 +5551,15 @@ function lbBlockFx(st,i,m){
 }
 function lbResolveOne(st,v1,v2){
   const s=S.season, i=st.mi||0, m=st.ms[i]; if(!m)return null;
-  const fx=lbBlockFx(st,i,m), cm=teamMod(st);
+  const fx=lbBlockFx(st,i,m), sq=squadLg();
   let mode=fx.mode||null; if(st.red&&i===0)mode=mode==='adv'?null:'dis';
   let nat=v1; if(mode&&v2!=null)nat=mode==='adv'?Math.max(v1,v2):Math.min(v1,v2);
   const home=m.ha==='H'?1:0, mom=lgMom(s), dc=lbDC(m), r={nat,dc,home,mom,mode,pair:mode?[v1,v2]:null};
-  if(s.out>0){r.missed=1;r.team=squadMod();r.total=nat+cm+4+r.team+home+mom;if(!s.seasonOut)s.out--}
+  if(s.out>0){r.missed=1;r.team=squadMod();r.total=nat+sq+5+r.team+home+mom;if(!s.seasonOut)s.out--}
   else{
-    const raw=pmod(rating(S.attrs))+cm+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
+    const raw=pmod(rating(S.attrs))+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
     r.hot=s.hot>0?2:0; if(s.hot>0)s.hot--;
-    r.total=nat+capMods(raw)+r.hot+home+mom;
+    r.sq=sq; r.total=nat+Math.max(LG_FLOOR,capMods(raw))+sq+r.hot+home+mom;
     if(isCrit(nat)&&s.bench>0){s.bench=0;r.benchWon=1;S.flag_benchback=1;S.benchBackN=(S.benchBackN||0)+1}
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
@@ -5622,9 +5631,13 @@ const lbGo=()=>{homeHold=false;playSync()};
 let lbRunning=false;
 /* ---------- the league pop-up: one big die per match, the boxes light up, the small table moves ---------- */
 let lbLast=null, lbAll=false, lbResume=false;
-const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(S.attrs))+teamMod(st)+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
-  const mods=capMods(raw), home=m.ha==='H'?1:0, mom=lgMom(s), hot=s.hot>0?2:0;let mode=fx.mode||null;if(st.red&&i===0)mode=mode==='adv'?null:'dis';
-  return{mods,home,mom,hot,tot:mods+home+mom+hot,mode,fx}};
+const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(S.attrs))+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
+  const mods=Math.max(LG_FLOOR,capMods(raw)), sq=squadLg(), home=m.ha==='H'?1:0, mom=lgMom(s), hot=s.hot>0?2:0;let mode=fx.mode||null;if(st.red&&i===0)mode=mode==='adv'?null:'dis';
+  return{mods,sq,home,mom,hot,tot:mods+sq+home+mom+hot,mode,fx}};
+/* the squad around you in the league: its strength against the league's average, from −3 to +3 */
+let SQ_DIV=1.8;
+const LG_FLOOR=5;   // in the league the team never plays worse than it would without you: a teenager is one of eleven
+function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-3,3)}catch(e){return 0}}
 function lbNear(s){
   const tb=lgTable(s), me=tb.find(x=>x.me); if(!me)return'';
   const lo=Math.max(1,Math.min(me.pos-1,tb.length-2)); const rows=tb.filter(x=>x.pos>=lo&&x.pos<=lo+2);
@@ -5664,7 +5677,7 @@ function lbHTML(){
     die=two?`<div class="pair">${[0,1].map(k=>dieSVG(20,vals[k]??'',(shown?oc(vals[k]):'')+(shown&&k!==kept?' dropped':''),'lbd'+k)).join('')}</div>`:dieSVG(20,shown?shown.r.nat:'',shown?oc(shown.r.nat):'','lbd0');
     const ev=(m.dr||m.mr)&&!shown?`<span class="chip ${((m.dr||m.mr).fx.mode==='adv'||(m.dr||m.mr).fx.buff>0)?'fit':'inj'}">${(m.dr||m.mr).ok?t.success:t.fail}: ${(m.dr||m.mr).fx.mode?t.fx[(m.dr||m.mr).fx.mode]:t.fx.buff((m.dr||m.mr).fx.buff)}</span>`:'';
     info=shown?`<div class="sum num">d20 <b>${shown.r.nat}</b> ${sg(shown.r.total-shown.r.nat)} = <b>${shown.r.total}</b> ${t.vs} ${t.dc} ${shown.r.dc}</div><div class="verdict result v-${shown.r.w==='W'?'good':shown.r.w==='D'?'mid':'bad'}" style="font-size:20px">${t.wdl[shown.r.w]}${shown.r.g?` · ${t.goalsN(shown.r.g)}`:''}</div>`
-      :`<div class="mods" style="justify-content:center"><span class="chip">${t.mods} ${sg(mm.mods)}</span>${mm.home?`<span class="chip fit">${t.homeS} +1</span>`:''}${mm.mom?`<span class="chip ${mm.mom>0?'fit':'inj'}">${t.momT} ${sg(mm.mom)}</span>`:''}${mm.hot?`<span class="chip hot">${t.hotChip(s.hot)}</span>`:''}${ev}<span class="chip">${t.dc} ${dc}</span><span class="chip odds">${t.odds(need,Math.round(chanceOf(need,md,true)*100))}</span></div>`;
+      :`<div class="mods" style="justify-content:center"><span class="chip">${t.mods} ${sg(mm.mods)}</span>${mm.sq?`<span class="chip ${mm.sq>0?'fit':'inj'}">${t.squadT} ${sg(mm.sq)}</span>`:''}${mm.home?`<span class="chip fit">${t.homeS} +1</span>`:''}${mm.mom?`<span class="chip ${mm.mom>0?'fit':'inj'}">${t.momT} ${sg(mm.mom)}</span>`:''}${mm.hot?`<span class="chip hot">${t.hotChip(s.hot)}</span>`:''}${ev}<span class="chip">${t.dc} ${dc}</span><span class="chip odds">${t.odds(need,Math.round(chanceOf(need,md,true)*100))}</span></div>`;
     btn=lbAll?`<button class="btn" data-ov="lbstop">${t.lbStop}</button>`:`<button class="btn" data-ov="lbroll">${md==='adv'?t.rollAdv:md==='dis'?t.rollDis:t.roll(20)}</button><button class="btn ghost" data-ov="lball">${t.rollAll}</button>`;
   }
   return `<div class="ovcard move lbpop">${head}<div class="lbdie">${die}</div><div class="lbinfo2">${info}</div>${lbNear(s)}<div class="lbbtns">${btn}</div><button class="ovx lbxx" data-ov="lbhome" aria-label="${t.lbHome}">×</button><button hidden class="linkb lbx" data-ov="lbhome">${t.lbHome}</button></div>`;
@@ -6730,7 +6743,7 @@ function femCopy(base,over){
   return r;
 }
 /* ================= the board, its targets, new managers, press conferences, big-match atmosphere, late career and the next generation ================= */
-const APP_VER='0.57';
+const APP_VER='0.58';
 /* stories about the match itself; every other story (career, money, media, training) comes after the game */
 const MATCH_CH=new Set(['eve','rain','hamstring','tunnel','birthday','flight','pens','heat','referee','family','bootdeal','prank','party','captspeech','captref']);
 const chStage=()=>{const s=S.season;return s.postCh!=null&&s.stages[s.postCh]?s.stages[s.postCh]:s.stages[s.idx]};
