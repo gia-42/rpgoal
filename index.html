@@ -1205,8 +1205,7 @@ body.ipadL .wrap>*,body.ipadP .wrap>*{box-sizing:border-box}
 .ipgrid.ip2{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}
 .ipadP .ipgrid.ip2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .ip2 .ipcol>section.trackp{flex:1 1 auto}
-/* seasons list, contract and Hall of Fame spread into two columns */
-:is(.ipadL,.ipadP) .seasonsP .scrollbox{display:grid;grid-template-columns:1fr 1fr;column-gap:28px;align-content:start}
+/* contract and Hall of Fame spread into two columns; the seasons list stays one column, year after year */
 :is(.ipadL,.ipadP) .ctab{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;row-gap:8px;align-content:start;grid-auto-flow:row dense}
 :is(.ipadL,.ipadP) .ctab>*{grid-column:1}
 :is(.ipadL,.ipadP) .ctab>.lbl{grid-column:2;grid-row:1}
