@@ -1384,6 +1384,10 @@ polyline.fc-l{fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linejoin:rou
 .cp-item .muted{font-size:11.5px;font-variant-numeric:tabular-nums}
 .cp-t{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;color:#f2c14e}
 .cp-t .ti{width:13px;height:13px}
+.evline.atml{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap;width:100%;max-width:100%;box-sizing:border-box;min-width:0}
+.evline.atml svg.die.atmi{width:28px!important;height:28px!important;max-width:28px!important;max-height:28px!important;flex:none;padding:0;margin:0}
+.evline.atml .atmt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.evline.atml .atmk{color:var(--ink-3);font-weight:500}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -3095,12 +3099,12 @@ function stageCard(){
       :dieSVG(20,r?r.nat:'',r?outc(r.nat):'','stage');
     const chDie=st.chr&&!st.chr.auto?`<div class="dcell">${dieSVG(st.chr.die||20,st.chr.nat,(st.chr.nat===(st.chr.die||20)?'crit':st.chr.nat===1?'fumble':st.chr.ok?'win':'lose')+' small sdie','chd')}<span class="lbl">${t.storyT}</span></div>`:'';
     const evDie=st.evr?`<div class="dcell">${dieSVG(st.evr.die||EVMAP[st.ev].die,st.evr.nat,(st.evr.perfect?'crit':st.evr.nat===1?'fumble':st.evr.ok?'win':'lose')+' small adie','ev')}<span class="lbl">${t.moment}</span></div>`:'';
-    const atmDie=st.atm?`<div class="dcell">${dieSVG(6,st.atm,(st.atm>=5?'win':st.atm<=2?'lose':'evd')+' small adie','atm')}<span class="lbl">${t.atmL}</span></div>`:'';
+    const atmDie='';   // the atmosphere d6 sits inline, in front of the line it decides
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie||atmDie?`<div class="row" style="gap:8px;justify-content:center">${atmDie}${chDie}${evDie}${healDie}</div>`:''}</div>`;
     body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
-    if(st.atm)body+=`<div class="evline ${st.atm>=5?'ok':st.atm<=2?'bad':''}">${t.atmTx[st.atm]}</div>`;
+    if(st.atm)body+=`<div class="evline atml ${st.atm>=5?'ok':st.atm<=2?'bad':''}">${dieSVG(6,st.atm,(st.atm>=5?'win':st.atm<=2?'lose':'evd')+' adie atmi','atm')}<span class="atmt"><span class="atmk">${t.atmL}: </span>${t.atmTx[st.atm]}</span></div>`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
       body+=`<div class="evline ${st.evr.ok?'ok':'bad'}">${st.ev==='derby'?swI():'★'} ${t.ev[st.ev][0]} · ${st.evr.ok?t.success:t.fail}${fx.mode?` · ${fx.mode==='adv'?t.fx.adv:t.fx.dis}`:fx.buff?` · ${t.fx.buff(fx.buff)}`:''}</div>`}
