@@ -1345,6 +1345,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .ngrid .ncol+.ncol{margin-top:14px}
 @media (min-width:900px){.ngrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}.ngrid .ncol+.ncol{margin-top:0}}
 .cchart{padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.cchart polyline{fill:none;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
 .ncol>.cchart:last-child{border-bottom:0}
 .cchart .pga-plot{height:96px}
 .gabars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:3px}
@@ -1388,6 +1389,36 @@ polyline.fc-l{fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linejoin:rou
 .evline.atml svg.die.atmi{width:28px!important;height:28px!important;max-width:28px!important;max-height:28px!important;flex:none;padding:0;margin:0}
 .evline.atml .atmt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .evline.atml .atmk{color:var(--ink-3);font-weight:500}
+.ovcard.hofpop{max-width:min(980px,100%);width:100%;max-height:100%;overflow-y:auto;overscroll-behavior:contain;align-items:stretch;text-align:left;padding:22px 22px 18px;gap:14px;cursor:default;
+ --ink:#eceef2;--ink-2:#b0b4be;--ink-3:#8a8f9b;--rule:#2a2d34;--card:#14161b;--accent:#8193ff;--good:#6ea8ff;--bad:#ff7a6e;--warn:#e3a14d;color:var(--ink)}
+.hofpop .hp-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid #2c3038;background:none;color:#c4c7cf;font-size:20px;line-height:1;cursor:pointer}
+.hofpop .hp-head{display:flex;align-items:center;gap:14px;padding-right:44px}
+.hofpop .hp-who{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.hofpop .hp-who h2{margin:0;font-size:24px;line-height:1.15}
+.hofpop .hp-who .muted{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.hofpop .hp-score{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.hofpop .hp-score b{font-size:30px;color:#f2c14e;line-height:1}
+.hofpop .ncol>*+*{margin-top:12px}
+.hofpop .numgrid{margin:0}
+.hofpop .hp-btns{gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.hofpop .hp-btns .btn{width:auto!important;flex:none;margin:0!important;padding-left:16px;padding-right:16px}
+.hofpop .cabinet{justify-content:flex-start}
+.hofpop .ncol>.cchart:last-child,.hofpop>.cchart{border-bottom:0}
+.hofpop .stbl tr:last-child td{border-bottom:0}
+.stbl .stc .crest{flex:none}
+.stbl-w{overflow-x:auto;margin-top:6px}
+.stbl{width:100%;border-collapse:collapse;font-size:13px}
+.stbl th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:500;text-align:right;padding:4px 6px;border-bottom:1px solid var(--rule)}
+.stbl td{padding:5px 6px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+.stbl th.cl,.stbl td.cl{text-align:left;width:40%}
+.stbl .stc{display:inline-flex;align-items:center;gap:6px}
+.stbl td.gold{color:#f2c14e;font-weight:600}.stbl td.up{color:var(--accent)}.stbl td.bad{color:var(--bad)}
+.stbl sup{font-size:9px;color:var(--ink-3);margin-left:1px}
+.stbl td.trs{text-align:left}
+.stbl td.trs .ti{width:15px;height:15px;vertical-align:middle;margin-right:2px}
+.rc-c{position:absolute;transform:translate(-50%,-50%);display:inline-flex;background:var(--card);border-radius:50%;padding:1px}
+.hrow .hbtn{cursor:pointer}
+@media (max-width:600px){.ovcard.hofpop{padding:18px 14px 14px}.hofpop .hp-who h2{font-size:20px}.hofpop .hp-score b{font-size:24px}.stbl th.cl,.stbl td.cl{width:auto}}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1735,7 +1766,7 @@ en:{
  teamT:'Team level',teamLv:['Elite','Contender','Solid','Modest','Underdog'],teamRank:(r,n)=>`${r} of ${n}`,
  offersT:'You received these offers:',firedT:'Find a new club',stayBtn:'Stay',stayDesc:'Keep going where you are.',decideLater:'Decide later',openWindow:'Open the transfer window',windowHint:n=>n?`${n} club${n>1?'s':''} made you an offer.`:'No new offers this window.',
  noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',pgaL:'P · G · A',posProjS:'Projection',posFinalS:'Final',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
- statsT:'Career numbers',gaT:'Goals and assists per season',finT:'League finish',growT:'Attributes: first season and now',pathT:'Career path',startT:'First season',nowT:'Now',champT:'Champions',upT:'Promoted',downT:'Relegated',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
+ statsT:'Career numbers',hpBySeason:'Season by season',hpNoHist:'Season-by-season charts are kept for careers that end from now on.',colYr:'Year',colAge:'Age',colClub:'Club',colFin:'League',colRt:'Rating',rtBySeason:'Rating by season',hpClose:'Close',gaT:'Goals and assists per season',finT:'League finish',growT:'Attributes: first season and now',pathT:'Career path',startT:'First season',nowT:'Now',champT:'Champions',upT:'Promoted',downT:'Relegated',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
  awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
@@ -1871,7 +1902,7 @@ pt:{
  teamT:'Nível do time',teamLv:['Elite','Candidato','Sólido','Modesto','Azarão'],teamRank:(r,n)=>`${r} de ${n}`,
  offersT:'Você recebeu estas propostas:',firedT:'Procure um novo clube',stayBtn:'Ficar',stayDesc:'Seguir onde você está.',decideLater:'Decidir depois',openWindow:'Abrir a janela de transferências',windowHint:n=>n?`${n} clube${n>1?'s':''} te fez uma proposta.`.replace('clubes te fez','clubes te fizeram'):'Nenhuma proposta nova nesta janela.',
  noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',pgaL:'J · G · A',posProjS:'Projeção',posFinalS:'Final',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
- statsT:'Números da carreira',gaT:'Gols e assistências por temporada',finT:'Posição na liga',growT:'Atributos: primeira temporada e agora',pathT:'Trajetória',startT:'Primeira temporada',nowT:'Agora',champT:'Campeão',upT:'Acesso',downT:'Rebaixado',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
+ statsT:'Números da carreira',hpBySeason:'Temporada a temporada',hpNoHist:'Os gráficos por temporada ficam guardados para as carreiras encerradas daqui em diante.',colYr:'Ano',colAge:'Idade',colClub:'Clube',colFin:'Liga',colRt:'Nível',rtBySeason:'Nível por temporada',hpClose:'Fechar',gaT:'Gols e assistências por temporada',finT:'Posição na liga',growT:'Atributos: primeira temporada e agora',pathT:'Trajetória',startT:'Primeira temporada',nowT:'Agora',champT:'Campeão',upT:'Acesso',downT:'Rebaixado',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
  awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
@@ -2858,7 +2889,7 @@ function retire(){
   const ud=underdogs(H);
   const hid=Date.now(); S.hofId=hid;
   hof.push({cid:careerId(S),cs,feats:S.feats||[],items:(S.items||[]).map(i=>i.k),daily:S.daily||null,tags:careerTags(),g:S.gender==='f'?'f':'m',ud,oneClub,id:hid,name:S.name||'',nat:S.nat,pos:myPos(),style:S.style||null,from:H[0].year,to:H[H.length-1].year,seasons:H.length,goals,assists,apps,peak,
-    forty:!!S.reached40,clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name,w:x.w})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason&&S.endReason.kind!=='quit',quit:S.endReason&&S.endReason.kind==='quit'?S.endReason.age:null,awards:(S.awards||[]).map(a=>({k:a.k,p:a.p,g:a.g,c:a.c,t:a.t,lg:a.lg})),kow:S.koW||0,sgoals:Math.max(0,...H.map(h=>h.goals)),earn:S.earn||0,feeMax:S.feeMax||0,wageMax:S.wageMax||0});
+    forty:!!S.reached40,clubs,trophies:S.trophies.map(x=>({kind:x.kind,lg:x.lg,name:x.name,w:x.w})),score,milestones:(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years)),rivalMoves:S.rivalMoves||0,legends:(S.legends||[]).map(l=>l.club),injury:!!S.endReason&&S.endReason.kind!=='quit',quit:S.endReason&&S.endReason.kind==='quit'?S.endReason.age:null,awards:(S.awards||[]).map(a=>({k:a.k,p:a.p,g:a.g,c:a.c,t:a.t,lg:a.lg})),kow:S.koW||0,sgoals:Math.max(0,...H.map(h=>h.goals)),earn:S.earn||0,feeMax:S.feeMax||0,wageMax:S.wageMax||0,hist:histOf(H),a0:H[0].a0||null,a1:S.attrs?{...S.attrs}:null});
   saveHof(hof); S.hofSaved=true;
 }
 
@@ -4090,6 +4121,7 @@ function ovHTML(o){
     const top=n?`<div class="verdict result v-${V==='bad'?'bad':'mid'}" style="font-size:20px;text-align:center">${t.awayV[V]}</div><div class="mods" style="justify-content:center"><span class="chip num">${o.w}${t.wdlS.W} ${o.d}${t.wdlS.D} ${o.l}${t.wdlS.L}</span>${o.p0&&o.p1?`<span class="chip num ${o.p1<o.p0?'fit':o.p1>o.p0?'inj':''}">${t.awayPos(ord(o.p0),ord(o.p1))}</span>`:''}</div>`:'';
     return `<div class="ovcard window"><span class="ov-kicker">${t.injT}</span><h2 class="ov-title" style="font-size:26px">${t.awayT}</h2>${top}<div class="ov-sub2">${n?t.awaySubM(n):t.awaySub(o.items.length)}</div><div class="sv-list away">${rows}</div>${o.bench?`<div class="banner bad">${t.awayBench}</div>`:''}<button class="btn" data-ov="close">${t.awayBack}</button></div>`;
   }
+  if(o.k==='hofp'){const p=loadHof().find(x=>x.id===o.id);return p?hofCareerHTML(p):''}
   if(o.k==='hofdel'){const p=loadHof().find(x=>x.id===o.id);return `<div class="ovcard move"><span class="ov-kicker">${t.hofT}</span><h2 class="ov-title" style="font-size:26px">${t.hofDelT}</h2><div class="ov-sub2"><b>${esc(p?(p.name||t.unnamed):'')}</b></div><div class="ov-sub2">${t.hofDelDesc}</div>
       <button class="btn danger" data-ov="go">${t.hofDelYes}</button><button class="btn ghost" data-ov="close">${t.hofDelNo}</button></div>`}
   if(o.k==='quit'){const st=quitStage(), Q=t.quitTx[st], q=Array.isArray(Q[0])?Q[o.v%Q.length]:Q, body=typeof q[1]==='function'?q[1](S.age):q[1], fresh=st==='create'||st==='retired';
@@ -4187,6 +4219,13 @@ function flushOv(){
     if(o.k==='away'||o.k==='chron'||o.k==='howto'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='deal'){dealClick(e,o);return}
     if(o.k==='mid'){midClick(e);return}
+    if(o.k==='hofp'){const b=e.target.closest('[data-ov]');
+      if(e.target===ovEl||(b&&b.dataset.ov==='close')){closeOv();return}
+      if(!b)return; const id=o.id, v=b.dataset.ov;
+      if(v==='share'){const p=loadHof().find(x=>x.id===id);if(p)shareCard(p);return}
+      if(v==='cmp'){if(hofCmp.has(id))hofCmp.delete(id);else{if(hofCmp.size>=2)hofCmp.delete([...hofCmp][0]);hofCmp.add(id)}closeOv();render();return}
+      if(v==='del'){closeOv();ovQ.unshift({k:'hofdel',id});flushOv();return}
+      return}
     if(o.k==='hofdel'){if(e.target.closest('[data-ov="go"]')){const id=o.id;closeOv();deleteHof(id);render();return}
       if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='foot'){footClick(e);return}
@@ -4592,7 +4631,7 @@ function onClick(e){
   if(act==='hoftab'){hofTab=b.dataset.v;render();return}
   if(act==='achf'){achF=b.dataset.v;render();return}
   if(act==='csub'){careerSub=b.dataset.v;render();return}
-  if(act==='hofopen'){const id=+b.dataset.id;hofOpen.has(id)?hofOpen.delete(id):hofOpen.add(id);render();return}
+  if(act==='hofopen'){ovQ.unshift({k:'hofp',id:+b.dataset.id});flushOv();return}
   if(act==='hofdel'){ovQ.unshift({k:'hofdel',id:+b.dataset.id});flushOv();return}
   if(act==='hofclear'){if(hofArm){addHofDel(loadHof().map(p=>p.id));saveHof([]);hofArm=false}else hofArm=true;render();return}
   if(act==='randname'){shuffleName();return}
@@ -5495,16 +5534,61 @@ function finChart(H){
   const dots=H.map((h,i)=>{const L=LEAGUES[h.league];return `<span class="fc-dot ${cls(h)} ${L&&L.div===2?'d2':''}" style="left:${x(i)}%;top:${y(h.pos)}%" title="${h.year} · ${esc(h.club)} · ${ord(h.pos)}${L?' · '+esc(L.name):''}"></span>`}).join('');
   return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.finT}</span><div class="pga-leg fc-leg"><span class="fc-champ">${t.champT}</span><span class="fc-up">${t.upT}</span><span class="fc-down">${t.downT}</span><span class="fc-d2">${t.div2}</span></div></div><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.finT}">${line}</svg>${dots}</div>${yrAxis(H)}</div></div>`;
 }
-function growChart(H){
-  const a0=H[0]&&H[0].a0; if(!a0||!S.attrs)return'';
+function growChart(H,A0,A1){
+  const a0=A0||(H[0]&&H[0].a0), now=A1||S.attrs; if(!a0||!now)return'';
   const mx=20;
-  return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.growT}</span><div class="pga-leg"><span class="gr-0">${t.startT}</span><span class="gr-1">${t.nowT}</span></div></div><div class="grow">${AK.map(k=>{const v0=a0[k]||0,v1=S.attrs[k]||0,d=v1-v0;return `<div class="gr-row"><span class="lbl">${aLbl(k)}</span><div class="gr-bar"><i class="gr-1" style="width:${v1/mx*100}%"></i><i class="gr-0" style="width:${Math.min(v0,v1)/mx*100}%"></i></div><span class="num gr-v">${v1}${d?`<em class="${d>0?'up':'dn'}">${d>0?'+':''}${d}</em>`:''}</span></div>`}).join('')}</div></div>`;
+  return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.growT}</span><div class="pga-leg"><span class="gr-0">${t.startT}</span><span class="gr-1">${t.nowT}</span></div></div><div class="grow">${AK.map(k=>{const v0=a0[k]||0,v1=now[k]||0,d=v1-v0;return `<div class="gr-row"><span class="lbl">${aLbl(k)}</span><div class="gr-bar"><i class="gr-1" style="width:${v1/mx*100}%"></i><i class="gr-0" style="width:${Math.min(v0,v1)/mx*100}%"></i></div><span class="num gr-v">${v1}${d?`<em class="${d>0?'up':'dn'}">${d>0?'+':''}${d}</em>`:''}</span></div>`}).join('')}</div></div>`;
 }
 function pathChart(H){
   if(!H.length)return'';
   const segs=[];H.forEach(h=>{const l=segs[segs.length-1];if(l&&l.club===h.club){l.n++;l.to=h.year;l.t+=h.trophies.filter(x=>x.kind!=='bdo').length}else segs.push({club:h.club,n:1,from:h.year,to:h.year,t:h.trophies.filter(x=>x.kind!=='bdo').length})});
   const N=H.length;
   return `<div class="cchart"><span class="lbl">${t.pathT}</span><div class="cpath">${segs.map(g=>{const k=kitOf(g.club);return `<div class="cp-seg" style="flex:${g.n} 1 0;--k1:${k[0]};--k2:${k[1]||k[0]}" title="${esc(g.club)} · ${g.from}${g.to!==g.from?'–'+g.to:''}"><i></i></div>`}).join('')}</div><div class="cp-list">${segs.map(g=>`<div class="cp-item">${crest(kitOf(g.club),13)}<b>${esc(g.club)}</b><span class="muted">${g.from}${g.to!==g.from?'–'+String(g.to).slice(-2):''}</span>${g.t?`<span class="cp-t">${trophySVG('ti')}${g.t}</span>`:''}</div>`).join('')}</div></div>`;
+}
+
+/* ---- Hall of Fame: the full career pop-up ---- */
+const histOf=H=>H.map(h=>({y:h.year,a:h.age,c:h.club,lg:h.league,p:h.pos,sz:h.size||null,mv:h.move||null,g:h.goals||0,as:h.assists||0,ap:h.apps||0,r:h.rating,tr:(h.trophies||[]).map(x=>({kind:x.kind,lg:x.lg,w:x.w}))}));
+function hofHist(p){
+  if(p.hist&&p.hist.length)return p.hist;
+  if(S&&S.hofId===p.id&&S.history&&S.history.length){p.hist=histOf(S.history);p.a0=S.history[0].a0||null;p.a1=S.attrs?{...S.attrs}:null;
+    try{const hof=loadHof(),e=hof.find(x=>x.id===p.id);if(e&&!e.hist){e.hist=p.hist;e.a0=p.a0;e.a1=p.a1;saveHof(hof)}}catch(e){}return p.hist}
+  return null;
+}
+const histH=hist=>hist.map(x=>({year:x.y,age:x.a,club:x.c,league:x.lg,pos:x.p,size:x.sz||(LEAGUES[x.lg]&&LEAGUES[x.lg].size)||20,move:x.mv,goals:x.g,assists:x.as,apps:x.ap,rating:x.r,trophies:x.tr||[]}));
+function ratingChart(H){
+  if(H.length<2)return'';
+  const lo=Math.floor(Math.min(...H.map(h=>h.rating))-.5), hi=Math.ceil(Math.max(...H.map(h=>h.rating))+.5), x=i=>100*i/(H.length-1), y=v=>100*(1-(v-lo)/((hi-lo)||1));
+  const grid=[lo,Math.round((lo+hi)/2),hi].map(v=>`<span class="pga-gl" style="top:${y(v)}%"><i>${v}</i></span>`).join('');
+  const line=`<polyline class="pga-g" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h.rating).toFixed(2)).join(' ')}"/>`;
+  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="rc-c" style="left:${x(i)}%;top:${y(h.rating)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:`<span class="pga-dot pga-g" style="left:${x(i)}%;top:${y(h.rating)}%" title="${h.year} · ${fmt(h.rating)}"></span>`).join('');
+  return `<div class="cchart"><span class="lbl">${t.rtBySeason}</span><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.rtBySeason}">${line}</svg>${marks}</div>${yrAxis(H)}</div></div>`;
+}
+function seasonTable(H){
+  return `<div class="cchart"><span class="lbl">${t.hpBySeason}</span><div class="stbl-w"><table class="stbl"><thead><tr><th>${t.colYr}</th><th>${t.colAge}</th><th class="cl">${t.colClub}</th><th>${t.colFin}</th><th>${t.apps}</th><th>G</th><th>A</th><th>${t.colRt}</th><th></th></tr></thead><tbody>${H.map(h=>{const L=LEAGUES[h.league];const tr=(h.trophies||[]).filter(x=>x.kind!=='bdo');const b=(h.trophies||[]).some(x=>x.kind==='bdo');
+    return `<tr><td class="num">${h.year}</td><td class="num">${h.age}</td><td class="cl"><span class="stc">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b></span></td><td class="num ${h.pos===1?'gold':h.move==='down'?'bad':h.move==='up'?'up':''}">${h.pos?ord(h.pos):'—'}${L&&L.div===2?'<sup>2</sup>':''}</td><td class="num">${h.apps}</td><td class="num">${h.goals}</td><td class="num">${h.assists}</td><td class="num">${fmt(h.rating)}</td><td class="trs">${tr.slice(0,4).map(x=>troSVG(x,'ti')).join('')}${tr.length>4?`<span class="muted">+${tr.length-4}</span>`:''}${b?troSVG({kind:'bdo'},'ti'):''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+}
+function hofCareerHTML(p){
+  const ps=t.pos[p.pos]||[p.pos,p.pos], hist=hofHist(p), H=hist?histH(hist):null, g=p.g||'m';
+  const titles=p.trophies.filter(x=>x.kind!=='bdo').length, bdoN=p.trophies.filter(x=>x.kind==='bdo').length, wcN=p.trophies.filter(x=>x.kind==='wc').length;
+  const counts={},cx={};p.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1;cx[n]=cx[n]||x});
+  const cups=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
+  const tags=(p.tags||[]).slice(); if(!p.tags)(p.legends||[]).forEach(c=>tags.push(['legend',c])); if(p.oneClub)tags.unshift(['oneclub',p.clubs[0]]);
+  if(p.forty)tags.push(['forty']); if(p.injury)tags.push(['injury']); if(p.rivalMoves)tags.push(['rival']);
+  const flag=NLOGO[p.nat]?`<img class="cflag" src="${NLOGO[p.nat]}" alt="" decoding="sync" draggable="false">`:'';
+  const last=p.clubs[p.clubs.length-1];
+  const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
+  const left=`<div class="numgrid">${cell(t.seasons,p.seasons)}${cell(t.apps,p.apps)}${cell(t.goals,p.goals)}${cell(t.assists,p.assists)}${cell(t.peakT,fmt(p.peak))}${cell(t.trophies,titles)}${cell(t.bdo,bdoN)}${cell(t.wcs,wcN)}</div>
+    ${cups?`<div class="cabinet">${cups}</div>`:''}${awCab(p.awards)}
+    ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(x=>tagChip(x,g)).join('')}</div>`:''}
+    ${(p.feats||[]).length||(p.items||[]).length?`<div class="cabinet">${(p.feats||[]).map(k=>`<span class="chip tg blue">${t.feats[k][0]}</span>`).join('')}${(p.items||[]).map(k=>`<span class="chip tg gold">${t.items[k][0]}</span>`).join('')}</div>`:''}
+    ${H?pathChart(H):`<div class="cchart"><span class="lbl">${t.pathT}</span><div class="hpath">${p.clubs.map(esc).join(' → ')}</div></div>`}
+    ${H&&p.a0&&p.a1?growChart(H,p.a0,p.a1):''}`;
+  const right=H?`${ratingChart(H)}${gaChart(H)}${finChart(H)}`:`<div class="muted small">${t.hpNoHist}</div>`;
+  return `<div class="ovcard hofpop"><button class="hp-x" data-ov="close" aria-label="${t.hpClose}">×</button>
+    <div class="hp-head">${crest(kitOf(last),40)}<div class="hp-who"><span class="lbl">${ps[0]}${p.style&&t.styles[p.style]?' · '+t.styles[p.style]:''}</span><h2>${esc(p.name||t.unnamed)} <span class="gsym">${g==='f'?'♀':'♂'}</span></h2><span class="muted">${flag}${COUNTRY[lang][p.nat]||''} · ${p.from}–${p.to}${p.daily?' · '+t.dailyBtn:''}</span></div><div class="hp-score"><span class="lbl">${t.legacy}</span><b class="num">${p.score}</b></div></div>
+    <div class="ngrid"><div class="ncol">${left}</div><div class="ncol">${right}</div></div>
+    ${H?seasonTable(H):''}
+    <div class="row hp-btns"><button class="btn ghost sm" data-ov="share">${t.shareBtn}</button><button class="btn ghost sm" data-ov="cmp" aria-pressed="${hofCmp.has(p.id)}">${hofCmp.has(p.id)?t.cmpOn:t.cmpBtn}</button><button class="btn ghost sm hofdel" data-ov="del">${t.hofDel}</button></div></div>`;
 }
 /* ---- campaign panel (Career tab) ---- */
 function campaignView(){
