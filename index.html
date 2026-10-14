@@ -1304,9 +1304,26 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .ipcol.tg .cc{padding-top:calc(9px - var(--tg)*1.2px);padding-bottom:calc(9px - var(--tg)*1.2px)}
 .ipcol.tg .sstat .cc b.num{font-size:calc(26px - var(--tg)*1.4px)}
 .ipcol.tg .who{margin-bottom:calc(0px - var(--tg)*1px)}
-.ipcol.tgt .ltable td{padding-top:var(--rp);padding-bottom:var(--rp)}
-.ipcol.tgt .ltable th{padding-top:var(--rp);padding-bottom:var(--rp)}
+.tgt .ltable td{padding-top:var(--rp)!important;padding-bottom:var(--rp)!important}
+.tgt .ltable th{padding-top:var(--rp)!important;padding-bottom:var(--rp)!important}
+.tgt.tgt2 .ltable td,.tgt.tgt2 .ltable th{font-size:12.5px}
 .lbpop .lbbtns .btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovl.docked .ovcard.runpop>*,.ovl.docked .ovcard.lbpop>*{flex-shrink:0}
+.ovl.docked .runpop.lbfit1{gap:5px}
+.ovl.docked .runpop.lbfit1 .fixd{height:78px}
+.ovl.docked .runpop.lbfit1 .fixd .die{max-width:72px}
+.ovl.docked .runpop.lbfit1 .fixinfo{min-height:70px}
+.ovl.docked .runpop.lbfit1 .fixbtn{height:auto;min-height:52px}
+.ovl.docked .runpop.lbfit2{gap:3px;padding-top:12px}
+.ovl.docked .runpop.lbfit2 .fixd{height:64px}
+.ovl.docked .runpop.lbfit2 .fixd .die{max-width:60px}
+.ovl.docked .runpop.lbfit2 .ltmini .ltr{padding-top:0;padding-bottom:0;min-height:0}
+.ovl.docked .runpop.lbfit3 .fixd{height:52px}
+.ovl.docked .runpop.lbfit3 .fixd .die{max-width:50px}
+.ovl.docked .runpop.lbfit3 .fixinfo{min-height:56px}
+.ovl.docked .runpop.lbfit4 .ltmini{font-size:12px}
+.ovl.docked .runpop.lbfit4 .ltmini .ltr{line-height:1.15}
+.ovl.docked .ovcard.lbfit4 .ltmini .gap,.ovl.docked .ovcard.lbfit4 .ltmini .sep{height:4px;min-height:0}
 .ovl.docked .lbpop.lbfit1{gap:5px}
 .ovl.docked .lbpop.lbfit1 .lbrec{min-height:44px}
 .ovl.docked .lbpop.lbfit1 .lbdie{height:80px}
@@ -1324,6 +1341,49 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .ovl.docked .lbpop.lbfit3 .lbtitle{font-size:18px;min-height:22px}
 .ovl.docked .lbpop.lbfit4 .ltmini{font-size:12px}
 .ovl.docked .lbpop.lbfit4 .lbtxt,.ovl.docked .lbpop.lbfit4 .ov-sub2{font-size:12px;line-height:1.25}
+.ngrid .ncol>*+*{margin-top:10px}
+.ngrid .ncol+.ncol{margin-top:14px}
+@media (min-width:900px){.ngrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}.ngrid .ncol+.ncol{margin-top:0}}
+.cchart{padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.ncol>.cchart:last-child{border-bottom:0}
+.cchart .pga-plot{height:96px}
+.gabars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:3px}
+.gab{flex:1 1 0;height:100%;display:flex;flex-direction:column-reverse;min-width:0}
+.gab i{display:block;width:100%;flex:none}
+.gab .gab-g{background:var(--accent);border-radius:0}
+.gab .gab-a{background:var(--warn);border-radius:2px 2px 0 0;opacity:.9}
+.gab-yrs{display:flex;gap:3px;height:16px}
+.gab-yrs span{flex:1 1 0;min-width:0;font-size:11px;color:var(--ink-3);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:visible}
+polyline.fc-l{fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linejoin:round}
+.fc-dot{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);background:var(--ink-2);border:2px solid var(--ink-2);box-sizing:border-box}
+.fc-dot.fc-champ{background:#f2c14e;border-color:#f2c14e}
+.fc-dot.fc-up{background:var(--accent);border-color:var(--accent)}
+.fc-dot.fc-down{background:var(--bad);border-color:var(--bad)}
+.fc-dot.d2{background:var(--card)}
+.fc-leg span::before{width:8px!important;height:8px!important;border-radius:50%!important}
+.fc-leg .fc-champ::before{background:#f2c14e}
+.fc-leg .fc-up::before{background:var(--accent)}
+.fc-leg .fc-down::before{background:var(--bad)}
+.fc-leg .fc-d2::before{background:transparent;border:2px solid var(--ink-2);box-sizing:border-box}
+.pga-leg .pga-s::before{background:var(--warn)}
+.grow{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.gr-row{display:grid;grid-template-columns:34px minmax(0,1fr) 44px;align-items:center;gap:8px}
+.gr-bar{position:relative;height:8px;border-radius:4px;background:var(--rule)}
+.gr-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.gr-bar .gr-1,.pga-leg .gr-1::before{background:var(--accent)}
+.gr-bar .gr-0,.pga-leg .gr-0::before{background:var(--ink-3)}
+.gr-v{font-size:12.5px;text-align:right;white-space:nowrap}
+.gr-v em{font-style:normal;font-size:11px;margin-left:3px}
+.gr-v em.up{color:var(--accent)}.gr-v em.dn{color:var(--bad)}
+.cpath{display:flex;gap:2px;height:12px;margin:8px 0 8px;border-radius:6px;overflow:hidden}
+.cp-seg{min-width:4px;background:var(--k1);box-shadow:inset 0 -3px 0 var(--k2)}
+.pga-leg span{white-space:nowrap}
+.pga-leg{flex-wrap:wrap;row-gap:4px}
+.cp-list{display:flex;flex-wrap:wrap;gap:6px 14px}
+.cp-item{display:inline-flex;align-items:center;gap:5px;font-size:12.5px}
+.cp-item .muted{font-size:11.5px;font-variant-numeric:tabular-nums}
+.cp-t{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;color:#f2c14e}
+.cp-t .ti{width:13px;height:13px}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1671,7 +1731,7 @@ en:{
  teamT:'Team level',teamLv:['Elite','Contender','Solid','Modest','Underdog'],teamRank:(r,n)=>`${r} of ${n}`,
  offersT:'You received these offers:',firedT:'Find a new club',stayBtn:'Stay',stayDesc:'Keep going where you are.',decideLater:'Decide later',openWindow:'Open the transfer window',windowHint:n=>n?`${n} club${n>1?'s':''} made you an offer.`:'No new offers this window.',
  noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',pgaL:'P · G · A',posProjS:'Projection',posFinalS:'Final',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
- statsT:'Career numbers',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
+ statsT:'Career numbers',gaT:'Goals and assists per season',finT:'League finish',growT:'Attributes: first season and now',pathT:'Career path',startT:'First season',nowT:'Now',champT:'Champions',upT:'Promoted',downT:'Relegated',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
  awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
@@ -1807,7 +1867,7 @@ pt:{
  teamT:'Nível do time',teamLv:['Elite','Candidato','Sólido','Modesto','Azarão'],teamRank:(r,n)=>`${r} de ${n}`,
  offersT:'Você recebeu estas propostas:',firedT:'Procure um novo clube',stayBtn:'Ficar',stayDesc:'Seguir onde você está.',decideLater:'Decidir depois',openWindow:'Abrir a janela de transferências',windowHint:n=>n?`${n} clube${n>1?'s':''} te fez uma proposta.`.replace('clubes te fez','clubes te fizeram'):'Nenhuma proposta nova nesta janela.',
  noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',pgaL:'J · G · A',posProjS:'Projeção',posFinalS:'Final',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
- statsT:'Números da carreira',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
+ statsT:'Números da carreira',gaT:'Gols e assistências por temporada',finT:'Posição na liga',growT:'Atributos: primeira temporada e agora',pathT:'Trajetória',startT:'Primeira temporada',nowT:'Agora',champT:'Campeão',upT:'Acesso',downT:'Rebaixado',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
  awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
@@ -3306,15 +3366,20 @@ function setHTML(el,html){
 /* iPad landscape and computer: nothing in the three columns may run past the bottom of the screen */
 function fitIp(){
   try{
-  if(ipMode!=='L')return; const cols=app.querySelectorAll('.ipgrid.ipL>.ipcol'); if(cols.length<3)return;
   const over=e=>e.scrollHeight>e.clientHeight+1;
+  // any full league table on a one-page screen: tighten the rows until all clubs show
+  const tabFit=sec=>{const tr=sec.querySelector('.track')||sec;sec.classList.remove('tgt','tgt2');sec.style.removeProperty('--rp');
+    for(let p=3.5;p>=0&&(over(tr)||over(sec));p-=.5){sec.classList.add('tgt');sec.style.setProperty('--rp',p+'px')}
+    if(over(tr)||over(sec))sec.classList.add('tgt2')};
+  if(document.body.classList.contains('onepage'))app.querySelectorAll('section.ltab').forEach(tabFit);
+  if(ipMode!=='L')return; const cols=app.querySelectorAll('.ipgrid.ipL>.ipcol'); if(cols.length<3)return;
   const L=cols[0]; L.classList.remove('tg'); L.style.removeProperty('--tg'); [...L.children].forEach(c=>c.style.zoom='');
   for(let k=1;k<=6&&over(L);k++){L.classList.add('tg');L.style.setProperty('--tg',k)}
   if(over(L)){const z=Math.max(.7,L.clientHeight/L.scrollHeight);[...L.children].forEach(c=>c.style.zoom=z)}
-  const R=cols[2], tr=R.querySelector('.track')||R; R.classList.remove('tgt'); R.style.removeProperty('--rp');
-  for(let p=3.5;p>=0&&(over(tr)||over(R));p-=.5){R.classList.add('tgt');R.style.setProperty('--rp',p+'px')}
-  const card=ovEl&&ovEl.classList.contains('docked')&&ovEl.querySelector('.ovcard.lbpop');
-  if(card){const F=['lbfit1','lbfit2','lbfit3','lbfit4'];F.forEach(c=>card.classList.remove(c));for(const c of F){if(!over(card)&&!over(ovEl))break;card.classList.add(c)}}
+  const card=ovEl&&ovEl.classList.contains('docked')&&ovEl.querySelector('.ovcard.lbpop,.ovcard.runpop');
+  if(card){const F=['lbfit1','lbfit2','lbfit3','lbfit4'];F.forEach(c=>card.classList.remove(c));card.style.zoom='';
+    for(const c of F){if(!over(card)&&!over(ovEl))break;card.classList.add(c)}
+    if(over(card)||over(ovEl)){const z=Math.max(.75,Math.min(ovEl.clientHeight/ovEl.scrollHeight,card.clientHeight/card.scrollHeight));card.style.zoom=z}}
   }catch(e){}
 }
 function render(){
@@ -3787,14 +3852,14 @@ function statsView(){
   const counts={},cx={};S.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1;cx[n]=cx[n]||x});
   const cab=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
   const clubs=byClub.map(c=>`<div class="crow"><span class="yr">${t.seasonsShort(c.seasons)}</span><span class="cl">${crest(kitOf(c.club),13)}<b>${esc(c.club)}</b>${c.titles?`<span class="muted">${t.titlesN(c.titles)}</span>`:''}</span><span class="nm">${c.apps}·${c.goals}·${c.assists}</span></div>`).join('');
-  return sub+`<section class="panel stack trackp nums" style="gap:8px">
+  return sub+`<section class="panel stack trackp nums" style="gap:8px"><div class="ngrid"><div class="ncol">
     <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,fmt(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
     ${cab?`<div class="cabinet oneline">${cab}</div>`:''}
     ${awCab(S.awards)}
     <div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>
     <div class="cgrid">${radar()}${campaignView()}</div>
-    ${sparkline()}
-    <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div>${quitRow()}</section>`;
+    <div class="row between"><span class="lbl">${t.byClub}</span><span class="lbl">${t.apps} · G · A</span></div><div class="scrollbox">${clubs}</div></div>
+    <div class="ncol">${sparkline()}${gaChart(H)}${finChart(H)}${growChart(H)}${pathChart(H)}</div></div>${quitRow()}</section>`;
 }
 
 
@@ -5407,6 +5472,36 @@ function sparkline(){
   return `<div class="spark"><span class="lbl">${t.sparkT}</span><div class="sp-box" data-spark="1"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" class="sp-l"/></svg>${marks}<span class="sp-dot" hidden></span><span class="sp-tip" hidden></span></div><div class="row between sp-ax"><span>${H[0].age}</span><span>${H[H.length-1].age}</span></div></div>`;
 }
 
+
+/* ---- Career tab charts ---- */
+const yrAxis=H=>{const n=H.length-1,step=Math.max(1,Math.ceil(H.length/5)),x=i=>n?100*i/n:50;return `<div class="pga-yrs">${H.map((h,i)=>(i===n||(i%step===0&&n-i>=step*.6))?`<span class="pga-yr ${i===0?'first':i===n?'last':''}" style="left:${x(i)}%">${h.year}</span>`:'').join('')}</div>`};
+function gaChart(H){
+  if(H.length<2)return'';
+  const mx=Math.max(1,...H.map(h=>(h.goals||0)+(h.assists||0))), top=Math.ceil(mx/10)*10||10;
+  const grid=[0,.5,1].map(f=>`<span class="pga-gl" style="top:${100-f*100}%"><i>${Math.round(top*f)}</i></span>`).join('');
+  const bars=H.map(h=>{const g=h.goals||0,a=h.assists||0;return `<div class="gab" title="${h.year} · ${esc(h.club)} · ${g} G · ${a} A"><i class="gab-a" style="height:${(a/top*100).toFixed(1)}%"></i><i class="gab-g" style="height:${(g/top*100).toFixed(1)}%"></i></div>`}).join('');
+  return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.gaT}</span><div class="pga-leg"><span class="pga-g">${t.goals}</span><span class="pga-s">${t.assists}</span></div></div><div class="pga-box"><div class="pga-plot">${grid}<div class="gabars">${bars}</div></div><div class="gab-yrs">${H.map((h,i)=>`<span>${i===0||i===H.length-1||H.length<=8?h.year:''}</span>`).join('')}</div></div></div>`;
+}
+function finChart(H){
+  if(H.length<2)return'';
+  const sz=Math.max(...H.map(h=>h.size||LEAGUES[h.league].size||20)), x=i=>100*i/(H.length-1), y=p=>100*((p||sz)-1)/(sz-1);
+  const grid=[1,Math.round((sz+1)/2),sz].map(p=>`<span class="pga-gl" style="top:${y(p)}%"><i>${p}</i></span>`).join('');
+  const cls=h=>h.pos===1?'fc-champ':h.move==='down'?'fc-down':h.move==='up'?'fc-up':'';
+  const line=`<polyline class="fc-l" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h.pos).toFixed(2)).join(' ')}"/>`;
+  const dots=H.map((h,i)=>{const L=LEAGUES[h.league];return `<span class="fc-dot ${cls(h)} ${L&&L.div===2?'d2':''}" style="left:${x(i)}%;top:${y(h.pos)}%" title="${h.year} · ${esc(h.club)} · ${ord(h.pos)}${L?' · '+esc(L.name):''}"></span>`}).join('');
+  return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.finT}</span><div class="pga-leg fc-leg"><span class="fc-champ">${t.champT}</span><span class="fc-up">${t.upT}</span><span class="fc-down">${t.downT}</span><span class="fc-d2">${t.div2}</span></div></div><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.finT}">${line}</svg>${dots}</div>${yrAxis(H)}</div></div>`;
+}
+function growChart(H){
+  const a0=H[0]&&H[0].a0; if(!a0||!S.attrs)return'';
+  const mx=20;
+  return `<div class="cchart"><div class="row between" style="flex-wrap:wrap;gap:6px"><span class="lbl">${t.growT}</span><div class="pga-leg"><span class="gr-0">${t.startT}</span><span class="gr-1">${t.nowT}</span></div></div><div class="grow">${AK.map(k=>{const v0=a0[k]||0,v1=S.attrs[k]||0,d=v1-v0;return `<div class="gr-row"><span class="lbl">${aLbl(k)}</span><div class="gr-bar"><i class="gr-1" style="width:${v1/mx*100}%"></i><i class="gr-0" style="width:${Math.min(v0,v1)/mx*100}%"></i></div><span class="num gr-v">${v1}${d?`<em class="${d>0?'up':'dn'}">${d>0?'+':''}${d}</em>`:''}</span></div>`}).join('')}</div></div>`;
+}
+function pathChart(H){
+  if(!H.length)return'';
+  const segs=[];H.forEach(h=>{const l=segs[segs.length-1];if(l&&l.club===h.club){l.n++;l.to=h.year;l.t+=h.trophies.filter(x=>x.kind!=='bdo').length}else segs.push({club:h.club,n:1,from:h.year,to:h.year,t:h.trophies.filter(x=>x.kind!=='bdo').length})});
+  const N=H.length;
+  return `<div class="cchart"><span class="lbl">${t.pathT}</span><div class="cpath">${segs.map(g=>{const k=kitOf(g.club);return `<div class="cp-seg" style="flex:${g.n} 1 0;--k1:${k[0]};--k2:${k[1]||k[0]}" title="${esc(g.club)} · ${g.from}${g.to!==g.from?'–'+g.to:''}"><i></i></div>`}).join('')}</div><div class="cp-list">${segs.map(g=>`<div class="cp-item">${crest(kitOf(g.club),13)}<b>${esc(g.club)}</b><span class="muted">${g.from}${g.to!==g.from?'–'+String(g.to).slice(-2):''}</span>${g.t?`<span class="cp-t">${trophySVG('ti')}${g.t}</span>`:''}</div>`).join('')}</div></div>`;
+}
 /* ---- campaign panel (Career tab) ---- */
 function campaignView(){
   const cap=S.history.length&&S.age>=21?t.capLv[capLv(potCap())]:'?';
@@ -6936,7 +7031,7 @@ const FEM={pt:{
  autoPlay:'Lesionada · jogos simulados automaticamente',seasonOutChip:'Lesionada · fora da temporada',n40:'Você jogou até os 40. Uma jogadora que não envelhece.',
  throughTo:r=>`Classificada: ${r}`,throughGroup:'Classificada na fase de grupos',outIn:r=>`Eliminada · ${r}`,winners:c=>`Campeã: ${c}!`,won:'Campeã',
  calledUp:(n,c)=>`Convocada para a ${c||'Copa do Mundo'}! (${n})`,callT:'Convocada!','wcRes.4':'Vice-campeã','wcRes.5':'Campeã',notCalled:'Não convocada',groupOut:'Eliminada da Copa na fase de grupos.',cgOut:'Eliminada na fase de grupos.',
- ovChamps:'Campeã!',ovLeague:'Campeã da liga!',ovBdoSub:y=>`A melhor jogadora do mundo em ${y}`,leagueChamp:l=>`Campeã: ${l}!`,
+ champT:'Campeã',ovChamps:'Campeã!',ovLeague:'Campeã da liga!',ovBdoSub:y=>`A melhor jogadora do mundo em ${y}`,leagueChamp:l=>`Campeã: ${l}!`,
  fired:c=>`Dispensada: o ${c} encerrou seu contrato depois da má fase.`,firedShort:'Dispensada',
  'fanScale.0':'Odiada','fanScale.1':'Neutra','fanStatus.0':'Odiada','fanStatus.1':'Mal-vista','fanStatus.2':'Neutra','fanStatus.3':'Querida','fanStatus.4':'Amada',
  nMerc:'Mais um clube novo. A torcida já te vê como mercenária.','capLv.0':'Jogadora de elenco',
