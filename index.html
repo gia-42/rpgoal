@@ -1293,6 +1293,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .pga-leg span{display:inline-flex;align-items:center;gap:6px}
 .pga-leg span::before{content:'';width:14px;height:3px;border-radius:2px;background:currentColor}
 .pga-leg .pga-a::before{background:var(--ink-3)}.pga-leg .pga-g::before{background:var(--accent)}.pga-leg .pga-s::before{background:var(--warn)}
+.ab-cap{font-size:.55em;color:var(--ink-3);margin-left:1px;font-weight:500;letter-spacing:0}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1517,6 +1518,17 @@ const posScore=(a,p)=>AK.reduce((s,k)=>s+a[k]*(POS[p].w[k]||0),0)+POS_BIAS[p];
 const posFit=(a,p)=>{const d=posScore(a,bestPos(a))-posScore(a,p);return d<=.35?0:d<=1.2?1:2};
 const bestPos=a=>Object.keys(POS).reduce((b,p)=>posScore(a,p)>posScore(a,b)+1e-9?p:b,'ST');
 const myPos=()=>S.pos||bestPos(S.attrs);
+// how far each attribute can grow in each position: one signature attribute can reach 20, the rest stop earlier
+const POS_CAP={
+ ST:{fin:20,spd:18,ski:18,str:18,dec:18,pas:16,lead:14,def:12},
+ W:{spd:20,ski:19,fin:17,pas:17,dec:17,str:15,lead:14,def:15},
+ AM:{pas:20,ski:19,dec:18,fin:17,spd:16,lead:15,str:14,def:15},
+ CM:{pas:20,dec:19,def:18,ski:17,str:17,lead:17,spd:13,fin:13},
+ DM:{def:20,dec:19,str:18,pas:17,lead:17,spd:15,ski:14,fin:14},
+ FB:{spd:20,def:19,pas:17,str:17,dec:17,ski:16,lead:15,fin:13},
+ CB:{def:20,str:18,lead:17,dec:17,pas:17,spd:16,ski:15,fin:14}};
+const attrCap=(k,p)=>{p=p||myPos();const c=(POS_CAP[p]||{})[k]||20,sty=S&&S.pos===p&&S.style?styleOf(p,S.style):null;return Math.min(20,c+(sty&&sty[1]===k?1:0))};
+const canUp=k=>S.attrs[k]<attrCap(k);
 function focusKey(){const w=POS[myPos()].w;const top=AK.slice().sort((x,y)=>(w[y]||0)-(w[x]||0)).slice(0,3);return Math.random()<.6?pick(top):pick(AK)}
 /* moments: roll the die + floor(attribute/5) against the target, before the match. The result shapes that match's d20. */
 const EVENTS=[
@@ -1628,7 +1640,7 @@ en:{
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
  settingsT:'Settings',hapT:'Vibration',onT:'On',offT:'Off',soundT:'Sound',themeT:'Theme',langT:'Language',
- bySeason:'Season by season',pgaBySeason:'Apps, goals and assists by season',seasonsShort:n=>`${n} ${n>1?'yrs':'yr'}`,
+ bySeason:'Season by season',capOf:n=>`Can grow up to ${n} in this position`,pgaBySeason:'Apps, goals and assists by season',seasonsShort:n=>`${n} ${n>1?'yrs':'yr'}`,
  noTitles:'No titles',wcN:n=>`${n} World Cup${n>1?'s':''}`,bdoNs:n=>`${n} Ballon${n>1?'s':''} d’Or`,appsS:'apps',ratingS:'rating',majorN:n=>`${n} major${n>1?'s':''}`,
  tag:{legend:c=>`Legend · ${c}`,idol:c=>`Club idol · ${c}`,oneclub:c=>`One-club · ${c}`,forty:()=>'Played until 40',injury:()=>'Ended by injury',rival:()=>'Crossed to a rival',
   blessed:()=>'Blessed by the dice',cursed:()=>'Cursed by the dice',nat20s:()=>'Natural 20 collector',biggame:()=>'Big-game player',bottler:()=>'Bottled the finals',
@@ -1764,7 +1776,7 @@ pt:{
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
  settingsT:'Ajustes',hapT:'Vibração',onT:'Ligada',offT:'Desligada',soundT:'Som',themeT:'Tema',langT:'Idioma',
- bySeason:'Por temporada',pgaBySeason:'Jogos, gols e assistências por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
+ bySeason:'Por temporada',capOf:n=>`Pode chegar a ${n} nesta posição`,pgaBySeason:'Jogos, gols e assistências por temporada',seasonsShort:n=>`${n} ${n>1?'anos':'ano'}`,
  noTitles:'Sem títulos',wcN:n=>`${n} Copa${n>1?'s':''} do Mundo`,bdoNs:n=>`${n} Bola${n>1?'s':''} de Ouro`,appsS:'jogos',ratingS:'nível',majorN:n=>`${n} grande${n>1?'s':''}`,
  tag:{legend:c=>`Lenda · ${c}`,idol:c=>`Ídolo · ${c}`,oneclub:c=>`Um clube só · ${c}`,forty:()=>'Jogou até os 40',injury:()=>'Encerrada por lesão',rival:()=>'Trocou pelo rival',
   blessed:()=>'Abençoado pelos dados',cursed:()=>'Amaldiçoado pelos dados',nat20s:()=>'Colecionador de 20',biggame:()=>'Jogador de decisão',bottler:()=>'Amarelou nas finais',
@@ -1872,7 +1884,8 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const d=n=>1+Math.floor(Math.random()*n);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const rating=a=>AK.reduce((s,k)=>s+a[k],0)/AK.length;
+const ratingAvg=a=>AK.reduce((s,k)=>s+a[k],0)/AK.length;
+const rating=(a,p)=>{if(!a)return 0;p=p||(typeof S!=='undefined'&&S&&a===S.attrs&&S.pos)||bestPos(a);const w=POS[p].w;return .75*AK.reduce((s,k)=>s+a[k]*(w[k]||0),0)+.25*ratingAvg(a)};
 const pmod=r=>Math.max(-2,Math.round((r-5)*0.4));
 const keyBonus=v=>Math.floor(v/5);
 // without you the squad rolls +2 if you're an ordinary player, down to −2 when you're the star they lean on
@@ -2192,7 +2205,7 @@ const teamLevel=fr=>TEAM_LV.findIndex(x=>fr<=x+1e-9);
 /* end of season: everyone drifts a little toward their usual level; your club follows you */
 /* the Brasileirão's twelve big clubs are always close: their level swings a lot from year to year but never runs away */
 const parityClub=n=>{const i=CLUB_INFO_M[n];return !isW()&&!!i&&LEAGUES[i.league].c==='BRA'&&LEAGUES[i.league].div===1&&i.pr>=3};
-let LIFT_MAX=1.5, LIFT_CAP=8;   // your club grows with you, but slowly and only so far
+let LIFT_MAX=1.5, LIFT_CAP=6;   // your club grows with you, but slowly and only so far
 function evolveTeams(h){
   // a player better than the club is used to lifts it a little more every season he stays
   const exc=rating(S.attrs)-(tierMinOf(h.league,h.tier)+1);
@@ -2270,7 +2283,7 @@ function resolveEvent(v){
   let perfect=v===e.die, ok=perfect||(v!==1&&total>=tgt), die=e.die;
   if(e.id==='pen'&&pkForce){const k=pkForce;v=k.v;bonus=k.m;tgt=pkTgt(k.dir);total=v+bonus;ok=k.goal;perfect=k.goal&&v===10;die=10;if(k.dir==='chip'){addLoy(k.goal?2:-2);if(k.goal)chipScored();else S.chipsMiss=(S.chipsMiss||0)+1}}
   let fx={...(ok?e.ok:e.bad)};
-  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1);if(st.ev==='training')s.train++}
+  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.max(S.attrs[e.at[0]],Math.min(attrCap(e.at[0]),S.attrs[e.at[0]]+1));if(st.ev==='training')s.train++}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   st.evr={nat:v,bonus,tgt,total,ok,perfect,die}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
   if(v===1&&ONPITCH_EV.includes(st.ev))injuryScare();
@@ -2293,7 +2306,7 @@ function resolveStage(v1,v2){
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
     if(isCrit(nat)&&s.bench>0&&st.comp==='league'){s.bench=0;r.benchWon=1;S.flag_benchback=1;S.benchBackN=(S.benchBackN||0)+1;S.notes=(S.notes||[]).concat([['nBenchWon']])}
-    if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&!isCG(st)&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
+    if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&!isCG(st)&&AK.some(canUp)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(injTrig(nat)){r.injury=true;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null,relapse:s.relapseHit?1:0}}
   }
   r.dc=dcFor(st);
@@ -2306,8 +2319,9 @@ function resolveStage(v1,v2){
     st.res={tone:r.tone,kind:r.kind,missed:!!r.missed};
   }else if(st.comp==='run'){
     const dw=s.v>=6&&st.lha?LB_DRAW:3;
-    const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
-    const draw=!win&&(r.missed?r.total>=r.dc-dw:(nat!==1&&r.total>=r.dc-dw));
+    const up=!r.missed&&s.v>=6&&st.lha&&nat<=LG_UPSET;
+    const win=r.missed?r.total>=r.dc:(isCrit(nat)||(!up&&nat!==1&&r.total>=r.dc));
+    const draw=!win&&(r.missed?r.total>=r.dc-dw:(!up&&nat!==1&&r.total>=r.dc-dw));
     if(s.v>=6&&st.lha){lgRecord(s,win?'W':draw?'D':'L',r.missed);if(!r.missed&&isCrit(nat)){mom20(s);r.mom20=1}}
     const k=win?'W':draw?'D':'L', g=s.rung=s.rung||{W:0,D:0,L:0}; g[k]++;
     r.wdl=k; r.win=win; r.tone=win?'good':draw?'mid':'bad'; r.rec={...g};
@@ -2350,8 +2364,8 @@ function resolveStage(v1,v2){
   S.notes=[];
   s.last=r;
 }
-function pickAttr(k){const s=S.season;if(!s.pickAttr||S.attrs[k]>=20)return;S.attrs[k]++;s.pickAttr=false;if(s.last)s.last.picked=k}
-function autoPick(){const w=POS[myPos()].w,ks=AK.filter(k=>S.attrs[k]<20).sort((a,b)=>(w[b]||0)-(w[a]||0));pickAttr(ks[0]||AK[0])}
+function pickAttr(k){const s=S.season;if(!s.pickAttr||!canUp(k))return;S.attrs[k]++;s.pickAttr=false;if(s.last)s.last.picked=k}
+function autoPick(){const w=POS[myPos()].w,ks=AK.filter(canUp).sort((a,b)=>(w[b]||0)-(w[a]||0));pickAttr(ks[0]||AK[0])}
 /* the injury check: one d4, no bonuses except the shin guards. 3+ shakes it off (only a 4 past 30) */
 const injNeed=()=>{const p=S.attrs&&S.attrs.str||0, re=S.season&&S.season.inj&&S.season.inj.relapse?1:0;return Math.min(4,(S.age>=36||(S.age>=34&&p<17)||(S.age>=31&&p<14)?4:3)+re)};
 /* a natural 1 in a match: an injury scare most of the time. After rushing back from an injury, a 1 or a 2 always is */
@@ -2389,7 +2403,7 @@ function injD10(a,b){
   if(a===12&&b===12)giveItem('tape');
   i.d10=[a,b]; i.kept=kept; s.pendingHeal=false;
   if(a===1&&b===1&&Math.random()<.55){i.career=true;s.careerOver=true;return}
-  if(a===12&&b===12){i.lucky=true;S.attrs.str=Math.min(20,S.attrs.str+1)}
+  if(a===12&&b===12){i.lucky=true;S.attrs.str=Math.max(S.attrs.str,Math.min(attrCap('str'),S.attrs.str+1))}
   if(kept===1&&(a===1&&b===1||Math.random()<.5)){
     const L1=s.stages.find(x=>x.comp==='league'&&x.round===((s.v||4)>=5?2:1));
     const past=!!L1&&(!!L1.res||s.stages.indexOf(L1)<=s.idx);
@@ -2473,9 +2487,10 @@ function grow(){
   if(S.age>=(phy>=16?33:30)&&!shielded)S.attrs.spd-=1;
   const G=(canGrow&&rolls.length?clamp(Math.round((A-9)/1.5),0,6):0)+eliteGrow();
   const train=canGrow?s.train:0;
-  for(let i=0;i<G+train;i++){const open=AK.filter(k=>S.attrs[k]<20);if(!open.length||rating(S.attrs)>=potCap())break;S.attrs[pick(open)]++}
-  if(canGrow)s.crit.forEach(k=>{if(rating(S.attrs)<critCap())S.attrs[k]++})   // big moments can carry you past your ceiling, but only so far;
-  AK.forEach(k=>S.attrs[k]=clamp(S.attrs[k],1,20));
+  for(let i=0;i<G+train;i++){const open=AK.filter(canUp);if(!open.length||rating(S.attrs)>=potCap())break;S.attrs[pick(open)]++}
+  if(canGrow)s.crit.forEach(k=>{if(rating(S.attrs)<critCap()&&canUp(k))S.attrs[k]++})   // big moments can carry you past your ceiling, but only so far;
+  AK.forEach(k=>{if(S.attrs[k]>attrCap(k)&&S.attrs[k]>=before[k])S.attrs[k]--});   // what your position doesn't use fades back toward its cap, a point a season
+  AK.forEach(k=>S.attrs[k]=clamp(S.attrs[k],1,Math.max(attrCap(k),Math.min(20,before[k]))));   // nothing grows past its position's cap
   return{before,A,G,base,train,crits:canGrow?s.crit.length:0,hot,shielded,capped:!canGrow,ceiling:canGrow&&rating(S.attrs)>=potCap()};
 }
 function settleLeague(s){
@@ -2763,7 +2778,7 @@ const d10cls=dieCls(10);
 const healCls=v=>v>=11?'crit':v===1?'fumble':'';
 function attrBars(a,before){
   return `<div class="abil">${AK.map(k=>{const diff=before?a[k]-before[k]:0;
-    return `<div class="ab-cell"><span class="lbl" data-nm="${t.attrs[k]}">${aLbl(k)}</span><span class="ab-v num">${a[k]}${diff>0?`<span class="gain">+${diff}</span>`:diff<0?`<span class="loss">${diff}</span>`:''}</span><span class="ab-m num">${sg(keyBonus(a[k]))}</span></div>`}).join('')}</div>`;
+    return `<div class="ab-cell"><span class="lbl" data-nm="${t.attrs[k]}">${aLbl(k)}</span><span class="ab-v num">${a[k]}${a===S.attrs&&S.phase!=='create'?`<span class="ab-cap" title="${t.capOf(attrCap(k))}">/${attrCap(k)}</span>`:''}${diff>0?`<span class="gain">+${diff}</span>`:diff<0?`<span class="loss">${diff}</span>`:''}</span><span class="ab-m num">${sg(keyBonus(a[k]))}</span></div>`}).join('')}</div>`;
 }
 function teamBar(){
   if(!S.club||S.phase==='create')return'';
@@ -4664,7 +4679,7 @@ function questProg(q,s,h){
   return null;
 }
 function questReward(q){
-  if(q.rw==='attr'){const w=POS[myPos()].w,ks=AK.filter(k=>S.attrs[k]<20).sort((a,b)=>(w[b]||0)-(w[a]||0));if(ks[0]){S.attrs[ks[0]]++;q.got=ks[0]}}
+  if(q.rw==='attr'){const w=POS[myPos()].w,ks=AK.filter(canUp).sort((a,b)=>(w[b]||0)-(w[a]||0));if(ks[0]){S.attrs[ks[0]]++;q.got=ks[0]}}
   else if(q.rw==='fans')addLoy(3);
   else gainInsp(1);
 }
@@ -4747,13 +4762,13 @@ function pickFeat(k){const h=S.history[S.history.length-1];if(!h||!h.featDue||h.
 function doCamp(k){
   const h=S.history[S.history.length-1]; if(!h||h.camp)return; h.camp=k;
   if(k==='tr:wf'){h.campGot=[];if((S.wf||2)<5){S.wf=(S.wf||2)+1;h.campGot.push('wf');S.wfTrained=(S.wfTrained||0)+1;if(S.wfTrained>=2)giveItem('balance',null,h)}}
-  else if(k.startsWith('tr:')){const x=k.slice(3);h.campGot=[];for(let i=0;i<2;i++)if(S.attrs[x]<20&&rating(S.attrs)<critCap()){S.attrs[x]++;h.campGot.push(x)}}
+  else if(k.startsWith('tr:')){const x=k.slice(3);h.campGot=[];for(let i=0;i<2;i++)if(canUp(x)&&rating(S.attrs)<critCap()){S.attrs[x]++;h.campGot.push(x)}}
   if(k==='rest')S.restNext=1;
   if(k==='media')S.mediaNext=1;
 }
 /* two random attributes to drill this summer */
 function campOpts(h){
-  if(!h.campOpts){const ks=AK.filter(x=>S.attrs[x]<20).sort(()=>Math.random()-.5);h.campOpts=ks.slice(0,2);if(S.foot&&(S.wf||5)<5&&Math.random()<.45)h.campOpts[h.campOpts.length>1?1:0]='wf'}
+  if(!h.campOpts){const ks=AK.filter(canUp).sort(()=>Math.random()-.5);h.campOpts=ks.slice(0,2);if(S.foot&&(S.wf||5)<5&&Math.random()<.45)h.campOpts[h.campOpts.length>1?1:0]='wf'}
   return h.campOpts;
 }
 const campLabel=k=>k==='tr:wf'?t.campWf:k.startsWith('tr:')?t.campTrain(t.attrs[k.slice(3)]):t.camp[k][0];
@@ -5677,12 +5692,12 @@ function lbResolveOne(st,v1,v2){
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
     (s.mg=s.mg||{}).league=(s.mg.league||[]).concat(clamp(r.total-(dc-LB_OFF),-10,10));
   }
-  const crit=!r.missed&&isCrit(nat), win=crit||(nat!==1&&r.total>=dc), draw=!win&&nat!==1&&r.total>=dc-LB_DRAW;
+  const up=!r.missed&&nat<=LG_UPSET, crit=!r.missed&&isCrit(nat), win=crit||(!up&&nat!==1&&r.total>=dc), draw=!win&&!up&&nat!==1&&r.total>=dc-LB_DRAW;
   r.w=win?'W':draw?'D':'L';
   if(!r.missed){
     const g={goals:0,assists:0,apps:0,cs:0};addStats(g,1,nat,true);r.g=g.goals;r.a=g.assists;
     if(g.goals>0&&m.opp&&S.history.some(h=>h.club===m.opp)&&m.opp!==S.club.name)S.flag_exgoal=1;
-    if(crit){r.crit=1;s.hot=2;mom20(s);r.mom20=1;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(k=>S.attrs[k]<20)&&rating(S.attrs)<critCap())s.pickAttr=true}
+    if(crit){r.crit=1;s.hot=2;mom20(s);r.mom20=1;const tmp={};critGood(tmp);r.ct=tmp.ct;if(S.age<=33&&Math.random()<.3&&AK.some(canUp)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(injTrig(nat)){r.inj=1;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null,relapse:s.relapseHit?1:0}}
   }
   if(m.der&&!r.missed){if(r.w==='W')fanAdd('rivW',1,m.opp,null);else if(r.w==='L')fanAdd('rivL',-1,m.opp,null)}
@@ -5715,7 +5730,7 @@ function lbMomentRoll(st,v){
   let b=evBonus(e), tgt=evTarget(e), tot=v+b, perfect=v===e.die, ok=perfect||(v!==1&&tot>=tgt);
   if(e.id==='pen'&&pkForce){const k=pkForce;v=k.v;b=k.m;tgt=pkTgt(k.dir);tot=v+b;ok=k.goal;perfect=k.goal&&v===10;if(k.dir==='chip'){addLoy(k.goal?2:-2);if(k.goal)chipScored();else S.chipsMiss=(S.chipsMiss||0)+1}}
   const fx={...(ok?e.ok:e.bad)};
-  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.min(20,S.attrs[e.at[0]]+1)}
+  if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.max(S.attrs[e.at[0]],Math.min(attrCap(e.at[0]),S.attrs[e.at[0]]+1))}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
   m.mr={nat:v,b,tgt,tot,ok,perfect,fx:{mode:fx.mode||null,buff:fx.buff||0}};
   if(v===1&&ONPITCH_EV.includes(m.mev))injuryScare();
@@ -5748,6 +5763,8 @@ const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(
   return{mods,sq,home,mom,hot,tot:mods+sq+home+mom+hot,mode,fx}};
 /* the squad around you in the league: its strength against the league's average, from −3 to +3 */
 let SQ_DIV=1.8;
+// in the league anyone can lose: a natural 1 or 2 is a defeat however good you and your team are
+const LG_UPSET=2;
 const LG_FLOOR=5;   // in the league the team never plays worse than it would without you: a teenager is one of eleven
 function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-3,3)}catch(e){return 0}}
 function lbNear(s){
@@ -5992,7 +6009,7 @@ function maybePick(){
 }
 function pickHTML(){
   return `<div class="ovcard move prepop"><span class="ov-kicker">${t.natural20}</span><h2 class="ov-title" style="font-size:24px">${t.pickT}</h2><div class="ov-sub2">${t.critPick}</div>
-    <div class="picks pop">${AK.map(k=>`<button class="pickbtn" data-ov="pick" data-k="${k}" ${S.attrs[k]>=20?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(20,S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
+    <div class="picks pop">${AK.map(k=>`<button class="pickbtn" data-ov="pick" data-k="${k}" ${!canUp(k)?'disabled':''}><span class="lbl">${t.attrsS[k]}</span><b class="num">${S.attrs[k]}→${Math.min(attrCap(k),S.attrs[k]+1)}</b></button>`).join('')}</div></div>`;
 }
 function maybeRun(){
   if(homeHold)return;
@@ -6246,11 +6263,11 @@ function eosHTML(o){
 }
 function campHTML(){
   return `<div class="ovcard move prepop"><span class="ov-kicker">${t.campT} · ${t.nextAge(S.age+1)}</span><h2 class="ov-title" style="font-size:24px">${t.campSub}</h2>
-    <div class="prepg two">${(()=>{const h=S.history[S.history.length-1];return campOpts(h).map(a=>a==='wf'?`<button class="prepb" data-ov="camp" data-k="tr:wf"><b>${t.campWf}</b><span>${t.campWfD(S.wf||2,Math.min(5,(S.wf||2)+1))}</span></button>`:`<button class="prepb" data-ov="camp" data-k="tr:${a}"><b>${t.campTrain(t.attrs[a])}</b><span>${t.campTrainD(t.attrs[a],S.attrs[a],Math.min(20,S.attrs[a]+2))}</span></button>`).join('')+['rest','media'].map(k=>`<button class="prepb" data-ov="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')})()}</div></div>`;
+    <div class="prepg two">${(()=>{const h=S.history[S.history.length-1];return campOpts(h).map(a=>a==='wf'?`<button class="prepb" data-ov="camp" data-k="tr:wf"><b>${t.campWf}</b><span>${t.campWfD(S.wf||2,Math.min(5,(S.wf||2)+1))}</span></button>`:`<button class="prepb" data-ov="camp" data-k="tr:${a}"><b>${t.campTrain(t.attrs[a])}</b><span>${t.campTrainD(t.attrs[a],S.attrs[a],Math.min(attrCap(a),S.attrs[a]+2))}</span></button>`).join('')+['rest','media'].map(k=>`<button class="prepb" data-ov="camp" data-k="${k}"><b>${t.camp[k][0]}</b><span>${t.camp[k][1]}</span></button>`).join('')})()}</div></div>`;
 }
 function prepClick(e){
   const b=e.target.closest('[data-ov]'); if(!b||b.disabled)return; const v=b.dataset.ov;
-  if(v==='pick'){const k=b.dataset.k, to=Math.min(20,S.attrs[k]+1);
+  if(v==='pick'){const k=b.dataset.k, to=Math.min(attrCap(k),S.attrs[k]+1);
     ovEl.querySelectorAll('.pickbtn').forEach(q=>{q.disabled=true;if(q!==b)q.classList.add('dim')});
     b.classList.add('chosen'); busy=true; busySince=Date.now(); sfx('pass');
     setTimeout(()=>{const n=b.querySelector('b');if(n)n.innerHTML=`${to}<i class="plus1">+1</i>`;b.classList.add('up')},380);
@@ -6878,7 +6895,7 @@ function femCopy(base,over){
   return r;
 }
 /* ================= the board, its targets, new managers, press conferences, big-match atmosphere, late career and the next generation ================= */
-const APP_VER='0.58';
+const APP_VER='0.58b';
 /* stories about the match itself; every other story (career, money, media, training) comes after the game */
 const MATCH_CH=new Set(['eve','rain','hamstring','tunnel','birthday','flight','pens','heat','referee','family','bootdeal','prank','party','captspeech','captref']);
 const chStage=()=>{const s=S.season;return s.postCh!=null&&s.stages[s.postCh]?s.stages[s.postCh]:s.stages[s.idx]};
