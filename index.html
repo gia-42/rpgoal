@@ -1295,6 +1295,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .pga-leg .pga-a::before{background:var(--ink-3)}.pga-leg .pga-g::before{background:var(--accent)}.pga-leg .pga-s::before{background:var(--warn)}
 .ab-cap{font-size:.55em;color:var(--ink-3);margin-left:1px;font-weight:500;letter-spacing:0}
 .crimg{object-fit:contain;display:inline-block;flex:none;vertical-align:middle}
+.cflag{height:.95em;width:auto;max-width:1.6em;object-fit:contain;vertical-align:-.12em;margin-right:.35em;display:inline-block;border-radius:2px}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1587,7 +1588,11 @@ const KIT_FALLBACK=[['#2E5BBA','#FFFFFF'],['#B3261E','#FFFFFF'],['#1E7A46','#FFF
 /*LOGOS*/const LOGO={"AC Ajaccio": "logos/fra1/ac-ajaccio.png", "Alavés": "logos/spa1/alaves.png", "Amazonas": "logos/br2/amazonas.png", "América Mineiro": "logos/br2/america-mineiro.png", "Angers": "logos/fra1/angers.png", "Arsenal": "logos/eng1/arsenal.png", "Aston Villa": "logos/eng1/aston-villa.png", "Atalanta": "logos/ita1/atalanta.png", "Athletic Club": "logos/spa1/athletic-club.png", "Athletico Paranaense": "logos/br2/athletico-paranaense.png", "Atlético Goianiense": "logos/br2/atletico-goianiense.png", "Atlético Madrid": "logos/spa1/atletico-madrid.png", "Atlético Mineiro": "logos/br1/atletico-mineiro.png", "Auxerre": "logos/fra1/auxerre.png", "Avaí": "logos/br2/avai.png", "Bahia": "logos/br1/bahia.png", "Barcelona": "logos/spa1/barcelona.png", "Bologna": "logos/ita1/bologna.png", "Botafogo": "logos/br1/botafogo.png", "Botafogo-SP": "logos/br2/botafogo-sp.png", "Bournemouth": "logos/eng1/bournemouth.png", "Brentford": "logos/eng1/brentford.png", "Brest": "logos/fra1/brest.png", "Brighton": "logos/eng1/brighton.png", "Burnley": "logos/eng1/burnley.png", "Cagliari": "logos/ita1/cagliari.png", "Ceará": "logos/br1/ceara.png", "Celta Vigo": "logos/spa1/celta-vigo.png", "Chapecoense": "logos/br2/chapecoense.png", "Chelsea": "logos/eng1/chelsea.png", "Clermont Foot": "logos/fra1/clermont-foot.png", "Como": "logos/ita1/como.png", "Corinthians": "logos/br1/corinthians.png", "Coritiba": "logos/br2/coritiba.png", "Criciúma": "logos/br2/criciuma.png", "Cruzeiro": "logos/br1/cruzeiro.png", "Crystal Palace": "logos/eng1/crystal-palace.png", "Cuiabá": "logos/br2/cuiaba.png", "Empoli": "logos/ita1/empoli.png", "Espanyol": "logos/spa1/espanyol.png", "Everton": "logos/eng1/everton.png", "Fiorentina": "logos/ita1/fiorentina.png", "Flamengo": "logos/br1/flamengo.png", "Fluminense": "logos/br1/fluminense.png", "Fortaleza": "logos/br1/fortaleza.png", "Fulham": "logos/eng1/fulham.png", "Genoa": "logos/ita1/genoa.png", "Getafe": "logos/spa1/getafe.png", "Girona": "logos/spa1/girona.png", "Goiás": "logos/br2/goias.png", "Grêmio": "logos/br1/gremio.png", "Guarani": "logos/br2/guarani.png", "Hellas Verona": "logos/ita1/hellas-verona.png", "Inter": "logos/ita1/inter.png", "Internacional": "logos/br1/internacional.png", "Ipswich Town": "logos/eng1/ipswich-town.png", "Ituano": "logos/br2/ituano.png", "Juventude": "logos/br1/juventude.png", "Juventus": "logos/ita1/juventus.png", "Las Palmas": "logos/spa1/las-palmas.png", "Lazio": "logos/ita1/lazio.png", "Le Havre": "logos/fra1/le-havre.png", "Lecce": "logos/ita1/lecce.png", "Leganés": "logos/spa1/leganes.png", "Lens": "logos/fra1/lens.png", "Lille": "logos/fra1/lille.png", "Liverpool": "logos/eng1/liverpool.png", "Londrina": "logos/br2/londrina.png", "Lyon": "logos/fra1/lyon.png", "Mallorca": "logos/spa1/mallorca.png", "Manchester City": "logos/eng1/manchester-city.png", "Manchester United": "logos/eng1/manchester-united.png", "Marseille": "logos/fra1/marseille.png", "Milan": "logos/ita1/milan.png", "Mirassol": "logos/br1/mirassol.png", "Monaco": "logos/fra1/monaco.png", "Montpellier": "logos/fra1/montpellier.png", "Monza": "logos/ita1/monza.png", "Nantes": "logos/fra1/nantes.png", "Napoli": "logos/ita1/napoli.png", "Newcastle": "logos/eng1/newcastle.png", "Newcastle United": "logos/eng1/newcastle.png", "Nice": "logos/fra1/nice.png", "Nottingham Forest": "logos/eng1/nottingham-forest.png", "Novorizontino": "logos/br2/novorizontino.png", "Operário": "logos/br2/operario.png", "Osasuna": "logos/spa1/osasuna.png", "Palmeiras": "logos/br1/palmeiras.png", "Paris FC": "logos/fra1/paris-fc.png", "Paris Saint-Germain": "logos/fra1/paris-saint-germain.png", "Parma": "logos/ita1/parma.png", "Paysandu": "logos/br2/paysandu.png", "Ponte Preta": "logos/br2/ponte-preta.png", "Rayo Vallecano": "logos/spa1/rayo-vallecano.png", "Real Betis": "logos/spa1/real-betis.png", "Real Madrid": "logos/spa1/real-madrid.png", "Real Sociedad": "logos/spa1/real-sociedad.png", "Real Valladolid": "logos/spa1/real-valladolid.png", "Red Bull Bragantino": "logos/br1/red-bull-bragantino.png", "Reims": "logos/fra1/reims.png", "Remo": "logos/br2/remo.png", "Rennes": "logos/fra1/rennes.png", "Roma": "logos/ita1/roma.png", "Santos": "logos/br1/santos.png", "Sevilla": "logos/spa1/sevilla.png", "Sheffield United": "logos/eng1/sheffield-united.png", "Sport": "logos/br1/sport.png", "Strasbourg": "logos/fra1/strasbourg.png", "São Paulo": "logos/br1/sao-paulo.png", "Torino": "logos/ita1/torino.png", "Tottenham": "logos/eng1/tottenham.png", "Toulouse": "logos/fra1/toulouse.png", "Udinese": "logos/ita1/udinese.png", "Valencia": "logos/spa1/valencia.png", "Vasco da Gama": "logos/br1/vasco-da-gama.png", "Venezia": "logos/ita1/venezia.png", "Vila Nova": "logos/br2/vila-nova.png", "Villarreal": "logos/spa1/villarreal.png", "Vitória": "logos/br1/vitoria.png", "West Ham": "logos/eng1/west-ham.png", "Wolverhampton": "logos/eng1/wolverhampton.png"};/*/LOGOS*/
 // a club's colours; when we have its real badge the colours carry it along and the crest draws the badge instead
 const kitOf=n=>{const k=KIT[n]||KIT_FALLBACK[[...String(n)].reduce((a,c)=>a+c.charCodeAt(0),0)%KIT_FALLBACK.length];return LOGO[n]?Object.assign(k.slice(),{logo:LOGO[n]}):k};
-const natKit=c=>NAT_KIT[c]||KIT_FALLBACK[0];
+/*NLOGOS*/const NLOGO={"ALB": "logos/nat/alb.png", "ARG": "logos/nat/arg.png", "AUS": "logos/nat/aus.png", "AUT": "logos/nat/aut.png", "BEL": "logos/nat/bel.png", "BOL": "logos/nat/bol.png", "BRA": "logos/nat/bra.png", "CAN": "logos/nat/can.png", "CHN": "logos/nat/chn.png", "CMR": "logos/nat/cmr.png", "COL": "logos/nat/col.png", "CRC": "logos/nat/crc.png", "CRO": "logos/nat/cro.png", "CZE": "logos/nat/cze.png", "DEN": "logos/nat/den.png", "ECU": "logos/nat/ecu.png", "EGY": "logos/nat/egy.png", "ENG": "logos/nat/eng.png", "ESP": "logos/nat/esp.png", "FIN": "logos/nat/fin.png", "FRA": "logos/nat/fra.png", "GEO": "logos/nat/geo.png", "GER": "logos/nat/ger.png", "GHA": "logos/nat/gha.png", "GRE": "logos/nat/gre.png", "HAI": "logos/nat/hai.png", "HUN": "logos/nat/hun.png", "IRL": "logos/nat/irl.png", "IRN": "logos/nat/irn.png", "ISL": "logos/nat/isl.png", "ITA": "logos/nat/ita.png", "JAM": "logos/nat/jam.png", "JPN": "logos/nat/jpn.png", "KOR": "logos/nat/kor.png", "KSA": "logos/nat/ksa.png", "MAR": "logos/nat/mar.png", "MEX": "logos/nat/mex.png", "NED": "logos/nat/ned.png", "NGA": "logos/nat/nga.png", "NZL": "logos/nat/nzl.png", "PAN": "logos/nat/pan.png", "PAR": "logos/nat/par.png", "PER": "logos/nat/per.png", "PHI": "logos/nat/phi.png", "POL": "logos/nat/pol.png", "POR": "logos/nat/por.png", "QAT": "logos/nat/qat.png", "ROU": "logos/nat/rou.png", "RSA": "logos/nat/rsa.png", "SCO": "logos/nat/sco.png", "SEN": "logos/nat/sen.png", "SRB": "logos/nat/srb.png", "SUI": "logos/nat/sui.png", "SVK": "logos/nat/svk.png", "SVN": "logos/nat/svn.png", "SWE": "logos/nat/swe.png", "TUN": "logos/nat/tun.png", "TUR": "logos/nat/tur.png", "UKR": "logos/nat/ukr.png", "URU": "logos/nat/uru.png", "USA": "logos/nat/usa.png", "VEN": "logos/nat/ven.png", "VIE": "logos/nat/vie.png", "WAL": "logos/nat/wal.png", "ZAM": "logos/nat/zam.png"};/*/NLOGOS*/
+// a nation's colours; with its flag on hand the crest draws the flag instead
+const natKit=c=>{const k=NAT_KIT[c]||KIT_FALLBACK[0];return NLOGO[c]?Object.assign(k.slice(),{logo:NLOGO[c]}):k};
+// the flag of the country a competition belongs to: domestic league and cup, or your nation at the World Cup and continental tournaments
+const compFlag=(comp,lg)=>{let c=null;if(comp==='wc')c=S.nat;else if(['league','cup','run'].includes(comp)){const L=LEAGUES[lg!=null?lg:S.club&&S.club.league];c=L&&L.c}const f=c&&NLOGO[c];return f?`<img class="cflag" src="${f}" alt="" decoding="async" draggable="false">`:''};
 function hexLum(h){const n=parseInt(h.slice(1),16),c=[n>>16&255,n>>8&255,n&255].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
 const hexCon=(a,b)=>{const x=hexLum(a),y=hexLum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
 const kit2=k=>k.length>=2?[k[0],k[1]]:[k[0],hexLum(k[0])>.5?'#15171c':'#ffffff'];   // two colours for UI accents, whatever the club has
@@ -2805,7 +2810,7 @@ const leagueLine=Li=>`${LEAGUES[Li].name} · ${lgCountry(Li)}${LEAGUES[Li].div==
 function homeNext(){
   const s=S.season; if(!s)return''; const st=s.stages[s.idx];
   const fin=()=>{const me=s.lt?lgTable(s).find(x=>x.me):null;return me?`${esc(LEAGUES[S.club.league].name)} · ${ord(me.pos)} · ${me.pts} ${t.ptsS}`:t.finish};
-  const nx=st?`${esc(compName(st.comp,S.club.league))} · ${roundShort(st)}${st.opp?` · ${st.comp==='wc'?`${esc(COUNTRY[lang][S.nat])} × ${esc(oppName(st))}`:t.vsOpp(esc(oppName(st)))}`:''}`:fin();
+  const nx=st?`${compFlag(st.comp)}${esc(compName(st.comp,S.club.league))} · ${roundShort(st)}${st.opp?` · ${st.comp==='wc'?`${esc(COUNTRY[lang][S.nat])} × ${esc(oppName(st))}`:t.vsOpp(esc(oppName(st)))}`:''}`:fin();
   const inj=s.out>0?`<div class="banner bad">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</div>`:'';
   return `<section class="panel nextp">${inj}<div class="nextrow"><div class="nextt"><span class="lbl">${st?t.nextUp:t.seasonOver}</span><b>${nx}</b></div>${injBtn(s)||`<button class="btn" data-act="play">${st?t.playNext:t.nextSeasonBtn}</button>`}</div></section>`;
 }
@@ -2875,11 +2880,11 @@ function slotNext(){
   let odds='';
   if(!lg&&s.out===0&&!s.last){try{const od=stageOdds(st);odds=`<span class="chip odds">${t.odds(od.need,Math.round(od.p*100))}</span>`}catch(e){}}
   const vs=st.opp?`<div class="vsline big">${crest(myKit(st),30)}<b>${esc(st.comp==='wc'?COUNTRY[lang][S.nat]:S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),30)}<b>${esc(oppName(st))}</b></div>`:'';
-  const head=`<div class="ms-head">${inj}<span class="lbl slotc">${t.nextUp} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h3>${roundName(st)}</h3>${vs}${odds||atmChip(st)?`<div class="mods" style="justify-content:center">${atmChip(st)}${odds}</div>`:''}</div>`;
+  const head=`<div class="ms-head">${inj}<span class="lbl slotc">${t.nextUp} · ${compFlag(st.comp)}${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h3>${roundName(st)}</h3>${vs}${odds||atmChip(st)?`<div class="mods" style="justify-content:center">${atmChip(st)}${odds}</div>`:''}</div>`;
   const foot=`<div class="ms-foot">${injBtn(s)||`<button class="btn" data-act="play">${t.playNext}</button>`}</div>`;
   let ctx='';
   if(lg){const ob=s.obj, op=ob&&s.lt?lgMyPos(s):null;
-    ctx=`<div class="ms-sec"><span class="lbl">${esc(LEAGUES[S.club.league].name)}</span>${s.lt?(lgPlayed(s)?lbNear(s):lgMini(s)):''}${ob?`<div class="sv-row msobj"><span>${t.objL}: ${objText(ob)}</span><span class="res ${op&&op<=ob.pos?'w':'p'}">${op?ord(op):'—'}</span></div>`:''}</div>`}
+    ctx=`<div class="ms-sec"><span class="lbl">${compFlag('league')}${esc(LEAGUES[S.club.league].name)}</span>${s.lt?(lgPlayed(s)?lbNear(s):lgMini(s)):''}${ob?`<div class="sv-row msobj"><span>${t.objL}: ${objText(ob)}</span><span class="res ${op&&op<=ob.pos?'w':'p'}">${op?ord(op):'—'}</span></div>`:''}</div>`}
   else ctx=`<div class="ms-sec"><span class="lbl">${isCG(st)?t.group:t.compPathT}</span>${compRows(s,st)}</div>`;
   const up=s.stages.filter((x,i)=>i>s.idx&&!x.res&&x.comp!==st.comp).slice(0,3);
   const done=s.stages.filter((x,i)=>i<s.idx&&x.res&&!x.res.skipped).slice(-3).reverse();
@@ -2954,7 +2959,7 @@ function stageCard(){
     const dc=m=>m.r?(m.r.crit?'crit':m.r.w==='W'?'win':m.r.w==='D'?'mid':'lose'):'';
     dice=`<div class="lbgrid" style="--c:${cols}">${st.ms.map((m,i)=>`<div class="lbc ${m.der?'der':''} ${m.r&&m.r.missed?'miss':''} ${i===mi&&!r?'nx':''}" title="${esc(m.opp)}">${dieSVG(20,m.r?m.r.nat:'',dc(m),'lb'+i)}<span class="lbha">${m.ha==='H'?t.homeS:t.awayS}${m.der?swI():''}</span></div>`).join('')}</div>`;
     const rs=st.ms.filter(m=>m.r), w=rs.filter(m=>m.r.w==='W').length, dr=rs.filter(m=>m.r.w==='D').length, l=rs.length-w-dr;
-    body=`<span class="rk mt">${t.rkMatch} · ${n}d20</span><span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3><!--split-->`
+    body=`<span class="rk mt">${t.rkMatch} · ${n}d20</span><span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3><!--split-->`
       +`<div class="mods lbinfo">${me&&me.p?`<span class="chip">${ord(me.pos)} · ${me.pts} ${t.ptsS}</span>`:''}<span class="chip ${mom>0?'fit':mom<0?'inj':''}">${t.momT} ${sg(mom)}</span><span class="chip">${t.homeS} +1</span>${rs.length?`<span class="chip num">${w}${t.wdlS.W} ${dr}${t.wdlS.D} ${l}${t.wdlS.L}</span>`:''}</div>`;
     if(der&&!der.dr){const e=EVMAP.derby;body+=`<div class="evbox"><span class="lbl">${swI()} ${t.ev.derby[0]} · ${t.vsOpp(esc(der.opp))} · d${DERBY_DIE} ${sg(evBonus(e))} · ${t.target} ${derbyTgt()}</span><div>${t.ev.derby[1]}</div></div>`;
       act=`<button class="btn" data-act="lbder">${t.roll(20)}</button>`}
@@ -2971,13 +2976,13 @@ function stageCard(){
     else if(!der&&s.lt&&lgPlayed(s))body+=lgMini(s);
   }else if(isCG(st)&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
     dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
-    body=`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${contIsUCL(S.club.league)?t.leaguePhase:t.group}</h3><!--split--><div class="evdesc">${t.cgRule(CG_NEED)}</div>${cgRec(s,st.comp)}`;
+    body=`<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${contIsUCL(S.club.league)?t.leaguePhase:t.group}</h3><!--split--><div class="evdesc">${t.cgRule(CG_NEED)}</div>${cgRec(s,st.comp)}`;
     if(r){const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     else act=`<button class="btn" data-act="runov">${t.cgPlay}</button>`;
   }else if(st.comp==='run'&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
     dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
     if(st.lha&&s.v>=6)lbCard=true;
-    body=st.lha&&s.v>=6?`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${t.pushT}</h3><!--split--><div class="evdesc">${(()=>{const ps=lgPushStatus(s);return t.pushSt[ps.cl||ps.type](ord(ps.pos),ps.gapTop)+' '+t.pushLeft(ps.left)})()}</div>${lgMini(s)}<div class="grec cgrec">${s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}<i>${x.lha==='H'?t.homeS:t.awayS}</i></span>`).join('')}</div>`:`<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${t.runT}</h3><!--split--><div class="evdesc">${t.runRule(s.run.type,runNeed(s))}</div><div class="grec">${s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}</span>`).join('')}<span class="lbl">${t.runPts(runPts(s),runNeed(s))}</span></div>`;
+    body=st.lha&&s.v>=6?`<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${t.pushT}</h3><!--split--><div class="evdesc">${(()=>{const ps=lgPushStatus(s);return t.pushSt[ps.cl||ps.type](ord(ps.pos),ps.gapTop)+' '+t.pushLeft(ps.left)})()}</div>${lgMini(s)}<div class="grec cgrec">${s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}<i>${x.lha==='H'?t.homeS:t.awayS}</i></span>`).join('')}</div>`:`<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${t.runT}</h3><!--split--><div class="evdesc">${t.runRule(s.run.type,runNeed(s))}</div><div class="grec">${s.stages.filter(x=>x.comp==='run').map(x=>`<span class="wd ${x.res&&x.res.wdl||''}" title="${x.opp?esc(oppName(x)):''}">${x.res&&x.res.wdl?t.wdlS[x.res.wdl]:x.g+1}</span>`).join('')}<span class="lbl">${t.runPts(runPts(s),runNeed(s))}</span></div>`;
     if(r){const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     else act=`<button class="btn" data-act="runov">${st.lha&&s.v>=6?t.pushPlay:t.runPlay}</button>`;
   }else if(chPending){
@@ -3006,7 +3011,7 @@ function stageCard(){
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie||atmDie?`<div class="row" style="gap:8px;justify-content:center">${atmDie}${chDie}${evDie}${healDie}</div>`:''}</div>`;
-    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
+    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.atm)body+=`<div class="evline ${st.atm>=5?'ok':st.atm<=2?'bad':''}">${t.atmTx[st.atm]}</div>`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
@@ -3712,7 +3717,7 @@ function leagueTableView(s,form){
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
   const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b><span class="cn">${esc(x.c)}</span><span class="fn">${esc(x.n)}</span></b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
-  return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
+  return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${compFlag('league')}${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
     <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
 /* ---------- Stats tab ---------- */
@@ -3885,7 +3890,7 @@ function ovHTML(o){
   if(o.k==='final'){
     const wc=o.comp==='wc', st={comp:o.comp,opp:o.opp};
     const opp=o.opp?`${crest(oppKit(st),64)}<b>${esc(oppName(st))}</b>`:`${crest(['#3a3e47','#22252c'],64)}<b>?</b>`;
-    return `<div class="ovcard ${wc?'gold':''}">${wc?trophySVG():''}<span class="ov-kicker">${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
+    return `<div class="ovcard ${wc?'gold':''}">${wc?trophySVG():''}<span class="ov-kicker">${compFlag(o.comp,o.lg)}${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
       <div class="ov-vs"><div class="ov-team l">${crest(myKit(st),64)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><span class="ov-x">${t.vs}</span><div class="ov-team r">${opp}</div></div>${tap}</div>`;
   }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
@@ -5782,7 +5787,7 @@ function lbHTML(){
   const L=lbLast&&lbLast.stage===s.idx?lbLast:null, shown=L&&!pd?L:null;
   const boxes=st.ms.map((x,j)=>`<span class="wd ${x.r?x.r.w:''} ${j===(st.mi||0)&&!done?'cur':''}" title="${esc(x.opp)}">${x.r?t.wdlS[x.r.w]:lbStart(s,st.round)+j}<i>${x.ha==='H'?t.homeS:t.awayS}${x.der?swI():''}</i></span>`).join('');
   const om=shown?st.ms[shown.i]:m, rd=lbStart(s,st.round)+(shown?shown.i:i);
-  const head=`<span class="ov-kicker">${esc(comp)} · ${roundName(st)}</span>
+  const head=`<span class="ov-kicker">${compFlag(st.comp)}${esc(comp)} · ${roundName(st)}</span>
     <h2 class="ov-title lbtitle">${pd==='der'?t.derbyT:pd==='mom'?t.ev[lbMomentEv(st,m).id][0]:done?t.lbDoneT:`${t.pushGame(rd)} · ${om.ha==='H'?t.homeG:t.awayG}`}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(kitOf(om.opp),20)}<b>${esc(om.opp)}</b>${om.der?' '+swI():''}</div>
     <div class="grec cgrec lbrec">${boxes}</div>`;
@@ -5914,7 +5919,7 @@ function wcTable(){
 }
 function wcPanel(v){
   const s=S.season, D=wcData(); if(!D)return `<section class="panel hero wcpanel"><div class="muted">—</div></section>`;
-  const head=`<span class="ov-kicker wck">★ ${esc(compName('wc'))} · ${S.year}</span>`;
+  const head=`<span class="ov-kicker wck">${compFlag('wc')||'★ '}${esc(compName('wc'))} · ${S.year}</span>`;
   if(v==='g'){
     const tb=wcTable(), played=D.gs.filter(x=>x.res).length;
     const rows=tb.map((x,i)=>`<tr class="${x.c===S.nat?'me':''} ${i<2&&played===3?'z1':''}"><td class="num">${i+1}</td><td class="tm">${crest(natKit(x.c),14)}<b>${esc(COUNTRY[lang][x.c]||x.c)}</b></td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td><td class="num">${x.gf-x.ga>0?'+':''}${x.gf-x.ga}</td><td class="num pts">${x.pts}</td></tr>`).join('');
@@ -6041,13 +6046,13 @@ function runResultHTML(){
   if(R.v6){const F=S.season.fin||{};let title,tone;
     if(R.champ){title=t.ovLeague;tone='good'}else if(F.move==='up'){title=t.runPromoted;tone='good'}else if(F.move==='down'){title=t.runRelegated;tone='bad'}
     else if(F.qual==='main'&&R.pos<=4){title=t.pushQ1(esc(L.cont));tone='good'}else if(F.qual==='second'){title=t.pushQ2(esc(cont2Name(R.lg)||L.cont));tone='good'}else{title=t.finished(R.pos);tone='mid'}
-    return `<div class="ovcard move runpop runres ${tone}">${R.champ?trophySVG():''}<span class="ov-kicker">${t.pushT} · ${esc(L.name)}</span><h2 class="ov-title" style="font-size:26px">${title}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${t.finished(R.pos)} · ${R.pts} ${t.ptsS}</div>${lgMini(S.season)}<button class="btn" data-ov="rdone">${t.runCont}</button></div>`}
+    return `<div class="ovcard move runpop runres ${tone}">${R.champ?trophySVG():''}<span class="ov-kicker">${t.pushT} · ${compFlag('league')}${esc(L.name)}</span><h2 class="ov-title" style="font-size:26px">${title}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${t.finished(R.pos)} · ${R.pts} ${t.ptsS}</div>${lgMini(S.season)}<button class="btn" data-ov="rdone">${t.runCont}</button></div>`}
   let title, tone;
   if(R.champ){title=t.ovLeague;tone='good'}
   else if(R.type==='releg'){title=R.move==='down'?t.runRelegated:t.runEscaped;tone=R.move==='down'?'bad':'good'}
   else if(R.type==='promo'){title=R.move==='up'?t.runPromoted:t.finished(R.pos);tone=R.move==='up'?'good':'bad'}
   else{title=t.finished(R.pos);tone='mid'}
-  return `<div class="ovcard move runpop runres ${tone}">${R.champ?trophySVG():''}<span class="ov-kicker">${t.runT} · ${esc(L.name)}</span><h2 class="ov-title">${title}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${t.runPts(R.pts,R.need)}</div><button class="btn" data-ov="rdone">${t.runCont}</button></div>`;
+  return `<div class="ovcard move runpop runres ${tone}">${R.champ?trophySVG():''}<span class="ov-kicker">${t.runT} · ${compFlag('league')}${esc(L.name)}</span><h2 class="ov-title">${title}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${t.runPts(R.pts,R.need)}</div><button class="btn" data-ov="rdone">${t.runCont}</button></div>`;
 }
 const fanTx=(k,n,o)=>{const f=t.fanEv[k];return typeof f==='function'?f(o?esc(o):'',n):f};
 const fanLine=f=>`<div class="small fanline ${f.n>0?'up':'down'}">${t.fans} ${sg(f.n)} · ${fanTx(f.k,f.n,f.opp)}</div>`;
@@ -6092,7 +6097,7 @@ function pushHTML(){
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
     :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
-  return `<div class="ovcard move runpop pushpop ${ps.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.pushT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:22px">${roundName(st)} · ${st.lha==='H'?t.homeG:t.awayG}</h2>
+  return `<div class="ovcard move runpop pushpop ${ps.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.pushT} · ${compFlag('league')}${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:22px">${roundName(st)} · ${st.lha==='H'?t.homeG:t.awayG}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b>${st.der?' '+swI():''}</div>
     <div class="ov-sub2">${t.pushSt[ps.cl||ps.type](ord(ps.pos),ps.gapTop)+' '+t.pushLeft(ps.left)}</div>
     ${lgMini(s)}<div class="grec cgrec" style="justify-content:center">${games}</div>
@@ -6118,7 +6123,7 @@ function runHTML(){
     :s.pendingHeal||s.pickAttr?`<button class="btn" data-ov="rclose">${t.storyBack}</button>`
     :left?`<button class="btn" data-ov="rnext">${t.runNext}</button>`:`<button class="btn ghost" data-ov="rtable" style="opacity:.6">${t.runTable}</button>`;
   const insp=!r&&((S.insp||0)>0||st.insp)?`<button class="tool insp" data-ov="rinsp" aria-pressed="${!!st.insp}">${t.inspBtn(S.insp||0)}</button>`:'';
-  return `<div class="ovcard move runpop ${s.run.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.runT} · ${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
+  return `<div class="ovcard move runpop ${s.run.type}"><button class="ovx" data-ov="rclose" aria-label="${t.lbHome}">×</button><span class="ov-kicker">${t.runT} · ${compFlag('league')}${esc(LEAGUES[S.club.league].name)}</span><h2 class="ov-title" style="font-size:24px">${t.runGame(st.g+1)}</h2>
     <div class="vsline">${crest(kitOf(S.club.name),20)}<b>${esc(S.club.name)}</b><span class="muted">${t.vs}</span>${crest(oppKit(st),20)}<b>${esc(oppName(st))}</b></div>
     <div class="ov-sub2">${t.runRule(s.run.type,need)}</div>
     <div class="grec" style="justify-content:center">${games}<span class="lbl">${t.runPts(pts,need)}</span></div>
@@ -6194,7 +6199,7 @@ function storyHTML(){
     return `<button class="chopt ${pickd?'on':''}" data-ov="ch" data-i="${i}" ${R?'disabled':''}><b>${C[2][o.k]}</b><span class="lbl">${line}</span>${fx}</button>`}).join('');
   const o=R?os[R.i]:null;
   const res=R?`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.auto?C[2][o.k]:R.ok?t.success:t.fail}</div><div class="small">${R.auto?'':`d${R.die||20} ${R.nat} ${sg(R.bonus)} = ${R.total} ${t.vs} ${R.tgt} · `}${effText(R.auto?o.fx:R.ok?o.ok:o.bad)}</div>`:'';
-  return `<div class="ovcard move story"><span class="ov-kicker">${t.storyT} · ${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${C[0]}</h2><div class="ov-sub2">${C[1]}</div>
+  return `<div class="ovcard move story"><span class="ov-kicker">${t.storyT} · ${compFlag(st.comp)}${esc(compName(st.comp==='run'?'league':st.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${C[0]}</h2><div class="ov-sub2">${C[1]}</div>
     <div class="storydie">${dieSVG(R&&!R.auto&&!R.die?20:CHK_DIE,R&&!R.auto?R.nat:'',(R&&!R.auto?(R.nat===(R.die||20)?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd')+' sdie','sd')}</div>
     ${R?res:`<div class="chopts">${opts}</div>`}
     ${R?`<button class="btn" data-ov="close">${t.storyBack}</button>`:''}</div>`;
@@ -6722,7 +6727,7 @@ function lmcHTML(){
   let res='';
   if(R){const msg=R.d?(R.nat20?t.lmcCounter:R.ok?t.lmcHeld:t.lmcBeaten):(R.ok?(R.shot?t.lmcGoal:t.lmcAssist):t.lmcMiss), good=R.ok;
     res=`<div class="sum num">${esc(TX[1][R.i])} · d20 <b>${R.v}</b> ${sg(R.b)} = <b>${R.tot}</b> ${t.vs} ${R.tgt}</div><div class="verdict result v-${good?'good':'bad'}" style="font-size:22px">${msg}</div><button class="btn" data-ov="ldone">${R.ok&&(!R.d||R.nat20)?t.runCont:R.ok?t.pensOpen:t.runCont}</button>`}
-  return `<div class="ovcard move lmcpop story"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${L.d?t.lmcTD:t.lmcT}</h2><div class="ov-sub2">${TX[0]}</div>
+  return `<div class="ovcard move lmcpop story"><span class="ov-kicker">${compFlag(st.comp)}${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${L.d?t.lmcTD:t.lmcT}</h2><div class="ov-sub2">${TX[0]}</div>
     <div class="storydie">${dieSVG(20,R?R.v:'',R?(R.v===20?'crit':R.v===1?'fumble':R.ok?'win':'lose'):'evd','lmd')}</div>
     ${R?res:`<div class="chopts">${opts}</div>`}</div>`;
 }
@@ -6774,7 +6779,7 @@ function pensHTML(){
   else foot=`<div class="muted small">${p.me.length+p.opp.length>=10?t.pensSudden:t.pensGoing}</div>`;
   const toss=`<div class="pktoss ${p.me.length+p.opp.length?'':'flip'}"><span class="coin" aria-hidden="true"></span><span>${t.pensFirst(esc(firstN))}</span></div>`;
   const wa=pensAmp(p);
-  return `<div class="ovcard move penspop ${wa>0?'wig':''}" style="--wig:${wa}px"><span class="ov-kicker">${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${t.pensT}</h2>${toss}
+  return `<div class="ovcard move penspop ${wa>0?'wig':''}" style="--wig:${wa}px"><span class="ov-kicker">${compFlag(st.comp)}${esc(compName(st.comp,S.club.league))} · ${roundName(st)}</span><h2 class="ov-title" style="font-size:24px">${t.pensT}</h2>${toss}
     <div class="pkboard ${Math.max(p.me.length,p.opp.length)>=5&&(p.me.length>=5&&p.opp.length>=5)?'sd':''}">${order.map(row).join('')}</div>${foot}</div>`;
 }
 /* your penalty: its own pop-up over the shootout. Pick a spot, then roll the big die */
@@ -6948,7 +6953,7 @@ function pressHTML(){
     return `<button class="chopt ${R&&R.i===i?'on':''}" data-ov="pr" data-i="${i}" ${R?'disabled':''}><b>${C.o[o.k]}</b><span class="lbl">${line}</span>${fx}</button>`}).join('');
   const o=R?os[R.i]:null;
   const res=R?`<div class="verdict result v-${R.ok?'good':'bad'}" style="font-size:20px">${R.auto?C.o[o.k]:R.ok?t.success:t.fail}</div><div class="small">${R.auto?'':`d${CHK_DIE} ${R.nat} ${sg(R.bonus)} = ${R.total} ${t.vs} ${R.tgt} · `}${effText(R.auto?o.fx:R.ok?o.ok:o.bad)}</div>`:'';
-  return `<div class="ovcard move story press"><span class="ov-kicker">${t.pressK} · ${esc(compName(P.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${P.fin?C.tf:C.tr}</h2><div class="ov-sub2">${C.q(opp)}</div>
+  return `<div class="ovcard move story press"><span class="ov-kicker">${t.pressK} · ${compFlag(P.comp)}${esc(compName(P.comp,S.club.league))}</span><h2 class="ov-title" style="font-size:24px">${P.fin?C.tf:C.tr}</h2><div class="ov-sub2">${C.q(opp)}</div>
     <div class="storydie">${dieSVG(CHK_DIE,R&&!R.auto?R.nat:'',(R&&!R.auto?(R.nat===CHK_DIE?'crit':R.nat===1?'fumble':R.ok?'win':'lose'):'evd')+' sdie','prd')}</div>
     ${R?res:`<div class="chopts">${opts}</div>`}${R?`<button class="btn" data-ov="prdone">${t.storyBack}</button>`:''}</div>`;
 }
