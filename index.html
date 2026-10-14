@@ -1296,6 +1296,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .ab-cap{font-size:.55em;color:var(--ink-3);margin-left:1px;font-weight:500;letter-spacing:0}
 .crimg{object-fit:contain;display:inline-block;flex:none;vertical-align:middle}
 .cflag{height:.95em;width:auto;max-width:1.6em;object-fit:contain;vertical-align:-.12em;margin-right:.35em;display:inline-block;border-radius:2px}
+.cup{display:inline-flex;align-items:center;gap:4px}.cup .ti,.eos-chip svg{width:1.25em;height:1.25em;flex:none;margin:-2px 0 -2px -2px}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -3117,7 +3118,7 @@ function offseasonView(){
   if(h.camp)N.push(['good',t.campDone(campLabel(h.camp))+(h.campGot&&h.campGot.length?` · +${h.campGot.length} ${h.campGot[0]==='wf'?t.wfL:t.attrs[h.campGot[0]]}`:'')]);
   if(h.scout&&!done)N.push(['gold',t.scouted]);
   const dev=t.devLead+t.devBase[g.base===1?0:g.base===0.5?3:g.base===0?1:2]+(S.age>=30&&!g.shielded?t.devSpd:'')+(g.G?t.devBonus(g.G):'')+(g.train?t.devTrain(g.train):'')+(g.crits?t.devCrit(g.crits):'')+(g.hot?t.devHot:'')+(g.capped?t.devCap:'')+t.devEnd;
-  const cups=h.trophies.slice().sort(byPrestige).map(x=>`<span class="cup ${x.kind==='wc'||x.kind==='bdo'?'wc':''}">${trophyName(x)}</span>`).join('');
+  const cups=h.trophies.slice().sort(byPrestige).map(x=>`<span class="cup ${x.kind==='wc'||x.kind==='bdo'?'wc':''}">${troSVG(x,'ti')}${trophyName(x)}</span>`).join('');
   let act;
   if(done)act=`<span class="muted">${t.eor}</span>`;
   else if(due)act=`<button class="btn" data-act="ageov">${t.ageBtn}</button>`;
@@ -3171,9 +3172,9 @@ function pgaChart(H){
 function careerView(){
   if(!S.history.length)return'';
   const rows=S.history.slice().reverse().map(h=>{
-    const ex=h.trophies.filter(x=>x.kind!=='wc'&&x.kind!=='bdo').sort(byPrestige).map(x=>`<span class="cup">${trophyName(x)}</span>`);
-    if(h.trophies.some(x=>x.kind==='wc'))ex.push(`<span class="cup wc">${t.wc}</span>`);
-    if(h.bdo)ex.push(h.bdo===1?`<span class="cup wc">${t.bdo}</span>`:`<span class="chip">${t.bdoShort(h.bdo)}</span>`);
+    const ex=h.trophies.filter(x=>x.kind!=='wc'&&x.kind!=='bdo').sort(byPrestige).map(x=>`<span class="cup">${troSVG(x,'ti')}${trophyName(x)}</span>`);
+    {const w=h.trophies.find(x=>x.kind==='wc');if(w)ex.push(`<span class="cup wc">${troSVG(w,'ti')}${t.wc}</span>`)}
+    if(h.bdo)ex.push(h.bdo===1?`<span class="cup wc">${troSVG({kind:'bdo'},'ti')}${t.bdo}</span>`:`<span class="chip">${t.bdoShort(h.bdo)}</span>`);
     if(h.wc!=null&&h.wc!==5)ex.push(`<span class="chip">${t.wc}: ${h.wc===-1?t.notCalled:t.wcRes[h.wc]}</span>`);
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
@@ -3213,8 +3214,8 @@ function hofPlayers(tabs){
     const key=tags.filter(x=>['legend','idol','oneclub','forty'].includes(x[0])).slice(0,2);
     let more='';
     if(open){
-      const counts={};p.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1});
-      const cups=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${c>1?c+'× ':''}${esc(n)}</span>`).join('');
+      const counts={},cx={};p.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1;cx[n]=cx[n]||x});
+      const cups=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
       more=`<div class="hmore"><span class="lbl">${p.from}–${p.to} · ${COUNTRY[lang][p.nat]||''} · ${t.seasons}: ${p.seasons}${p.style&&t.styles[p.style]?` · ${t.styles[p.style]}`:''}</span>
         <div class="hpath">${p.clubs.map(esc).join(' → ')}</div>
         <div class="numgrid">${[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.rating,fmt(p.peak)]].map(([l,v])=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`).join('')}</div>
@@ -3732,8 +3733,8 @@ function statsView(){
   const byClub=[];H.forEach(h=>{let c=byClub.find(x=>x.club===h.club);if(!c){c={club:h.club,seasons:0,apps:0,goals:0,assists:0,titles:0};byClub.push(c)}c.seasons++;c.apps+=h.apps;c.goals+=h.goals;c.assists+=h.assists;c.titles+=h.trophies.filter(x=>x.kind!=='bdo').length});
   const bestBdo=H.filter(h=>h.bdo).reduce((a,h)=>Math.min(a,h.bdo),99), wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
   const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
-  const counts={};S.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1});
-  const cab=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${c>1?c+'× ':''}${esc(n)}</span>`).join('');
+  const counts={},cx={};S.trophies.slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1;cx[n]=cx[n]||x});
+  const cab=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
   const clubs=byClub.map(c=>`<div class="crow"><span class="yr">${t.seasonsShort(c.seasons)}</span><span class="cl">${crest(kitOf(c.club),13)}<b>${esc(c.club)}</b>${c.titles?`<span class="muted">${t.titlesN(c.titles)}</span>`:''}</span><span class="nm">${c.apps}·${c.goals}·${c.assists}</span></div>`).join('');
   return sub+`<section class="panel stack trackp nums" style="gap:8px">
     <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,fmt(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
@@ -3879,6 +3880,32 @@ function crest(k,sz=56){const p='M30 2L56 9v24c0 18-11 28-26 34C15 61 4 51 4 33V
   else if(k.length===2)body=`<path d="${p}" fill="${k[0]}"/><path d="M30 2L56 9v24c0 18-11 28-26 34z" fill="${k[1]}"/>`;
   else body=`<path d="${p}" fill="${k[0]}"/>`;
   return `<svg class="crest" width="${sz}" height="${Math.round(sz*1.15)}" viewBox="0 0 60 69" aria-hidden="true">${body}<path d="${p}" fill="none" stroke="rgba(128,128,128,.6)" stroke-width="2"/></svg>`}
+/* minimal trophy drawings, one per competition we have art for; everything else keeps the gold cup */
+const TRO_C={g1:'#f2c14e',g2:'#d9a43a',g3:'#b98a2a',gh:'#fff3c4',s1:'#d9dee6',s2:'#a9b2be',s3:'#7f8897',sh:'#ffffff',dk:'#2b2e35',dk2:'#3a3e47',rd:'#9b3b2c',gr:'#2f7a46',br:'#c9976a',br2:'#9c6b44'};
+const TRO_SVG=(()=>{const C=TRO_C;
+ const lib=(base)=>`<path d="M20 44h24l-2 17H22z" fill="${base}"/><path d="M23 49h18M23 53h18M23 57h18" stroke="${C.s2}" stroke-width="1.3" opacity=".75"/><rect x="21" y="42" width="22" height="3" rx="1" fill="${C.s2}"/><path d="M23 25h18c0 8-4 13.5-9 14.5-5-1-9-6.5-9-14.5z" fill="${C.s1}"/><path d="M26 27c0 5 2 9 5 10.5" stroke="${C.sh}" stroke-width="1.6" fill="none" opacity=".8"/><rect x="30" y="39" width="4" height="4" fill="${C.s2}"/><rect x="31" y="15" width="2" height="10" fill="${C.s2}"/><circle cx="32" cy="12" r="4" fill="${C.s1}"/><path d="M30.5 12h3M32 8v8" stroke="${C.s3}" stroke-width=".9"/><path d="M32 2.5l1.6 4.5h-3.2z" fill="${C.s2}"/>`;
+ return{
+ ucl:`<path d="M22 13c-12-9-17 15 1 19" stroke="${C.s2}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M42 13c12-9 17 15-1 19" stroke="${C.s2}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M20 11h24c0 15-4 27-12 29-8-2-12-14-12-29z" fill="${C.s1}"/><path d="M24.5 14c0 10 2 18 6 22" stroke="${C.sh}" stroke-width="2" fill="none" opacity=".8"/><path d="M29.5 40h5l-.8 7h-3.4z" fill="${C.s2}"/><rect x="26" y="47" width="12" height="5" rx="1" fill="${C.s2}"/><rect x="23" y="52" width="18" height="8" rx="1.5" fill="${C.s3}"/>`,
+ lib:lib("#454a57"),
+ libw:lib(C.rd),
+ bdo:`<path d="M13 53c6-7 32-7 38 0l2 7H11z" fill="${C.s1}"/><path d="M17 52l5-4 4 5M33 49l5 4 4-3" stroke="${C.s2}" stroke-width="1.4" fill="none"/><circle cx="32" cy="28" r="18" fill="${C.g1}"/><path d="M32 18l8 6-3 9h-10l-3-9z" fill="${C.g3}" opacity=".55"/><path d="M32 18V10.5M40 24l7-3M37 33l5 7M27 33l-5 7M24 24l-7-3" stroke="${C.g3}" stroke-width="1.6" opacity=".55"/><path d="M21 21c3-6 9-9 15-8" stroke="${C.gh}" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>`,
+ cwc:`<path d="M22 52h20l2 9H20z" fill="${C.g2}"/><rect x="22" y="50" width="20" height="3" rx="1" fill="${C.g1}"/><path d="M25 50C20 36 33 28 28.5 16H32c2 13-6 21-2 34z" fill="${C.s1}"/><path d="M39 50C44 36 31 28 35.5 16H32c-2 13 6 21 2 34z" fill="${C.s2}"/><circle cx="32" cy="11" r="6.5" fill="${C.g1}"/><path d="M26 11h12M32 4.5c-3 4-3 9 0 13M32 4.5c3 4 3 9 0 13" stroke="${C.g3}" stroke-width="1" fill="none"/>`,
+ cdb:`<path d="M15 18c-7 0-7 10 1 11M49 18c7 0 7 10-1 11" stroke="${C.s2}" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M14 14h36c0 13-6 21-18 23-12-2-18-10-18-23z" fill="${C.s1}"/><path d="M15.5 22h33" stroke="${C.gr}" stroke-width="4"/><path d="M15.5 24.6h33" stroke="${C.g1}" stroke-width="1.2"/><path d="M19 16c1 8 4 13 9 16" stroke="${C.sh}" stroke-width="1.8" fill="none" opacity=".8"/><rect x="28" y="37" width="8" height="5" fill="${C.s2}"/><path d="M20 42h24l3 18H17z" fill="${C.s1}"/><path d="M19 47h26" stroke="${C.s2}" stroke-width="1.4"/>`,
+ suda:`<path d="M21 50h22v10H21z" fill="${C.dk}"/><rect x="21" y="49" width="22" height="2.2" fill="${C.g2}"/><path d="M25 49C24 38 27 33 29.5 28M39 49C40 38 37 33 34.5 28M32 49V28" stroke="${C.br2}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="32" cy="19" r="11" fill="${C.br}"/><path d="M21.5 19.5c6 3 15 3 21 0" stroke="${C.g1}" stroke-width="2.4" fill="none"/><path d="M25 13c2-3 6-4.5 9-4" stroke="#f1d2b6" stroke-width="2" fill="none" stroke-linecap="round" opacity=".85"/>`,
+ uel:`<path d="M19 7h26l-6.5 37h-13z" fill="${C.s1}"/><path d="M23 10l4.5 31M41 10l-4.5 31" stroke="${C.s2}" stroke-width="1.3"/><path d="M24 9.5l5 30" stroke="${C.sh}" stroke-width="1.8" opacity=".8"/><rect x="24" y="44" width="16" height="5" rx="1" fill="${C.s2}"/><path d="M22 49h20l1.5 11h-23z" fill="${C.s3}"/>`,
+ wwc:`<path d="M24 52h16l1.5 9h-19z" fill="${C.g2}"/><rect x="24" y="54.5" width="16" height="2.4" fill="${C.gr}"/><path d="M30 51C21 39 41 31 30 18" stroke="${C.g1}" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M34 51C43 39 23 31 34 18" stroke="${C.g2}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="32" cy="11.5" r="6" fill="${C.s1}"/><path d="M32 8.5l2.8 2-1 3.2h-3.6l-1-3.2z" fill="${C.s3}"/>`,
+ wc:`<path d="M26 50C24 41 22.5 31 24.5 23 21 15 26 6 32 6s11 9 7.5 17c2 8 .5 18-1.5 27z" fill="${C.g1}"/><circle cx="32" cy="13" r="7" fill="${C.g2}"/><path d="M26 14c3 2 9 2 12 0M28 8c2 3 6 3 8 0" stroke="${C.g3}" stroke-width="1" fill="none"/><path d="M28 24c-1 8 0 17 1.5 25" stroke="${C.gh}" stroke-width="1.8" fill="none" opacity=".75"/><path d="M27.5 46c2.5-8 1-15 4.5-22M36.5 46c-2.5-8-1-15-4.5-22" stroke="${C.g3}" stroke-width="1.3" fill="none" opacity=".55"/><rect x="23" y="50" width="18" height="3" rx="1" fill="${C.g2}"/><rect x="23" y="53" width="18" height="2.2" fill="${C.gr}"/><rect x="23" y="55.2" width="18" height="2.8" fill="${C.g2}"/><rect x="23" y="58" width="18" height="2.2" fill="${C.gr}"/>`
+ }})();
+// which drawing a trophy uses (null: the plain gold cup)
+function troKey(x){
+  if(!x)return null; if(x.kind==='wc')return x.w?'wwc':'wc'; if(x.kind==='bdo')return'bdo'; if(x.kind==='cwc')return'cwc';
+  const L=LEAGUES[x.lg]; if(!L)return null;
+  if(x.kind==='cont')return /Libertadores/.test(L.cont||'')?(L.w?'libw':'lib'):L.cont==='Champions League'?'ucl':null;
+  if(x.kind==='cont2')return !L.w&&/Libertadores/.test(L.cont||'')?'suda':L.cont==='Champions League'?'uel':null;
+  if(x.kind==='cup')return L.c==='BRA'&&!L.w?'cdb':null;
+  return null;
+}
+const troSVG=(x,cls='ov-icon')=>{const k=troKey(x);return k?`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true">${TRO_SVG[k]}</svg>`:trophySVG(cls)};
 const trophySVG=(cls='ov-icon')=>`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true"><path d="M19 9h26v11c0 10-6 17-13 17s-13-7-13-17z" fill="#f2c14e"/><path d="M19 13h-8c0 8 4 13 10 14M45 13h8c0 8-4 13-10 14" fill="none" stroke="#e0ad3c" stroke-width="3.5" stroke-linecap="round"/><path d="M27 36h10l-1.5 9h-7z" fill="#d9a43a"/><rect x="20" y="45" width="24" height="9" rx="2" fill="#c9962b"/><path d="M24 13c0 7 2 12 5 15" fill="none" stroke="#fff3c4" stroke-width="2.5" stroke-linecap="round" opacity=".7"/></svg>`;
 const goldBall=(cls='ov-icon')=>`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="gbg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#f2c14e"/><stop offset="1" stop-color="#9a6d15"/></radialGradient></defs><circle cx="32" cy="32" r="27" fill="url(#gbg)"/><polygon points="32,22 41.5,29 38,40.5 26,40.5 22.5,29" fill="#9a6d15" opacity=".55"/><path d="M32 22V9M41.5 29l12-4M38 40.5l7 11M26 40.5l-7 11M22.5 29l-12-4" stroke="#9a6d15" stroke-width="2" opacity=".45"/></svg>`;
 const oppName=st=>!st||!st.opp?'':st.comp==='wc'?(COUNTRY[lang][st.opp]||st.opp):st.opp;
@@ -3890,7 +3917,7 @@ function ovHTML(o){
   if(o.k==='final'){
     const wc=o.comp==='wc', st={comp:o.comp,opp:o.opp};
     const opp=o.opp?`${crest(oppKit(st),64)}<b>${esc(oppName(st))}</b>`:`${crest(['#3a3e47','#22252c'],64)}<b>?</b>`;
-    return `<div class="ovcard ${wc?'gold':''}">${wc?trophySVG():''}<span class="ov-kicker">${compFlag(o.comp,o.lg)}${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
+    return `<div class="ovcard ${wc?'gold':''}">${wc?troSVG({kind:'wc',w:isW()?1:undefined}):''}<span class="ov-kicker">${compFlag(o.comp,o.lg)}${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
       <div class="ov-vs"><div class="ov-team l">${crest(myKit(st),64)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><span class="ov-x">${t.vs}</span><div class="ov-team r">${opp}</div></div>${tap}</div>`;
   }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
@@ -3898,7 +3925,7 @@ function ovHTML(o){
   if(o.k==='awards')return `<div class="ovcard awardsov"><svg class="ov-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="26" r="17" fill="#f2c14e"/><circle cx="32" cy="26" r="11" fill="none" stroke="#9a6d15" stroke-width="2.5"/><path d="M32 18l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#9a6d15"/><path d="M22 40l-5 16 8-3 4 7 4-14M42 40l5 16-8-3-4 7-4-14" fill="#d9a43a"/></svg><span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.items.length>1?t.awardsT2(o.items.length):t.awardsT}</h2><div class="awlist">${o.items.map(a=>`<div class="aw">${esc(awName(a))}</div>`).join('')}</div>${tap}</div>`;
   if(o.k==='champ'||o.k==='league'){
     const wc=o.comp==='wc', who=wc?COUNTRY[lang][S.nat]:S.club.name, title=o.k==='league'?LEAGUES[o.lg].name:compName(o.comp,o.lg);
-    return `<div class="ovcard champ ${wc?'gold':''}" style="${kitVars(myKit({comp:o.comp}))}">${trophySVG()}<span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.k==='league'?t.ovLeague:t.ovChamps}</h2><div class="ov-sub">${esc(who)}</div><div class="ov-sub2">${esc(title)}</div>${tap}</div>`;
+    return `<div class="ovcard champ ${wc?'gold':''}" style="${kitVars(myKit({comp:o.comp}))}">${o.k==='league'?trophySVG():troSVG({kind:o.comp,lg:o.lg,w:isW()?1:undefined})}<span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.k==='league'?t.ovLeague:t.ovChamps}</h2><div class="ov-sub">${esc(who)}</div><div class="ov-sub2">${esc(title)}</div>${tap}</div>`;
   }
   if(o.k==='callup'){
     const nk=myKit({comp:'wc'}), cn=o.tk?t.intl[o.tk]:compName('wc');
@@ -3908,7 +3935,7 @@ function ovHTML(o){
     const L=LEAGUES[o.lg];
     return `<div class="ovcard lite" style="${kitVars(kitOf(S.club.name))}">${crest(kitOf(S.club.name),44)}<span class="ov-kicker">${esc(L.name)} · ${o.year}</span><h2 class="ov-title">${t.ovTop4(ord(o.pos))}</h2><div class="ov-sub2">${o.q==='second'?t.ovQual2(esc(cont2Name(o.lg))):t.ovQual(esc(L.cont))}</div>${tap}</div>`;
   }
-  if(o.k==='bdo')return `<div class="ovcard champ gold">${goldBall()}<span class="ov-kicker">${t.bdo} · ${o.year}</span><h2 class="ov-title">${esc(S.name||t.unnamed)}</h2><div class="ov-sub">${t.ovBdoSub(o.year)}</div>${tap}</div>`;
+  if(o.k==='bdo')return `<div class="ovcard champ gold">${troSVG({kind:'bdo'})}<span class="ov-kicker">${t.bdo} · ${o.year}</span><h2 class="ov-title">${esc(S.name||t.unnamed)}</h2><div class="ov-sub">${t.ovBdoSub(o.year)}</div>${tap}</div>`;
   if(o.k==='career')return recapHTML();
   if(o.k==='heal')return healHTML();
   if(o.k==='story')return storyHTML();
@@ -3962,13 +3989,13 @@ function recapHTML(){
   const H=S.history; if(!H||!H.length)return '';
   const tot=k=>H.reduce((a,h)=>a+(h[k]||0),0);
   const clubs=[];H.forEach(h=>{if(clubs[clubs.length-1]!==h.club)clubs.push(h.club)});
-  const counts={};S.trophies.filter(x=>x.kind!=='bdo').sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1});
+  const counts={},cx={};S.trophies.filter(x=>x.kind!=='bdo').sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1;cx[n]=cx[n]||x});
   const bdo=S.trophies.filter(x=>x.kind==='bdo').length;
   let i=0; const dl=()=>`style="animation-delay:${(0.5+0.16*i++).toFixed(2)}s"`;
   const head=[`<span class="ov-kicker rc" ${dl()}>${t.recapT} · ${H[0].year}–${H[H.length-1].year}</span>`,`<h2 class="ov-title rc" ${dl()}>${esc(S.name||t.unnamed)}</h2>`,
     `<div class="ov-sub2 rc" ${dl()}>${t.pos[myPos()][1]} · ${COUNTRY[lang][S.nat]}</div>`,`<div class="rc-path rc" ${dl()}>${clubs.map(esc).join(' → ')}</div>`,
     `<div class="rc-stats rc" ${dl()}>${[[t.seasons,H.length],[t.goals,tot('goals')],[t.assists,tot('assists')],[t.apps,tot('apps')]].map(([l,n])=>`<div><span class="lbl">${l}</span><b data-count="${n}">${reduce?n:0}</b></div>`).join('')}</div>`].join('');
-  const cups=Object.entries(counts).map(([n,c])=>`<span class="cup rc ${isGoldName(n)?'wc':''}" ${dl()}>${c>1?c+'× ':''}${esc(n)}</span>`).join('');
+  const cups=Object.entries(counts).map(([n,c])=>`<span class="cup rc ${isGoldName(n)?'wc':''}" ${dl()}>${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
   const ms=(S.milestones||[]).filter(m=>!(S.milestones||[]).some(o=>o.club===m.club&&o.years>m.years));
   const top3=H.filter(h=>h.bdo&&h.bdo>1&&h.bdo<=3).length;
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
@@ -6246,7 +6273,7 @@ function eosHTML(o){
   const cells=[[h.apps,t.eosS.apps],[h.goals,t.eosS.goals],[h.assists,t.eosS.assists]].concat(def?[[h.cs||0,t.eosS.cs]]:[]);
   S2('',`<div class="eos-pga" style="--n:${cells.length}">${cells.map(([v,l])=>`<div><b class="num" data-count="${v||0}">0</b><span>${l}</span></div>`).join('')}</div>`);
   const tro=h.trophies.filter(x=>x.kind!=='bdo');
-  if(tro.length)S2(t.eosTitles,`<div class="eos-chips">${tro.map(x=>`<span class="eos-chip gold">${trophySVG('')}${esc(trophyName(x))}</span>`).join('')}</div>`);
+  if(tro.length)S2(t.eosTitles,`<div class="eos-chips">${tro.map(x=>`<span class="eos-chip gold">${troSVG(x,'')}${esc(trophyName(x))}</span>`).join('')}</div>`);
   const acc=[];
   if(h.bdo===1)acc.push(['gold',t.bdoWin]);else if(h.bdo)acc.push(['',t.bdoRank(h.bdo)]);
   (h.awards||[]).forEach(a=>acc.push(['gold',awName(a)]));
