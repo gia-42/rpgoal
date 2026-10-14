@@ -1643,15 +1643,15 @@ const posScore=(a,p)=>AK.reduce((s,k)=>s+a[k]*(POS[p].w[k]||0),0)+POS_BIAS[p];
 const posFit=(a,p)=>{const d=posScore(a,bestPos(a))-posScore(a,p);return d<=.35?0:d<=1.2?1:2};
 const bestPos=a=>Object.keys(POS).reduce((b,p)=>posScore(a,p)>posScore(a,b)+1e-9?p:b,'ST');
 const myPos=()=>S.pos||bestPos(S.attrs);
-// how far each attribute can grow in each position: one signature attribute can reach 20, the rest stop earlier
+// how far each attribute can grow in each position: the signature attribute and the ones the role leans on can reach 20, the rest stop earlier
 const POS_CAP={
- ST:{fin:20,spd:18,ski:18,str:18,dec:18,pas:16,lead:14,def:12},
- W:{spd:20,ski:19,fin:17,pas:17,dec:17,str:15,lead:14,def:15},
- AM:{pas:20,ski:19,dec:18,fin:17,spd:16,lead:15,str:14,def:15},
- CM:{pas:20,dec:19,def:18,ski:17,str:17,lead:17,spd:13,fin:13},
- DM:{def:20,dec:19,str:18,pas:17,lead:17,spd:15,ski:14,fin:14},
- FB:{spd:20,def:19,pas:17,str:17,dec:17,ski:16,lead:15,fin:13},
- CB:{def:20,str:18,lead:17,dec:17,pas:17,spd:16,ski:15,fin:14}};
+ ST:{fin:20,spd:19,ski:19,str:19,dec:19,pas:17,lead:15,def:13},
+ W:{spd:20,ski:20,fin:18,pas:18,dec:18,str:16,lead:15,def:16},
+ AM:{pas:20,ski:20,dec:19,fin:18,spd:17,lead:16,str:15,def:16},
+ CM:{pas:20,dec:20,def:19,ski:18,str:18,lead:18,spd:14,fin:14},
+ DM:{def:20,dec:20,str:19,pas:18,lead:18,spd:16,ski:15,fin:15},
+ FB:{spd:20,def:20,pas:18,str:18,dec:18,ski:17,lead:16,fin:14},
+ CB:{def:20,str:19,lead:18,dec:18,pas:18,spd:17,ski:16,fin:15}};
 const attrCap=(k,p)=>{p=p||myPos();const c=(POS_CAP[p]||{})[k]||20,sty=S&&S.pos===p&&S.style?styleOf(p,S.style):null;return Math.min(20,c+(sty&&sty[1]===k?1:0))};
 const canUp=k=>S.attrs[k]<attrCap(k);
 function focusKey(){const w=POS[myPos()].w;const top=AK.slice().sort((x,y)=>(w[y]||0)-(w[x]||0)).slice(0,3);return Math.random()<.6?pick(top):pick(AK)}
@@ -2135,7 +2135,7 @@ function legendReady(){
   return pts>=20;
 }
 // bonuses stack: past +7 they count for half in the league, past +8 a third in cups (where the opponents scout you)
-const capMods=(x,st)=>st&&st.comp!=='league'&&st.comp!=='run'?(x<=8?x:8+Math.floor((x-8)/3)):(x<=7?x:7+Math.floor((x-7)/2));
+const capMods=(x,st)=>st&&st.comp!=='league'&&st.comp!=='run'?(x<=8?x:8+Math.floor((x-8)/3)):(x<=8?x:8+Math.floor((x-8)/2));
 function startCareer(offer){
   delete S.mem; delete S.lgMv; applyMem();
   S.attrs={...S.roll}; if(S.parent&&S.parent.best&&S.attrs[S.parent.best]!=null)S.attrs[S.parent.best]=Math.min(20,S.attrs[S.parent.best]+1); S.pos=bestPos(S.roll); if(!S.footR)S.footR=d(20); S.foot=footOf(S.footR); S.wf=startWF(S.foot,S.attrs.ski); S.age=17; S.year=S.startYear||2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -2309,12 +2309,12 @@ function lgSwap(h,s){
 const clubInfoMap=w=>{const m={};LEAGUES.forEach((L,Li)=>{if(!!L.w!==w)return;L.tiers.forEach((tr,ti)=>tr.clubs.forEach(n=>{if(!m[n]||L.div===1&&LEAGUES[m[n].league].div!==1)m[n]={league:Li,tier:ti,pr:tr.pr}}))});return m};
 const CLUB_INFO_M=clubInfoMap(false), CLUB_INFO_W=clubInfoMap(true);
 /* the Brasileirão's order by default: Corinthians just ahead of Flamengo, then four close pairs and trios a touch below, then everyone else */
-let BR_DC=2;   // the Brasileirão is a dogfight every week
+let BR_DC=3;   // the Brasileirão is a dogfight every week
 const BR_STR={'Corinthians':67.8,'Flamengo':67.6,'Palmeiras':66.9,'São Paulo':66.9,'Santos':66.9,'Cruzeiro':66.6,'Atlético Mineiro':66.6,'Grêmio':66.3,'Internacional':66.3,'Botafogo':66.0,'Fluminense':66.0,'Vasco da Gama':66.0};
 const baseStr=n=>!isW()&&BR_STR[n]!=null?BR_STR[n]:50+5*(((isW()?CLUB_INFO_W:CLUB_INFO_M)[n])||{pr:0}).pr;
 function teamStr(n){
   S.teams=S.teams||{};
-  if(S.teams[n]==null){const b=baseStr(n);S.teams[n]=+(b+(Math.random()*(parityClub(n)?2:6)-(parityClub(n)?1:3))).toFixed(1)}
+  if(S.teams[n]==null){const b=baseStr(n);S.teams[n]=+(b+(Math.random()*(parityClub(n)?4:6)-(parityClub(n)?2:3))).toFixed(1)}
   return S.teams[n];
 }
 /* clubs currently in a league: its own list plus your club if it arrived by promotion */
@@ -2466,7 +2466,7 @@ function resolveStage(v1,v2){
     if(pts<CG_NEED&&pts+3*left<CG_NEED){r.groupOut=true;s.cgRes=0;s.stages.forEach((x,i)=>{if(i>s.idx&&x.comp===st.comp&&!x.res)x.res={skipped:true}})}
     else if(pts>=CG_NEED&&before<CG_NEED){r.groupThrough=true;s.cgRes=1;if(st.g===5)S.flag_lastday=1}
     if(st.g===5||r.groupOut){const gs=s.stages.filter(x=>isCG(x)&&x.comp===st.comp),hw=m=>gs.filter(x=>x.ha===m).every(x=>x.res&&x.res.wdl==='W');if(hw('adv'))S.flag_fortress=1;if(hw('dis'))S.flag_roadwar=1}
-    if(st.g===5&&cgPts(s)>=13)S.flag_grpwin=1;
+    if(st.g===5&&cgPts(s)>=18)S.flag_grpwin=1;
     st.res={tone:r.tone,wdl:k,missed:!!r.missed}; fanMatch(st,r,win,true);
   }else if(st.comp==='wc'&&st.round===0&&st.g!=null){
     const win=r.missed?r.total>=r.dc:(isCrit(nat)||(nat!==1&&r.total>=r.dc));
@@ -2510,7 +2510,7 @@ function awaySummary(s){
     const r=st.res, k=r.wdl||(r.tone==='good'?'W':r.tone==='bad'?'L':'D');if(k==='W')w++;else if(k==='D')dd++;else l++});
   const n=w+dd+l, ppg=n?(3*w+dd)/n:0, lv=teamLevel(clubRank(S.club.name,S.club.league).frac), exp=[2.2,1.9,1.5,1.2,1][lv]||1.5;
   const v=!n?'ok':ppg>=exp+.3?'good':ppg>=exp-.35?'ok':'bad';
-  if(n>=2&&v==='bad')S.flag_missed=1; if(n>=2&&v==='good')S.flag_toofine=1;
+  if(n>=5&&v==='bad')S.flag_missed=1; if(n>=5&&v==='good')S.flag_toofine=1;
   return{k:'away',items,w,d:dd,l,v,p0:s.awayPos0||null,p1:s.lt?lgMyPos(s):null,bench:!!s.benchInj};
 }
 function benchBack(s){if(s.injOut&&s.out<=0&&!s.seasonOut&&!s.careerOver){const n=s.injOut;s.injOut=0;if(Math.random()<benchPx(n)){s.bench=Math.max(s.bench||0,n<=3?1:2);s.benchStart=1;s.benchInj=1;S.notes=(S.notes||[]).concat([['nBenchInj']])}}}
@@ -2519,7 +2519,7 @@ function chipScored(){S.chips=(S.chips||0)+1;if(S.chips>=3)giveItem('chipboots')
 const benchP=n=>n<=0?0:n===1?.1:n===2?.2:n===3?.3:n<=6?.5:.7;   // the body starts to complain after 30, later for the physically strong
 // a natural 1 on any roll on the pitch (the match, a moment, a last-minute chance, your penalty) brings out the injury check
 const ONPITCH_EV=['pen','fk','oneone','tackle','through','counter','header','derby','training','cwcgap'];
-const INJ_P=.7;   // a natural 1 in a match is a scare most of the time, not every time
+const INJ_P=.55;   // a natural 1 in a match is a scare about half the time, not every time
 function injuryScare(){const s=S.season;if(!s||s.pendingHeal||s.careerOver||s.out>0||Math.random()>=INJ_P)return false;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null};return true}
 function injChk(v){
   const s=S.season, i=s.inj, r=s.last, tot=v+(hasItem('shinpads')?1:0);
@@ -2608,7 +2608,7 @@ function finishSeason(){const s=S.season;if(S.phase==='season'&&s&&s.endReady&&!
 function eliteGrow(){const s=S.season;if(!s||S.age>29||s.seasonOut||!S.club)return 0;const pr=tierOf(S.club.league,S.club.tier).pr;return pr>=7.5?2:pr>=6?1:0}
 function grow(){
   const s=S.season, rolls=s.rolls, before={...S.attrs};
-  const A=rolls.length?rolls.reduce((a,b)=>a+b,0)/rolls.length:0;
+  const A=rolls.length?rolls.reduce((a,b)=>a+b,0)/rolls.length:0; if(rolls.filter(x=>x===1).length>=7)S.flag_snake=1;
   const canGrow=S.age<=(hasFeat('latebloomer')?35:33), hot=canGrow&&rolls.length>0&&A>=13&&S.age>=28;
   const phy=S.attrs.str;
   let base=S.age<=22?1:S.age<=27?0.5:S.age<=29?(phy>=14?0.5:0):S.age<=32?(phy>=16?0.5:phy>=13?0:-1):-1, shielded=false;
@@ -2716,7 +2716,7 @@ function bdoScore(s,pos,L){
   return rating(S.attrs)*4+22*rel+(POS_EDGE[p]||0)+(hasItem('docu')?3:0)+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
 }
 const POS_EXP={ST:29,AM:16.5,W:19,CM:11.4,FB:8.6,DM:7.6,CB:7.6}, POS_EDGE={ST:6,AM:5,W:3,CM:2,DM:0,FB:0,CB:0};
-const BDO_T=[149,146,144,142,140.5,139,137,135,133.5,131.5];
+const BDO_T=[153,150,148,146,144.5,143,141,139,137.5,135.5];
 function bdoRank(s,pos,L){const sc=bdoScore(s,pos,L);for(let i=0;i<BDO_T.length;i++)if(sc>=BDO_T[i])return i+1;return null}
 function clubAfterMove(h){
   const L=LEAGUES[S.club.league];
@@ -3586,7 +3586,7 @@ const ACH=[
  {id:'skipper',n:['Skipper','Capitão de verdade'],d:['Wear the armband for five seasons.','Use a braçadeira por cinco temporadas.'],test:()=>(S.captSeasons||0)>=5},
  {id:'smallclub',n:['Punching above','Acima do peso'],d:['Win the league with a modest or underdog squad.','Ganhe a liga com um elenco modesto ou azarão.'],test:()=>S.trophies.some(x=>x.kind==='league'&&x.ud>=1)},
  {id:'cont2small',n:['Small club, big night','Clube pequeno, noite grande'],d:['Win a second continental cup with a modest or underdog squad.','Ganhe uma copa continental secundária com um elenco modesto ou azarão.'],test:()=>S.trophies.some(x=>x.kind==='cont2'&&x.ud>=1)},
- {id:'nat1s',bad:1,n:['Snake eyes','Olho de cobra'],d:['Roll twelve natural 1s in one career.','Tire doze 1 naturais numa mesma carreira.'],test:()=>!!(S.rs&&S.rs.n1>=12)},
+ {id:'nat1s',bad:1,n:['Snake eyes','Olho de cobra'],d:['Roll seven natural 1s in a single season.','Tire sete 1 naturais numa mesma temporada.'],test:()=>!!S.flag_snake},
  {id:'plottwist',bad:1,n:['Plot twist','Reviravolta'],d:['Fail ten story checks in one career.','Falhe em dez testes de história numa carreira.'],test:()=>(S.chFail||0)>=10},
  {id:'nightmare',bad:1,n:['Nightmare fuel','Pesadelo'],d:['Miss your penalty in a final shootout and lose the final.','Perca o seu pênalti numa disputa de final e perca a taça.'],test:()=>!!S.flag_nightmare},
  {id:'spotmiss',bad:1,n:['Spot of bother','Marca maldita'],d:['Miss three shootout penalties in one career.','Perca três pênaltis em disputas numa carreira.'],test:()=>(S.pensMiss||0)>=3},
@@ -3908,7 +3908,7 @@ function careerTags(){
   Object.entries(S.clubPeak||{}).forEach(([c,lv])=>{if((S.legends||[]).some(l=>l.club===c))out.push(['legend',c]);else if(lv>=5&&H.filter(h=>h.club===c).length>=8&&H.filter(h=>h.club===c).reduce((a,h)=>a+h.trophies.filter(x=>x.kind!=='bdo').length,0)>=3)out.push(['idol',c])});
   (S.legends||[]).forEach(l=>{if(!out.some(x=>x[0]==='legend'&&x[1]===l.club))out.push(['legend',l.club])});
   if(rs.n>=50&&avg>=BLESS)out.push(['blessed']); else if(rs.n>=50&&avg<=CURSE)out.push(['cursed']);
-  if(rs.n20>=12)out.push(['nat20s']);
+  if(rs.n20>=12&&rs.n20/Math.max(1,rs.n)>=.062)out.push(['nat20s']);
   if(fin.w>=6&&fin.w>=fin.l*2)out.push(['biggame']); else if(fin.l>=4&&fin.l>fin.w)out.push(['bottler']);
   if(clubs.length>=8)out.push(['journeyman']);
   if(H.length>=10&&inj<=8)out.push(['iron']); else if(inj>=24)out.push(['glass']);
@@ -5041,6 +5041,7 @@ function wageFor(Li,ti,opts={}){
   let base=L.w?6e3*Math.pow(1.9,tr.pr):50e3*Math.pow(2.2,tr.pr);
   if(L.exotic)base*=L.c==='KSA'?40:16;
   if(L.c==='USA'&&!L.w)base*=.55;   // the MLS pays well, but below Europe's biggest leagues
+  if(L.c==='ESP'&&!L.w)base*=.7;   // Spanish clubs pay below English ones; Real Madrid and Barcelona still sit with the Premier League's best
   let f=clamp(Math.pow(1.45,r-(tr.min+1.5)),.3,4)*(1+Math.min(.5,.15*S.trophies.filter(x=>x.kind==='bdo').length));
   if(S.age>=32)f*=.85;
   return roundMoney(base*f*.75*(opts.mult||1));
@@ -5812,7 +5813,7 @@ function projPos(s){
   if(p===1&&goods<3)p=2; return p;
 }
 /* ================= league v6: blocks of quick matches, momentum, a real table ================= */
-const LB_OFF=6, LB_DRAW=4, LB_TOP=.42, LB_BOT=.48;
+const LB_OFF=4, LB_DRAW=4, LB_TOP=.46, LB_BOT=.52;
 const isLB=st=>!!st&&st.comp==='league'&&!!st.ms;
 const CODE_FIX={'Corinthians':'COR','São Paulo':'SPO','Palmeiras':'PAL','Vasco da Gama':'VAS','Manchester City':'MCI','Manchester United':'MUN','Real Madrid':'RMA','Atlético Madrid':'ATM','Real Sociedad':'RSO','Real Betis':'BET','Barcelona':'BAR','Bayern Munich':'BAY','Bayern München':'BAY','Borussia Dortmund':'BVB','Borussia Mönchengladbach':'BMG','Bayer Leverkusen':'LEV','RB Leipzig':'RBL','Paris Saint-Germain':'PSG','Inter':'INT','Inter Milan':'INT','AC Milan':'MIL','Milan':'MIL','Juventus':'JUV','Napoli':'NAP','Roma':'ROM','Lazio':'LAZ','Atlético Mineiro':'CAM','Atlético-MG':'CAM','Athletico Paranaense':'CAP','Flamengo':'FLA','Fluminense':'FLU','Botafogo':'BOT','Grêmio':'GRE','Internacional':'INT','Cruzeiro':'CRU','Santos':'SAN','Boca Juniors':'BOC','River Plate':'RIV','Racing Club':'RAC','Independiente':'IND','San Lorenzo':'SLO','Estudiantes':'EST','Tottenham Hotspur':'TOT','Tottenham':'TOT','Newcastle United':'NEW','West Ham United':'WHU','Aston Villa':'AVL','Nottingham Forest':'NFO','Wolverhampton':'WOL','Sheffield United':'SHU','Sporting CP':'SCP','Benfica':'BEN','Porto':'POR','FC Porto':'POR','Ajax':'AJA','PSV':'PSV','PSV Eindhoven':'PSV','Feyenoord':'FEY','Olympique de Marseille':'OM','Marseille':'OM','Olympique Lyonnais':'OL','Lyon':'OL','Al Ahly':'AHL','Zamalek':'ZAM','Wydad Casablanca':'WAC','Raja Casablanca':'RCA','Orlando Pirates':'ORL','Kaizer Chiefs':'KAI','Al Hilal':'HIL','Al Nassr':'NAS','Al Ittihad':'ITT','Inter Miami':'MIA','LA Galaxy':'LAG','LAFC':'LAF','Sport':'SPT','AZ':'AZ','Valencia':'VAL','Real Valladolid':'VLL','West Ham':'WHU','Newcastle':'NEW','Monaco':'MON','Montpellier':'MTP','Deportivo La Coruña':'DEP','Sporting Gijón':'SPG','FC Tokyo':'FCT','Kashima Antlers':'KAS','Kashiwa Reysol':'KRE','Portimonense':'PTM','Botafogo-SP':'BSP','Red Star':'RSF'};
 const CODE_SKIP=new Set(['fc','cf','afc','sc','ac','as','ss','us','cd','ca','se','ec','rc','club','de','da','do','das','dos','del','la','le','les','the','of','1.','vfl','vfb','sv','tsg','fk','sk','bk','if','ud','sd','rcd','ogc','cr','sl','ad','sad','esporte','clube','sport','sporting','real','atlético','athletic','deportivo','olympique','stade','racing','al','w','women','feminino','femení','femenino','ladies','frauen']);
@@ -5842,7 +5843,7 @@ const relSpots=L=>L.div===1&&L.down!=null?(L.c==='BRA'&&L.size>=20?4:L.size>=16?
 const lbCols=n=>n===9?3:n===10?5:n===8?4:n<=5?n:Math.ceil(n/2);
 /* a team's points per game from its strength against the rest of the league */
 function lgPPG(str,all){
-  const m=all.reduce((a,b)=>a+b,0)/all.length, sd=Math.max(1.2,Math.sqrt(all.reduce((a,b)=>a+(b-m)**2,0)/all.length));
+  const m=all.reduce((a,b)=>a+b,0)/all.length, sd=Math.max(1.0,Math.sqrt(all.reduce((a,b)=>a+(b-m)**2,0)/all.length));
   const z=(str-m)/sd; return clamp(1.38+(z>0?LB_TOP:LB_BOT)*z,.5,2.5);
 }
 function lgBuild(s){
@@ -5873,7 +5874,7 @@ function lgBuild(s){
     const rounds=o1.map(i=>base[i]).concat(o2.map(i=>base[i].map(([x,y])=>[y,x])));
     const ppg={}; others.forEach(x=>{ppg[x]=teams.find(q=>q.n===x).ppg}); ppg[me]=1.38;
     // one match: the gap in strength (plus a little home edge) shifts the odds; upsets and draws always possible
-    const play=(h,a)=>{const g=ppg[h]-ppg[a]+.12, D=clamp(.28-.05*Math.abs(g),.16,.28), H=clamp(.36+.28*g,.05,.84-D), x=Math.random();return x<H?[3,0]:x<H+D?[1,1]:[0,3]};
+    const play=(h,a)=>{const g=ppg[h]-ppg[a]+.12, D=clamp(.28-.06*Math.abs(g),.15,.28), H=clamp(.36+.34*g,.04,.85-D), x=Math.random();return x<H?[3,0]:x<H+D?[1,1]:[0,3]};
     const res={}; others.forEach(x=>res[x]=[]);
     const seq=[];
     rounds.forEach((pr,r)=>pr.forEach(([h,a])=>{
@@ -5928,16 +5929,17 @@ const lgMom=s=>{const w=(s.lt&&s.lt.me.wdl)||[];let wins=0,losses=0;
 const MOM_CAP=3;
 // a natural 20 in the league lifts the dressing room: +1 momentum that stacks, until the next defeat
 const mom20=s=>{s.momB=Math.min(MOM_CAP,(s.momB||0)+1);momFlags(s)};
-const momFlags=s=>{const m=lgMom(s);if(m>=MOM_CAP)S.flag_mom3=1;if(m<=-MOM_CAP)S.flag_freefall=1;if((s.momB||0)>=MOM_CAP)S.flag_lift=1;
-  const w=(s.lt&&s.lt.me.wdl)||[];if(w.length>=3&&w.slice(-3).every(x=>x==='D'))S.flag_stalemate=1};
+const momFlags=s=>{if((s.momB||0)>=MOM_CAP)S.flag_lift=1;
+  const w=(s.lt&&s.lt.me.wdl)||[];if(w.length>=5&&w.slice(-5).every(x=>x==='D'))S.flag_stalemate=1;if(w.length>=8&&w.slice(-8).every(x=>x==='L'))S.flag_freefall=1};
 function lbDC(m){
   const L=LEAGUES[S.club.league], rel=m.opp?clamp((teamStr(m.opp)-teamStr(S.club.name))/10,-2,2):0;
-  const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?(m.ha==='H'?-1:0):([0,0,0,1,2][tl]||0);   // the favourites face packed defences; small clubs fight for every point
+  const tl=teamLevel(clubRank(S.club.name,S.club.league).frac), grit=tl===0?-1:([0,0,0,1,2][tl]||0);   // the favourites face packed defences home and away; small clubs fight for every point
   return lgDC(L)+LB_OFF+Math.round(rel)+(L.w?1:0)+(L.c==='BRA'&&L.div===1&&!L.w?BR_DC:0)-grit;
 }
 /* one league match (block die or final-push game): shared bookkeeping */
 function lgRecord(s,w,missed){
   const T=s.lt; if(!T)return; const r=T.me.res.length; T.me.res.push(w==='W'?3:w==='D'?1:0); T.me.wdl.push(w); if(w!=='W')s.momB=0;   // a draw or a defeat resets momentum to zero
+  s.m3=w==='W'?(s.m3||0)+1:0; if(s.m3>=12)S.flag_mom3=1;   // Unstoppable: twelve league wins in a row
   momFlags(s);
   if(T.fx&&T.fx[r]){const q=T.teams.find(x=>x.n===T.fx[r]);if(q)q.res[r]=w==='W'?0:w==='D'?1:3}   // the other side of your match
 }
@@ -6037,7 +6039,7 @@ let SQ_DIV=1.8;
 // in the league anyone can lose: a natural 1 or 2 is a defeat however good you and your team are
 const LG_UPSET=2;
 const LG_FLOOR=5;   // in the league the team never plays worse than it would without you: a teenager is one of eleven
-function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-3,3)}catch(e){return 0}}
+function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-3,2)}catch(e){return 0}}   // a big squad helps, but a weak one hurts a little more
 function lbNear(s){
   const tb=lgTable(s), me=tb.find(x=>x.me); if(!me)return'';
   const lo=Math.max(1,Math.min(me.pos-1,tb.length-2)); const rows=tb.filter(x=>x.pos>=lo&&x.pos<=lo+2);
@@ -7413,18 +7415,18 @@ ACH.push(
  {id:'twofooted',n:['Both feet','Os dois pés'],d:['Train your weaker foot all the way to 5/5.','Treine o pé fraco até 5/5.'],test:()=>(S.wf||0)>=5&&S.foot!=='B'},
  {id:'bornboth',n:['Born two-footed','Dois pés de nascença'],d:['Roll a 20 for your dominant foot.','Tire 20 no dado do pé dominante.'],test:()=>S.foot==='B'},
  {id:'benchback',n:['Shirt reclaimed','Camisa de volta'],d:['Win your place back from the bench with a natural 20.','Reconquiste a vaga saindo do banco com um 20 natural.'],test:()=>!!S.flag_benchback},
- {id:'missed',n:['Sorely missed','Fez muita falta'],d:['Come back from injury to find the team struggled without you.','Volte de lesão e descubra que o time sofreu sem você.'],test:()=>!!S.flag_missed},
- {id:'toofine',bad:1,n:['Not so indispensable','Nem tão indispensável'],d:['Come back from injury to find the team did just fine without you.','Volte de lesão e descubra que o time foi muito bem sem você.'],test:()=>!!S.flag_toofine},
- {id:'grpwin',n:['Top of the group','Primeiro do grupo'],d:['Win your continental group with 13 points or more.','Vença o seu grupo continental com 13 pontos ou mais.'],test:()=>!!S.flag_grpwin},
+ {id:'missed',n:['Sorely missed','Fez muita falta'],d:['Miss five or more matches injured and come back to find the team struggled without you.','Fique fora por cinco jogos ou mais e volte para descobrir que o time sofreu sem você.'],test:()=>!!S.flag_missed},
+ {id:'toofine',bad:1,n:['Not so indispensable','Nem tão indispensável'],d:['Miss five or more matches injured and come back to find the team did just fine without you.','Fique fora por cinco jogos ou mais e volte para descobrir que o time foi muito bem sem você.'],test:()=>!!S.flag_toofine},
+ {id:'grpwin',n:['Top of the group','Primeiro do grupo'],d:['Win all six games of your continental group.','Vença os seis jogos do seu grupo continental.'],test:()=>!!S.flag_grpwin},
  {id:'walkaway',bad:1,n:['Walked away','Saída precoce'],d:['Retire by choice before you turn 30.','Aposente-se por escolha antes dos 30.'],test:()=>!!S.endReason&&S.endReason.kind==='quit'&&S.endReason.age<30});
 ACH.push(
  {id:'clubgrand',n:['Conquered it all','Conquistou tudo'],d:['Win every major title open to one club: league, national cup, main continental cup and Club World Cup. Separate spells at the club count.','Ganhe todos os grandes títulos possíveis por um mesmo clube: liga, copa nacional, principal copa continental e Mundial de Clubes. Passagens diferentes pelo clube contam.'],test:()=>Object.entries(clubTitles()).some(([c,T])=>{const lg=T.find(x=>x.kind==='league'&&isDiv1(x));if(!lg)return false;const L=LEAGUES[lg.lg];return(!L.cup||T.some(x=>x.kind==='cup'))&&(!L.cont||(T.some(x=>x.kind==='cont')&&T.some(x=>x.kind==='cwc')))})},
  {id:'triplecrown',n:['Triple crowned','Coroa tripla'],d:['Win the league, the national cup and the main continental cup with one club, in any seasons. Separate spells count.','Ganhe a liga, a copa nacional e a principal copa continental por um mesmo clube, em qualquer temporada. Passagens diferentes contam.'],test:()=>Object.values(clubTitles()).some(T=>T.some(x=>x.kind==='league'&&isDiv1(x))&&T.some(x=>x.kind==='cup')&&T.some(x=>x.kind==='cont'))},
  {id:'worldcont',n:['World and continent','Mundo e continente'],d:['Win the World Cup and your continent’s national-team tournament.','Ganhe a Copa do Mundo e o torneio continental de seleções.'],test:()=>allTrophies().some(x=>x.kind==='wc')&&allTrophies().some(x=>x.kind==='intl')},
- {id:'mom3',n:['Unstoppable','Imparável'],d:['Reach +3 momentum in the league.','Chegue a +3 de embalo na liga.'],test:()=>!!S.flag_mom3},
- {id:'freefall',bad:1,n:['Freefall','Queda livre'],d:['Sink to −3 momentum in the league.','Caia para −3 de embalo na liga.'],test:()=>!!S.flag_freefall},
+ {id:'mom3',n:['Unstoppable','Imparável'],d:['Win twelve league games in a row.','Vença doze jogos seguidos na liga.'],test:()=>!!S.flag_mom3},
+ {id:'freefall',bad:1,n:['Freefall','Queda livre'],d:['Lose eight league games in a row.','Perca oito jogos seguidos na liga.'],test:()=>!!S.flag_freefall},
  {id:'lift',n:['Dressing-room lift','Vestiário inflamado'],d:['Stack +3 momentum from natural 20s before a draw or a defeat.','Acumule +3 de embalo vindo de 20 naturais antes de um empate ou derrota.'],test:()=>!!S.flag_lift},
- {id:'stalemate',bad:1,n:['Stalemate','Empate em série'],d:['Draw three league games in a row.','Empate três jogos seguidos na liga.'],test:()=>!!S.flag_stalemate},
+ {id:'stalemate',bad:1,n:['Stalemate','Empate em série'],d:['Draw five league games in a row.','Empate cinco jogos seguidos na liga.'],test:()=>!!S.flag_stalemate},
  {id:'clinch',n:['Wrapped up early','Título antecipado'],d:['Go into the final three league games with the title already won.','Entre nas três últimas rodadas com o título já garantido.'],test:()=>!!S.flag_clinch},
  {id:'doomed',bad:1,n:['Play for pride','Pela honra'],d:['Go into the final three league games already relegated.','Entre nas três últimas rodadas já rebaixado.'],test:()=>!!S.flag_doomed},
  {id:'cupderby',n:['Derby beyond the league','Clássico fora da liga'],d:['Beat a main rival in the cup or on the continent.','Vença um grande rival na copa ou no continente.'],test:()=>!!S.flag_cupderby});
