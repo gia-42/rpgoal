@@ -1297,6 +1297,33 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .crimg{object-fit:contain;display:inline-block;flex:none;vertical-align:middle}
 .cflag{height:.95em;width:auto;max-width:1.6em;object-fit:contain;vertical-align:-.12em;margin-right:.35em;display:inline-block;border-radius:2px}
 .cup{display:inline-flex;align-items:center;gap:4px}.cup .ti,.eos-chip svg{width:1.25em;height:1.25em;flex:none;margin:-2px 0 -2px -2px}
+/* iPad / computer: each column tightens step by step until it fits the screen */
+.ipcol.tg{gap:calc(14px - var(--tg)*1.4px)}
+.ipcol.tg>section{padding-top:calc(14px - var(--tg)*1.4px);padding-bottom:calc(14px - var(--tg)*1.4px)}
+.ipcol.tg .ab-cell{padding-top:calc(8px - var(--tg)*1px);padding-bottom:calc(8px - var(--tg)*1px)}
+.ipcol.tg .cc{padding-top:calc(9px - var(--tg)*1.2px);padding-bottom:calc(9px - var(--tg)*1.2px)}
+.ipcol.tg .sstat .cc b.num{font-size:calc(26px - var(--tg)*1.4px)}
+.ipcol.tg .who{margin-bottom:calc(0px - var(--tg)*1px)}
+.ipcol.tgt .ltable td{padding-top:var(--rp);padding-bottom:var(--rp)}
+.ipcol.tgt .ltable th{padding-top:var(--rp);padding-bottom:var(--rp)}
+.lbpop .lbbtns .btn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovl.docked .lbpop.lbfit1{gap:5px}
+.ovl.docked .lbpop.lbfit1 .lbrec{min-height:44px}
+.ovl.docked .lbpop.lbfit1 .lbdie{height:80px}
+.ovl.docked .lbpop.lbfit1 .lbdie .die{max-width:74px}
+.ovl.docked .lbpop.lbfit1 .lbinfo2{min-height:84px}
+.ovl.docked .lbpop.lbfit2{gap:3px;padding-top:12px}
+.ovl.docked .lbpop.lbfit2 .lbdie{height:66px}
+.ovl.docked .lbpop.lbfit2 .lbdie .die{max-width:62px}
+.ovl.docked .lbpop.lbfit2 .lbinfo2{min-height:70px}
+.ovl.docked .lbpop.lbfit2 .ltmini .ltr{padding-top:0;padding-bottom:0;min-height:0}
+.ovl.docked .lbpop.lbfit3 .lbrec{min-height:34px}
+.ovl.docked .lbpop.lbfit3 .lbdie{height:54px}
+.ovl.docked .lbpop.lbfit3 .lbdie .die{max-width:52px}
+.ovl.docked .lbpop.lbfit3 .lbinfo2{min-height:56px}
+.ovl.docked .lbpop.lbfit3 .lbtitle{font-size:18px;min-height:22px}
+.ovl.docked .lbpop.lbfit4 .ltmini{font-size:12px}
+.ovl.docked .lbpop.lbfit4 .lbtxt,.ovl.docked .lbpop.lbfit4 .ov-sub2{font-size:12px;line-height:1.25}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -3258,7 +3285,7 @@ function fitStage(){
   if(dm&&dm.clientHeight<die)st.style.setProperty('--die',Math.max(56,dm.clientHeight-4)+'px');
 }
 try{window.addEventListener('orientationchange',()=>{fitViewport();setTimeout(()=>{try{render()}catch(e){}},350)})}catch(e){}
-try{window.addEventListener('resize',()=>{try{fitViewport();if(calcIpad()!==ipMode)render();else dockOv();fitStage();fitTexts()}catch(e){}})}catch(e){}
+try{window.addEventListener('resize',()=>{try{fitViewport();if(calcIpad()!==ipMode)render();else dockOv();fitStage();fitTexts();fitIp()}catch(e){}})}catch(e){}
 function fixCh(){
   const s=S&&S.season; if(!s||!s.stages)return;
   s.stages.forEach(st=>{if(!st||!st.ch||st.chr||st.res)return;const m=MATCH_CH.has(st.ch);
@@ -3275,6 +3302,20 @@ function setHTML(el,html){
   el.querySelectorAll('img.crimg,img.cflag').forEach(n=>{const a=pool[n.getAttribute('src')],o=a&&a.shift();if(!o)return;
     [...o.attributes].forEach(x=>{if(!n.hasAttribute(x.name))o.removeAttribute(x.name)});[...n.attributes].forEach(x=>{if(o.getAttribute(x.name)!==x.value)o.setAttribute(x.name,x.value)});n.replaceWith(o)});
   holdImgs(el);
+}
+/* iPad landscape and computer: nothing in the three columns may run past the bottom of the screen */
+function fitIp(){
+  try{
+  if(ipMode!=='L')return; const cols=app.querySelectorAll('.ipgrid.ipL>.ipcol'); if(cols.length<3)return;
+  const over=e=>e.scrollHeight>e.clientHeight+1;
+  const L=cols[0]; L.classList.remove('tg'); L.style.removeProperty('--tg'); [...L.children].forEach(c=>c.style.zoom='');
+  for(let k=1;k<=6&&over(L);k++){L.classList.add('tg');L.style.setProperty('--tg',k)}
+  if(over(L)){const z=Math.max(.7,L.clientHeight/L.scrollHeight);[...L.children].forEach(c=>c.style.zoom=z)}
+  const R=cols[2], tr=R.querySelector('.track')||R; R.classList.remove('tgt'); R.style.removeProperty('--rp');
+  for(let p=3.5;p>=0&&(over(tr)||over(R));p-=.5){R.classList.add('tgt');R.style.setProperty('--rp',p+'px')}
+  const card=ovEl&&ovEl.classList.contains('docked')&&ovEl.querySelector('.ovcard.lbpop');
+  if(card){const F=['lbfit1','lbfit2','lbfit3','lbfit4'];F.forEach(c=>card.classList.remove(c));for(const c of F){if(!over(card)&&!over(ovEl))break;card.classList.add(c)}}
+  }catch(e){}
 }
 function render(){
   try{fixCh()}catch(e){}
@@ -3305,7 +3346,7 @@ function render(){
   try{document.body.classList.toggle('fixv',fixv)}catch(e){}
   try{fitStage()}catch(e){}try{document.body.classList.toggle('onepage',one);document.documentElement.classList.toggle('onepage',one)}catch(e){}
   try{document.body.classList.toggle('iphome',!!app.querySelector('.ipgrid'));dockOv()}catch(e){}
-  requestAnimationFrame(()=>fitTexts());
+  fitIp(); requestAnimationFrame(()=>{fitTexts();fitIp()});
 }
 let lastKey='';
 
@@ -4043,7 +4084,7 @@ function flushOv(){
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
   ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
-  ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl);
+  ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
   if(o.k==='qual'||o.k==='callup')sfx('qual');
@@ -4376,7 +4417,7 @@ function fitTexts(root){
 function ovUpdate(html){
   if(!ovEl)return; try{setTimeout(refreshLeagueTable,0)}catch(e){} const card=ovEl.querySelector('.ovcard'), tmp=document.createElement('div'); tmp.innerHTML=html; const n=tmp.firstElementChild;
   if(!card||!n){setHTML(ovEl,html);return}
-  card.className=n.className+' still'; setHTML(card,n.innerHTML); requestAnimationFrame(()=>fitTexts(ovEl||document));
+  card.className=n.className+' still'; setHTML(card,n.innerHTML); fitIp(); requestAnimationFrame(()=>{fitTexts(ovEl||document);fitIp()});
 }
 function healRefresh(){if(ovKind==='heal')ovUpdate(healHTML())}   // never paint the recovery card into another pop-up
 function healClick(e){
