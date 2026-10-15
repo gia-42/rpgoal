@@ -4274,7 +4274,7 @@ function ac(){
       const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3800;lp.Q.value=.4;
       master=actx.createGain();master.gain.value=.16;master.connect(lp);lp.connect(comp);comp.connect(actx.destination)}
     if(actx.state==='suspended')actx.resume();
-    try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(e){}
+    try{if(navigator.audioSession&&navigator.audioSession.type!=='ambient')navigator.audioSession.type='ambient'}catch(e){}
     return actx;
   }catch(e){return null}
 }
@@ -4388,8 +4388,9 @@ document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest
 document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&nmShort(w))nmTip(w,w.dataset.nm,true)});
 document.addEventListener('pointerout',e=>{if(e.pointerType!=='mouse')return;const w=e.target.closest&&e.target.closest('[data-nm]');if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget))&&wdTipEl){wdTipEl.remove();wdTipEl=null}});
 document.addEventListener('scroll',()=>{if(wdTipEl){wdTipEl.remove();wdTipEl=null}},{passive:true,capture:true});
-/* iPhone: let the game's sounds play even with the ring/silent switch on (iOS 17+); older iOS keeps the switch's say */
-try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+/* iPhone and iPad: the game's sounds mix with whatever music or video is already playing instead of pausing it.
+   ('ambient' follows the ring/silent switch: with the switch on silent, the game stays quiet) */
+try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
 // some browsers only let sound start on a full tap: wake the audio there too
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{try{if(soundOn&&actx&&actx.state==='suspended')actx.resume()}catch(e){}},{passive:true}));
 app.addEventListener('click',e=>{if(e.target.closest('.stage .dicecol')&&!e.target.closest('[data-act]')){const b=app.querySelector('.stage [data-act="roll"],.stage [data-act="inj4"],.stage [data-act="inj10"]');if(b)b.click()}else if(e.target.closest('.agechk .dicecol')){const b=app.querySelector('[data-act="agechk"]');if(b)b.click()}});
