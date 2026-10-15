@@ -1419,6 +1419,7 @@ polyline.fc-l{fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linejoin:rou
 .rc-c{position:absolute;transform:translate(-50%,-50%);display:inline-flex;background:var(--card);border-radius:50%;padding:1px}
 .hrow .hbtn{cursor:pointer}
 @media (max-width:600px){.ovcard.hofpop{padding:18px 14px 14px}.hofpop .hp-who h2{font-size:20px}.hofpop .hp-score b{font-size:24px}.stbl th.cl,.stbl td.cl{width:auto}}
+.brkwhy{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1652,7 +1653,7 @@ const POS_CAP={
  DM:{def:20,dec:20,str:19,pas:18,lead:18,spd:16,ski:15,fin:15},
  FB:{spd:20,def:20,pas:18,str:18,dec:18,ski:17,lead:16,fin:14},
  CB:{def:20,str:19,lead:18,dec:18,pas:18,spd:17,ski:16,fin:15}};
-const attrCap=(k,p)=>{p=p||myPos();const c=(POS_CAP[p]||{})[k]||20,sty=S&&S.pos===p&&S.style?styleOf(p,S.style):null;return Math.min(20,c+(sty&&sty[1]===k?1:0))};
+const attrCap=(k,p)=>{p=p||myPos();const c=(POS_CAP[p]||{})[k]||20,sty=S&&S.pos===p&&S.style?styleOf(p,S.style):null;return Math.min(20,c+(sty&&sty[1]===k?1:0)+((S&&S.capUp&&S.capUp[k])||0))};
 const canUp=k=>S.attrs[k]<attrCap(k);
 function focusKey(){const w=POS[myPos()].w;const top=AK.slice().sort((x,y)=>(w[y]||0)-(w[x]||0)).slice(0,3);return Math.random()<.6?pick(top):pick(AK)}
 /* moments: roll the die + floor(attribute/5) against the target, before the match. The result shapes that match's d20. */
@@ -4100,6 +4101,7 @@ function ovHTML(o){
   if(o.k==='stage')return stagePopHTML();
   if(o.k==='agechk')return ageHTML();
   if(o.k==='feat')return featHTML();
+  if(o.k==='brk')return brkHTML();
   if(o.k==='pick')return pickHTML();
   if(o.k==='camp')return campHTML();
   if(o.k==='repos')return reposHTML();
@@ -4184,7 +4186,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='feat'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -4214,7 +4216,7 @@ function flushOv(){
     if(o.k==='lb'){lbClick(e);return}
     if(o.k==='stage'){if(e.target.closest('[data-ov="x"]')){homeHold=true;closeOv();render();return}const wv=e.target.closest('[data-ov="wcv"]');if(wv){wcView=wv.dataset.v;ovUpdate(stagePopHTML());try{fitStage()}catch(err){}return}onClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
-    if(o.k==='feat'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
+    if(o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
     if(o.k==='away'||o.k==='chron'||o.k==='howto'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='deal'){dealClick(e,o);return}
@@ -4928,9 +4930,11 @@ function afterSeason(h,s){
   if(h.trophies.some(x=>x.kind==='cont'))giveItem('medal',null,h);
   if((S.quests||0)>=10)giveItem('notebook',null,h);
   if(S.itemNotes&&S.itemNotes.length){h.items=(h.items||[]).concat(S.itemNotes);S.itemNotes=[]}
+  {const why=brkWhy(h,s), n=(S.capUp?Object.values(S.capUp).reduce((a,b)=>a+b,0):0)+(S.brkPend||0);
+   if(!S.endReason&&S.age>=21&&S.age<=31&&n<BRK_MAX&&why.length>=(n?4:3)&&S.year-(S.brkYear||-99)>=3&&brkOpts().length){h.brkDue=1;h.brkWhy=why;S.brkYear=S.year}}
   if(FEAT_AGES.includes(S.age)&&!S.endReason){const pool=FEATS.filter(k=>!hasFeat(k));h.featOpts=pool.sort(()=>Math.random()-.5).slice(0,3);h.featDue=1;if(S.age===FEAT_AGES[2]&&!S.reposDone)h.reposDue=1}
 }
-const prepDone=h=>!!h&&(!h.featDue||!!h.feat)&&(!h.reposDue||!!h.repos)&&(!!h.camp||S.age>=40);
+const prepDone=h=>!!h&&(!h.featDue||!!h.feat)&&(!h.brkDue||!!h.brk)&&(!h.reposDue||!!h.repos)&&(!!h.camp||S.age>=40);
 /* the third level-up: a chance to retrain in a new position. Skills move towards what the new role needs, so nobody is perfect everywhere */
 function reposShift(p){
   const o=POS[myPos()].w, n=POS[p].w, ch={};
@@ -4955,6 +4959,28 @@ function reposHTML(){
   if(sel){const ch=reposShift(sel);prev=`<div class="rpch">${AK.filter(k=>ch[k]).map(k=>`<span class="chip ${ch[k]>0?'fit':'inj'}">${t.attrsS[k]} ${a[k]} → ${a[k]+ch[k]}</span>`).join('')}</div><button class="btn" data-ov="rpgo">${t.reposGo(t.pos[sel][1])}</button>`}
   return `<div class="ovcard move prepop repop"><span class="ov-kicker">${t.featKick}</span><h2 class="ov-title" style="font-size:24px">${t.reposT}</h2><div class="ov-sub2">${t.reposD(t.pos[cur][1])}</div>${row}${prev}<button class="btn ghost" data-ov="rpstay">${t.reposStay(t.pos[cur][1])}</button></div>`;
 }
+/* ---- breakthroughs: a standout season lets you push one attribute's ceiling a point higher (twice a career at most) ---- */
+const BRK_MAX=2;
+function brkWhy(h,s){
+  const w=[], rolls=s.rolls||[], A=rolls.length>=25?rolls.reduce((a,b)=>a+b,0)/rolls.length:0, def=['CB','FB','DM'].includes(myPos());
+  if(h.trophies.some(x=>x.kind==='league'&&LEAGUES[x.lg]&&LEAGUES[x.lg].div===1)||h.trophies.some(x=>x.kind==='cont'||x.kind==='wc'))w.push('title');
+  if((h.awards||[]).length||(h.bdo&&h.bdo<=3))w.push('award');
+  if(A>=13)w.push('dice');
+  if(def?(h.cs||0)>=20:(h.goals+h.assists)>=40)w.push('output');
+  return w;
+}
+// attributes worth pushing: already at (or one short of) their ceiling, and the ceiling still below 20
+const brkOpts=()=>AK.filter(k=>attrCap(k)<20&&S.attrs[k]>=attrCap(k)-1).sort((a,b)=>((POS[myPos()].w[b]||0)-(POS[myPos()].w[a]||0))).slice(0,4);
+function doBrk(k){const h=S.history[S.history.length-1];if(!h||!h.brkDue||h.brk)return;
+  if(!k||k==='skip'){h.brk='skip';return}
+  if(!brkOpts().includes(k))return;
+  S.capUp=S.capUp||{};S.capUp[k]=(S.capUp[k]||0)+1;h.brk=k;S.brkN=(S.brkN||0)+1}
+function brkHTML(){
+  const h=S.history[S.history.length-1], used=S.capUp?Object.values(S.capUp).reduce((a,b)=>a+b,0):0, opts=brkOpts();
+  return `<div class="ovcard move prepop"><span class="ov-kicker">${t.brkKick(used+1,BRK_MAX)}</span><h2 class="ov-title" style="font-size:24px">${t.brkT}</h2><div class="ov-sub2">${t.brkSub}</div>
+    <div class="brkwhy">${(h.brkWhy||[]).map(w=>`<span class="chip tg gold">${t.brkWhyL[w]}</span>`).join('')}</div>
+    <div class="prepg">${opts.map(k=>`<button class="prepb" data-ov="brk" data-k="${k}"><b>${t.attrs[k]}</b><span>${t.brkLine(S.attrs[k],attrCap(k))}</span></button>`).join('')}</div></div>`;
+}
 function pickFeat(k){const h=S.history[S.history.length-1];if(!h||!h.featDue||h.feat||!h.featOpts.includes(k))return;h.feat=k;S.feats=(S.feats||[]).concat(k)}
 function doCamp(k){
   const h=S.history[S.history.length-1]; if(!h||h.camp)return; h.camp=k;
@@ -4972,6 +4998,7 @@ const campLabel=k=>k==='tr:wf'?t.campWf:k.startsWith('tr:')?t.campTrain(t.attrs[
 function autoPrep(){
   const h=S.history[S.history.length-1]; if(!h)return;
   if(h.featDue&&!h.feat)pickFeat(h.featOpts[0]);
+  if(h.brkDue&&!h.brk)doBrk(brkOpts()[0]||'skip');
   if(h.reposDue&&!h.repos)doRepos(Math.random()<.25?pick(Object.keys(POS).filter(p=>p!==myPos()&&posFit(S.attrs,p)<=1))||null:null);
   if(!h.camp&&S.age<40){const o=campOpts(h);doCamp(S.age>=31?'rest':o.length&&Math.random()<.6?'tr:'+pick(o):pick(['media','rest']))}
 }
@@ -5600,6 +5627,7 @@ function campaignView(){
     <div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>
     <div class="sv-row"><span>${t.inspT}</span><span class="cv">✦ ${S.insp||0}/${inspMax()}</span></div>
     <div class="sv-row"><span>${t.quests}</span><span class="cv">${S.quests||0}</span></div>
+    <div class="sv-row"><span>${t.brkProf}</span><span class="cv">${S.capUp?Object.values(S.capUp).reduce((a,b)=>a+b,0):0}/${BRK_MAX}${S.capUp&&Object.keys(S.capUp).length?' · '+Object.keys(S.capUp).map(k=>t.attrs3[k]).join(', '):''}</span></div>
     <div class="sv-row"><span>${t.invT}</span><span class="cv">${(S.items||[]).length}/${ITEMS.length}</span></div></div>
     <span class="lbl" style="margin-top:4px">${t.featsT}</span>${feats?`<div class="cabinet sm featw">${feats}</div>`:`<div class="muted small">${t.noFeats}</div>`}</div>`;
 }
@@ -5695,7 +5723,7 @@ en:{
   medal:['Continental medal','+1 in continental and Club World Cup matches.','Win the Champions League, Libertadores or the main continental cup.'],scarf:['Derby scarf','+2 on derby-day moments.','Win twenty-five derby-day moments.'],tape:['Lucky tape','+1 on every recovery d10.','Roll double 12 on a recovery, or come back from a season-ending injury.'],pendant:['Lucky pendant','+1 on the age checks.','Bring the whole squad on a hospital visit and pull it off.'],notebook:['Coach’s notebook','Season quests are 10% easier.','Complete ten quests.'],hatball:['Hat-trick ball','Start every season with 1 inspiration.','Score a hat-trick from a natural 20 in a final.'],cap:['Veteran cap','World Cup call-ups are a little easier.','Get called up for three World Cups.']},
  newItem:n=>`New item: ${n}`,
  feats:{clutch:['Clutch','+2 in finals.'],bigstage:['Big stage','+1 in continental, Club World Cup and World Cup matches.'],workhorse:['Workhorse','+1 in every league stretch.'],poacher:['Poacher','Goals +25%.'],maestro:['Maestro','Assists +25%.'],wall:['The wall','+1 when the focus is Defending or Physical; clean sheets +25%.'],ironlungs:['Iron lungs','Always roll the recovery d10s with advantage.'],ageless:['Ageless','+3 on the age checks.'],lucky:['Lucky','A natural 19 counts as a critical.'],captain:['Born leader','Fans warm to you faster: +1 support every season.'],inspiring:['Inspiring','Start every season with 1 inspiration.'],latebloomer:['Late bloomer','Ceiling +2 and you keep improving until 35.']},
- featT:'Level up! Choose a feat',featSub:a=>`At ${a} you have learned something about your game. Pick one; it lasts the whole career.`,featGot:k=>`New feat: ${k}`,
+ featT:'Level up! Choose a feat',brkT:'Breakthrough',brkKick:(i,n)=>`Standout season · ${i} of ${n}`,brkSub:'A standout season lets you break through a limit. Pick one attribute: its ceiling goes up by one point for the rest of your career. Growing into it is up to you.',brkWhyL:{title:'Major title',award:'Individual award',dice:'Hot dice: d20 average 13+',output:'Huge output'},brkLine:(v,c)=>`${v} now · ceiling ${c} → ${c+1}`,brkCapNow:c=>`ceiling ${c}`.trim()+' ',brkProf:'Breakthroughs',featSub:a=>`At ${a} you have learned something about your game. Pick one; it lasts the whole career.`,featGot:k=>`New feat: ${k}`,
  campT:'Pre-season',campSub:'How do you spend the summer?',camp:{train:['Training camp','+2 attribute points (up to your ceiling).'],rest:['Full rest','Your next injury heals with advantage.'],media:['Media tour','Fans +2 at the start of the season.'],nat:['National-team camp','Easier World Cup call-up next season.']},
  campDone:k=>`Pre-season: ${k}`,prepFirst:'Finish the pre-season above before the window opens.',
  agentBtn:'Ask your agent',agentRoll:b=>`d12 + Leadership ${sg(b)} vs 8`,agentRes:{great:'Your agent lands a bigger club!',ok:'Your agent finds one more offer.',none:'Your agent made calls, but no one new is buying.',fail:'Your agent comes back with nothing.',disaster:'The talks leak. One club walks away and the fans are annoyed.'},
@@ -5734,7 +5762,7 @@ pt:{
   medal:['Medalha continental','+1 nos jogos continentais e do Mundial.','Ganhe a Champions, a Libertadores ou a principal copa continental.'],scarf:['Cachecol do clássico','+2 nos momentos de clássico.','Vença vinte e cinco momentos de clássico.'],tape:['Fita da sorte','+1 em cada d10 de recuperação.','Tire dois 12 numa recuperação ou volte de uma lesão que tirou a temporada.'],pendant:['Pingente da sorte','+1 nos testes de idade.','Leve o elenco todo numa visita ao hospital e dê certo.'],notebook:['Caderno do técnico','As missões da temporada ficam 10% mais fáceis.','Cumpra dez missões.'],hatball:['Bola do hat-trick','Começa toda temporada com 1 inspiração.','Faça um hat-trick com um 20 natural numa final.'],cap:['Boné de veterano','Convocações para a Copa ficam um pouco mais fáceis.','Seja convocado para três Copas do Mundo.']},
  newItem:n=>`Novo item: ${n}`,
  feats:{clutch:['Decisivo','+2 em finais.'],bigstage:['Palco grande','+1 em jogos continentais, do Mundial e da Copa do Mundo.'],workhorse:['Incansável','+1 em toda fase da liga.'],poacher:['Matador','Gols +25%.'],maestro:['Maestro','Assistências +25%.'],wall:['A muralha','+1 quando o foco é Defesa ou Físico; jogos sem sofrer gol +25%.'],ironlungs:['Pulmão de aço','Sempre rola os d10 de recuperação com vantagem.'],ageless:['Sem idade','+3 nos testes de idade.'],lucky:['Sortudo','Um 19 natural conta como crítico.'],captain:['Líder nato','A torcida te abraça mais rápido: +1 de apoio por temporada.'],inspiring:['Inspirador','Começa toda temporada com 1 inspiração.'],latebloomer:['Tardio','Teto +2 e você continua evoluindo até os 35.']},
- featT:'Subiu de nível! Escolha um talento',featSub:a=>`Aos ${a} você aprendeu algo sobre o seu jogo. Escolha um; ele vale pela carreira toda.`,featGot:k=>`Novo talento: ${k}`,
+ featT:'Subiu de nível! Escolha um talento',brkT:'Superação',brkKick:(i,n)=>`Temporada de destaque · ${i} de ${n}`,brkSub:'Uma temporada de destaque te deixa romper um limite. Escolha um atributo: o teto dele sobe um ponto pelo resto da carreira. Chegar lá depende de você.',brkWhyL:{title:'Grande título',award:'Prêmio individual',dice:'Dados quentes: média 13+ no d20',output:'Produção enorme'},brkLine:(v,c)=>`${v} agora · teto ${c} → ${c+1}`,brkCapNow:c=>`teto ${c}`.trim()+' ',brkProf:'Superações',featSub:a=>`Aos ${a} você aprendeu algo sobre o seu jogo. Escolha um; ele vale pela carreira toda.`,featGot:k=>`Novo talento: ${k}`,
  campT:'Pré-temporada',campSub:'Como você passa as férias?',camp:{train:['Intertemporada','+2 pontos de atributo (até o seu teto).'],rest:['Descanso total','Sua próxima lesão cura com vantagem.'],media:['Ações de mídia','Torcida +2 no começo da temporada.'],nat:['Período na seleção','Convocação para a Copa mais fácil na próxima temporada.']},
  campDone:k=>`Pré-temporada: ${k}`,prepFirst:'Termine a pré-temporada acima antes de abrir a janela.',
  agentBtn:'Acionar o empresário',agentRoll:b=>`d12 + Liderança ${sg(b)} vs 8`,agentRes:{great:'Seu empresário traz um clube maior!',ok:'Seu empresário encontra mais uma proposta.',none:'Seu empresário ligou, mas ninguém novo quer comprar.',fail:'Seu empresário volta de mãos vazias.',disaster:'A negociação vaza. Um clube desiste e a torcida fica irritada.'},
@@ -6272,10 +6300,11 @@ const ovHas=k=>ovKind===k||ovQ.some(o=>o.k===k);
 function maybePrep(){
   if(view!=='game'||S.phase!=='offseason')return;
   const h=S.history[S.history.length-1]; if(!h)return;
-  if(['agechk','feat','repos','camp','window'].some(ovHas))return;
+  if(['agechk','feat','brk','repos','camp','window'].some(ovHas))return;
   if(ageCheckDue(h)){ovQ.push({k:'agechk'});return}
   if(h.ageCheck&&!h.ageCheck.ok)return;
   if(h.featDue&&!h.feat){ovQ.push({k:'feat'});return}
+  if(h.brkDue&&!h.brk){if(brkOpts().length)ovQ.push({k:'brk'});else h.brk='skip';return}
   if(h.reposDue&&!h.repos){if(!ovHas('repos'))ovQ.push({k:'repos'});return}
   if(!h.camp&&S.age<40){ovQ.push({k:'camp'});return}
 }
@@ -6552,6 +6581,11 @@ function prepClick(e){
       if(lbResume){lbResume=false;const s=S.season,st=s&&s.stages[s.idx];if(st&&isLB(st)&&(st.mi||0)<st.ms.length&&!s.pendingHeal&&!s.careerOver){lbLast=null;homeHold=false;lbAll=true;ovQ.push({k:'lb'});commit();setTimeout(()=>{if(ovKind==='lb'&&lbAll&&!busy)lbRoll()},600);return}}
       commit()},reduce?400:1500);return}
   if(v==='feat'){pickFeat(b.dataset.k);closeOv();commit();return}
+  if(v==='brk'){const k=b.dataset.k, to=Math.min(20,S.attrs[k]+1);
+    ovEl.querySelectorAll('.prepb').forEach(q=>{q.disabled=true;if(q!==b)q.classList.add('dim')});
+    b.classList.add('chosen'); busy=true; busySince=Date.now(); sfx('pass');
+    setTimeout(()=>{const n=b.querySelector('span');if(n)n.innerHTML=`<span class="campup">${t.brkCapNow('')}<b class="num">${attrCap(k)}</b> → <b class="num nv">${attrCap(k)+1}<i class="plus1">+1</i></b></span>`;b.classList.add('up')},380);
+    setTimeout(()=>{busy=false;doBrk(k);closeOv();commit()},reduce?400:1600);return}
   if(v==='camp'){const k=b.dataset.k;
     if(k.startsWith('tr:')&&!reduce){const x=k.slice(3), from=x==='wf'?(S.wf||2):S.attrs[x];doCamp(k);const h=S.history[S.history.length-1], n=(h.campGot||[]).length;
       ovEl.querySelectorAll('.prepb').forEach(q=>{q.disabled=true;if(q!==b)q.classList.add('dim')});
