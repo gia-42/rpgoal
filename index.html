@@ -676,6 +676,11 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .recrow .rect{display:flex;flex-direction:column;gap:1px;min-width:0}
 .recrow .rect b{font-size:14px}
 .recrow .recv{font-size:18px;font-weight:700;white-space:nowrap}
+.reclist.wrl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));column-gap:28px;align-items:start}.wrh{margin:14px 2px 2px;grid-column:1/-1}.reclist .wrh:first-child{margin-top:2px}
+.recrow.wr .rect{flex:1}.recrow.wr s{color:var(--ink-3);font-weight:500}
+.recrow.wr.br .recv,.recrow.wr.br b{color:var(--warn)}
+.wrp{height:4px;border-radius:3px;background:var(--rule);overflow:hidden;margin:4px 0 1px;max-width:260px}.wrp i{display:block;height:100%;background:var(--accent);border-radius:3px}.recrow.wr.br .wrp i{background:var(--warn)}
+.wrnote{margin:12px 2px 4px}
 .hoftabs{margin-bottom:2px}
 .mtag{border:0;font-family:inherit;cursor:pointer;line-height:1.5}
 .mtagx{display:flex;align-items:center;gap:14px;justify-content:center}.mtagx>div{display:flex;flex-direction:column;align-items:center;gap:3px}.mtagx .num{font-size:22px;font-weight:700}
@@ -2426,8 +2431,11 @@ function addStats(r,games,nat,sto){
   const rd=x=>sto?Math.floor(x)+(Math.random()<x-Math.floor(x)?1:0):Math.round(x);
   r.goals=rd(g); r.assists=rd(a); r.apps=r.injury?Math.max(0,Math.ceil(games/2)-1):games;
   r.cs=rd(games*csW()*0.38*perf*(S.attrs.def/20+.3)*(hasFeat('wall')?1.25:1)*(0.6+Math.random()*0.8));
-  const s=S.season; s.goals+=r.goals; s.assists+=r.assists; s.apps+=r.apps; s.cs=(s.cs||0)+r.cs;
+  const s=S.season; s.goals+=r.goals; s.assists+=r.assists; s.apps+=r.apps; s.cs=(s.cs||0)+r.cs; cstAdd(r.goals,r.assists,r.apps);
 }
+/* goals, assists and games per competition this season: what the real-world records are measured against */
+function cstAdd(g,a,ap){const s=S.season;if(!s)return;const st=s.stages&&s.stages[s.idx];let c=st?st.comp:'league';if(c==='run')c='league';if(c==='wc'&&s.wc&&s.wc.t)c='i_'+s.wc.t;
+  const o=(s.cst=s.cst||{})[c]=s.cst[c]||[0,0,0];o[0]+=g||0;o[1]+=a||0;o[2]+=ap||0}
 function resolveEvent(v){
   const s=S.season, st=s.stages[s.idx], e=EVMAP[st.ev];
   let bonus=evBonus(e)+evFoot(st,e), tgt=evTarget(e), total=v+bonus;
@@ -2711,7 +2719,7 @@ function endSeason(){
   if(S.tenure%5===0){milestone=S.tenure;addLoy(3);S.milestones.push({club:S.club.name,years:S.tenure,year:S.year})}
   const g=grow();
   const h={teamRank:cr.rank,teamOf:cr.of,size:L.size,qual,shieldUsed,shieldBack,fired,bdo,milestone,year:S.year,age:S.age,club:S.club.name,league:S.club.league,tier:S.club.tier,pos,move,goals:s.goals,assists:s.assists,apps:s.apps,
-    p:myPos(),trophies:s.trophies.slice(),lgPts:s.lgPts!=null?s.lgPts:undefined,rating:+rating(S.attrs).toFixed(1),injuries:s.injuries,scout:s.scout,ext:s.ext?1:0,recs:s.recs||[],
+    p:myPos(),trophies:s.trophies.slice(),lgPts:s.lgPts!=null?s.lgPts:undefined,rating:+rating(S.attrs).toFixed(1),injuries:s.injuries,scout:s.scout,ext:s.ext?1:0,recs:s.recs||[],wrecs:s.wrecs||[],cst:s.cst||null,
     wc:s.wc&&!s.wc.ret&&!s.wc.t?(s.wc.called?(s.wcRes==null?5:s.wcRes):-1):null,wcNeed:s.wc?s.wc.need:null,
     intl:s.wc&&!s.wc.ret&&s.wc.t?(s.wc.called?(s.wcRes==null?5:s.wcRes):-1):null,intlT:s.wc&&s.wc.t?s.wc.t:null};
   h.awards=seasonAwards(s,h); if(h.awards.length){S.awards=(S.awards||[]).concat(h.awards.map(a=>({...a,year:S.year})));ovPush({k:'awards',items:h.awards,year:S.year})}
@@ -3368,8 +3376,8 @@ function careerView(){
 let hofSub='players';
 let hofTab='players';
 function hofView(){
-  const tabs=`<div class="subtabs hoftabs" role="group"><button data-act="hoftab" data-v="players" aria-pressed="${hofTab==='players'}">${t.hofPlayers}</button><button data-act="hoftab" data-v="records" aria-pressed="${hofTab==='records'}">${t.recordsT}</button></div>`;
-  return hofTab==='records'?hofRecords(tabs):hofPlayers(tabs);
+  const tabs=`<div class="subtabs hoftabs" role="group"><button data-act="hoftab" data-v="players" aria-pressed="${hofTab==='players'}">${t.hofPlayers}</button><button data-act="hoftab" data-v="records" aria-pressed="${hofTab==='records'}">${t.recordsT}</button><button data-act="hoftab" data-v="world" aria-pressed="${hofTab==='world'}">${t.wrTab}</button></div>`;
+  return hofTab==='world'?hofWorld(tabs):hofTab==='records'?hofRecords(tabs):hofPlayers(tabs);
 }
 /* every all-time mark in the Hall of Fame and who holds it */
 function hofRecords(tabs){
@@ -3386,7 +3394,7 @@ function hofPlayers(tabs){
   const key={score:p=>p.score,titles:p=>p.trophies.filter(x=>x.kind!=='bdo').length*1e4+p.score,goals:p=>p.goals,peak:p=>p.peak*1e4+p.score,earn:p=>p.earn||0,fee:p=>p.feeMax||0,awards:p=>(p.awards||[]).length*1e4+p.score}[hofSort]||(p=>p.score);
   const all=loadHof().sort((a,b)=>key(b)-key(a)), hof=all.filter(p=>hofG==='all'||(hofG==='daily'?!!p.daily:(p.g||'m')===hofG));
   const filt=`<div class="subtabs" role="group"><button data-act="hofg" data-v="all" aria-pressed="${hofG==='all'}">${t.hofAll}</button><button data-act="hofg" data-v="m" aria-pressed="${hofG==='m'}">${t.genderM}</button><button data-act="hofg" data-v="f" aria-pressed="${hofG==='f'}">${t.genderW}</button><button data-act="hofg" data-v="daily" aria-pressed="${hofG==='daily'}">${t.dailyF}</button></div><select id="hsort" class="hsort" aria-label="${t.sortT}">${Object.entries(t.sorts).map(([k,v])=>`<option value="${k}" ${hofSort===k?'selected':''}>${t.sortT}: ${v}</option>`).join('')}</select>`;
-  const head=`<div class="phead"><h2 class="ptitle">${t.hofT}</h2>${all.length?`<div class="pfull hfrow">${tabs}</div><div class="pfull hfrow">${filt}</div>`:''}</div>`;
+  const head=`<div class="phead"><h2 class="ptitle">${t.hofT}</h2><div class="pfull hfrow">${tabs}</div>${all.length?`<div class="pfull hfrow">${filt}</div>`:''}</div>`;
   if(!hof.length)return `${head}<section class="pscroll"><div class="empty">${t.hofEmpty}</div></section>`;
   const rows=hof.map((p,i)=>{
     const open=hofOpen.has(p.id), ps=t.pos[p.pos]||[p.pos,p.pos];
@@ -3687,7 +3695,7 @@ function showToast(){
   if(toastEl||!toastQ.length||typeof document==='undefined'||!document.body)return;
   const a=toastQ.shift(), L=lang==='pt'?1:0, more=toastQ.length;
   toastEl=document.createElement('div'); toastEl.className='toast'+(a.bad?' bad':'')+(a.rec?' rec':''); toastEl.setAttribute('role','status');
-  toastEl.innerHTML=`${achIcon(a,true)}<div class="toast-t"><span class="lbl">${a.rec?t.recT:a.bad?t.achBadT:t.achT}${more?` · +${more}`:''}</span><b>${achTx(a,'n',L)}</b><span>${achTx(a,'d',L)}</span></div>`;
+  toastEl.innerHTML=`${achIcon(a,true)}<div class="toast-t"><span class="lbl">${a.wr?t.wrT:a.rec?t.recT:a.bad?t.achBadT:t.achT}${more?` · +${more}`:''}</span><b>${achTx(a,'n',L)}</b><span>${achTx(a,'d',L)}</span></div>`;
   document.body.appendChild(toastEl); sfx(a.bad?'achBad':'ach');
   const el=toastEl, hide=()=>{if(toastEl!==el)return;el.classList.add('out');setTimeout(()=>{el.remove();toastEl=null;showToast()},reduce?0:260)};
   el.addEventListener('click',hide); setTimeout(hide,3800);
@@ -4693,6 +4701,7 @@ function onClick(e){
   if(act==='hofsub'){hofSub=b.dataset.v;render();return}
   if(act==='hofg'){hofG=b.dataset.v;render();return}
   if(act==='hoftab'){hofTab=b.dataset.v;render();return}
+  if(act==='wrg'){wrG=b.dataset.v;render();return}
   if(act==='achf'){achF=b.dataset.v;render();return}
   if(act==='csub'){careerSub=b.dataset.v;render();return}
   if(act==='hofopen'){ovQ.unshift({k:'hofp',id:+b.dataset.id});flushOv();return}
@@ -4948,8 +4957,8 @@ const questText=q=>q.k==='goals'?t.qx.goals(q.n):q.k==='assists'?t.qx.assists(q.
 /* ---- crit tables: a d12 (two faces per outcome) decides what a natural 20 or a natural 1 turns into ---- */
 function critGood(r){
   const s=S.season, n=d(12), v=Math.ceil(n/2); r.ct={v,n,good:1};
-  if(v===1){r.goals=(r.goals||0)+1;s.goals++}
-  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2;const st0=s.stages[s.idx];if(st0&&isFinal(st0))giveItem('hatball')}
+  if(v===1){r.goals=(r.goals||0)+1;s.goals++;cstAdd(1,0,0)}
+  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2;cstAdd(2,0,0);const st0=s.stages[s.idx];if(st0&&isFinal(st0))giveItem('hatball')}
   else if(v===3)addLoy(2);
   else if(v===4)s.hot+=1;
   else if(v===5)s.scout=1;
@@ -5102,7 +5111,7 @@ function chron(h){
   if(h.injuries>=2)extra.push(C.inj);
   if(h.quest&&h.quest.done)extra.push(C.quest);
   if(h.feat)extra.push(C.feat(t.feats[h.feat][0]));
-  const recs=(h.recs||[]).map(k=>`<span class="ch-r">${t.recCh(k)}</span>`).join('');
+  const recs=(h.recs||[]).map(k=>`<span class="ch-r">${t.recCh(k)}</span>`).concat((h.wrecs||[]).map(k=>`<span class="ch-r">${t.wrT}: ${esc(wrName(k,S.gender).toLowerCase())}</span>`)).join('');
   return `<span class="ch-y">${h.year}</span> · ${esc(h.club)}: ${lead}; ${me}.${extra.length?' '+extra.join(' '):''}${recs?`<span class="ch-rs">${recs}</span>`:''}`;
 }
 
@@ -5510,8 +5519,92 @@ const REC=[
  {id:'fee',cur:()=>S.feeMax||0,hof:p=>p.feeMax||0,money:1},
  {id:'earn',cur:()=>S.earn||0,hof:p=>p.earn||0,money:1},
  {id:'awards',cur:()=>(S.awards||[]).length,hof:p=>(p.awards||[]).length}];
+/* ---- world records: the real all-time marks, and how close your career is ---- */
+// [id, group, en, pt, holder, mark, en note, pt note, value()]
+const wrSeasons=()=>{const s=S.season,live=S.phase==='season'&&s&&!s.ended&&S.club;return S.history.concat(live?[{live:1,goals:s.goals,apps:s.apps,cst:s.cst||{},league:S.club.league,wc:s.wc&&!s.wc.t&&s.wc.called?0:null}]:[])};
+const wrC=(h,c,i)=>(h.cst&&h.cst[c]||[0,0,0])[i];
+const wrSum=(f,c,i)=>wrSeasons().filter(f).reduce((a,h)=>a+wrC(h,c,i),0);
+const wrMax=(f,c,i)=>Math.max(0,...wrSeasons().filter(f).map(h=>wrC(h,c,i)));
+const wrLg=(c,div)=>h=>{const L=LEAGUES[h.league];return!!L&&L.c===c&&L.div===div&&!L.w};
+const wrCont=n=>h=>{const L=LEAGUES[h.league];return!!L&&L.cont===n};
+const wrAll=()=>true;
+const wrTro=f=>recTroph().filter(f).length;
+const wrContW=n=>wrTro(x=>x.kind==='cont'&&LEAGUES[x.lg]&&LEAGUES[x.lg].cont===n);
+const wrWCs=()=>wrSeasons().filter(h=>h.wc!=null&&h.wc>=0).length;
+const WREC={
+ m:[
+  ['goals','all','Career goals','Gols na carreira','Cristiano Ronaldo',981,'active · Oct 2026','em atividade · out. 2026',()=>recSum('goals')],
+  ['apps','all','Matches played','Jogos disputados','Cristiano Ronaldo',1336,'active · Oct 2026','em atividade · out. 2026',()=>recSum('apps')],
+  ['ygoals','all','Goals in a season','Gols numa temporada','Lionel Messi',91,'2012','2012',()=>Math.max(0,...wrSeasons().map(h=>h.goals||0))],
+  ['titles','all','Trophies','Títulos','Lionel Messi',48,'active · Sep 2026','em atividade · set. 2026',()=>wrTro(x=>x.kind!=='bdo')],
+  ['bdo','all','Ballon d’Or wins','Bolas de Ouro','Lionel Messi',8,'2009–2023','2009–2023',()=>wrTro(x=>x.kind==='bdo')],
+  ['wcg','wc','World Cup goals','Gols em Copas do Mundo','Kylian Mbappé',22,'2018–2026 · active','2018–2026 · em atividade',()=>wrSum(wrAll,'wc',0)],
+  ['wc1','wc','Goals at one World Cup','Gols numa só Copa','Just Fontaine',13,'1958','1958',()=>wrMax(wrAll,'wc',0)],
+  ['wcm','wc','World Cup matches','Jogos em Copas do Mundo','Lionel Messi',34,'2006–2026','2006–2026',()=>wrSum(wrAll,'wc',2)],
+  ['wct','wc','World Cups played','Copas do Mundo disputadas','Lionel Messi, Cristiano Ronaldo',6,'2006–2026','2006–2026',wrWCs],
+  ['wcw','wc','World Cup wins','Títulos de Copa do Mundo','Pelé',3,'1958, 1962, 1970','1958, 1962, 1970',()=>wrTro(x=>x.kind==='wc')],
+  ['eurog','wc','Euro goals','Gols em Eurocopas','Cristiano Ronaldo',14,'2004–2024','2004–2024',()=>wrSum(wrAll,'i_euro',0)],
+  ['copag','wc','Copa América goals','Gols em Copas América','Norberto Méndez, Zizinho',17,'1945–1957','1945–1957',()=>wrSum(wrAll,'i_copa',0)],
+  ['uclg','club','Champions League goals','Gols na Champions League','Cristiano Ronaldo',140,'2003–2022','2003–2022',()=>wrSum(wrCont('Champions League'),'cont',0)],
+  ['uclm','club','Champions League matches','Jogos na Champions League','Cristiano Ronaldo',183,'2003–2022','2003–2022',()=>wrSum(wrCont('Champions League'),'cont',2)],
+  ['uclw','club','Champions League wins','Títulos da Champions League','Gento, Kroos, Modrić, Carvajal, Nacho',6,'1956–2024','1956–2024',()=>wrContW('Champions League')],
+  ['libg','club','Libertadores goals','Gols na Libertadores','Alberto Spencer',54,'1960–1972','1960–1972',()=>wrSum(wrCont('Copa Libertadores'),'cont',0)],
+  ['libw','club','Libertadores wins','Títulos da Libertadores','Francisco Sá',6,'1972–1978','1972–1978',()=>wrContW('Copa Libertadores')],
+  ['brag','lg','Brasileirão goals','Gols no Brasileirão','Roberto Dinamite',190,'1971–1992','1971–1992',()=>wrSum(wrLg('BRA',1),'league',0)],
+  ['bra1','lg','Brasileirão goals in a season','Gols numa edição do Brasileirão','Washington',34,'2004','2004',()=>wrMax(wrLg('BRA',1),'league',0)],
+  ['engg','lg','Premier League goals','Gols na Premier League','Alan Shearer',260,'1992–2006','1992–2006',()=>wrSum(wrLg('ENG',1),'league',0)],
+  ['eng1','lg','Premier League goals in a season','Gols numa temporada da Premier League','Erling Haaland',36,'2022–23','2022–23',()=>wrMax(wrLg('ENG',1),'league',0)],
+  ['espg','lg','LaLiga goals','Gols na LaLiga','Lionel Messi',474,'2004–2021','2004–2021',()=>wrSum(wrLg('ESP',1),'league',0)],
+  ['esp1','lg','LaLiga goals in a season','Gols numa temporada da LaLiga','Lionel Messi',50,'2011–12','2011–12',()=>wrMax(wrLg('ESP',1),'league',0)],
+  ['itag','lg','Serie A goals','Gols na Serie A','Silvio Piola',274,'1929–1954','1929–1954',()=>wrSum(wrLg('ITA',1),'league',0)],
+  ['ita1','lg','Serie A goals in a season','Gols numa temporada da Serie A','Gonzalo Higuaín, Ciro Immobile',36,'2015–16 · 2019–20','2015–16 · 2019–20',()=>wrMax(wrLg('ITA',1),'league',0)],
+  ['gerg','lg','Bundesliga goals','Gols na Bundesliga','Gerd Müller',365,'1965–1979','1965–1979',()=>wrSum(wrLg('GER',1),'league',0)],
+  ['ger1','lg','Bundesliga goals in a season','Gols numa temporada da Bundesliga','Robert Lewandowski',41,'2020–21','2020–21',()=>wrMax(wrLg('GER',1),'league',0)],
+  ['frag','lg','Ligue 1 goals','Gols na Ligue 1','Delio Onnis',299,'1971–1986','1971–1986',()=>wrSum(wrLg('FRA',1),'league',0)],
+  ['fra1','lg','Ligue 1 goals in a season','Gols numa temporada da Ligue 1','Josip Skoblar',44,'1970–71','1970–71',()=>wrMax(wrLg('FRA',1),'league',0)]],
+ f:[
+  ['bdo','all','Ballon d’Or Féminin wins','Bolas de Ouro','Aitana Bonmatí',3,'2023–2025','2023–2025',()=>wrTro(x=>x.kind==='bdo')],
+  ['wcg','wc','Women’s World Cup goals','Gols em Copas do Mundo','Marta',17,'2003–2023','2003–2023',()=>wrSum(wrAll,'wc',0)],
+  ['wc1','wc','Goals at one World Cup','Gols numa só Copa','Michelle Akers',10,'1991','1991',()=>wrMax(wrAll,'wc',0)],
+  ['wcm','wc','World Cup matches','Jogos em Copas do Mundo','Kristine Lilly',30,'1991–2007','1991–2007',()=>wrSum(wrAll,'wc',2)],
+  ['wct','wc','World Cups played','Copas do Mundo disputadas','Formiga',7,'1995–2019','1995–2019',wrWCs],
+  ['wcw','wc','World Cup wins','Títulos de Copa do Mundo','Prinz, Lloyd, Rapinoe, Morgan',2,'1991–2019','1991–2019',()=>wrTro(x=>x.kind==='wc')],
+  ['uclg','club','Champions League goals','Gols na Champions League','Ada Hegerberg',69,'active · Sep 2026','em atividade · set. 2026',()=>wrSum(wrCont('UEFA Women’s Champions League'),'cont',0)],
+  ['uclw','club','Champions League wins','Títulos da Champions League','Renard, Le Sommer, Bouhaddi',8,'2011–2022','2011–2022',()=>wrContW('UEFA Women’s Champions League')]]
+};
+const WR_G={all:['Overall','Geral'],wc:['National team','Seleção'],club:['Continental club cups','Copas continentais'],lg:['Leagues','Ligas']};
+const wrList=g=>WREC[g==='f'?'f':'m'];
+function checkWR(){
+  if(!S||!S.history||S.phase==='create'||S.phase==='retired'||S.hofSaved)return;
+  S.wrecs=S.wrecs||{};
+  wrList(S.gender).forEach(R=>{
+    if(S.wrecs[R[0]])return; let v=0; try{v=R[8]()}catch(e){} if(!(v>R[5]))return;
+    S.wrecs[R[0]]={year:S.year,v};
+    toastQ.push({id:'record',rec:1,wr:1,n:[R[2],R[3]],d:[T.en.recBeat(v.toLocaleString('en-US'),esc(R[4]),R[5].toLocaleString('en-US')),T.pt.recBeat(v.toLocaleString('pt-BR'),esc(R[4]),R[5].toLocaleString('pt-BR'))]});
+    const s=S.season; if(S.phase==='season'&&s&&!s.ended)(s.wrecs=s.wrecs||[]).push(R[0]); else {const h=S.history[S.history.length-1];if(h)(h.wrecs=h.wrecs||[]).push(R[0])}
+  });
+  Object.keys(S.wrecs).forEach(id=>{const R=wrList(S.gender).find(x=>x[0]===id);let v=0;try{v=R?R[8]():0}catch(e){}if(v>S.wrecs[id].v)S.wrecs[id].v=v});
+  showToast();
+}
+const wrN=v=>Math.round(v).toLocaleString(lang==='pt'?'pt-BR':'en-US');
+const wrName=(id,g)=>{const R=wrList(g).find(x=>x[0]===id);return R?R[lang==='pt'?3:2]:''};
+let wrG=null;
+function hofWorld(tabs){
+  const g=wrG||(S&&S.gender==='f'?'f':'m'), mine=S&&S.history&&S.history.length&&S.phase!=='retired'&&(S.gender==='f'?'f':'m')===g, L=lang==='pt'?1:0;
+  const filt=`<div class="subtabs" role="group"><button data-act="wrg" data-v="m" aria-pressed="${g==='m'}">${t.genderM}</button><button data-act="wrg" data-v="f" aria-pressed="${g==='f'}">${t.genderW}</button></div>`;
+  const head=`<div class="phead"><h2 class="ptitle">${t.hofT}</h2><div class="pfull hfrow">${tabs}</div><div class="pfull hfrow">${filt}</div></div>`;
+  const list=wrList(g), rows=Object.keys(WR_G).map(k=>{const rs=list.filter(R=>R[1]===k);if(!rs.length)return'';
+    return `<h3 class="wrh lbl">${WR_G[k][L]}</h3>`+rs.map(R=>{
+      const br=mine&&S.wrecs&&S.wrecs[R[0]]; let v=0; if(mine)try{v=R[8]()}catch(e){}
+      const pc=Math.min(100,100*v/R[5]);
+      return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
+  return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
+}
+Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
 function checkRecords(){
   if(!S||!S.history||S.phase==='create'||S.phase==='retired'||S.hofSaved)return;
+  checkWR();
   const hof=loadHof().filter(p=>p.id!==S.hofId); if(!hof.length)return;
   S.recs=S.recs||{};
   REC.forEach(R=>{
@@ -6621,6 +6714,7 @@ function eosHTML(o){
   const mo=[];
   const recs=[...new Set((h.recs||[]).concat(Object.entries(S.recs||{}).filter(([k,v])=>v&&v.year===h.year).map(([k])=>k)))];
   recs.forEach(k=>{if(t.rec&&t.rec[k])mo.push(['gold',`${t.recT}: ${t.rec[k]}`])});
+  [...new Set((h.wrecs||[]).concat(Object.entries(S.wrecs||{}).filter(([k,v])=>v&&v.year===h.year).map(([k])=>k)))].forEach(k=>{const n=wrName(k,S.gender);if(n)mo.push(['gold',`${t.wrT}: ${n}`])});
   if(h.legend)mo.push(['gold',t.nLegend(esc(h.club))]);
   if(h.milestone)mo.push(['',t.nMilestone(h.milestone,esc(h.club))]);
   if(S.capt&&S.capt.club===h.club&&S.capt.since===h.year)mo.push(['good',t.nCaptain(esc(h.club))]);
@@ -7073,7 +7167,7 @@ function lmcResolve(i,v){
   r.lmcRoll={v,tot,ok,i,b,tgt:o[1],d:L.d,at:o[0],shot:!!o[2],nat20:v===20}; s.pendingLMC=false; s.lmc=null; if(v===1)injuryScare();
   const win=()=>{r.pens=0;r.lmcGoal=1;koSettle(st,r,true);if(r.champ){if(isCrit(r.nat))s.bootsWon=1;S.flag_screamer=1}S.lmcGoals=(S.lmcGoals||0)+1;s.pensStage=null};
   if(!L.d){
-    if(ok){if(o[2]){r.goals=(r.goals||0)+1;s.goals++}else{r.assists=(r.assists||0)+1;s.assists++}win()}
+    if(ok){if(o[2]){r.goals=(r.goals||0)+1;s.goals++;cstAdd(1,0,0)}else{r.assists=(r.assists||0)+1;s.assists++;cstAdd(0,1,0)}win()}
     else{s.pendingPens=true;pensStart(st)}
   }else{
     if(v===20){r.lmcCounter=1;win()}
