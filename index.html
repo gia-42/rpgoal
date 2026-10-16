@@ -681,6 +681,17 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .recrow.wr.br .recv,.recrow.wr.br b{color:var(--warn)}
 .wrp{height:4px;border-radius:3px;background:var(--rule);overflow:hidden;margin:4px 0 1px;max-width:260px}.wrp i{display:block;height:100%;background:var(--accent);border-radius:3px}.recrow.wr.br .wrp i{background:var(--warn)}
 .wrnote{margin:12px 2px 4px}
+.drawgrp{width:100%;display:flex;flex-direction:column;gap:4px;text-align:left}
+.drow{display:grid;grid-template-columns:46px 26px minmax(0,1fr) auto;gap:9px;align-items:center;padding:6px 10px;border-radius:9px;background:#191c22;border:1px solid #2c3038;min-height:40px}
+.drow b{font-size:14px;color:#f3f4f6;line-height:1.2;min-width:0}
+.drow.me{border-color:#8193ff;background:#1d2236}
+.drow.tbd{opacity:.55}.drow .dq{width:26px;text-align:center;font-weight:700;color:#a9adb7}
+.dpot{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#a9adb7;white-space:nowrap}
+.dyou{font-size:11px;font-weight:600;color:#9cb0ff}
+.dstr{display:flex;gap:2px}.dstr i{width:5px;height:12px;border-radius:2px;background:#3a3e47}.dstr i.on{background:#e6e7ea}
+.chip.drk{margin:2px auto 0}.chip.dk0{color:var(--good);background:var(--good-soft);border-color:transparent}.chip.dk2{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.ovcard .chip.dk0,.stage .chip.dk0{color:#6ea8ff;background:#17233a;border-color:transparent}.ovcard .chip.dk2,.stage .chip.dk2{color:#ff8a7e;background:#3a1d1b;border-color:transparent}
+.drawpop .verdict.v-good{color:#6ea8ff}.drawpop .verdict.v-bad{color:#ff8a7e}
 .hoftabs{margin-bottom:2px}
 .mtag{border:0;font-family:inherit;cursor:pointer;line-height:1.5}
 .mtagx{display:flex;align-items:center;gap:14px;justify-content:center}.mtagx>div{display:flex;flex-direction:column;align-items:center;gap:3px}.mtagx .num{font-size:22px;font-weight:700}
@@ -2208,8 +2219,43 @@ function wcGroup(){
   const k=intlSeason()?1:0;
   return [{c:pick(PA.filter(ok)),dc:17-k},{c:pick(PB.filter(ok)),dc:16-k},{c:pick(PC.filter(ok)),dc:15-k}].sort(()=>Math.random()-.5);
 }
+
+/* ---- group stage draw: a d6 plus your seeding decides a forgiving, balanced or hard group ---- */
+const DRAW_MOD=[1,0,0,-1];
+function grpCands(comp){
+  const me=S.club.name, L=LEAGUES[S.club.league], mc=L.cont; let pool;
+  if(comp==='cont'){const extra=mc==='Copa Libertadores'?LIB_EXTRA:(CONT_EXTRA[mc]||[]);pool=clubsWhere(L=>L.div===1&&L.cont===mc,1).concat(extra.map(n=>({n,pr:1.2})))}
+  else pool=contIsUCL(S.club.league)?clubsWhere(L=>L.div===1&&L.cont===mc).filter(x=>x.pr<(isW()?4.6:5.5)):mc==='Copa Libertadores'?clubsWhere(L=>L.div===1&&L.cont==='Copa Libertadores').filter(x=>x.pr<2.4).concat(LIB_EXTRA.map(n=>({n,pr:.8}))):clubsWhere(L=>L.div===1&&L.cont===mc).filter(x=>x.pr<.8).concat((CONT_EXTRA[mc]||[]).map(n=>({n,pr:.2})));
+  const seen=new Set([me]); return pool.filter(x=>!seen.has(x.n)&&seen.add(x.n)).sort((a,b)=>b.pr-a.pr).slice(0,24);
+}
+function grpSeed(comp){
+  if(comp==='wc'){const P=wcPools().slice(0,3);let pot=P.findIndex(x=>x.includes(S.nat));if(pot<0)pot=2;return{pot,lab:pot+1,mod:pot===0?1:pot===1?0:-1}}
+  const c=grpCands(comp), my=tierOf(S.club.league,S.club.tier).pr, sz=Math.max(1,Math.ceil(c.length/4)), pot=clamp(Math.floor(c.filter(x=>x.pr>my).length/sz),0,3);
+  return{pot,lab:pot+1,mod:DRAW_MOD[pot]};
+}
+const drawKind=(nat,mod)=>nat===1?2:nat===6?0:nat+mod>=5?0:nat+mod>=3?1:2;   // 0 forgiving · 1 balanced · 2 hard
+const drawPick=(list,kind)=>{const h=Math.ceil(list.length/2),part=kind===0?list.slice(list.length-h):kind===2?list.slice(0,h):list;return pick(part.length?part:list)};
+function drawGroup(comp,nat){
+  const s=S.season, sd=grpSeed(comp), kind=drawKind(nat,sd.mod), rows=[];
+  if(comp==='wc'){
+    const P=wcPools().slice(0,3), k=intlSeason()?1:0;
+    P.forEach((pl,i)=>{const list=pl.filter(c=>c!==S.nat),c=drawPick(list,kind),ix=list.indexOf(c),n=list.length;
+      rows.push({n:c,pot:i,dc:17-i-k+(ix<n/3?1:ix>=2*n/3?-1:0),str:clamp(5-i*1.5-(ix/n)*1.5,1,5)})});
+  }else{
+    const c=grpCands(comp), sz=Math.max(1,Math.ceil(c.length/4)), pots=[0,1,2,3].map(i=>c.slice(i*sz,(i+1)*sz)), hi=c[0].pr, lo=c[c.length-1].pr;
+    [0,1,2,3].filter(i=>i!==sd.pot).forEach(i=>{const list=pots[i].length?pots[i]:c.filter(x=>!rows.some(r=>r.n===x.n));const x=drawPick(list.filter(y=>!rows.some(r=>r.n===y.n)),kind);
+      rows.push({n:x.n,pot:i,str:hi>lo?1+4*(x.pr-lo)/(hi-lo):3})});
+  }
+  (s.draws=s.draws||{})[comp]={nat,mod:sd.mod,pot:sd.pot,kind,rows,year:S.year};
+  s.stages.forEach(x=>{if(x.comp===comp&&x.round===0&&x.g!=null&&x.opp==null&&x.slot!=null){const r=rows[x.slot]||rows[0];x.opp=r.n;if(comp==='wc')x.gdc=r.dc}});
+  if(s.drawPending===comp)s.drawPending=null;
+  if(kind===0)S.flag_easygrp=1; if(kind===2)S.flag_hardgrp=1;
+}
+const drawUndrawn=st=>!!st&&st.round===0&&st.g!=null&&st.opp==null&&st.slot!=null&&(st.comp==='wc'||st.comp==='cont'||st.comp==='cont2');
+const uiLive=()=>typeof document!=='undefined'&&!!document.body&&document.body.nodeType===1;
 function activate(){
   const s=S.season, st=s.stages[s.idx]; if(!st)return;
+  if(drawUndrawn(st)){if(uiLive()&&!simming){s.drawPending=st.comp;return}drawGroup(st.comp,d(6))}
   if(s.redNext&&!st.res&&!st.red){st.red=1;s.redNext=0}
   if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;}
   if(st.ev!==undefined)return;
@@ -2234,16 +2280,14 @@ const isCG=st=>!!st&&(st.comp==='cont'||st.comp==='cont2')&&st.round===0&&st.g!=
 const CG_NEED=9;
 const cgPts=s=>{const g=s.cg||{W:0,D:0};return g.W*3+g.D};
 function contGroupStages(s,comp){
-  const opps=[];
-  for(let i=0;i<3;i++){const o=pickOpp({comp,round:1});if(!o)break;opps.push(o);s.stages.push({opp:o,_tmp:1})}
-  s.stages=s.stages.filter(x=>!x._tmp);
-  if(opps.length<3)return null;
+  if(grpCands(comp).length<3)return null;
+  const opps=[0,1,2];   // slots: the draw puts a club in each one when the group stage comes up
   // home and away alternate (who starts away is drawn); each club is met once at home and once away
   const st=Math.random()<.5?'dis':'adv', fl=m=>m==='adv'?'dis':'adv', o1=[0,1,2].sort(()=>Math.random()-.5), ha=g=>g%2?fl(st):st;
   const legs1=o1.map((i,g)=>({opp:opps[i],ha:ha(g)})), legs2=[3,4,5].map(g=>({ha:ha(g)}));
   const pool={adv:legs1.filter(x=>x.ha==='dis').map(x=>x.opp).sort(()=>Math.random()-.5),dis:legs1.filter(x=>x.ha==='adv').map(x=>x.opp)};
   legs2.forEach(x=>{x.opp=pool[x.ha].shift()});
-  return legs1.concat(legs2).map((x,g)=>({comp,round:0,g,opp:x.opp,ha:x.ha,key:focusKey(),res:null}));
+  return legs1.concat(legs2).map((x,g)=>({comp,round:0,g,opp:null,slot:x.opp,ha:x.ha,key:focusKey(),res:null}));
 }
 function buildSeason(){
   applyMem();
@@ -2603,7 +2647,7 @@ function wcCallUp(s,tk){
   if(rating(S.attrs)>=need-(s.natCamp?1:0)-(hasItem('cap')?.5:0)&&!s.seasonOut){
     if(!tk){s.calledWC=1;if(S.history.filter(h=>h.wc!=null&&h.wc>=0).length>=2)giveItem('cap')}
     s.wc={called:true,need,t:tk||null}; ovPush({k:'callup',tk:tk||null,year:S.year});
-    const add=wcGroup().map((x,g)=>({comp:'wc',round:0,g,opp:x.c,gdc:x.dc,key:focusKey(),res:null}));
+    const add=[0,1,2].sort(()=>Math.random()-.5).map((sl,g)=>({comp:'wc',round:0,g,opp:null,slot:sl,gdc:null,key:focusKey(),res:null}));
     for(let r=1;r<5;r++)add.push({comp:'wc',round:r,key:focusKey(),res:null});
     return add;
   }
@@ -2849,13 +2893,16 @@ function newSeason(club){
   S.age++; S.year++; S.growth=null; S.offers=null;
   buildSeason(); S.phase='season';
 }
-function simRest(){
+let simming=false;
+function simRest(){simming=true;try{simRest0()}finally{simming=false}}
+function simRest0(){
   {const h=S.history[S.history.length-1];if(S.phase==='offseason'&&h)autoPrep()}
   let guard=0;
   while(S.phase==='season'&&guard++<300){
     const s=S.season, st=s.stages[s.idx];
     if(s.endReady||!st){finishSeason();break}
     if(s.careerOver){endCareer();break}
+    if(s.drawPending||drawUndrawn(st)){drawGroup(st.comp,d(6));activate();continue}
     if(s.pickAttr){autoPick();continue}
     if(s.pendingLMC){lmcAuto();continue}
     if(s.pendingPens){pensAuto();continue}
@@ -2868,6 +2915,37 @@ function simRest(){
     if(isFinal(st)&&(S.insp||0)>0&&!st.insp&&effMode(st)!=='adv'){st.insp=1;S.insp--}
     resolveStage(d(20),d(20));
   }
+}
+
+/* ---- the draw pop-up ---- */
+function maybeDraw(){
+  if(view!=='game'||S.phase!=='season'||!S.season||homeHold)return;
+  const s=S.season; if(s.drawPending&&!ovHas('draw'))ovQ.unshift({k:'draw',comp:s.drawPending});
+}
+const drawTag=(s,comp)=>{const D=s&&s.draws&&s.draws[comp];return D?`<span class="chip drk dk${D.kind}">${t.drawK[D.kind]}</span>`:''};
+function drawHTML(o){
+  const s=S.season, comp=o.comp, D=s.draws&&s.draws[comp], sd=D?{lab:(D.pot|0)+1,mod:D.mod,pot:D.pot}:grpSeed(comp), wc=comp==='wc';
+  const title=comp==='cont'&&contIsUCL(S.club.league)?t.drawLP:t.drawT, cn=compName(comp,S.club.league);
+  const meK=wc?myKit({comp:'wc'}):kitOf(S.club.name), meN=wc?(COUNTRY[lang][S.nat]||S.nat):S.club.name;
+  const dots=v=>`<span class="dstr">${[1,2,3,4,5].map(i=>`<i class="${i<=Math.round(v)?'on':''}"></i>`).join('')}</span>`;
+  const opp=D?D.rows:(wc?[0,1,2]:[0,1,2,3].filter(i=>i!==sd.pot)).map(i=>({pot:i,tbd:1}));
+  const rows=opp.concat([{me:1,pot:sd.pot}]).sort((a,b)=>a.pot-b.pot||(a.me?-1:1)).map(r=>r.me
+    ?`<div class="drow me"><span class="dpot">${t.potS(r.pot+1)}</span>${crest(meK,26)}<b>${esc(meN)}</b><span class="dyou">${t.drawYou}</span></div>`
+    :r.tbd?`<div class="drow tbd"><span class="dpot">${t.potS(r.pot+1)}</span><span class="dq">?</span><b></b><span></span></div>`
+    :`<div class="drow"><span class="dpot">${t.potS(r.pot+1)}</span>${crest(wc?natKit(r.n):kitOf(r.n),26)}<b>${esc(wc?(COUNTRY[lang][r.n]||r.n):r.n)}</b>${dots(r.str)}</div>`).join('');
+  const verdict=D?`<div class="sum num">d6 <b>${D.nat}</b> ${sg(D.mod)} = <b>${D.nat+D.mod}</b></div><div class="verdict result ${D.kind===0?'v-good':D.kind===2?'v-bad':''}" style="font-size:22px">${t.drawK[D.kind]}</div>`:'';
+  return `<div class="ovcard move drawpop" style="${kitVars(meK)}"><span class="ov-kicker">${compFlag(comp,S.club.league)}${esc(cn)} · ${S.year}</span><h2 class="ov-title" style="font-size:24px">${title}</h2>
+    <div class="storydie">${dieSVG(6,D?D.nat:'',D?(D.kind===0?'win':D.kind===2?'lose':'evd'):'evd','dr')}</div>
+    <div class="mods" style="justify-content:center"><span class="chip">${t.potS(sd.lab)}${sd.mod?` · ${sg(sd.mod)}`:''}</span></div>
+    ${verdict||`<div class="ov-sub2">${t.drawRule}</div>`}
+    <div class="drawgrp">${rows}</div>
+    ${D?`<button class="btn" data-ov="close">${t.recapBtn}</button>`:`<button class="btn" data-ov="grroll">${t.roll(6)}</button>`}</div>`;
+}
+function drawClick(e,o){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
+  if(v==='grroll'){const s=S.season;if(s.draws&&s.draws[o.comp])return;const x=d(6),mod=grpSeed(o.comp).mod,k=drawKind(x,mod),el=ovEl.querySelector('[data-die="dr"]');
+    rollDice(el?[el]:[],6,[x],()=>k===0?'win':k===2?'lose':'',()=>{drawGroup(o.comp,x);activate();if(k===0)sfx('pass');else if(k===2)sfx('fail');save();ovUpdate(drawHTML(o))});return}
+  if(v==='close'){closeOv();commit()}
 }
 /* ---------- hall of fame ---------- */
 const TW={league:25,cup:12,wc:60,raw:10,cwc:48,bdo:50,intl:30};
@@ -3169,7 +3247,7 @@ function stageCard(){
     else if(!der&&s.lt&&lgPlayed(s))body+=lgMini(s);
   }else if(isCG(st)&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
     dice=`<div class="dicecol"><div class="dmain">${dieSVG(20,'','evd','ev')}</div></div>`;
-    body=`<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${contIsUCL(S.club.league)?t.leaguePhase:t.group}</h3><!--split--><div class="evdesc">${t.cgRule(CG_NEED)}</div>${cgRec(s,st.comp)}`;
+    body=`<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${contIsUCL(S.club.league)?t.leaguePhase:t.group}</h3>${drawTag(s,st.comp)}<!--split--><div class="evdesc">${t.cgRule(CG_NEED)}</div>${cgRec(s,st.comp)}`;
     if(r){const nx=s.stages.find(x=>!x.res);act=`<button class="btn" data-act="go">${nx?t.goNext(`${compName(nx.comp,S.club.league)} · ${roundShort(nx)}`):t.finish}</button>`}
     else act=`<button class="btn" data-act="runov">${t.cgPlay}</button>`;
   }else if(st.comp==='run'&&!injured&&!(r&&(s.pendingHeal||s.pickAttr||s.careerOver))){
@@ -3204,7 +3282,7 @@ function stageCard(){
     const I=r&&r.injury&&s.inj?s.inj:null;
     const healDie=I?`<div class="dcell"><div class="row" style="gap:4px;flex-wrap:nowrap;justify-content:center">${dieSVG(4,I.d4??'',(I.d4!=null?(I.adv?'crit':'fumble'):'')+' small inj4','inj4')}${[0,1].map(k=>dieSVG(12,I.d10?I.d10[k]:'',(I.d10?((I.d10[0]===1&&I.d10[1]===1)?'fumble':(I.d10[k]===I.kept&&(k===0||I.d10[0]!==I.d10[1]))?healCls(I.kept):'dropped'):'')+' small','inj10'+k)).join('')}</div><span class="lbl">${t.recovery}</span></div>`:'';
     dice=`<div class="dicecol"><div class="dmain">${main}</div>${chDie||evDie||healDie||atmDie?`<div class="row" style="gap:8px;justify-content:center">${atmDie}${chDie}${evDie}${healDie}</div>`:''}</div>`;
-    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
+    body=`${injured?'':`<span class="rk mt">${t.rkMatch} · d20</span>`}<span class="lbl">${compFlag(st.comp)}${t.seasonComp(S.year,comp)}</span><h3>${roundName(st)}</h3>${st.comp==='wc'&&st.round===0?drawTag(s,'wc'):''}${oppLine}${recNow}${grp&&!r?`<div class="muted small st-rule">${st.comp==='run'?t.runRule(s.run.type,runNeed(s))+' · '+t.runPts(runPts(s),runNeed(s)):isCG(st)?t.cgRule(CG_NEED)+' · '+t.runPts(cgPts(s),CG_NEED):isWCup(st)?t.wcThru+' · '+t.wcSeeTbl:t.groupRule}</div>`:''}${st.comp==='run'&&r?`<div class="muted small st-rule">${t.runPts(runPts(s),runNeed(s))}</div>`:''}<!--split-->`;
     if(st.atm)body+=`<div class="evline atml ${st.atm>=5?'ok':st.atm<=2?'bad':''}">${dieSVG(6,st.atm,(st.atm>=5?'win':st.atm<=2?'lose':'evd')+' adie atmi','atm')}<span class="atmt"><span class="atmk">${t.atmL}: </span>${t.atmTx[st.atm]}</span></div>`;
     if(st.chr){const C=t.chx[st.ch],o=CHOICES[st.ch].opts[st.chr.i];body+=`<div class="evline ${st.chr.ok?'ok':'bad'}">${C[0]} · ${C[2][o.k]}${st.chr.auto?'':` · ${st.chr.ok?t.success:t.fail}`} · ${effText(st.chr.auto?o.fx:st.chr.ok?o.ok:o.bad)}</div>`}
     if(st.evr&&r){const e=EVMAP[st.ev];   // already read before the match: one line is enough now
@@ -4171,6 +4249,7 @@ function ovHTML(o){
   if(o.k==='agechk')return ageHTML();
   if(o.k==='feat')return featHTML();
   if(o.k==='brk')return brkHTML();
+  if(o.k==='draw')return drawHTML(o);
   if(o.k==='pick')return pickHTML();
   if(o.k==='camp')return campHTML();
   if(o.k==='repos')return reposHTML();
@@ -4250,12 +4329,12 @@ function closeOv(){
   const was=ovKindPrev; flushOv(); if(!ovEl)scheduleAuto(); try{dockOv()}catch(e){}
   if(!ovEl&&was==='final')setTimeout(()=>{try{if(!ovEl&&!busy)playSync()}catch(e){}},260);
 }
-const DIE_ROLL_SEL='[data-ov="lbroll"],[data-ov="lbmom"],[data-ov="rroll"],[data-ov="pkick"],[data-ov="droll"],[data-ov="roll"],[data-ov="hchk"],[data-ov="h4"],[data-ov="h10"],[data-ov="h10b"],[data-act="roll"],[data-act="inj4"],[data-act="inj10"]';
+const DIE_ROLL_SEL='[data-ov="lbroll"],[data-ov="lbmom"],[data-ov="rroll"],[data-ov="pkick"],[data-ov="droll"],[data-ov="grroll"],[data-ov="roll"],[data-ov="hchk"],[data-ov="h4"],[data-ov="h10"],[data-ov="h10b"],[data-act="roll"],[data-act="inj4"],[data-act="inj10"]';
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -4285,6 +4364,7 @@ function flushOv(){
     if(o.k==='lb'){lbClick(e);return}
     if(o.k==='stage'){if(e.target.closest('[data-ov="x"]')){homeHold=true;closeOv();render();return}const wv=e.target.closest('[data-ov="wcv"]');if(wv){wcView=wv.dataset.v;ovUpdate(stagePopHTML());try{fitStage()}catch(err){}return}onClick(e);return}
     if(o.k==='agechk'){ageClick(e);return}
+    if(o.k==='draw'){drawClick(e,o);return}
     if(o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
     if(o.k==='away'||o.k==='chron'||o.k==='howto'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
@@ -4525,7 +4605,7 @@ function awayCheck(any){
   benchBack(s);s.away=(s.away||[]).concat(s.idx);const o=awaySummary(s);s.away=[];s.awaySkip=s.idx;s.benchInj=0;ovQ=ovQ.filter(x=>x.k!=='away');ovQ.unshift(o);
   if(ovEl&&['lb','stage'].includes(ovKind)){lbAll=false;closeOv()}
 }
-function commit(){ensureContract();save();awayCheck();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
+function commit(){ensureContract();save();awayCheck();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeDraw();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -4754,7 +4834,7 @@ function onClick(e){
   else if(act==='storyov'){homeHold=false;if(ovEl&&ovKind!=='story')closeOv();ovQ=ovQ.filter(o=>o.k!=='story');const s0=S.season,st0=s0&&s0.stages[s0.idx];if(st0&&st0.ch&&!st0.chr){ovQ.unshift({k:'story'});flushOv()}else{render();playSync()}}
   else if(act==='pensov'){maybePens();flushOv()}
   else if(act==='lmcov'){maybeLMC();flushOv()}
-  else if(act==='runov'){maybeRun();flushOv()}
+  else if(act==='runov'){if(S.season&&S.season.drawPending){homeHold=false;maybeDraw();flushOv();return}maybeRun();flushOv()}
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
   else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
@@ -5600,7 +5680,9 @@ function hofWorld(tabs){
       return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
   return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
 }
+Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
 Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
 function checkRecords(){
   if(!S||!S.history||S.phase==='create'||S.phase==='retired'||S.hofSaved)return;
@@ -6389,6 +6471,7 @@ function wcPanel(v){
 function playSync(){
   const pk=['stage','lb'];
   if(view!=='game'||S.phase!=='season'||!S.season){if(pk.includes(ovKind))closeOv();return}
+  if(S.season.drawPending&&!homeHold){if(!ovHas('draw')){if(pk.includes(ovKind))closeOv();ovQ.unshift({k:'draw',comp:S.season.drawPending});flushOv()}return}
   const k=playKind();
   if(pk.includes(ovKind)){if(homeHold){closeOv();return}if(k===ovKind){if(k==='stage'){ovUpdate(stagePopHTML());try{fitStage()}catch(e){}}else lbRefresh();return}closeOv()}
   if(!homeHold&&!ovEl&&!ovQ.length&&k&&!busy){ovQ.push({k});flushOv()}
@@ -6479,7 +6562,7 @@ function maybeRun(){
   if(view!=='game'||S.phase!=='season'||!S.season)return;
   const s=S.season, st=s.stages[s.idx];
   const lk=x=>isCG(st)?isCG(x)&&x.comp===st.comp:x.comp==='run';
-  if(!st||!(st.comp==='run'||isCG(st))||s.pendingHeal||s.pickAttr||s.out>0||ovHas('run'))return;
+  if(!st||!(st.comp==='run'||isCG(st))||s.pendingHeal||s.pickAttr||s.out>0||ovHas('run')||s.drawPending||ovHas('draw'))return;
   if(s.last&&s.last.stage!==s.idx)return;
   if(s.last&&!s.stages.some(x=>lk(x)&&!x.res))return;
   ovQ.push({k:'run'});
