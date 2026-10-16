@@ -2127,12 +2127,12 @@ function randomName(nat,g){g=g||(typeof S!=='undefined'&&S&&S.gender)||'m';const
 
 let S=fresh();
 // 0.58 started every career over: a save without era 58 opens on the new-player screen (the account sync checks SAVE_ERA too)
-try{window.SAVE_ERA=59}catch(e){}
-function fresh(g){g=g||'m';return{phase:'create',era:59,gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
+try{window.SAVE_ERA=60}catch(e){}
+function fresh(g){g=g||'m';return{phase:'create',era:60,gender:g,nat:'BRA',name:randomName('BRA',g),roll:{},rerolls:1,history:[],trophies:[]}}
 function save(){if(S.phase==='create'){try{localStorage.removeItem(KEY)}catch(e){}return}S.savedAt=Date.now();S.rev=(S.rev||0)+1;S.sid=S.savedAt.toString(36)+Math.random().toString(36).slice(2,7);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.cloudSync)cloudSync()}
 function fixSave(x){
   if(!x)return x;
-  if(x.era!==59)return fresh(x.gender==='f'?'f':'m');
+  if(x.era!==60)return fresh(x.gender==='f'?'f':'m');
   if(!x.cid&&x.phase&&x.phase!=='create'){const id=careerId(x);if(id)x.cid=id}
   const f=o=>{if(!o)return;if(!LEAGUES[o.league])o.league=0;const n=LEAGUES[o.league].tiers.length;if(!(o.tier>=0))o.tier=0;if(o.tier>=n)o.tier=n-1};
   if(!NATIONS[x.nat])x.nat='BRA';
@@ -2183,7 +2183,7 @@ function careerFinishedIn(c,hof){
   return (hof||[]).some(e=>e&&((id&&e.cid===id)||(legacy&&sg&&!e.cid&&hofSig(e)===sg)));
 }
 /* 0.57: a clean slate. Hall of Fame entries, records and achievements from before this release are left behind (here and in the account) */
-const DATA_EPOCH=1791916309000;
+const DATA_EPOCH=1792191368058;   // 0.58b, 16 Oct 2026: every career, Hall of Fame entry and achievement starts over
 const epochOK=e=>!e||e.id==null||typeof e.id!=='number'||e.id>=DATA_EPOCH;
 function loadHof(){return loadHof0().filter(epochOK)}
 function loadHof0(){if(hofMem)return hofMem.slice();try{const r=JSON.parse(localStorage.getItem(HOFKEY)||'[]');hofMem=Array.isArray(r)?r:[];const d=hofDedupe(hofMem);if(d.length!==hofMem.length){hofMem=d;try{localStorage.setItem(HOFKEY,JSON.stringify(d))}catch(e){}}}catch(e){hofMem=[]}return hofMem.slice()}
@@ -3971,7 +3971,7 @@ function showToast(){
   el.addEventListener('click',hide); setTimeout(hide,3800);
 }
 /* 0.58: the stories you've seen start again from zero, once */
-try{if(localStorage.getItem('rpgoal-era')!=='58'){localStorage.removeItem('rpgoal-stories');localStorage.setItem('rpgoal-era','58')}}catch(e){}
+try{if(localStorage.getItem('rpgoal-era')!=='60'){localStorage.removeItem('rpgoal-stories');localStorage.setItem('rpgoal-era','60')}}catch(e){}
 const storiesSeen=()=>{try{return Object.keys(JSON.parse(localStorage.getItem('rpgoal-stories')||'{}')).length}catch(e){return 0}};
 const ACH_ICON={
  icecold:'M12 3v18 M5 7l14 10 M19 7L5 17 M9 4l3 2 3-2 M9 20l3-2 3 2',
