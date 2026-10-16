@@ -719,6 +719,8 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .sparks i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#f2c14e;box-shadow:0 0 8px #f2c14e;z-index:2;animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-110vh)}}
 .bigov .btro .btro-i{width:96px;height:96px}
+.ltable tr[data-act]{cursor:pointer}.ltable tr[data-act]:hover td{background:var(--sunk)}
+.clubcard .sv-list,.clubcard .eos-chips{width:100%}.clubcard .eos-chip .crest{margin-right:2px}
 .parade-tro .pt-i{width:64px;height:64px;display:block;margin:2px auto}
 .ovl.big .ov-tap{display:none}
 @media (prefers-reduced-motion:reduce){.bigov *,.bigov{animation:none!important}.sparks{display:none}}
@@ -4156,7 +4158,7 @@ function leagueTableView(s,form){
   const mv=S.lgMv&&S.lgMv.year===S.year-1?S.lgMv:null, nm={};
   if(mv){if(S.club.league===mv.lg)mv.up.forEach(n=>nm[n]='up');if(S.club.league===mv.lg2)mv.down.forEach(n=>nm[n]='down')}
   const zone=p=>L.div===2?(p<=up?'z1':''):p===1?'zc':(L.cont&&p<=c1?'z1':L.cont&&p<=c2?'z2':rel&&p>n-rel?'zr':'');
-  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b><span class="cn">${esc(x.c)}</span><span class="fn">${esc(x.n)}</span></b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
+  const rows=tb.map(x=>`<tr class="${x.me?'me':''} ${zone(x.pos)}" data-k="${esc(x.c)}" data-act="club" data-n="${esc(x.n)}"><td class="num">${x.pos}</td><td class="tm" data-nm="${esc(x.n)}">${crest(kitOf(x.n),13)}<b><span class="cn">${esc(x.c)}</span><span class="fn">${esc(x.n)}</span></b>${nm[x.n]?`<span class="lgnew ${nm[x.n]}" title="${nm[x.n]==='up'?t.newUp:t.newDown}">${nm[x.n]==='up'?'▲':'▼'}</span>`:''}</td><td class="num">${x.p}</td><td class="num">${x.w}</td><td class="num">${x.d}</td><td class="num">${x.l}</td>${form?`<td class="fm">${x.f.map(v=>`<i class="${v===3?'W':v===1?'D':'L'}"></i>`).join('')}</td>`:''}<td class="num pts">${x.pts}</td></tr>`).join('');
   return `<section class="panel trackp ltab"><div class="row between" style="margin-bottom:4px"><h3 style="font-size:16px">${compFlag('league')}${esc(L.name)}</h3><span class="lbl">${t.roundOf(mp,s.lt.M)}</span></div>
     <div class="track"><table class="ltable"><thead><tr><th>#</th><th class="tm">${t.clubT}</th><th>${t.pldS}</th><th>${t.wdlS.W}</th><th>${t.wdlS.D}</th><th>${t.wdlS.L}</th>${form?`<th class="fm">${t.formT}</th>`:''}<th>${t.ptsS}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
@@ -4351,6 +4353,24 @@ const goldBall=(cls='ov-icon')=>`<svg class="${cls}" viewBox="0 0 64 64" aria-hi
 const oppName=st=>!st||!st.opp?'':st.comp==='wc'?(COUNTRY[lang][st.opp]||st.opp):st.opp;
 const oppKit=st=>st.comp==='wc'?natKit(st.opp):kitOf(st.opp);
 const myKit=st=>st&&st.comp==='wc'?natKit(S.nat):kitOf(S.club.name);
+
+/* ---- tap a club in a table: its card ---- */
+function clubHTML(o){
+  const n=o.n, info=(isW()?CLUB_INFO_W:CLUB_INFO_M)[n]; let Li=info?info.league:null;
+  if(S.club&&S.club.name===n)Li=S.club.league; else if(S.season&&S.season.lt&&leagueClubs(S.club.league).includes(n))Li=S.club.league;
+  const L=Li!=null?LEAGUES[Li]:null, cr=Li!=null?clubRank(n,Li):null, kit=kitOf(n);
+  let posL='';
+  if(S.season&&S.season.lt&&Li===S.club.league){const row=lgTable(S.season).find(x=>(x.me?S.club.name:x.n)===n);if(row)posL=`${ord(row.pos)} · ${row.pts} ${t.ptsS}`}
+  const riv=mainRivals(n);
+  const H=(S.history||[]).filter(h=>h.club===n), now=S.club&&S.club.name===n&&S.phase!=='retired';
+  const tro=H.reduce((a,h)=>a.concat(h.trophies.filter(x=>x.kind!=='bdo')),[]);
+  const row=(l,v)=>`<div class="sv-row"><span>${l}</span><span class="cv">${v}</span></div>`;
+  const you=H.length||now?`${row(t.seasons,H.length+(now&&S.phase==='season'?1:0))}${row(`${t.apps} · ${t.goals} · ${t.assists}`,`<span class="num">${H.reduce((a,h)=>a+h.apps,0)} · ${H.reduce((a,h)=>a+h.goals,0)} · ${H.reduce((a,h)=>a+h.assists,0)}</span>`)}${tro.length?row(t.trophies,tro.length):''}${(S.legends||[]).some(x=>x.club===n)?row(t.clubTag,`<span class="gold">${t.legendT}</span>`):''}`:`<div class="muted small">${t.clubNever}</div>`;
+  return `<div class="ovcard lite clubcard" style="${kitVars(kit)}">${crest(kit,60)}<span class="ov-kicker">${L?`${compFlag('league',Li)}${esc(L.name)}`:''}</span><h2 class="ov-title" style="font-size:26px">${esc(n)}</h2>${now?`<span class="chip yel">${t.clubNow}</span>`:''}
+    <div class="sv-list">${cr?row(t.clubLv,`${t.teamLv[teamLevel(cr.frac)]} · ${t.clubRk(cr.rank,cr.of)}`):''}${posL?row(t.clubPos,posL):''}</div>
+    ${riv.length?`<span class="lbl">${t.clubRiv}</span><div class="eos-chips">${riv.map(r=>`<span class="eos-chip">${crest(kitOf(r),14)}${esc(r)}</span>`).join('')}</div>`:''}
+    <span class="lbl">${t.clubYou}</span><div class="sv-list">${you}</div><span class="ov-tap">${t.tapClose}</span></div>`;
+}
 let ovEl=null, ovTimer=null;
 function ovHTML(o){
   const tap=`<span class="ov-tap">${t.tapClose}</span>`;
@@ -4365,6 +4385,7 @@ function ovHTML(o){
       <div class="bvs"><div class="bteam l">${crest(mk,72)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><div class="bx">${t.vs.toUpperCase()}</div><div class="bteam r">${crest(ok,72)}<b>${o.opp?esc(oppName(st)):'?'}</b></div></div>
       <div class="bsub">${po?(S.season&&S.season.po&&S.season.po.rel?t.introRel:t.introPo):t.introSub}</div><button class="btn bgo" data-ov="close">${t.introGo}</button></div></div>`;
   }
+  if(o.k==='club')return clubHTML(o);
   if(o.k==='po'){
     const kit=kitOf(S.club.name), ttl=o.rel?(o.ok?t.poStay:t.poDown):(o.ok?t.poUpT:t.poMiss);
     return `<div class="ovcard ${o.ok?'champ':'lite'}" style="${kitVars(kit)}">${crest(kit,56)}<span class="ov-kicker">${esc(compName('po',S.club.league))} · ${o.year}</span><h2 class="ov-title">${ttl}</h2><div class="ov-sub">${esc(S.club.name)}</div><div class="ov-sub2">${o.rel?(o.ok?t.poStayD:t.poDownD):(o.ok?t.poUpD:t.poMissD)}</div>${tap}</div>`;
@@ -4995,6 +5016,7 @@ function onClick(e){
   else if(act==='runov'){if(S.season&&S.season.drawPending){homeHold=false;maybeDraw();flushOv();return}maybeRun();flushOv()}
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
+  else if(act==='club'){if(ovEl)return;ovQ.unshift({k:'club',n:b.dataset.n});flushOv()}
   else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:S.bonusDone||S.daily?'offers':'bonus'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
@@ -5839,12 +5861,14 @@ function hofWorld(tabs){
       return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
   return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
 }
+Object.assign(T.en,{clubLv:'Squad level',clubRk:(i,n)=>`${ord(i)} of ${n}`,clubPos:'League position',clubRiv:'Rivals',clubYou:'Your time here',clubNever:'You have never played here.',clubNow:'Your club',clubTag:'Status',legendT:'Club legend'});
 Object.assign(T.en,{poUp:'Promotion play-offs',poRel:'Relegation play-off',poR:{pre:'Preliminary round',sf:'Play-off semi-final',f:'Play-off final',po1:'Play-off 1',po2:'Play-off 2',br:'Promotion/relegation play-off'},introPo:'Promotion on the line',introRel:'Top-flight survival on the line',poUpT:'Promoted!',poUpD:'Through the play-offs and up to the top flight.',poMiss:'So close',poMissD:'The play-offs end your promotion push. Another season down here.',poStay:'Stayed up!',poStayD:'The play-off goes your way. Top-flight football again next season.',poDown:'Relegated',poDownD:'The play-off is lost. Next season is in the second division.'});
 Object.assign(T.en,{paradeK:'Trophy parade',paradeT:'The city is yours',paradeD:'Open-top bus, trophy held high, the streets packed in your colours.',paradeWc:'The whole country is out on the streets to welcome the team home.'});
 Object.assign(T.en,{introSub:'One match for the trophy',introGo:'Kick off'});
 Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{clubLv:'Nível do elenco',clubRk:(i,n)=>`${i}º de ${n}`,clubPos:'Posição na liga',clubRiv:'Rivais',clubYou:'Sua passagem',clubNever:'Você nunca jogou aqui.',clubNow:'Seu clube',clubTag:'Status',legendT:'Lenda do clube'});
 Object.assign(T.pt,{poUp:'Playoffs de acesso',poRel:'Playoff de rebaixamento',poR:{pre:'Fase preliminar',sf:'Semifinal dos playoffs',f:'Final dos playoffs',po1:'Playoff 1',po2:'Playoff 2',br:'Playoff de acesso e rebaixamento'},introPo:'Vale o acesso',introRel:'Vale a permanência na elite',poUpT:'Acesso!',poUpD:'Pelos playoffs, de volta à primeira divisão.',poMiss:'Foi por pouco',poMissD:'Os playoffs encerram a briga pelo acesso. Mais uma temporada aqui embaixo.',poStay:'Permanência!',poStayD:'O playoff sai do seu jeito. Primeira divisão de novo na próxima temporada.',poDown:'Rebaixado',poDownD:'O playoff está perdido. A próxima temporada é na segunda divisão.'});
 Object.assign(T.pt,{paradeK:'Festa do título',paradeT:'A cidade é sua',paradeD:'Ônibus aberto, taça levantada e as ruas tomadas pelas cores do clube.',paradeWc:'O país inteiro vai às ruas para receber a seleção.'});
 Object.assign(T.pt,{introSub:'Um jogo pela taça',introGo:'Bola rolando'});
