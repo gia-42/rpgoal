@@ -681,6 +681,47 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .recrow.wr.br .recv,.recrow.wr.br b{color:var(--warn)}
 .wrp{height:4px;border-radius:3px;background:var(--rule);overflow:hidden;margin:4px 0 1px;max-width:260px}.wrp i{display:block;height:100%;background:var(--accent);border-radius:3px}.recrow.wr.br .wrp i{background:var(--warn)}
 .wrnote{margin:12px 2px 4px}
+.ovl.big{padding:0;background:rgba(5,6,9,.92)}
+.bigov{position:relative;overflow:hidden;width:100%;height:100%;max-width:560px;max-height:900px;margin:auto;display:flex;align-items:center;justify-content:center;color:#fff;background:radial-gradient(120% 80% at 50% 100%,#1a1d25 0%,#07080b 70%);font-family:var(--f-ui);cursor:default}
+@media (min-width:600px){.bigov{height:min(820px,calc(100dvh - 40px));border-radius:20px;border:1px solid #2c3038}}
+.bin{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 22px;text-align:center;width:100%}
+.glowL,.glowR{position:absolute;top:10%;width:70%;height:80%;border-radius:50%;filter:blur(60px);opacity:.55;z-index:1;animation:glowIn 1.2s ease-out both}
+.glowL{left:-25%;background:var(--k1)} .glowR{right:-25%;background:var(--k2)}
+@keyframes glowIn{from{opacity:0;transform:scale(.6)}}
+.beams{position:absolute;inset:-50%;z-index:0;background:conic-gradient(from 0deg,transparent 0 8deg,rgba(255,255,255,.06) 8deg 12deg,transparent 12deg 30deg);animation:bspin 40s linear infinite}
+.fin .beams{background:conic-gradient(from 0deg,transparent 0 6deg,rgba(242,193,78,.12) 6deg 11deg,transparent 11deg 24deg);animation-duration:28s}
+@keyframes bspin{to{transform:rotate(360deg)}}
+.bk{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#c9ccd3;animation:fadeUp .6s .1s both}
+.bt{font-size:clamp(30px,8.5vw,44px);font-weight:600;line-height:1.02;letter-spacing:-.02em;text-wrap:balance;animation:track 1s .2s cubic-bezier(.2,.8,.2,1) both;
+  background:linear-gradient(100deg,#fff 0%,#fff 40%,#cfd6ff 50%,#fff 60%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.fin .bt,.bt.gold{background-image:linear-gradient(100deg,#f2c14e 0%,#fff1c2 45%,#f2c14e 55%,#c9962b 100%);animation:track 1s .2s cubic-bezier(.2,.8,.2,1) both,sheen 3.2s 1.2s linear infinite}
+.bt{animation:track 1s .2s cubic-bezier(.2,.8,.2,1) both,sheen 3.6s 1.2s linear infinite}
+@keyframes track{from{opacity:0;letter-spacing:.3em;filter:blur(6px)}}
+@keyframes sheen{from{background-position:100% 0}to{background-position:-150% 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.bvs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;width:100%;margin-top:4px}
+.bteam{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.bteam b{font-size:18px} .bteam span{font-size:12px;color:#aeb3bd;font-family:var(--f-num)}
+.bteam .crest{filter:drop-shadow(0 6px 18px rgba(0,0,0,.5))}
+.bteam.l{animation:slideL2 .8s .5s cubic-bezier(.2,.9,.3,1.1) both} .bteam.r{animation:slideR2 .8s .5s cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes slideL2{from{opacity:0;transform:translateX(-120px) scale(.8)}} @keyframes slideR2{from{opacity:0;transform:translateX(120px) scale(.8)}}
+.bx{font-family:var(--f-num);font-weight:600;font-size:22px;color:#fff;animation:vsPop .5s 1.15s cubic-bezier(.2,1.6,.4,1) both,vsGlow 2.4s 1.7s ease-in-out infinite}
+.fin .bx{color:#f2c14e}
+@keyframes vsPop{from{opacity:0;transform:scale(3)}} @keyframes vsGlow{50%{text-shadow:0 0 18px currentColor}}
+.bsub{font-size:13.5px;color:#c9ccd3;animation:fadeUp .6s 1.3s both}
+.bigov .bgo{width:100%;max-width:320px;margin-top:8px;background:#fff;color:#111;border-color:#fff;animation:fadeUp .6s 1.5s both}
+.fin .bgo{background:#f2c14e;border-color:#f2c14e}
+.btro{animation:rise 1.4s .1s cubic-bezier(.2,.9,.3,1) both;filter:drop-shadow(0 0 22px rgba(242,193,78,.55))}
+.btro-i{width:86px;height:86px;display:block}
+.btro.big .btro-i{width:130px;height:130px}
+@keyframes rise{from{opacity:0;transform:translateY(80px) scale(.6)}}
+
+.sparks i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#f2c14e;box-shadow:0 0 8px #f2c14e;z-index:2;animation:floatUp linear infinite;opacity:0}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-110vh)}}
+.bigov .btro .btro-i{width:96px;height:96px}
+.ovl.big .ov-tap{display:none}
+@media (prefers-reduced-motion:reduce){.bigov *,.bigov{animation:none!important}.sparks{display:none}}
+
 .bngrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
 .bnc{display:flex;flex-direction:column;align-items:center;gap:0;padding:7px 2px;border-radius:9px;border:1px solid #2c3038;background:#191c22;color:#f3f4f6;font:inherit;cursor:pointer;position:relative}
 .bnc b{font-size:18px;font-weight:500}.bnc .lbl{font-size:10px;color:#a9adb7}
@@ -4251,10 +4292,15 @@ let ovEl=null, ovTimer=null;
 function ovHTML(o){
   const tap=`<span class="ov-tap">${t.tapClose}</span>`;
   if(o.k==='final'){
-    const wc=o.comp==='wc', st={comp:o.comp,opp:o.opp};
-    const opp=o.opp?`${crest(oppKit(st),64)}<b>${esc(oppName(st))}</b>`:`${crest(['#3a3e47','#22252c'],64)}<b>?</b>`;
-    return `<div class="ovcard ${wc?'gold':''}">${wc?troSVG({kind:'wc',w:isW()?1:undefined}):''}<span class="ov-kicker">${compFlag(o.comp,o.lg)}${esc(compName(o.comp,o.lg))} · ${S.year}</span><h2 class="ov-title">${wc&&!intlSeason()?t.ovWcFinal:t.ovFinal}</h2>
-      <div class="ov-vs"><div class="ov-team l">${crest(myKit(st),64)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><span class="ov-x">${t.vs}</span><div class="ov-team r">${opp}</div></div>${tap}</div>`;
+    const wc=o.comp==='wc', st={comp:o.comp,opp:o.opp}, mk=myKit(st), ok=o.opp?oppKit(st):['#3a3e47','#22252c'];
+    const col=k=>(k&&k[0]&&/^#/.test(k[0])&&!/^#f{3,6}$/i.test(k[0])?k[0]:(k&&k[1])||'#8193ff');
+    const name=wc?(intlSeason()?t.intl[S.season.wc.t]:(isW()?t.wcW:t.wcM)):compName(o.comp,o.lg);
+    const tro=troSVG(wc?(intlSeason()?{kind:'intl',t:S.season.wc.t}:{kind:'wc',w:isW()?1:undefined}):{kind:o.comp,lg:o.lg,w:isW()?1:undefined},'btro-i');
+    const sp=Array.from({length:26},()=>`<i style="left:${(Math.random()*100).toFixed(1)}%;animation-delay:${(Math.random()*4).toFixed(2)}s;animation-duration:${(3+Math.random()*3).toFixed(2)}s"></i>`).join('');
+    return `<div class="bigov fin" style="--k1:${col(mk)};--k2:${col(ok)}"><div class="beams"></div><div class="glowL"></div><div class="glowR"></div><div class="sparks" aria-hidden="true">${sp}</div>
+      <div class="bin"><div class="btro">${tro}</div><span class="bk">${S.year} · ${t.ovFinal}</span><div class="bt">${esc(name)}</div>
+      <div class="bvs"><div class="bteam l">${crest(mk,72)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><div class="bx">${t.vs.toUpperCase()}</div><div class="bteam r">${crest(ok,72)}<b>${o.opp?esc(oppName(st)):'?'}</b></div></div>
+      <div class="bsub">${t.introSub}</div><button class="btn bgo" data-ov="close">${t.introGo}</button></div></div>`;
   }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
   if(o.k==='howto')return `<div class="ovcard window howto"><span class="ov-kicker">RPGoal</span><h2 class="ov-title" style="font-size:26px">${t.howT}</h2><div class="howlist">${t.howTo.map(([h,x])=>`<div><b>${h}</b><span>${x}</span></div>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
@@ -4371,7 +4417,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='bonus'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='final'?' big':'')+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='bonus'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -5719,9 +5765,11 @@ function hofWorld(tabs){
       return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
   return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
 }
+Object.assign(T.en,{introSub:'One match for the trophy',introGo:'Kick off'});
 Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{introSub:'Um jogo pela taça',introGo:'Bola rolando'});
 Object.assign(T.pt,{bonusK:'Última rolagem',bonusT:'Pontos extras',bonusSub:m=>`Role um d6: esse é o número de pontos extras para pôr nos atributos que quiser, até ${m} em cada.`,bonusLeft:n=>n===1?'Falta 1 ponto':`Faltam ${n} pontos`,bonusReset:'Refazer'});
 Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
 Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
