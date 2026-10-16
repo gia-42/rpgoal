@@ -4830,7 +4830,11 @@ function awayCheck(any){
   benchBack(s);s.away=(s.away||[]).concat(s.idx);const o=awaySummary(s);s.away=[];s.awaySkip=s.idx;s.benchInj=0;ovQ=ovQ.filter(x=>x.k!=='away');ovQ.unshift(o);
   if(ovEl&&['lb','stage'].includes(ovKind)){lbAll=false;closeOv()}
 }
-function commit(){ensureContract();save();awayCheck();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeDraw();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
+function repairRelo(){   // seasons saved before mid-season moves changed league: put the table and cups right
+  const s=S&&S.phase==='season'&&S.season; if(!s||s.relo||!s.lt||!s.midFrom||!S.club)return; s.relo=1;
+  const mem=leagueClubs(S.club.league); if(s.lt.teams.filter(q=>!mem.includes(q.n)).length>s.lt.teams.length/2)try{midRelocate(s,s.midFrom)}catch(e){console.error(e)}
+}
+function commit(){repairRelo();ensureContract();save();awayCheck();render();checkIntro();maybeWindow();maybeLMC();maybePens();maybeHeal();maybePick();maybePrep();maybeMid();maybeStory();maybeDraw();maybeRun();maybePress();flushOv();playSync();checkAch();checkRecords();scheduleAuto()}
 let healOpen=false;
 function maybeHeal(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.pendingHeal||healOpen||ovQ.some(o=>o.k==='heal'))return;
@@ -5591,12 +5595,62 @@ function midCheck(s){
     const lo=loanTarget(); if(lo)s.mid={kind:'loan',offers:[lo]};
   }
 }
+
+/* ---- moving mid-season: you finish the season in your new club's league, and in its cups if it is still in them ---- */
+function simLgRes(n,strs,count){const ppg=clamp(lgPPG(teamStr(n),strs)+(Math.random()-.5)*.24,.45,2.65),pD=.26,pW=clamp((ppg-pD)/3,.04,.86),r=[];for(let i=0;i<count;i++){const x=Math.random();r.push(x<pW?3:x<pW+pD?1:0)}return r}
+const wdlOf=r=>r.map(x=>x===3?'W':x===1?'D':'L');
+function midRelocate(s,old){
+  const L=LEAGUES[S.club.league]; if(!L)return;
+  const lgLeft=s.stages.filter((x,i)=>x.comp==='league'&&!x.res);
+  if(s.lt&&(s.v||4)>=6&&lgLeft.length){
+    const T=s.lt, me=S.club.name, k=lgPlayed(s), sameLg=T.teams.some(q=>q.n===me);
+    if(sameLg){
+      // same league: your old club keeps your results so far, you take over the new club's
+      const q=T.teams.find(x=>x.n===me), strs=T.teams.map(x=>teamStr(x.n));
+      T.teams=T.teams.filter(x=>x!==q);
+      if(old&&!T.teams.some(x=>x.n===old))T.teams.push({n:old,c:T.codes[old]||old.slice(0,3).toUpperCase(),res:T.me.res.concat(simLgRes(old,strs,T.M-k)),tb:Math.random()});
+      T.me.res=q.res.slice(0,k); T.me.wdl=wdlOf(T.me.res);
+      const others=T.teams.map(x=>x.n), sizes=T.sz, out=[];
+      lgLeft.forEach(x=>{const n=sizes[x.round]||0,b=[];for(let j=0;j<n;j++)b.push({opp:pick(others),ha:Math.random()<.5?'H':'A'});x.ms=b;x.mi=0});
+      s.lpush=Array.from({length:sizes[4]||3},()=>({opp:pick(others),ha:Math.random()<.5?'H':'A'}));
+      T.riv=T.riv&&others.includes(T.riv)?T.riv:null;
+    }else{
+      // a new league: its own table, with your new club's results so far
+      const bl=lgBuild(s); if(bl){const N=s.lt, done=s.stages.filter(x=>x.comp==='league'&&x.res).map(x=>x.round), k2=done.reduce((a,r)=>a+(N.sz[r]||0),0);
+        N.me.res=simLgRes(me,N.teams.map(x=>teamStr(x.n)),k2); N.me.wdl=wdlOf(N.me.res);
+        lgLeft.forEach(x=>{x.ms=(bl[x.round]||[]).map(m=>({...m}));x.mi=0});s.lpush=bl[4]}
+    }
+  }
+  // cups: carry on only where the new club is still alive
+  const lv=teamLevel(clubRank(S.club.name,S.club.league).frac), pr=[.85,.75,.62,.5,.4][lv]||.5;
+  const contK=L.cont&&L.div===1?(S.club.tier>=2?'cont':S.club.tier>=1&&hasCont2(S.club.league)?'cont2':null):null;
+  const played=c=>s.stages.filter((x,i)=>i<s.idx&&(x.comp===c||(c==='cont'&&x.comp==='cont2'))&&x.res&&!x.res.skipped).map(x=>x.round);
+  const roundsGone=c=>{const r=played(c);return r.length?Math.max(...r)+1:(c==='cup'?2:1)};
+  const aliveCup=Math.random()<Math.pow(pr,roundsGone('cup')), aliveCont=!!contK&&Math.random()<Math.pow(pr,roundsGone('cont'));
+  const reset=x=>{x.res=null;delete x.opp;delete x.ev;delete x.evr;delete x.atm;delete x.ch;delete x.chr;delete x.intro};
+  let anyCont=false;
+  s.stages.forEach((x,i)=>{if(i<s.idx)return;
+    if(x.comp==='cup'&&(!x.res||x.res.skipped)){if(aliveCup)reset(x);else x.res={skipped:true,tied:1}}
+    if((x.comp==='cont'||x.comp==='cont2')&&(!x.res||x.res.skipped)){if(isCG(x)){x.res={skipped:true,tied:1};return}
+      if(aliveCont){reset(x);x.comp=contK;anyCont=true}else x.res={skipped:true,tied:1}}});
+  if(aliveCont&&!anyCont){
+    // the old club had no continental nights left: the new club's knockout rounds slot into the calendar
+    const cur=ORDER.findIndex(([c,r])=>c==='league'&&r===(lgLeft[0]?lgLeft[0].round:2));
+    ORDER.slice(Math.max(0,cur)).forEach(([c,r])=>{if(c!=='cont'||r===0)return;
+      const prev=ORDER[ORDER.findIndex(([c2,r2])=>c2===c&&r2===r)-1];
+      let at=s.stages.findIndex((x,i)=>i>=s.idx&&prev&&x.comp===(prev[0]==='cont'?contK:prev[0])&&x.round===prev[1]);
+      at=at<0?s.stages.length:at+1; s.stages.splice(at,0,{comp:contK,round:r,key:focusKey(),res:null})});
+  }
+  s.midCup=aliveCup?1:0; s.midCont=aliveCont?1:0;
+  try{s.obj=makeObjective()}catch(e){}
+}
 function midMove(o){
   const s=S.season, notes=[];
   // cup-tied: the cups you already played this season stay with your old club
-  s.stages.forEach((x,i)=>{if(i>=s.idx&&!x.res&&['cup','cont','cont2','cwc'].includes(x.comp))x.res={skipped:true,tied:1}});
+  s.stages.forEach((x,i)=>{if(i>=s.idx&&!x.res&&x.comp==='cwc')x.res={skipped:true,tied:1}});
   const parent={name:S.club.name,league:S.club.league,tier:S.club.tier};
   joinClub(o,null,notes);
+  try{midRelocate(s,parent.name)}catch(e){console.error(e)} s.relo=1;
   if(o.loan)S.contract.loan={...parent,back:S.year};
   else signContract(o,o.wage,o.years,S.year);
   s.midFrom=parent.name; s.midLoan=o.loan?1:0;
