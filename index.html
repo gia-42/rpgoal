@@ -1767,7 +1767,7 @@ en:{
  themeDark:'Dark',themeLight:'Light',installIOS:'Install: tap Share, then Add to Home Screen',installBtn:'Install app',
  tabGame:'Game',tabSeason:'Season',tabStats:'Career',tabHof:n=>`Hall of Fame${n?` (${n})`:''}`,
  attrs:{spd:'Speed',fin:'Finishing',ski:'Skills',pas:'Passing',def:'Defending',str:'Physical',dec:'Mentality',lead:'Leadership'},attrs3:{spd:'SPD',fin:'FIN',ski:'SKL',pas:'PAS',def:'DEF',str:'PHY',dec:'MEN',lead:'LDR'},attrsS:{spd:'Speed',fin:'Finish.',ski:'Skills',pas:'Passing',def:'Defend.',str:'Physical',dec:'Mental.',lead:'Leader.'},
- unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 20 · mod ${m}`,
+ unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 100 · mod ${m}`,
  div2:'2nd division',
  newRoll:'New career · 8d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
  avgTo:a=>`Average <b class="num">${a}</b>`,firstOffers:'Your first offers',euroOffer:'Straight to Europe',
@@ -1903,7 +1903,7 @@ pt:{
  themeDark:'Escuro',themeLight:'Claro',installIOS:'Instalar: toque em Compartilhar e depois em Adicionar à Tela de Início',installBtn:'Instalar app',
  tabGame:'Jogo',tabSeason:'Temporada',tabStats:'Carreira',tabHof:n=>`Hall da Fama${n?` (${n})`:''}`,
  attrs:{spd:'Velocidade',fin:'Finalização',ski:'Habilidade',pas:'Passe',def:'Defesa',str:'Físico',dec:'Mentalidade',lead:'Liderança'},attrs3:{spd:'VEL',fin:'FIN',ski:'HAB',pas:'PAS',def:'DEF',str:'FÍS',dec:'MEN',lead:'LID'},attrsS:{spd:'Veloc.',fin:'Final.',ski:'Habil.',pas:'Passe',def:'Defesa',str:'Físico',dec:'Mental.',lead:'Lider.'},
- unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 20 · mod ${m}`,
+ unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 100 · mod ${m}`,
  div2:'2ª divisão',
  newRoll:'Nova carreira · 8d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
  avgTo:a=>`Média <b class="num">${a}</b>`,firstOffers:'Suas primeiras propostas',euroOffer:'Direto para a Europa',
@@ -2059,6 +2059,8 @@ const squadMod=()=>clamp(4-pmod(rating(S.attrs)),-2,2);
 function sg(n){return (n>=0?'+':'−')+Math.abs(n)}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>lang==='pt'?n.toFixed(1).replace('.',','):n.toFixed(1);
+/* the overall rating is shown out of 100 (the game still works on 1–20 underneath) */
+const o100=n=>String(Math.round((+n||0)*5));
 const tierOf=(Li,ti)=>LEAGUES[Li].tiers[Math.min(ti,LEAGUES[Li].tiers.length-1)];
 const lgCountry=Li=>COUNTRY[lang][LEAGUES[Li].c];
 const NATMOD_W={USA:3,ESP:3,ENG:3,FRA:3,BRA:3,GER:2,NED:2,ITA:1,POR:1,ARG:0,URU:0};
@@ -3092,7 +3094,7 @@ function sheet(wide){
   const cond=S.phase==='season'&&s&&s.out>0?`<span class="chip inj">${s.seasonOut?t.seasonOutChip:t.injured(s.out)}</span>`:`<span class="chip fit">${t.fit}</span>`+cchip;
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:S.phase==='season'&&isIntlYear(S.year)&&CONF[S.nat]?`<span class="chip gold">${t.intl[intlKey()]}</span>`:'';
   return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl agenat">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span>${S.foot?footTag():''}<h2>${esc(S.name||t.unnamed)}</h2><div class="muted clubline">${crest(kitOf(S.club.name),14)}<span>${esc(S.club.name)} · ${esc(LEAGUES[S.club.league].name)}</span></div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.phase==='season'&&S.season&&S.season.stages.some(x=>x.comp==='cont'||x.comp==='cont2')?`<span class="chip contq">${qualName(S.season.stages.some(x=>x.comp==='cont2')?'second':'main',S.club.league)}</span>`:''}${wcChip}${S.insp?`<span class="chip gold" title="${t.inspT}">✦ ${S.insp}</span>`:''}</div></div>
-  <div class="rating"><div class="lbl"><span class="agebit">${t.yrs(S.age)} · </span>${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
+  <div class="rating"><div class="lbl"><span class="agebit">${t.yrs(S.age)} · </span>${t.rating}</div><div class="big num">${o100(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
   <div class="bars">${fanBar()}${teamBar()}${roleBar()}${fameBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div>${wide?ccells():''}</section>`;
 }
 /* ---------- iPad layouts: L (landscape, 3 columns) and P (portrait dashboard) ---------- */
@@ -3422,7 +3424,7 @@ function retiredView(){
   const H=S.history, tot=k=>H.reduce((s,h)=>s+h[k],0);
   const peak=Math.max(...H.map(h=>h.rating));
   const wcs=H.filter(h=>h.wc!=null&&h.wc>=0).length;
-  return `<section class="panel hero offs retd"><div class="offh"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2>${esc(S.name||t.unnamed)}</h2><span class="muted small">${t.peak(fmt(peak))}</span></div>
+  return `<section class="panel hero offs retd"><div class="offh"><span class="lbl">${t.over(H[0].year,H[H.length-1].year)}</span><h2>${esc(S.name||t.unnamed)}</h2><span class="muted small">${t.peak(o100(peak))}</span></div>
   <div class="statline sm"><div class="stat"><div class="lbl">${t.seasons}</div><div class="n num">${H.length}</div></div><div class="stat"><div class="lbl">${t.goals}</div><div class="n num">${tot('goals')}</div></div><div class="stat"><div class="lbl">${t.trophies}</div><div class="n num">${S.trophies.length}</div></div><div class="stat"><div class="lbl">${t.wcs}</div><div class="n num">${wcs}</div></div></div>
   <div class="offnotes">${S.endReason?`<div class="on ${S.endReason.kind==='quit'?'':'bad'}">${S.endReason.kind==='quit'?t.endedQuit(S.endReason.age):t.endedInjury(S.endReason.age)}</div>`:''}${S.reached40?`<div class="on gold">${t.n40}</div>`:''}${S.hofSaved?`<div class="on gold">${t.enshrined}</div>`:''}${S.parent?`<div class="on">${t.heirOf(esc(S.parent.name))}</div>`:''}${(S.kids||[]).length?`<div class="on gold">${t.kidsYes(S.kids)}</div>`:S.kids?`<div class="on dim">${t.kidsNo}</div>`:''}</div>
   <div class="offact wrapb"><button class="btn" data-act="reset">${t.newCareer}</button>${(decideKids(),S.kids||[]).includes('m')?`<button class="btn ghost" data-act="heir" data-g="m">${t.heirSon}</button>`:''}${(S.kids||[]).includes('f')?`<button class="btn ghost" data-act="heir" data-g="f">${t.heirDau}</button>`:''}<button class="btn ghost" data-act="recap">${t.replay}</button><button class="btn ghost" data-act="chron">${t.chronT}</button>${S.hofId?`<button class="btn ghost" data-act="share" data-id="${S.hofId}">${t.shareBtn}</button>`:''}</div></section>`;
@@ -3448,7 +3450,7 @@ function careerView(){
     if(h.wc!=null&&h.wc!==5)ex.push(`<span class="chip">${t.wc}: ${h.wc===-1?t.notCalled:t.wcRes[h.wc]}</span>`);
     if(h.intl!=null&&h.intl>=0&&h.intl!==5)ex.push(`<span class="chip">${t.intl[h.intlT]}: ${t.wcRes[h.intl]}</span>`);
     if(h.fired)ex.push(`<span class="chip inj">${t.firedShort}</span>`);
-    return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${fmt(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
+    return `<div class="crow"><span class="yr">${h.year}</span><span class="cl">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b><span class="muted">${ord(h.pos)}${h.move==='up'?' ▲':h.move==='down'?' ▼':''}</span></span><span class="nm">${h.apps}·${h.goals}·${h.assists} · ${o100(h.rating)}</span>${ex.length?`<span class="cups">${ex.join('')}</span>`:''}<span class="chr">${chron(h).replace(/^\d+ · [^:]+: /,'')}</span></div>`}).join('');
   return `<section class="panel stack trackp seasonsP" style="gap:6px"><div class="row between"><h3 style="font-size:18px">${t.bySeason}</h3><button class="btn ghost sm" data-act="chron">${t.chronT}</button></div>${pgaChart(S.history)}<div class="scrollbox">${rows}</div>${quitRow()}</section>`;
 }
 let hofSub='players';
@@ -3463,7 +3465,7 @@ function hofRecords(tabs){
   if(!hof.length)return `${head}<section class="pscroll"><div class="empty">${t.hofEmpty}</div></section>`;
   const RX=REC.concat([{id:'intls',hof:p=>(p.trophies||[]).filter(x=>x.kind==='intl').length},{id:'score',hof:p=>p.score||0}]);
   const rows=RX.map(R=>{let best=null,v=0;hof.forEach(p=>{const x=R.hof(p);if(x>v){v=x;best=p}});if(!best)return'';
-    const val=R.money?money(v):R.dec?fmt(v):v;
+    const val=R.money?money(v):R.dec?o100(v):v;
     return `<div class="recrow"><div class="rect"><span class="lbl">${t.rec[R.id]||t.recX[R.id]}</span><b>${esc(best.name||t.unnamed)} <span class="gsym">${best.g==='f'?'♀':'♂'}</span></b><span class="muted small">${best.from}–${best.to}${best.daily?' · '+t.dailyBtn:''}</span></div><span class="recv num">${val}</span></div>`}).join('');
   return `${head}<section class="pscroll"><div class="reclist">${rows}</div></section>`;
 }
@@ -3488,7 +3490,7 @@ function hofPlayers(tabs){
       const cups=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
       more=`<div class="hmore"><span class="lbl">${p.from}–${p.to} · ${COUNTRY[lang][p.nat]||''} · ${t.seasons}: ${p.seasons}${p.style&&t.styles[p.style]?` · ${t.styles[p.style]}`:''}</span>
         <div class="hpath">${p.clubs.map(esc).join(' → ')}</div>
-        <div class="numgrid">${[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.rating,fmt(p.peak)]].map(([l,v])=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`).join('')}</div>
+        <div class="numgrid">${[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.rating,o100(p.peak)]].map(([l,v])=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`).join('')}</div>
         ${cups?`<div class="cabinet">${cups}</div>`:''}
         ${awCab(p.awards)}
         ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(x=>tagChip(x,p.g||'m')).join('')}</div>`:''}
@@ -3497,7 +3499,7 @@ function hofPlayers(tabs){
     }
     return `<div class="hrow c g${p.g||'m'} ${open?'open':''}"><div class="hrank num">${i+1}</div>
       <button class="hbtn" data-act="hofopen" data-id="${p.id}" aria-expanded="${open}"><span class="hl1"><span class="pos"><span class="ab">${ps[0]}</span></span><span class="hname">${esc(p.name||t.unnamed)}</span>${p.daily?`<span class="dailytag" title="${t.dailyT(p.daily)}"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10" rx="2"/><path d="M2.5 7h11M5.5 2v3M10.5 2v3"/></svg>${new Date(p.daily+'T12:00:00Z').toLocaleDateString(lang==='pt'?'pt-BR':'en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).replace('.','')}</span>`:''}<span class="gsym" aria-label="${p.g==='f'?t.genderW:t.genderM}" title="${p.g==='f'?t.genderW:t.genderM}">${p.g==='f'?'♀':'♂'}</span></span>
-        <span class="hl2 hst"><span class="tt">${titles?t.titlesN(titles):t.noTitles}</span>${wcN?`<span class="ic">${icoCup}${wcN}</span>`:''}${bdoN?`<span class="ic">${icoBall}${bdoN}</span>`:''}<span class="pga num"><b>${p.apps}</b> ${t.pS}<i></i><b>${p.goals}</b> G<i></i><b>${p.assists}</b> A</span><span class="rt num">${fmt(p.peak)}</span></span></button>
+        <span class="hl2 hst"><span class="tt">${titles?t.titlesN(titles):t.noTitles}</span>${wcN?`<span class="ic">${icoCup}${wcN}</span>`:''}${bdoN?`<span class="ic">${icoBall}${bdoN}</span>`:''}<span class="pga num"><b>${p.apps}</b> ${t.pS}<i></i><b>${p.goals}</b> G<i></i><b>${p.assists}</b> A</span><span class="rt num">${o100(p.peak)}</span></span></button>
       <div class="hscore"><div class="n num">${p.score}</div></div>${more}</div>`}).join('');
   return `${head}<section class="pscroll stack" style="gap:10px">${cmpView(all)}<div class="hof">${rows}</div>
   <div class="row"><button class="btn danger sm" data-act="hofclear">${hofArm?t.hofClearSure:t.hofClear}</button></div></section>`;
@@ -3639,7 +3641,7 @@ const ACH=[
  {id:'goals30',n:['Goal machine','Máquina de gols'],d:['Score 30 goals in a season.','Marque 30 gols numa temporada.'],test:()=>S.history.some(h=>h.goals>=30)||!!(S.phase==='season'&&S.season&&S.season.goals>=30)},
  {id:'assists20',n:['The architect','O arquiteto'],d:['Make 20 assists in a season.','Dê 20 assistências numa temporada.'],test:()=>S.history.some(h=>h.assists>=20)||!!(S.phase==='season'&&S.season&&S.season.assists>=20)},
  {id:'goals300',n:['Three hundred','Trezentos'],d:['Score 300 career goals.','Marque 300 gols na carreira.'],test:()=>careerSum('goals')>=300},
- {id:'worldclass',n:['World class','Classe mundial'],d:['Reach a rating of 18.','Chegue a nível 18.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=18},
+ {id:'worldclass',n:['World class','Classe mundial'],d:['Reach a rating of 90.','Chegue a nível 90.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=18},
  {id:'galactico',n:['Galáctico','Galáctico'],d:['Sign for Real Madrid.','Assine com o Real Madrid.'],test:()=>!!S.club&&S.club.name==='Real Madrid'},
  {id:'barca',n:['Més que un club','Més que un club'],d:['Sign for Barcelona.','Assine com o Barcelona.'],test:()=>!!S.club&&S.club.name==='Barcelona'},
  {id:'abroad3',n:['Globetrotter','Globetrotter'],d:['Play in four different countries.','Jogue em quatro países diferentes.'],test:()=>new Set(S.history.map(h=>LEAGUES[h.league].c).concat(S.club&&S.phase!=='create'?[LEAGUES[S.club.league].c]:[])).size>=4},
@@ -3659,7 +3661,7 @@ const ACH=[
  {id:'stillgotit',n:['Still got it','Ainda dá caldo'],d:['Pass the keep-playing check at 37 or older.','Passe no teste para continuar jogando aos 37 ou mais.'],test:()=>S.history.some(h=>h.ageCheck&&h.ageCheck.ok&&h.age>=37)},
  {id:'forty',n:['Ageless','Sem idade'],d:['Play until you are 40.','Jogue até os 40.'],test:()=>!!S.reached40},
  {id:'friends',n:['From enemies to friends','De inimigo a amigo'],d:['Go from disliked to loved by the same club’s fans.','Passe de mal-visto a amado pela torcida do mesmo clube.'],test:()=>!!S.club&&S.phase!=='create'&&S.dislikedAt===S.club.name&&fanTier()>=4},
- {id:'goat',n:['The GOAT','O GOAT'],d:['Reach a rating of 20.','Chegue a nível 20.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=20},
+ {id:'goat',n:['The GOAT','O GOAT'],d:['Reach a rating of 100.','Chegue a nível 100.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=20},
  {id:'wc3',n:['Three stars','Tricampeão do mundo'],d:['Win three World Cups.','Ganhe três Copas do Mundo.'],test:()=>allTrophies().filter(x=>x.kind==='wc').length>=3},
  {id:'cupking',n:['Cup specialist','Rei de copa'],d:['Win the national cup three times.','Ganhe a copa nacional três vezes.'],test:()=>allTrophies().filter(x=>x.kind==='cup').length>=3},
  {id:'perfectgroup',n:['Perfect group','Fase de grupos perfeita'],d:['Win all three World Cup group games.','Vença os três jogos da fase de grupos da Copa.'],test:()=>!!(S.season&&S.season.wcg&&S.season.wcg.W>=3&&!intlSeason())},
@@ -3908,7 +3910,7 @@ const ACH_PROG={
  cupking:()=>[allTrophies().filter(x=>x.kind==='cup').length,3],
  goals30:()=>[bestSeason('goals'),30], assists20:()=>[bestSeason('assists'),20],
  goals300:()=>[careerSum('goals'),300], ironman:()=>[careerSum('apps'),750],
- worldclass:()=>[live()?+rating(S.attrs).toFixed(1):0,18], goat:()=>[live()?+rating(S.attrs).toFixed(1):0,20],
+ worldclass:()=>[live()?Math.round(rating(S.attrs)*5):0,90], goat:()=>[live()?Math.round(rating(S.attrs)*5):0,100],
  abroad3:()=>[new Set(S.history.map(h=>LEAGUES[h.league].c).concat(live()&&S.club?[LEAGUES[S.club.league].c]:[])).size,4],
  decade:()=>[live()?S.tenure||0:0,10], twohomes:()=>[Object.values(S.clubPeak||{}).filter(v=>v>=5).length,2],
  hothand:()=>[S.season&&S.season.rolls?S.season.rolls.filter(x=>x===20).length:0,2],
@@ -4036,7 +4038,7 @@ function statsView(){
   const cab=Object.entries(counts).map(([n,c])=>`<span class="cup ${isGoldName(n)?'wc':''}">${troSVG(cx[n],'ti')}${c>1?c+'× ':''}${esc(n)}</span>`).join('');
   const clubs=byClub.map(c=>`<div class="crow"><span class="yr">${t.seasonsShort(c.seasons)}</span><span class="cl">${crest(kitOf(c.club),13)}<b>${esc(c.club)}</b>${c.titles?`<span class="muted">${t.titlesN(c.titles)}</span>`:''}</span><span class="nm">${c.apps}·${c.goals}·${c.assists}</span></div>`).join('');
   return sub+`<section class="panel stack trackp nums" style="gap:8px"><div class="ngrid"><div class="ncol">
-    <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,fmt(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
+    <div class="numgrid">${cell(t.seasons,H.length)}${cell(t.apps,tot('apps'))}${cell(t.goals,tot('goals'))}${cell(t.assists,tot('assists'))}${cell(t.peakT,o100(peak))}${cell(t.trophies,S.trophies.filter(x=>x.kind!=='bdo').length)}${cell(t.bdo,bestBdo<99?ord(bestBdo):'—')}${cell(t.wcs,wcs)}</div>
     ${cab?`<div class="cabinet oneline">${cab}</div>`:''}
     ${awCab(S.awards)}
     <div class="row between"><span class="lbl">${t.attrsT}</span>${S.foot?footTag():''}</div><div class="attrs">${attrBars(S.attrs)}</div>
@@ -5694,7 +5696,7 @@ function checkRecords(){
     let best=0,who=null; hof.forEach(p=>{const v=R.hof(p);if(v>best){best=v;who=p}});
     const v=R.cur(); if(best<=0||v<=best)return;
     S.recs[R.id]={year:S.year,v,old:best,who:who&&who.name||''};
-    const L=lang==='pt'?1:0, vv=R.money?money(v):R.dec?fmt(v):v, bb=R.money?money(best):R.dec?fmt(best):best;
+    const L=lang==='pt'?1:0, vv=R.money?money(v):R.dec?o100(v):v, bb=R.money?money(best):R.dec?o100(best):best;
     toastQ.push({id:'record',rec:1,n:[T.en.rec[R.id],T.pt.rec[R.id]],d:[T.en.recBeat(vv,esc(who.name||T.en.unnamed),bb),T.pt.recBeat(vv,esc(who.name||T.pt.unnamed),bb)]});
     const s=S.season; if(S.phase==='season'&&s&&!s.ended)(s.recs=s.recs||[]).push(R.id); else {const h=S.history[S.history.length-1];if(h)(h.recs=h.recs||[]).push(R.id)}
   });
@@ -5763,7 +5765,7 @@ function sparkScrub(e){
   const px=(6+i*(W-12)/(H.length-1))/W*100, py=(Hh-6-(h.rating-min)/(max-min)*(Hh-14))/Hh*100;
   const dot=box.querySelector('.sp-dot'), tip=box.querySelector('.sp-tip');
   dot.hidden=false; dot.style.left=px+'%'; dot.style.top=py+'%';
-  tip.hidden=false; tip.innerHTML=`${crest(kitOf(h.club),11)}<b>${h.year}</b> · ${esc(h.club)} · <span class="num">${fmt(h.rating)}</span>`;
+  tip.hidden=false; tip.innerHTML=`${crest(kitOf(h.club),11)}<b>${h.year}</b> · ${esc(h.club)} · <span class="num">${o100(h.rating)}</span>`;
   tip.style.left=clamp(px,14,86)+'%';
 }
 function sparkHide(e){const box=e.target.closest&&e.target.closest('[data-spark]');if(!box)return;box.querySelectorAll('.sp-dot,.sp-tip').forEach(x=>x.hidden=true)}
@@ -5826,14 +5828,14 @@ const histH=hist=>hist.map(x=>({year:x.y,age:x.a,club:x.c,league:x.lg,pos:x.p,si
 function ratingChart(H){
   if(H.length<2)return'';
   const lo=Math.floor(Math.min(...H.map(h=>h.rating))-.5), hi=Math.ceil(Math.max(...H.map(h=>h.rating))+.5), x=i=>100*i/(H.length-1), y=v=>100*(1-(v-lo)/((hi-lo)||1));
-  const grid=[lo,Math.round((lo+hi)/2),hi].map(v=>`<span class="pga-gl" style="top:${y(v)}%"><i>${v}</i></span>`).join('');
+  const grid=[lo,Math.round((lo+hi)/2),hi].map(v=>`<span class="pga-gl" style="top:${y(v)}%"><i>${v*5}</i></span>`).join('');
   const line=`<polyline class="pga-g" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h.rating).toFixed(2)).join(' ')}"/>`;
-  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="rc-c" style="left:${x(i)}%;top:${y(h.rating)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:`<span class="pga-dot pga-g" style="left:${x(i)}%;top:${y(h.rating)}%" title="${h.year} · ${fmt(h.rating)}"></span>`).join('');
+  const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="rc-c" style="left:${x(i)}%;top:${y(h.rating)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:`<span class="pga-dot pga-g" style="left:${x(i)}%;top:${y(h.rating)}%" title="${h.year} · ${o100(h.rating)}"></span>`).join('');
   return `<div class="cchart"><span class="lbl">${t.rtBySeason}</span><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.rtBySeason}">${line}</svg>${marks}</div>${yrAxis(H)}</div></div>`;
 }
 function seasonTable(H){
   return `<div class="cchart"><span class="lbl">${t.hpBySeason}</span><div class="stbl-w"><table class="stbl"><thead><tr><th>${t.colYr}</th><th>${t.colAge}</th><th class="cl">${t.colClub}</th><th>${t.colFin}</th><th>${t.apps}</th><th>G</th><th>A</th><th>${t.colRt}</th><th></th></tr></thead><tbody>${H.map(h=>{const L=LEAGUES[h.league];const tr=(h.trophies||[]).filter(x=>x.kind!=='bdo');const b=(h.trophies||[]).some(x=>x.kind==='bdo');
-    return `<tr><td class="num">${h.year}</td><td class="num">${h.age}</td><td class="cl"><span class="stc">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b></span></td><td class="num ${h.pos===1?'gold':h.move==='down'?'bad':h.move==='up'?'up':''}">${h.pos?ord(h.pos):'—'}${L&&L.div===2?'<sup>2</sup>':''}</td><td class="num">${h.apps}</td><td class="num">${h.goals}</td><td class="num">${h.assists}</td><td class="num">${fmt(h.rating)}</td><td class="trs">${tr.slice(0,4).map(x=>troSVG(x,'ti')).join('')}${tr.length>4?`<span class="muted">+${tr.length-4}</span>`:''}${b?troSVG({kind:'bdo'},'ti'):''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+    return `<tr><td class="num">${h.year}</td><td class="num">${h.age}</td><td class="cl"><span class="stc">${crest(kitOf(h.club),13)}<b>${esc(h.club)}</b></span></td><td class="num ${h.pos===1?'gold':h.move==='down'?'bad':h.move==='up'?'up':''}">${h.pos?ord(h.pos):'—'}${L&&L.div===2?'<sup>2</sup>':''}</td><td class="num">${h.apps}</td><td class="num">${h.goals}</td><td class="num">${h.assists}</td><td class="num">${o100(h.rating)}</td><td class="trs">${tr.slice(0,4).map(x=>troSVG(x,'ti')).join('')}${tr.length>4?`<span class="muted">+${tr.length-4}</span>`:''}${b?troSVG({kind:'bdo'},'ti'):''}</td></tr>`}).join('')}</tbody></table></div></div>`;
 }
 function hofCareerHTML(p){
   const ps=t.pos[p.pos]||[p.pos,p.pos], hist=hofHist(p), H=hist?histH(hist):null, g=p.g||'m';
@@ -5845,7 +5847,7 @@ function hofCareerHTML(p){
   const flag=NLOGO[p.nat]?`<img class="cflag" src="${NLOGO[p.nat]}" alt="" decoding="sync" draggable="false">`:'';
   const last=p.clubs[p.clubs.length-1];
   const cell=(l,v)=>`<div><span class="lbl">${l}</span><b>${v}</b></div>`;
-  const left=`<div class="numgrid">${cell(t.seasons,p.seasons)}${cell(t.apps,p.apps)}${cell(t.goals,p.goals)}${cell(t.assists,p.assists)}${cell(t.peakT,fmt(p.peak))}${cell(t.trophies,titles)}${cell(t.bdo,bdoN)}${cell(t.wcs,wcN)}</div>
+  const left=`<div class="numgrid">${cell(t.seasons,p.seasons)}${cell(t.apps,p.apps)}${cell(t.goals,p.goals)}${cell(t.assists,p.assists)}${cell(t.peakT,o100(p.peak))}${cell(t.trophies,titles)}${cell(t.bdo,bdoN)}${cell(t.wcs,wcN)}</div>
     ${cups?`<div class="cabinet">${cups}</div>`:''}${awCab(p.awards)}
     ${tags.length||(p.ud||[]).length?`<div class="cabinet">${(p.ud||[]).map(u=>udChip(u)).join('')}${tags.map(x=>tagChip(x,g)).join('')}</div>`:''}
     ${(p.feats||[]).length||(p.items||[]).length?`<div class="cabinet">${(p.feats||[]).map(k=>`<span class="chip tg blue">${t.feats[k][0]}</span>`).join('')}${(p.items||[]).map(k=>`<span class="chip tg gold">${t.items[k][0]}</span>`).join('')}</div>`:''}
@@ -5891,7 +5893,7 @@ function careerCard(p){
   g.fillStyle=dim;g.font='600 34px system-ui,sans-serif';g.fillText('RPGOAL · '+t.hofT.toUpperCase(),80,110);
   g.fillStyle=ink;g.font='700 92px system-ui,sans-serif';g.fillText((p.name||t.unnamed).slice(0,20),80,230);
   g.fillStyle=dim;g.font='500 38px system-ui,sans-serif';g.fillText(`${(t.pos[p.pos]||[p.pos,p.pos])[1]} · ${COUNTRY[lang][p.nat]||''} · ${p.from}–${p.to}`,80,295);
-  const stats=[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.peakT,fmt(p.peak)]];
+  const stats=[[t.apps,p.apps],[t.goals,p.goals],[t.assists,p.assists],[t.peakT,o100(p.peak)]];
   stats.forEach(([l,v],i)=>{const x=80+i*235;g.fillStyle=dim;g.font='600 26px system-ui,sans-serif';g.fillText(String(l).toUpperCase(),x,400);g.fillStyle=ink;g.font='700 72px system-ui,sans-serif';g.fillText(String(v),x,475)});
   const counts={};(p.trophies||[]).slice().sort(byPrestige).forEach(x=>{const n=trophyName(x);counts[n]=(counts[n]||0)+1});
   g.fillStyle=dim;g.font='600 26px system-ui,sans-serif';g.fillText(t.titlesL.toUpperCase(),80,570);
@@ -6793,7 +6795,7 @@ function eosHTML(o){
   if(acc.length)S2(t.eosAcc,`<div class="eos-chips">${acc.map(([c,x])=>`<span class="eos-chip ${c}">${x}</span>`).join('')}</div>`);
   const a0=h.a0||{}, a1=h.a1||S.attrs, ch=AK.filter(k=>a0[k]!=null&&a0[k]!==a1[k]);
   const r0=h.a0?rating(a0):null, r1=rating(a1);
-  S2(t.eosAttr,`${r0!=null?`<div class="eos-ovr"><span>${t.eosOvr}</span><b class="num">${fmt(r0)}</b><span class="arr">→</span><b class="num ${r1>r0?'up':r1<r0?'down':''}">${fmt(r1)}</b></div>`:''}${ch.length?`<div class="eos-attrs">${ch.map((k,i)=>{const dv=a1[k]-a0[k];return `<div class="eos-attr" style="--i:${i}"><span>${t.attrs[k]}</span><span class="num">${a0[k]} → <b>${a1[k]}</b> <i class="${dv>0?'up':'down'}">${dv>0?'+':'−'}${Math.abs(dv)}</i></span></div>`}).join('')}</div>`:`<div class="muted small">${t.eosNoAttr}</div>`}`);
+  S2(t.eosAttr,`${r0!=null?`<div class="eos-ovr"><span>${t.eosOvr}</span><b class="num">${o100(r0)}</b><span class="arr">→</span><b class="num ${r1>r0?'up':r1<r0?'down':''}">${o100(r1)}</b></div>`:''}${ch.length?`<div class="eos-attrs">${ch.map((k,i)=>{const dv=a1[k]-a0[k];return `<div class="eos-attr" style="--i:${i}"><span>${t.attrs[k]}</span><span class="num">${a0[k]} → <b>${a1[k]}</b> <i class="${dv>0?'up':'down'}">${dv>0?'+':'−'}${Math.abs(dv)}</i></span></div>`}).join('')}</div>`:`<div class="muted small">${t.eosNoAttr}</div>`}`);
   const mo=[];
   const recs=[...new Set((h.recs||[]).concat(Object.entries(S.recs||{}).filter(([k,v])=>v&&v.year===h.year).map(([k])=>k)))];
   recs.forEach(k=>{if(t.rec&&t.rec[k])mo.push(['gold',`${t.recT}: ${t.rec[k]}`])});
