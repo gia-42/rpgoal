@@ -2638,6 +2638,7 @@ function resolveEvent(v){
   let fx={...(ok?e.ok:e.bad)};
   if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.max(S.attrs[e.at[0]],Math.min(attrCap(e.at[0]),S.attrs[e.at[0]]+1));if(st.ev==='training')s.train++}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
+  if(perfect&&['fk','oneone','header','counter'].includes(e.id))s.wonder=(s.wonder||0)+1;
   st.evr={nat:v,bonus,tgt,total,ok,perfect,die}; st.fx={mode:fx.mode||null,buff:fx.buff||0};
   if(v===1&&ONPITCH_EV.includes(st.ev))injuryScare();
   if(st.ev==='derby'&&ok){S.derbyW=(S.derbyW||0)+1;if(S.derbyW>=25)giveItem('scarf')}
@@ -5271,8 +5272,8 @@ const questText=q=>q.k==='goals'?t.qx.goals(q.n):q.k==='assists'?t.qx.assists(q.
 /* ---- crit tables: a d12 (two faces per outcome) decides what a natural 20 or a natural 1 turns into ---- */
 function critGood(r){
   const s=S.season, n=d(12), v=Math.ceil(n/2); r.ct={v,n,good:1};
-  if(v===1){r.goals=(r.goals||0)+1;s.goals++;cstAdd(1,0,0)}
-  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2;cstAdd(2,0,0);const st0=s.stages[s.idx];if(st0&&isFinal(st0))giveItem('hatball')}
+  if(v===1){r.goals=(r.goals||0)+1;s.goals++;cstAdd(1,0,0);s.wonder=(s.wonder||0)+1}
+  else if(v===2){r.goals=(r.goals||0)+2;s.goals+=2;cstAdd(2,0,0);s.wonder=(s.wonder||0)+1;const st0=s.stages[s.idx];if(st0&&isFinal(st0))giveItem('hatball')}
   else if(v===3)addLoy(2);
   else if(v===4)s.hot+=1;
   else if(v===5)s.scout=1;
@@ -5814,7 +5815,7 @@ function midClick(e){
 }
 /* ================= individual awards: positions, lines, young player, competition MVPs ================= */
 const AW_GROUP={ST:'att',W:'att',AM:'mid',CM:'mid',DM:'mid',FB:'def',CB:'def'};
-const AW_W={pos:8,grp:14,young:8,mvp_league:10,mvp_cup:5,mvp_cont:12,mvp_cont2:6,mvp_wc:16,mvp_intl:9,mvp_cwc:6};
+const AW_W={boot:9,shoe:14,puskas:6,pos:8,grp:14,young:8,mvp_league:10,mvp_cup:5,mvp_cont:12,mvp_cont2:6,mvp_wc:16,mvp_intl:9,mvp_cwc:6};
 function seasonPerf(s){const p=myPos(), out=s.goals*0.8+s.assists*0.5+(s.cs||0)*0.25, rel=clamp(out/(POS_EXP[p]||12),0,2.2);return rating(S.attrs)*4+22*rel}
 function seasonAwards(s,h){
   const out=[], p=myPos(), perf=seasonPerf(s)+(hasItem('docu')?2:0), L=LEAGUES[h.league];
@@ -5823,6 +5824,13 @@ function seasonAwards(s,h){
   if(perf+lvlAdj+Math.random()*8>=111)out.push({k:'pos',p});
   if(perf+lvlAdj+Math.random()*8>=118)out.push({k:'grp',g:AW_GROUP[p]});
   if(S.age<=21&&perf+lvlAdj+Math.random()*8>=83)out.push({k:'young'});
+  // the top scorer's boot: your league goals against the season's best CPU tally
+  {const lgG=(s.cst&&s.cst.league||[0])[0], M=L.matches||38, thr=Math.round(M*(.58+Math.random()*.27));
+   if(lgG>=Math.max(8,thr))out.push({k:'boot',lg:h.league});
+   const fac=['ENG','ESP','ITA','GER','FRA'].includes(L.c)?2:['POR','NED'].includes(L.c)?1.5:0;
+   if(fac&&!L.w&&L.div===1&&lgG*fac>=52+Math.random()*16)out.push({k:'shoe'})}
+  // goal of the year: a wonder goal or two, and enough fame for the vote
+  if(s.wonder&&Math.random()<Math.min(.12,.012*s.wonder+(S.fame||0)/1500))out.push({k:'puskas'});
   // MVPs: how you played in that competition, the big moments you won, and how far the team went
   const comps={};
   s.stages.forEach(st=>{const c=st.comp==='run'?'league':st.comp;if(!st.res||st.res.skipped)return;comps[c]=comps[c]||{mom:0};if(st.evr&&st.evr.ok)comps[c].mom++;if(st.chr&&st.chr.ok&&!st.chr.auto)comps[c].mom++});
@@ -5838,7 +5846,7 @@ function seasonAwards(s,h){
   });
   return out;
 }
-const awName=a=>a.k==='pos'?t.awPos[a.p]:a.k==='grp'?t.awGrp[a.g]:a.k==='young'?t.awYoung:t.awMvp(a.c==='league'?LEAGUES[a.lg].name:a.c==='intl'?t.intl[a.t]:a.c==='wc'?(isW()?t.wcW:t.wcM):compName(a.c,a.lg));
+const awName=a=>a.k==='boot'?t.awBoot(LEAGUES[a.lg]?LEAGUES[a.lg].name:''):a.k==='shoe'?t.awShoe:a.k==='puskas'?(isW()?t.awMarta:t.awPuskas):a.k==='pos'?t.awPos[a.p]:a.k==='grp'?t.awGrp[a.g]:a.k==='young'?t.awYoung:t.awMvp(a.c==='league'?LEAGUES[a.lg].name:a.c==='intl'?t.intl[a.t]:a.c==='wc'?(isW()?t.wcW:t.wcM):compName(a.c,a.lg));
 const awCab=list=>{if(!list||!list.length)return'';const c={};list.forEach(a=>{const n=awName(a);c[n]=(c[n]||0)+1});return `<div class="cabinet oneline">${Object.entries(c).map(([n,k])=>`<span class="cup aw">${k>1?k+'× ':''}${esc(n)}</span>`).join('')}</div>`};
 const awWeight=a=>a.k==='mvp'?Math.round((AW_W['mvp_'+a.c]||5)*((a.c==='league'||a.c==='cup')&&a.lg!=null&&LEAGUES[a.lg]?lgFactor(a.lg):1)):AW_W[a.k]||5;
 /* ---- Career > Contract ---- */
@@ -5971,6 +5979,7 @@ Object.assign(T.en,{paradeK:'Trophy parade',paradeT:'The city is yours',paradeD:
 Object.assign(T.en,{introSub:'One match for the trophy',introGo:'Kick off'});
 Object.assign(T.en,{bgK:'Where you come from',bgT:'Your background',bgSub:'Pick one. Each brings two strengths and a flaw.',bgRow:'Background'});
 Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
+Object.assign(T.en,{awBoot:l=>`Golden Boot · ${l}`,awShoe:'European Golden Shoe',awPuskas:'Puskás Award',awMarta:'Marta Award'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
 Object.assign(T.pt,{clubLv:'Nível do elenco',clubRk:(i,n)=>`${i}º de ${n}`,clubPos:'Posição na liga',clubRiv:'Rivais',clubYou:'Sua passagem',clubNever:'Você nunca jogou aqui.',clubNow:'Seu clube',clubTag:'Status',legendT:'Lenda do clube'});
@@ -5979,6 +5988,7 @@ Object.assign(T.pt,{paradeK:'Festa do título',paradeT:'A cidade é sua',paradeD
 Object.assign(T.pt,{introSub:'Um jogo pela taça',introGo:'Bola rolando'});
 Object.assign(T.pt,{bgK:'De onde você vem',bgT:'Sua origem',bgSub:'Escolha uma. Cada uma traz dois pontos fortes e um defeito.',bgRow:'Origem'});
 Object.assign(T.pt,{bonusK:'Última rolagem',bonusT:'Pontos extras',bonusSub:m=>`Role um d6: esse é o número de pontos extras para pôr nos atributos que quiser, até ${m} em cada.`,bonusLeft:n=>n===1?'Falta 1 ponto':`Faltam ${n} pontos`,bonusReset:'Refazer'});
+Object.assign(T.pt,{awBoot:l=>`Artilharia · ${l}`,awShoe:'Chuteira de Ouro',awPuskas:'Prêmio Puskás',awMarta:'Prêmio Marta'});
 Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
 Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
 function checkRecords(){
@@ -6572,6 +6582,7 @@ function lbMomentRoll(st,v){
   const fx={...(ok?e.ok:e.bad)};
   if(perfect){fx.mode='adv';if(S.age<=33&&rating(S.attrs)<critCap())S.attrs[e.at[0]]=Math.max(S.attrs[e.at[0]],Math.min(attrCap(e.at[0]),S.attrs[e.at[0]]+1))}
   if(fx.grow)s.train+=fx.grow; if(fx.scout)s.scout=1;
+  if(perfect&&['fk','oneone','header','counter'].includes(e.id))s.wonder=(s.wonder||0)+1;
   m.mr={nat:v,b,tgt,tot,ok,perfect,fx:{mode:fx.mode||null,buff:fx.buff||0}};
   if(v===1&&ONPITCH_EV.includes(m.mev))injuryScare();
 }
