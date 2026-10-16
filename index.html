@@ -2374,6 +2374,7 @@ function activate(){
   if(st.opp===undefined){st.opp=needsOpp(st)?pickOpp(st):null;}
   if(st.ev!==undefined)return;
   if(st.atm===undefined)st.atm=bigMatch(st)?d(6):0;
+  if(st.mood===undefined)st.mood=rollMood(st);
   // a derby outside the league: any of your main rivals, in the cup or on the continent, is derby day
   if(st.comp!=='league'&&st.comp!=='run'&&st.comp!=='wc'&&!isLB(st)&&S.club&&isMainRival(S.club.name,st.opp)){st.der=1;
     if(isCG(st)){st.ev=null;return}
@@ -5121,6 +5122,16 @@ const inspMax=()=>hasItem('kidshirt')?3:2;
 const gainInsp=n=>{S.insp=clamp((S.insp||0)+n,0,inspMax())};
 const addLoy=n=>{const L=S.loyalty||0;if(n>0)n*=L>=17?.3:L>=9?.55:1;S.loyalty=clamp(Math.round((L+n)*10)/10,-10,25)};   // past Loved, each new cheer counts for less
 
+
+/* ---- how you feel going into a match: sometimes a small edge, sometimes a weight ---- */
+const MOODS={mConf:1,mFocus:1,mHungry:1,mNerv:-1,mTired:-1,mFlat:-1};
+function rollMood(st){
+  const s=S.season; if(!s||st.comp==='run'||Math.random()>=.35)return null;
+  const prev=s.stages.slice(0,s.idx).reverse().find(x=>x.res&&!x.res.skipped), good=prev&&prev.res.tone==='good', bad=prev&&prev.res.tone==='bad';
+  const big=isFinal(st)||!!st.der, wcDone=s.stages.some(x=>x.comp==='wc'&&x.res&&!x.res.skipped)&&st.comp!=='wc';
+  const w={mConf:good?3:1,mFocus:big?1.5:.8,mHungry:yearsLeft()<=1?2:0,mNerv:big?(S.age<=21?2.5:1):.3,mTired:wcDone||(s.apps||0)>=40?2:.3,mFlat:bad?1.5:.5};
+  let r=Math.random()*Object.values(w).reduce((a,b)=>a+b,0);for(const k in w){r-=w[k];if(r<=0)return k}return null;
+}
 /* extra match modifiers from feats, items, companions and form */
 function extraMods(st){
   const s=S.season, o=[]; if(!st||!S.club)return o;
@@ -5139,6 +5150,7 @@ function extraMods(st){
   if(s&&s.bench>0&&st.comp==='league')o.push(['bench',-2]);
   if(s&&s.coach&&(st.comp==='league'||st.comp==='run'))o.push(['coach',s.coach]);
   if(st.atm&&ATM[st.atm])o.push(ATM[st.atm]);
+  if(st.mood&&MOODS[st.mood])o.push([st.mood,MOODS[st.mood]]);
   return o;
 }
 const extraSum=st=>extraMods(st).reduce((a,x)=>a+x[1],0);
@@ -6278,7 +6290,7 @@ en:{
  chron:{champ:n=>`champions of the ${n}`,up:'promoted',down:'relegated',won:c=>`won the ${c}`,bdo:'Ballon d’Or',wc:'world champion',and:', ',pos:(p,n)=>`${p} in the ${n}`,goals:n=>`${n} goals`,assists:n=>`${n} assists`,cs:n=>`${n} clean sheets`,nemWin:n=>`Got the better of ${n}.`,nemLose:n=>`${n} had the last word.`,fired:'Shown the door.',inj:'A season of knocks.',quest:'Quest complete.',feat:k=>`Learned: ${k}.`},
  chronT:'Chronicle',chronBtn:'Read the chronicle',
  sparkT:'Rating by age',sparkKey:'crest · joined a club',legacyPts:'Legacy points',
- xm:{iMedal:'Medal',fClutch:'Clutch',fBig:'Big stage',fWork:'Workhorse',fWall:'The wall',iBoots:'Lucky boots',iArm:'Armband',iShirt:'Shirt',iBall:'Golden ball',mate:'Bond',bench:'Bench fight'},
+ xm:{mConf:'Confidence',mFocus:'Locked in',mHungry:'Contract-year hunger',mNerv:'Nerves',mTired:'Tired legs',mFlat:'Off day',iMedal:'Medal',fClutch:'Clutch',fBig:'Big stage',fWork:'Workhorse',fWall:'The wall',iBoots:'Lucky boots',iArm:'Armband',iShirt:'Shirt',iBall:'Golden ball',mate:'Bond',bench:'Bench fight'},
  chx:{eve:['The night before the derby','The city is buzzing and the squad is restless.',{rest:'Early night',dinner:'Team dinner',talk:'A fiery interview'}],
   mentor:['A veteran offers extra sessions','After training, an old pro offers to stay with you.',{extra:'Stay and train',video:'Study the video'}],
   party:['Teammates’ party','The dressing room is celebrating a birthday tonight.',{skip:'Stay home',go:'Go along'}],
@@ -6317,7 +6329,7 @@ pt:{
  chron:{champ:n=>`campeão do ${n}`,up:'acesso',down:'rebaixado',won:c=>`ganhou ${c}`,bdo:'Bola de Ouro',wc:'campeão do mundo',and:', ',pos:(p,n)=>`${p} no ${n}`,goals:n=>`${n} gols`,assists:n=>`${n} assistências`,cs:n=>`${n} jogos sem sofrer gol`,nemWin:n=>`Levou a melhor sobre ${n}.`,nemLose:n=>`${n} deu a última palavra.`,fired:'Mandado embora.',inj:'Uma temporada de pancadas.',quest:'Missão cumprida.',feat:k=>`Aprendeu: ${k}.`},
  chronT:'Crônica',chronBtn:'Ler a crônica',
  sparkT:'Nível por idade',sparkKey:'escudo · chegada a um clube',legacyPts:'Pontos de legado',
- xm:{iMedal:'Medalha',fClutch:'Decisivo',fBig:'Palco grande',fWork:'Incansável',fWall:'Muralha',iBoots:'Chuteira',iArm:'Braçadeira',iShirt:'Camisa',iBall:'Bola dourada',mate:'Laço',bench:'Briga pela vaga'},
+ xm:{mConf:'Confiança',mFocus:'Foco total',mHungry:'Fome de contrato',mNerv:'Nervosismo',mTired:'Pernas cansadas',mFlat:'Dia apagado',iMedal:'Medalha',fClutch:'Decisivo',fBig:'Palco grande',fWork:'Incansável',fWall:'Muralha',iBoots:'Chuteira',iArm:'Braçadeira',iShirt:'Camisa',iBall:'Bola dourada',mate:'Laço',bench:'Briga pela vaga'},
  chx:{eve:['A noite antes do clássico','A cidade está fervendo e o elenco, inquieto.',{rest:'Dormir cedo',dinner:'Jantar do elenco',talk:'Entrevista inflamada'}],
   mentor:['Um veterano oferece treinos extras','Depois do treino, um experiente se oferece para ficar com você.',{extra:'Ficar e treinar',video:'Estudar os vídeos'}],
   party:['Festa do elenco','O vestiário comemora um aniversário hoje à noite.',{skip:'Ficar em casa',go:'Ir junto'}],
