@@ -1770,7 +1770,7 @@ const WC_DC=[16,19,20,22,23];
 
 /* opponents, kits */
 const WC_A_W=['USA','ESP','ENG','GER','FRA','SWE','NED','JPN','BRA','CAN'],WC_B_W=['AUS','NOR','DEN','ITA','KOR','COL','CHN','SUI','AUT','ISL'],WC_C_W=['NGA','ZAM','JAM','PHI','VIE','MAR','NZL','POR','ARG','IRL','CRC','HAI','PAR','VEN','PER','BOL','SCO','FIN','POL','WAL','CZE','BEL','ECU','URU','MEX'];
-const wcPools=()=>{if(intlSeason()){const c=CONF[S.nat]||'UEFA';return ((isW()?INTL_POOL_W:INTL_POOL)[c]||INTL_POOL[c])}return isW()?[WC_A_W,WC_B_W,WC_C_W]:[WC_A,WC_B,WC_C]};
+const wcPools=()=>{if(intlSeason()&&!isU20(S.season.wc.t)){const c=CONF[S.nat]||'UEFA';return ((isW()?INTL_POOL_W:INTL_POOL)[c]||INTL_POOL[c])}return isW()?[WC_A_W,WC_B_W,WC_C_W]:[WC_A,WC_B,WC_C]};
 const WC_A=['BRA','ARG','FRA','ENG','ESP','GER','POR','NED','ITA','BEL','CRO','URU'];
 const WC_B=['COL','MEX','USA','MAR','SUI','DEN','JPN','SEN','KOR','SRB','POL','ECU','AUT','TUR','UKR','PAR'];
 const WC_C=['AUS','CAN','KSA','IRN','QAT','TUN','CRC','NGA','GHA','CMR','EGY','RSA','PER','VEN','BOL','CZE','SCO','HUN','SVK','ROU','GRE','SVN','ALB','GEO','WAL','SWE','NOR','IRL','PAN'];
@@ -2470,6 +2470,8 @@ const INTL_POOL={UEFA:[['FRA','ESP','ENG','GER','POR','NED','ITA','BEL','CRO'],[
  CONMEBOL:[['BRA','ARG','URU','COL'],['ECU','PAR','MEX','USA','PER'],['VEN','CAN','CRC','PAN','BOL']],CONCACAF:[['MEX','USA','CAN'],['CRC','PAN','JAM'],['HAI','JAM']],
  CAF:[['MAR','SEN','NGA','EGY'],['CMR','GHA','TUN'],['RSA','ZAM']],AFC:[['JPN','KOR','IRN','AUS'],['KSA','QAT'],['CHN','VIE','PHI']]};
 const INTL_POOL_W={UEFA:[['ESP','ENG','GER','FRA','NED','SWE'],['NOR','DEN','ITA','SUI','AUT','ISL'],['POR','IRL','BEL','SCO','FIN','POL','WAL','CZE']],CONMEBOL:[['BRA','COL','ARG'],['URU','ECU','PAR','VEN'],['MEX','CRC','PER','BOL']],CONCACAF:[['USA','CAN','MEX'],['JAM','CRC'],['HAI','PAN']]};
+/* the U-20 World Cup: men in odd years, women in even years (2026, 2028…), for players aged 20 or under */
+const isU20Year=y=>y%2===(isW()?0:1), u20Key=()=>isW()?'wu20':'u20', isU20=tk=>tk==='u20'||tk==='wu20';
 const intlSeason=()=>!!(S&&S.season&&S.season.wc&&S.season.wc.t);
 const INTL_DC=[16,18,19,20,21];   // women's World Cup a year later (2027, 2031…)
 const isW=()=>!!(typeof S!=='undefined'&&S&&S.gender==='f');
@@ -2594,7 +2596,7 @@ function dcBase(st){
   if(st.comp==='run')return st.lha&&S.season&&S.season.v>=6?lbDC({opp:st.opp,ha:st.lha}):runDC();
   if(st.comp==='league')return lgDC(L);
   if(st.comp==='cup')return lgDC(L)+st.round+(st.round>=2?2:0)+(isW()?1:0)+matchupDC(st);
-  if(st.comp==='wc')return st.round===0&&st.gdc?st.gdc:(intlSeason()?INTL_DC:WC_DC)[st.round];
+  if(st.comp==='wc')return (st.round===0&&st.gdc?st.gdc:(intlSeason()?INTL_DC:WC_DC)[st.round])-(intlSeason()&&isU20(S.season.wc.t)?2:0);
   if(st.comp==='cwc')return [17,19][st.round]+matchupDC(st);
   if(st.comp==='sup')return lgDC(L)+2+matchupDC(st);
   if(st.comp==='po')return lgDC(L)+1+st.round+matchupDC(st);
@@ -2794,7 +2796,7 @@ function quitNow(){
 function endCareer(){S.endReason={kind:'injury',age:S.age};endSeason();retire()}
 /* the World Cup breaks up the season: it is played before the second half of the league */
 function wcCallUp(s,tk){
-  const need=wcNeed(S.nat)-(tk?.5:0);
+  const need=wcNeed(S.nat)-(isU20(tk)?4.5:tk?.5:0);
   if(S.intlRet){s.wc={called:false,need,t:tk||null,ret:1};return null}
   if(rating(S.attrs)>=need-(s.natCamp?1:0)-(hasItem('cap')?.5:0)&&!s.seasonOut){
     if(!tk){s.calledWC=1;if(S.history.filter(h=>h.wc!=null&&h.wc>=0).length>=2)giveItem('cap')}
@@ -2849,8 +2851,8 @@ function nextStage(){
   benchBack(s);
   if(s.out===0&&s.away&&s.away.length){ovQ.push(awaySummary(s));s.away=[];s.benchInj=0}
   let idx=s.stages.findIndex(x=>!x.res);
-  if((isWCYear(S.year)||(isIntlYear(S.year)&&CONF[S.nat]))&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
-    const add=wcCallUp(s,isWCYear(S.year)?null:intlKey());
+  if((isWCYear(S.year)||(isIntlYear(S.year)&&CONF[S.nat])||(isU20Year(S.year)&&S.age<=20))&&!s.wc&&(idx<0||(s.stages[idx].comp==='league'&&s.stages[idx].round===((s.v||4)>=5?2:1)))){
+    const add=wcCallUp(s,isWCYear(S.year)?null:isIntlYear(S.year)&&CONF[S.nat]?intlKey():u20Key());
     if(add){const at=idx<0?s.stages.length:idx;s.stages.splice(at,0,...add);idx=at}
   }
   if(idx<0){runCheck();idx=s.stages.findIndex(x=>!x.res)}
@@ -2971,7 +2973,7 @@ function endSeason(){
   if(S.age>=40&&!S.endReason){S.reached40=true;retire()}
 }
 function bdoScore(s,pos,L){
-  const tp={league:L.div===1?(L.lvl===0?6:12):0,cup:3,cont:-1,cont2:2,wc:30,cwc:8,intl:12,sup:1};
+  const tp={league:L.div===1?(L.lvl===0?6:12):0,cup:3,cont:-1,cont2:2,wc:30,cwc:8,intl:12,sup:1,u20:2};
   let tr=0;s.trophies.forEach(x=>{tr+=x.kind==='cont'?(contIsUCL(x.lg)?28:10):(tp[x.kind]||0)});
   const p=myPos(), out=s.goals*0.8+s.assists*0.5+(s.cs||0)*0.25, rel=clamp(out/(POS_EXP[p]||12),0,2.2);
   return rating(S.attrs)*4+22*rel+(S.fame||0)/40+(POS_EDGE[p]||0)+(hasItem('docu')?3:0)+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
@@ -3148,6 +3150,7 @@ function trophyWeight(x){
   return Math.round(base*(dom&&x.lg!=null?lgFactor(x.lg):1)*ud);
 }
 function trophyWeight0(x){
+  if(x.kind==='u20')return 10;
   if(x.kind==='cwc')return x.lg!=null&&LEAGUES[x.lg]&&!contIsUCL(x.lg)?56:48;
   if(x.kind==='cont'){const c=x.lg!=null&&LEAGUES[x.lg]?LEAGUES[x.lg].cont:'';return contIsUCL(x.lg)?42:/Libertadores/.test(c)?34:20}
   if(x.kind==='cont2')return x.lg!=null&&LEAGUES[x.lg]&&contIsUCL(x.lg)?18:12;
@@ -3236,7 +3239,7 @@ const fameTier=v=>{let i=0;while(i<FAME_B.length&&v>=FAME_B[i])i++;return i};
 function fameSeasonEnd(h,s){
   const from=S.fame||0, L=LEAGUES[h.league]||LEAGUES[S.club.league], pr=Math.max(0,tierOf(h.league,h.tier).pr);
   let g=pr*.35+Math.min(3,(h.goals+h.assists)/15);
-  h.trophies.forEach(x=>{const k=x.kind;g+=k==='league'?(LEAGUES[x.lg]&&LEAGUES[x.lg].div===1?2*lgFactor(x.lg):.5):k==='cup'?.7:k==='cont'?(contIsUCL(x.lg)||/Libertadores/.test(LEAGUES[x.lg].cont||'')?6:3):k==='cont2'?2:k==='cwc'?3:k==='wc'?10:k==='intl'?5:0});
+  h.trophies.forEach(x=>{const k=x.kind;g+=k==='league'?(LEAGUES[x.lg]&&LEAGUES[x.lg].div===1?2*lgFactor(x.lg):.5):k==='cup'?.7:k==='cont'?(contIsUCL(x.lg)||/Libertadores/.test(LEAGUES[x.lg].cont||'')?6:3):k==='cont2'?2:k==='cwc'?3:k==='wc'?10:k==='intl'?5:k==='u20'?1.5:0});
   if(h.bdo===1)g+=10;else if(h.bdo&&h.bdo<=3)g+=4;else if(h.bdo)g+=1.5;
   g+=(h.awards||[]).length; if(h.wc!=null&&h.wc>=0)g+=1+h.wc*.5; if(h.intl!=null&&h.intl>=0)g+=.5+h.intl*.3;
   if(L&&L.exotic)g*=.6;
@@ -3549,7 +3552,7 @@ function tracker(){
   return `<section class="panel trackp"><div class="row between" style="margin-bottom:6px"><h3 style="font-size:18px">${t.season(S.year)}</h3>${sim}</div><div class="track">${rows}</div></section>`;
 }
 const isGoldName=n=>[T.en.wcM,T.en.wcW,T.en.bdoM,T.en.bdoW,T.pt.wcM,T.pt.wcW,T.pt.bdoM,T.pt.bdoW].includes(n);
-const trophyName=x=>x.kind==='raw'?x.name:x.kind==='intl'?t.intl[x.t]||x.t:x.kind==='wc'?(x.w?t.wcW:t.wcM):compName(x.kind,x.lg,!!x.w||(x.lg!=null&&!!(LEAGUES[x.lg]||{}).w));
+const trophyName=x=>x.kind==='raw'?x.name:x.kind==='u20'?t.intl[x.t]||t.intl.u20:x.kind==='intl'?t.intl[x.t]||x.t:x.kind==='wc'?(x.w?t.wcW:t.wcM):compName(x.kind,x.lg,!!x.w||(x.lg!=null&&!!(LEAGUES[x.lg]||{}).w));
 function offseasonView(){
   const h=S.history[S.history.length-1], g=S.growth, L=LEAGUES[h.league];
   const done=S.age>=40, ac=h.ageCheck, due=ageCheckDue(h), stop=ac&&!ac.ok;
@@ -7308,9 +7311,9 @@ Object.assign(T.en,{awardsT:'Individual award',awardsT2:n=>`${n} individual awar
 Object.assign(T.pt,{awardsT:'Prêmio individual',awardsT2:n=>`${n} prêmios individuais`,awYoung:'Melhor Jogador Jovem',awMvp:c=>`Craque · ${c}`,awardsL:'Prêmios',
  awPos:{ST:'Melhor Centroavante',W:'Melhor Ponta',AM:'Melhor Meia-atacante',CM:'Melhor Meio-campista',DM:'Melhor Volante',FB:'Melhor Lateral',CB:'Melhor Zagueiro'},
  awGrp:{att:'Melhor Atacante',mid:'Melhor Meio-campista do Ano',def:'Melhor Defensor'}});
-Object.assign(T.en,{intl:{euro:'Euro',copa:'Copa América',gold:'Gold Cup',afcon:'Africa Cup of Nations',asian:'Asian Cup',weuro:'Women’s Euro',wcopa:'Copa América Femenina',wgold:'W Gold Cup'},intlTag:{euro:'EURO',copa:'COPA',gold:'GOLD',afcon:'AFCON',asian:'ASIA',weuro:'EURO',wcopa:'COPA',wgold:'GOLD'},
+Object.assign(T.en,{intl:{euro:'Euro',copa:'Copa América',gold:'Gold Cup',afcon:'Africa Cup of Nations',asian:'Asian Cup',weuro:'Women’s Euro',wcopa:'Copa América Femenina',wgold:'W Gold Cup',u20:'U-20 World Cup',wu20:'Women’s U-20 World Cup'},intlTag:{euro:'EURO',copa:'COPA',gold:'GOLD',afcon:'AFCON',asian:'ASIA',weuro:'EURO',wcopa:'COPA',wgold:'GOLD',u20:'U20',wu20:'U20'},
  nLeftOutI:(c,k)=>`Left out of the ${COUNTRY.en[c]||c} squad for the ${T.en.intl[k]}. The season goes on.`});
-Object.assign(T.pt,{intl:{euro:'Eurocopa',copa:'Copa América',gold:'Copa Ouro',afcon:'Copa Africana de Nações',asian:'Copa da Ásia',weuro:'Eurocopa Feminina',wcopa:'Copa América Feminina',wgold:'Copa Ouro W'},intlTag:{euro:'EURO',copa:'COPA',gold:'OURO',afcon:'CAN',asian:'ÁSIA',weuro:'EURO',wcopa:'COPA',wgold:'OURO'},
+Object.assign(T.pt,{intl:{euro:'Eurocopa',copa:'Copa América',gold:'Copa Ouro',afcon:'Copa Africana de Nações',asian:'Copa da Ásia',weuro:'Eurocopa Feminina',wcopa:'Copa América Feminina',wgold:'Copa Ouro W',u20:'Copa do Mundo Sub-20',wu20:'Copa do Mundo Sub-20 Feminina'},intlTag:{euro:'EURO',copa:'COPA',gold:'OURO',afcon:'CAN',asian:'ÁSIA',weuro:'EURO',wcopa:'COPA',wgold:'OURO',u20:'SUB20',wu20:'SUB20'},
  nLeftOutI:(c,k)=>`Fora da convocação da seleção (${COUNTRY.pt[c]||c}) para a ${T.pt.intl[k]}. A temporada segue.`});
 ITEMS.push('goldpen','unveil');
 Object.assign(ACH_RATE,{nat1s:30,invincible:35,giantkill:8,twohomes:3,friends:2,awpos:39,awgrp:22,awyoung:11,mvp:65,mvp3:20,awards10:5,contking:25,skipper:15,smallclub:8,cont2small:2,firstmil:36,bigmoney:10,recordfee:5,clause:40,loanperm:3,renew3:35,holdout:6,nextbig:.5,bigsign:45,released:45});
@@ -7423,7 +7426,7 @@ function koSettle(st,r,win){
   const s=S.season;
   r.win=win; r.tone=win?'good':'bad'; if(win)S.koW=(S.koW||0)+1; r.champ=win&&st.round===lastRound(st.comp)&&st.comp!=='po';
   if(st.comp==='po'){if(!win)poDone(false);else if(st.round===lastRound('po'))poDone(true)}
-  if(r.champ){s.trophies.push(st.comp==='wc'?(intlSeason()?{kind:'intl',t:S.season.wc.t,year:S.year,w:isW()?1:undefined}:{kind:'wc',year:S.year,w:isW()?1:undefined}):{kind:st.comp,lg:S.club.league,year:S.year,ud:udLv()});ovPush({k:'champ',comp:st.comp,lg:S.club.league,year:S.year,opp:st.opp||null})}
+  if(r.champ){s.trophies.push(st.comp==='wc'?(intlSeason()?{kind:isU20(S.season.wc.t)?'u20':'intl',t:S.season.wc.t,year:S.year,w:isW()?1:undefined}:{kind:'wc',year:S.year,w:isW()?1:undefined}):{kind:st.comp,lg:S.club.league,year:S.year,ud:udLv()});ovPush({k:'champ',comp:st.comp,lg:S.club.league,year:S.year,opp:st.opp||null})}
   if(r.champ&&st.comp==='cont')s.cwcDue=1;
   if(!win)s.stages.forEach((x,i)=>{if(i>s.stages.indexOf(st)&&x.comp===st.comp&&!x.res)x.res={skipped:true}});
   if(st.comp==='wc'){if(r.champ)s.wcRes=5;else if(!win)s.wcRes=st.round}
