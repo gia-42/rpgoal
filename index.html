@@ -719,6 +719,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .sparks i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#f2c14e;box-shadow:0 0 8px #f2c14e;z-index:2;animation:floatUp linear infinite;opacity:0}
 @keyframes floatUp{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-110vh)}}
 .bigov .btro .btro-i{width:96px;height:96px}
+.parade-tro .pt-i{width:64px;height:64px;display:block;margin:2px auto}
 .ovl.big .ov-tap{display:none}
 @media (prefers-reduced-motion:reduce){.bigov *,.bigov{animation:none!important}.sparks{display:none}}
 
@@ -1804,7 +1805,13 @@ const kit2=k=>k.length>=2?[k[0],k[1]]:[k[0],hexLum(k[0])>.5?'#15171c':'#ffffff']
 function kitVars(k){const[a,b]=kit2(k), num=hexCon(a,b)>=2.6?b:(hexLum(a)>.4?'#15171c':'#ffffff'), line=hexLum(a)>.75?(hexCon(a,b)>=1.6?b:'#9aa0aa'):a;return `--k1:${a};--k2:${num};--k3:${line};--ke:${num}55`}
 /* celebration queue (filled by the career logic, shown by the view) */
 let ovQ=[];
-const ovPush=o=>{ovQ.push(o)};
+const ovPush=o=>{ovQ.push(o);if(o.k==='champ'||o.k==='league'){try{paradeFor(o)}catch(e){}}};
+/* right after a title: the trophy parade. The fans love it (country titles feed fame instead) */
+function paradeFor(o){
+  const wc=o.k==='champ'&&o.comp==='wc', big=o.k==='league'||['cont','cwc'].includes(o.comp), loy=wc?0:big?2:1, fame=wc?(intlSeason()?1:3):0;
+  if(loy)addLoy(loy); if(fame)S.fame=Math.min(100,(S.fame||0)+fame);
+  ovQ.push({k:'parade',wc,ttl:o.k==='league'?{kind:'league',lg:o.lg}:wc?(intlSeason()?{kind:'intl',t:S.season&&S.season.wc&&S.season.wc.t}:{kind:'wc',w:isW()?1:undefined}):{kind:o.comp,lg:o.lg,w:isW()?1:undefined},loy,fame,year:o.year});
+}
 const ORDER=[['league',0],['cont',0],['cup',0],['league',1],['cont',1],['cup',1],['league',2],['cont',2],['cup',2],['cont',3],['league',3],['cup',3],['cont',4]];
 
 /* ---------- text ---------- */
@@ -4302,6 +4309,11 @@ function ovHTML(o){
       <div class="bvs"><div class="bteam l">${crest(mk,72)}<b>${esc(wc?COUNTRY[lang][S.nat]:S.club.name)}</b></div><div class="bx">${t.vs.toUpperCase()}</div><div class="bteam r">${crest(ok,72)}<b>${o.opp?esc(oppName(st)):'?'}</b></div></div>
       <div class="bsub">${t.introSub}</div><button class="btn bgo" data-ov="close">${t.introGo}</button></div></div>`;
   }
+  if(o.k==='parade'){
+    const kit=o.wc?natKit(S.nat):kitOf(S.club.name), who=o.wc?(COUNTRY[lang][S.nat]||S.nat):S.club.name;
+    const fx=[o.loy?`<span class="eos-chip blue">${t.fans} +${o.loy}</span>`:'',o.fame?`<span class="eos-chip blue">${t.fameT} +${o.fame}</span>`:''].join('');
+    return `<div class="ovcard champ parade" style="${kitVars(kit)}">${crest(kit,56)}<span class="ov-kicker">${t.paradeK} · ${o.year}</span><h2 class="ov-title">${t.paradeT}</h2><div class="ov-sub">${esc(who)}</div><div class="ov-sub2">${o.wc?t.paradeWc:t.paradeD}</div><div class="parade-tro">${troSVG(o.ttl,'pt-i')}</div>${fx?`<div class="eos-chips">${fx}</div>`:''}${tap}</div>`;
+  }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
   if(o.k==='howto')return `<div class="ovcard window howto"><span class="ov-kicker">RPGoal</span><h2 class="ov-title" style="font-size:26px">${t.howT}</h2><div class="howlist">${t.howTo.map(([h,x])=>`<div><b>${h}</b><span>${x}</span></div>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
   if(o.k==='awards')return `<div class="ovcard awardsov"><svg class="ov-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="26" r="17" fill="#f2c14e"/><circle cx="32" cy="26" r="11" fill="none" stroke="#9a6d15" stroke-width="2.5"/><path d="M32 18l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#9a6d15"/><path d="M22 40l-5 16 8-3 4 7 4-14M42 40l5 16-8-3-4 7-4-14" fill="#d9a43a"/></svg><span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.items.length>1?t.awardsT2(o.items.length):t.awardsT}</h2><div class="awlist">${o.items.map(a=>`<div class="aw">${esc(awName(a))}</div>`).join('')}</div>${tap}</div>`;
@@ -4421,6 +4433,7 @@ function flushOv(){
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
+  if(o.k==='parade')confetti(ovEl,o);
   if(o.k==='qual'||o.k==='callup')sfx('qual');
   if(o.k==='career'||o.k==='eos')countUp(ovEl);
   try{dockOv()}catch(e){}
@@ -5765,10 +5778,12 @@ function hofWorld(tabs){
       return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
   return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
 }
+Object.assign(T.en,{paradeK:'Trophy parade',paradeT:'The city is yours',paradeD:'Open-top bus, trophy held high, the streets packed in your colours.',paradeWc:'The whole country is out on the streets to welcome the team home.'});
 Object.assign(T.en,{introSub:'One match for the trophy',introGo:'Kick off'});
 Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{paradeK:'Festa do título',paradeT:'A cidade é sua',paradeD:'Ônibus aberto, taça levantada e as ruas tomadas pelas cores do clube.',paradeWc:'O país inteiro vai às ruas para receber a seleção.'});
 Object.assign(T.pt,{introSub:'Um jogo pela taça',introGo:'Bola rolando'});
 Object.assign(T.pt,{bonusK:'Última rolagem',bonusT:'Pontos extras',bonusSub:m=>`Role um d6: esse é o número de pontos extras para pôr nos atributos que quiser, até ${m} em cada.`,bonusLeft:n=>n===1?'Falta 1 ponto':`Faltam ${n} pontos`,bonusReset:'Refazer'});
 Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
