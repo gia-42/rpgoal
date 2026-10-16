@@ -681,6 +681,12 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .recrow.wr.br .recv,.recrow.wr.br b{color:var(--warn)}
 .wrp{height:4px;border-radius:3px;background:var(--rule);overflow:hidden;margin:4px 0 1px;max-width:260px}.wrp i{display:block;height:100%;background:var(--accent);border-radius:3px}.recrow.wr.br .wrp i{background:var(--warn)}
 .wrnote{margin:12px 2px 4px}
+.bngrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
+.bnc{display:flex;flex-direction:column;align-items:center;gap:0;padding:7px 2px;border-radius:9px;border:1px solid #2c3038;background:#191c22;color:#f3f4f6;font:inherit;cursor:pointer;position:relative}
+.bnc b{font-size:18px;font-weight:500}.bnc .lbl{font-size:10px;color:#a9adb7}
+.bnc i{position:absolute;top:3px;right:5px;font-style:normal;font-size:10.5px;font-weight:700;color:#6ea8ff}
+.bnc.on{border-color:#8193ff}.bnc:disabled{cursor:default;opacity:.55}.bnc.on:disabled{opacity:1}
+.bnleft{color:#a9adb7}
 .drawgrp{width:100%;display:flex;flex-direction:column;gap:4px;text-align:left}
 .drow{display:grid;grid-template-columns:46px 26px minmax(0,1fr) auto;gap:9px;align-items:center;padding:6px 10px;border-radius:9px;background:#191c22;border:1px solid #2c3038;min-height:40px}
 .drow b{font-size:14px;color:#f3f4f6;line-height:1.2;min-width:0}
@@ -1770,7 +1776,7 @@ en:{
  unnamed:'Unnamed player',yrs:a=>`${a} yrs`,injured:n=>`Injured · out ${n} match${n>1?'es':''}`,fit:'Fit',rating:'Rating',of20:m=>`of 100 · mod ${m}`,
  div2:'2nd division',
  newRoll:'New career · 8d10',rollPlayer:'Roll your player',pname:'Player name',nat:'Nationality',randName:'Random name',
- avgTo:a=>`Average <b class="num">${a}</b>`,firstOffers:'Your first offers',euroOffer:'Straight to Europe',
+ avgTo:a=>`Overall <b class="num">${a}</b>`,firstOffers:'Your first offers',euroOffer:'Straight to Europe',
  startNote:{sa:'You start in your home country. Top flight needs an average of 4.0+, and below that you start in the second division. An average of 8.0+ brings an offer from Europe.',
   mid:'You start in your home country. Top flight needs an average of 5.0+, and below that you start in the second division.',
   top:'You start in your home country, where the top flight is tough to break into: it needs an average of 6.5+. Below that you start in the second division and fight for promotion.'},
@@ -1906,7 +1912,7 @@ pt:{
  unnamed:'Jogador sem nome',yrs:a=>`${a} anos`,injured:n=>`Lesionado · fora por ${n} jogo${n>1?'s':''}`,fit:'Apto',rating:'Nível',of20:m=>`de 100 · mod ${m}`,
  div2:'2ª divisão',
  newRoll:'Nova carreira · 8d10',rollPlayer:'Crie seu jogador',pname:'Nome do jogador',nat:'Nacionalidade',randName:'Nome aleatório',
- avgTo:a=>`Média <b class="num">${a}</b>`,firstOffers:'Suas primeiras propostas',euroOffer:'Direto para a Europa',
+ avgTo:a=>`Geral <b class="num">${a}</b>`,firstOffers:'Suas primeiras propostas',euroOffer:'Direto para a Europa',
  startNote:{sa:'Você começa no seu país. A primeira divisão pede média 4,0+, e abaixo disso você começa na segunda divisão. Média 8,0+ traz uma proposta da Europa.',
   mid:'Você começa no seu país. A primeira divisão pede média 5,0+, e abaixo disso você começa na segunda divisão.',
   top:'Você começa no seu país, onde é difícil entrar na primeira divisão: ela pede média 6,5+. Abaixo disso você começa na segunda divisão e briga pelo acesso.'},
@@ -2060,7 +2066,7 @@ function sg(n){return (n>=0?'+':'−')+Math.abs(n)}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>lang==='pt'?n.toFixed(1).replace('.',','):n.toFixed(1);
 /* the overall rating is shown out of 100 (the game still works on 1–20 underneath) */
-const o100=n=>String(Math.round((+n||0)*5));
+const o100=n=>String(Math.max(0,Math.min(100,Math.round(36+3.2*(+n||0)))));
 const tierOf=(Li,ti)=>LEAGUES[Li].tiers[Math.min(ti,LEAGUES[Li].tiers.length-1)];
 const lgCountry=Li=>COUNTRY[lang][LEAGUES[Li].c];
 const NATMOD_W={USA:3,ESP:3,ENG:3,FRA:3,BRA:3,GER:2,NED:2,ITA:1,POR:1,ARG:0,URU:0};
@@ -2146,6 +2152,33 @@ function makeStartOffersW(avg,nat){
   if(avg>=8&&(LEAGUES[Li].c==='BRA'||LEAGUES[Li].c==='USA')){const eu=pick([23,24,25,26]);const tl=LEAGUES[eu].tiers.length-1,p=LEAGUES[eu].tiers[tl].clubs;out[2]={name:pick(p),league:eu,tier:tl,watch:1}}
   return out.slice(0,3);
 }
+
+/* ---- creation, last step: a d6 of bonus points to put wherever you like ---- */
+const BONUS_MAX=12;
+const bonusBase=k=>{const p=bestPos(S.roll),sty=styleOf(p,S.style);return S.roll[k]+(sty&&sty[1]===k?1:0)};
+const bonusLeft=()=>(S.bonusR||0)-AK.reduce((a,k)=>a+((S.bonus||{})[k]||0),0);
+const bonusAttrs=()=>Object.fromEntries(AK.map(k=>[k,bonusBase(k)+((S.bonus||{})[k]||0)]));
+function autoBonus(){const p=bestPos(S.roll),w=POS[p].w,ks=AK.slice().sort((x,y)=>(w[y]||0)-(w[x]||0));S.bonus={};let n=S.bonusR||0;
+  while(n>0){const k=ks.find(k=>bonusBase(k)+(S.bonus[k]||0)<BONUS_MAX);if(!k)break;S.bonus[k]=(S.bonus[k]||0)+1;n--}S.bonusDone=1}
+function bonusHTML(){
+  const p=bestPos(S.roll), r0=rating(Object.fromEntries(AK.map(k=>[k,bonusBase(k)])),p), A=bonusAttrs(), r1=rating(A,p), left=bonusLeft(), rolled=!!S.bonusR;
+  const cells=AK.map(k=>{const v=A[k],add=(S.bonus||{})[k]||0,can=rolled&&left>0&&v<BONUS_MAX;
+    return `<button class="bnc ${add?'on':''}" data-ov="bnadd" data-k="${k}" ${can?'':'disabled'}><span class="lbl">${t.attrsS[k]}</span><b class="num">${v}</b>${add?`<i>+${add}</i>`:''}</button>`}).join('');
+  return `<div class="ovcard move bonuspop"><span class="ov-kicker">${t.bonusK}</span><h2 class="ov-title" style="font-size:24px">${t.bonusT}</h2><div class="ov-sub2">${t.bonusSub(BONUS_MAX)}</div>
+    <div class="storydie">${dieSVG(6,S.bonusR||'',rolled?'win':'evd','bon')}</div>
+    <div class="eos-ovr"><span>${t.rating}</span><b class="num">${o100(r0)}</b>${rolled?`<span class="arr">→</span><b class="num ${r1>r0?'up':''}">${o100(r1)}</b>`:''}</div>
+    ${rolled?`<div class="lbl bnleft">${t.bonusLeft(left)}</div>`:''}
+    <div class="bngrid">${cells}</div>
+    ${rolled?`<div class="lbbtns"><button class="btn ghost" data-ov="bnreset" ${left===S.bonusR?'disabled':''}>${t.bonusReset}</button><button class="btn" data-ov="bnok" ${left>0&&AK.some(k=>A[k]<BONUS_MAX)?'disabled':''}>${t.chooseClub}</button></div>`:`<button class="btn" data-ov="bnroll">${t.roll(6)}</button>`}</div>`;
+}
+function bonusClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b||busy)return; const v=b.dataset.ov;
+  if(v==='bnroll'){if(S.bonusR)return;const x=d(6),el=ovEl.querySelector('[data-die="bon"]');rollDice(el?[el]:[],6,[x],()=>'win',()=>{S.bonusR=x;S.bonus={};sfx('pass');save();ovUpdate(bonusHTML())});return}
+  if(v==='bnadd'){const k=b.dataset.k;if(bonusLeft()<1||bonusAttrs()[k]>=BONUS_MAX)return;S.bonus[k]=(S.bonus[k]||0)+1;sfx('click');ovUpdate(bonusHTML());return}
+  if(v==='bnreset'){S.bonus={};ovUpdate(bonusHTML());return}
+  if(v==='bnok'){S.bonusDone=1;save();closeOv();ovQ.unshift({k:'offers'});flushOv();render();return}
+  if(e.target===ovEl&&!S.bonusR)closeOv();
+}
 function makeStartOffers(avg,nat){
   if(isW())return makeStartOffersW(avg,nat);
   const [top,sec]=HOME[nat], reg=REGION[nat], E=ENTRY[reg], used=new Set(), out=[];
@@ -2177,6 +2210,7 @@ function startCareer(offer){
   delete S.mem; delete S.lgMv; applyMem();
   S.attrs={...S.roll}; if(S.parent&&S.parent.best&&S.attrs[S.parent.best]!=null)S.attrs[S.parent.best]=Math.min(20,S.attrs[S.parent.best]+1); S.pos=bestPos(S.roll); if(!S.footR)S.footR=d(20); S.foot=footOf(S.footR); S.wf=startWF(S.foot,S.attrs.ski); S.age=17; S.year=S.startYear||2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   const sty=styleOf(S.pos,S.style); if(sty)S.attrs[sty[1]]=Math.min(20,S.attrs[sty[1]]+1); else S.style=null;
+  if(S.bonus)AK.forEach(k=>{if(S.bonus[k])S.attrs[k]=Math.min(20,S.attrs[k]+S.bonus[k])});
   S.club={name:offer.name,league:offer.league,tier:offer.tier};
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
   S.loyalty=0; S.tenure=0; S.hops=0; S.milestones=[]; S.rivalMoves=0; S.notes=[];
@@ -3200,7 +3234,7 @@ function createView(){
       <div class="cname"><input type="text" id="pname" maxlength="28" value="${esc(S.name)}" aria-label="${t.pname}" ${S.daily?'disabled':''}>${S.daily?'':`<button class="btn ghost sm" data-act="randname">${t.randName}</button>`}</div>
     </div>
     <div class="dice cdice">${cells}</div>
-    ${all?`<div class="cinfo"><div class="cpos2"><span class="lbl">${t.posPick} · ${t.avgTo(fmt(avg))}</span><b>${t.pos[pos][1]}</b><span class="muted small">${t.posAuto}</span></div>
+    ${all?`<div class="cinfo"><div class="cpos2"><span class="lbl">${t.posPick} · ${t.avgTo(o100(rating(bonusAttrs(),pos)))}</span><b>${t.pos[pos][1]}</b><span class="muted small">${t.posAuto}</span></div>
       <button class="cfoot" data-act="rollfoot" ${S.footR||S.daily?'disabled':''} aria-label="${t.footL}">${dieSVG(20,S.footR||'',S.footR===20?'crit':'','foot')}<span class="cpos2"><span class="lbl">${t.footL}</span><b>${S.footR?t.foot[footOf(S.footR)]:t.footRoll}</b><span class="muted small">${t.footOdds}</span></span></button></div>
       <div class="styles cst">${(STYLES[pos]||[]).map(([k,x])=>`<button class="stylebtn" data-act="style" data-s="${k}" aria-pressed="${S.style===k}" ${S.daily?'disabled':''}><b>${t.styles[k]}</b><span class="muted small">+1 ${t.attrsS[x]}</span></button>`).join('')}</div>`
       :`<div class="muted small ctip">${t.rollHint}</div>`}
@@ -3641,7 +3675,7 @@ const ACH=[
  {id:'goals30',n:['Goal machine','Máquina de gols'],d:['Score 30 goals in a season.','Marque 30 gols numa temporada.'],test:()=>S.history.some(h=>h.goals>=30)||!!(S.phase==='season'&&S.season&&S.season.goals>=30)},
  {id:'assists20',n:['The architect','O arquiteto'],d:['Make 20 assists in a season.','Dê 20 assistências numa temporada.'],test:()=>S.history.some(h=>h.assists>=20)||!!(S.phase==='season'&&S.season&&S.season.assists>=20)},
  {id:'goals300',n:['Three hundred','Trezentos'],d:['Score 300 career goals.','Marque 300 gols na carreira.'],test:()=>careerSum('goals')>=300},
- {id:'worldclass',n:['World class','Classe mundial'],d:['Reach a rating of 90.','Chegue a nível 90.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=18},
+ {id:'worldclass',n:['World class','Classe mundial'],d:['Reach a rating of 94.','Chegue a nível 94.'],test:()=>!!S.attrs&&S.phase!=='create'&&rating(S.attrs)>=18},
  {id:'galactico',n:['Galáctico','Galáctico'],d:['Sign for Real Madrid.','Assine com o Real Madrid.'],test:()=>!!S.club&&S.club.name==='Real Madrid'},
  {id:'barca',n:['Més que un club','Més que un club'],d:['Sign for Barcelona.','Assine com o Barcelona.'],test:()=>!!S.club&&S.club.name==='Barcelona'},
  {id:'abroad3',n:['Globetrotter','Globetrotter'],d:['Play in four different countries.','Jogue em quatro países diferentes.'],test:()=>new Set(S.history.map(h=>LEAGUES[h.league].c).concat(S.club&&S.phase!=='create'?[LEAGUES[S.club.league].c]:[])).size>=4},
@@ -3910,7 +3944,7 @@ const ACH_PROG={
  cupking:()=>[allTrophies().filter(x=>x.kind==='cup').length,3],
  goals30:()=>[bestSeason('goals'),30], assists20:()=>[bestSeason('assists'),20],
  goals300:()=>[careerSum('goals'),300], ironman:()=>[careerSum('apps'),750],
- worldclass:()=>[live()?Math.round(rating(S.attrs)*5):0,90], goat:()=>[live()?Math.round(rating(S.attrs)*5):0,100],
+ worldclass:()=>[live()?+o100(rating(S.attrs)):0,94], goat:()=>[live()?+o100(rating(S.attrs)):0,100],
  abroad3:()=>[new Set(S.history.map(h=>LEAGUES[h.league].c).concat(live()&&S.club?[LEAGUES[S.club.league].c]:[])).size,4],
  decade:()=>[live()?S.tenure||0:0,10], twohomes:()=>[Object.values(S.clubPeak||{}).filter(v=>v>=5).length,2],
  hothand:()=>[S.season&&S.season.rolls?S.season.rolls.filter(x=>x===20).length:0,2],
@@ -4257,6 +4291,7 @@ function ovHTML(o){
   if(o.k==='repos')return reposHTML();
   if(o.k==='eos')return eosHTML(o);
   if(o.k==='offers')return offersHTML();
+  if(o.k==='bonus')return bonusHTML();
   if(o.k==='chron')return `<div class="ovcard window"><span class="ov-kicker">${esc(S.name||t.unnamed)}</span><h2 class="ov-title" style="font-size:26px">${t.chronT}</h2><div class="chronlist">${S.history.map(h=>`<p>${chron(h)}</p>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
   if(o.k==='window')return windowHTML();
   if(o.k==='deal')return dealHTML(o);
@@ -4331,12 +4366,12 @@ function closeOv(){
   const was=ovKindPrev; flushOv(); if(!ovEl)scheduleAuto(); try{dockOv()}catch(e){}
   if(!ovEl&&was==='final')setTimeout(()=>{try{if(!ovEl&&!busy)playSync()}catch(e){}},260);
 }
-const DIE_ROLL_SEL='[data-ov="lbroll"],[data-ov="lbmom"],[data-ov="rroll"],[data-ov="pkick"],[data-ov="droll"],[data-ov="grroll"],[data-ov="roll"],[data-ov="hchk"],[data-ov="h4"],[data-ov="h10"],[data-ov="h10b"],[data-act="roll"],[data-act="inj4"],[data-act="inj10"]';
+const DIE_ROLL_SEL='[data-ov="lbroll"],[data-ov="lbmom"],[data-ov="rroll"],[data-ov="pkick"],[data-ov="droll"],[data-ov="grroll"],[data-ov="bnroll"],[data-ov="roll"],[data-ov="hchk"],[data-ov="h4"],[data-ov="h10"],[data-ov="h10b"],[data-act="roll"],[data-act="inj4"],[data-act="inj10"]';
 function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='bonus'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -4369,6 +4404,7 @@ function flushOv(){
     if(o.k==='draw'){drawClick(e,o);return}
     if(o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
+    if(o.k==='bonus'){bonusClick(e);return}
     if(o.k==='away'||o.k==='chron'||o.k==='howto'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='deal'){dealClick(e,o);return}
     if(o.k==='mid'){midClick(e);return}
@@ -4796,6 +4832,7 @@ function onClick(e){
   if(act==='roll6'||act==='roll1'){
     const a=S.roll||{}, all=AK.every(k=>a[k]);
     let keys;
+    if(S.bonusR)return;
     if(act==='roll1'){const k=b.dataset.k;if(a[k]){if(!all||S.rerolls<1)return;S.rerolls--}keys=[k]}
     else if(all){if(S.rerolls<1)return;S.rerolls--;keys=AK}
     else keys=AK.filter(k=>!a[k]);
@@ -4839,7 +4876,7 @@ function onClick(e){
   else if(act==='runov'){if(S.season&&S.season.drawPending){homeHold=false;maybeDraw();flushOv();return}maybeRun();flushOv()}
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
-  else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:'offers'});flushOv()}
+  else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:S.bonusDone||S.daily?'offers':'bonus'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(12),c=d(12);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],12,[a],()=>'',()=>{rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'careerInj':I.season||I.out>0?'injury':'pass');commit()})})}
@@ -5682,8 +5719,10 @@ function hofWorld(tabs){
       return `<div class="recrow wr${br?' br':''}"><div class="rect"><span class="lbl">${R[2+L]}</span><b>${br?`<s>${esc(R[4])}</s> ${esc(S.name)}`:esc(R[4])}</b><span class="muted small">${esc(R[6+L])}</span>${mine?`<div class="wrp"><i style="width:${br?100:pc.toFixed(1)}%"></i></div><span class="muted small num">${t.wrYou(esc(S.name),wrN(v))}</span>`:''}</div><span class="recv num">${wrN(br?br.v:R[5])}</span></div>`}).join('')}).join('');
   return `${head}<section class="pscroll"><div class="reclist wrl">${rows}</div><div class="muted small wrnote">${t.wrNote}</div></section>`;
 }
+Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
+Object.assign(T.pt,{bonusK:'Última rolagem',bonusT:'Pontos extras',bonusSub:m=>`Role um d6: esse é o número de pontos extras para pôr nos atributos que quiser, até ${m} em cada.`,bonusLeft:n=>n===1?'Falta 1 ponto':`Faltam ${n} pontos`,bonusReset:'Refazer'});
 Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
 Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
 function checkRecords(){
@@ -5722,6 +5761,7 @@ function startDaily(){
     S.style=pick(STYLES[bestPos(S.roll)]||[[null]])[0];
     S.startOffers=makeStartOffers(rating(S.roll),S.nat);
     S.footR=d(20);
+    S.bonusR=d(6); autoBonus();
   }finally{Math.random=orig}
 }
 
@@ -5828,7 +5868,7 @@ const histH=hist=>hist.map(x=>({year:x.y,age:x.a,club:x.c,league:x.lg,pos:x.p,si
 function ratingChart(H){
   if(H.length<2)return'';
   const lo=Math.floor(Math.min(...H.map(h=>h.rating))-.5), hi=Math.ceil(Math.max(...H.map(h=>h.rating))+.5), x=i=>100*i/(H.length-1), y=v=>100*(1-(v-lo)/((hi-lo)||1));
-  const grid=[lo,Math.round((lo+hi)/2),hi].map(v=>`<span class="pga-gl" style="top:${y(v)}%"><i>${v*5}</i></span>`).join('');
+  const grid=[lo,Math.round((lo+hi)/2),hi].map(v=>`<span class="pga-gl" style="top:${y(v)}%"><i>${o100(v)}</i></span>`).join('');
   const line=`<polyline class="pga-g" vector-effect="non-scaling-stroke" points="${H.map((h,i)=>x(i).toFixed(2)+','+y(h.rating).toFixed(2)).join(' ')}"/>`;
   const marks=H.map((h,i)=>i===0||h.club!==H[i-1].club?`<span class="rc-c" style="left:${x(i)}%;top:${y(h.rating)}%" title="${esc(h.club)} · ${h.year}">${crest(kitOf(h.club),13)}</span>`:`<span class="pga-dot pga-g" style="left:${x(i)}%;top:${y(h.rating)}%" title="${h.year} · ${o100(h.rating)}"></span>`).join('');
   return `<div class="cchart"><span class="lbl">${t.rtBySeason}</span><div class="pga-box"><div class="pga-plot">${grid}<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="${t.rtBySeason}">${line}</svg>${marks}</div>${yrAxis(H)}</div></div>`;
