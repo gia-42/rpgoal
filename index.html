@@ -1420,6 +1420,14 @@ polyline.fc-l{fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-linejoin:rou
 .hrow .hbtn{cursor:pointer}
 @media (max-width:600px){.ovcard.hofpop{padding:18px 14px 14px}.hofpop .hp-who h2{font-size:20px}.hofpop .hp-score b{font-size:24px}.stbl th.cl,.stbl td.cl{width:auto}}
 .brkwhy{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rolebar .fb-fill{background:var(--ink-3)}
+.rolebar.rl3 .fb-fill,.rolebar.rl4 .fb-fill,.rolebar.rl5 .fb-fill{background:var(--accent)}
+.rolebar.rl3 .fb-state,.rolebar.rl4 .fb-state,.rolebar.rl5 .fb-state{color:var(--accent)}
+.rolebar.rl0 .fb-fill,.rolebar.rl1 .fb-fill{background:var(--bad)}
+.rolebar.rl0 .fb-state,.rolebar.rl1 .fb-state{color:var(--bad)}
+.famebar .fb-fill{background:#d9a43a}
+.famebar.fm3 .fb-state,.famebar.fm4 .fb-state,.famebar.fm5 .fb-state{color:#d9a43a}
+.eos-chip.blue{color:var(--good)}.eos-chip.red{color:var(--bad)}
 </style>
 
 <style>.install{font-size:12.5px;color:var(--ink-3);text-align:center;padding-top:8px}.install button{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:7px;padding:6px 12px;cursor:pointer}</style>
@@ -1777,7 +1785,7 @@ en:{
  teamT:'Team level',teamLv:['Elite','Contender','Solid','Modest','Underdog'],teamRank:(r,n)=>`${r} of ${n}`,
  offersT:'You received these offers:',firedT:'Find a new club',stayBtn:'Stay',stayDesc:'Keep going where you are.',decideLater:'Decide later',openWindow:'Open the transfer window',windowHint:n=>n?`${n} club${n>1?'s':''} made you an offer.`:'No new offers this window.',
  noSeason:'No season in progress.',noStats:'Your numbers appear here after your first season.',finalPos:'Final position',projPos:'Projected finish',pgaL:'P · G · A',posProjS:'Projection',posFinalS:'Final',stillIn:r=>`Still in · next: ${r}`,startsIn:r=>`Starts at the ${r.toLowerCase()}`,
- statsT:'Career numbers',footSide:(l,w)=>`${l?'Left':'Right'} foot${w?' (weak)':''}`,lmcSide:(l,w)=>`It falls to your ${l?'left':'right'} foot${w?' (weak)':''}`,twoFootTag:'Two-footed',hpBySeason:'Season by season',hpNoHist:'Season-by-season charts are kept for careers that end from now on.',colYr:'Year',colAge:'Age',colClub:'Club',colFin:'League',colRt:'Rating',rtBySeason:'Rating by season',hpClose:'Close',gaT:'Goals and assists per season',finT:'League finish',growT:'Attributes: first season and now',pathT:'Career path',startT:'First season',nowT:'Now',champT:'Champions',upT:'Promoted',downT:'Relegated',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
+ statsT:'Career numbers',roleT:'Club status',roleLv:['Surplus','Bench','Rotation','Starter','Key player','Star'],fameT:'Fame',fameLv:['Unknown','Local name','National name','Continental star','World star','Global icon'],footSide:(l,w)=>`${l?'Left':'Right'} foot${w?' (weak)':''}`,lmcSide:(l,w)=>`It falls to your ${l?'left':'right'} foot${w?' (weak)':''}`,twoFootTag:'Two-footed',hpBySeason:'Season by season',hpNoHist:'Season-by-season charts are kept for careers that end from now on.',colYr:'Year',colAge:'Age',colClub:'Club',colFin:'League',colRt:'Rating',rtBySeason:'Rating by season',hpClose:'Close',gaT:'Goals and assists per season',finT:'League finish',growT:'Attributes: first season and now',pathT:'Career path',startT:'First season',nowT:'Now',champT:'Champions',upT:'Promoted',downT:'Relegated',peakT:'Peak rating',byClub:'By club',seasonsN:n=>`${n} season${n>1?'s':''}`,titlesN:n=>`${n} title${n>1?'s':''}`,
  awayT:'While you were out',awaySub:n=>`You missed ${n} stage${n>1?'s':''}. Here’s how the team did:`,awayBack:'Back to it',
  leaveT:'Leave',stayT:'Stay',simShort:'Sim season',gpg:'G/App',
  genderL:'Football',genderM:'Men',genderW:'Women',hofAll:'All',moneyTag:'Big money',
@@ -1913,7 +1921,7 @@ pt:{
  teamT:'Nível do time',teamLv:['Elite','Candidato','Sólido','Modesto','Azarão'],teamRank:(r,n)=>`${r} de ${n}`,
  offersT:'Você recebeu estas propostas:',firedT:'Procure um novo clube',stayBtn:'Ficar',stayDesc:'Seguir onde você está.',decideLater:'Decidir depois',openWindow:'Abrir a janela de transferências',windowHint:n=>n?`${n} clube${n>1?'s':''} te fez uma proposta.`.replace('clubes te fez','clubes te fizeram'):'Nenhuma proposta nova nesta janela.',
  noSeason:'Nenhuma temporada em andamento.',noStats:'Seus números aparecem aqui depois da primeira temporada.',finalPos:'Posição final',projPos:'Projeção',pgaL:'J · G · A',posProjS:'Projeção',posFinalS:'Final',stillIn:r=>`Na disputa · próxima: ${r}`,startsIn:r=>`Começa: ${r}`,
- statsT:'Números da carreira',footSide:(l,w)=>`Pé ${l?'esquerdo':'direito'}${w?' (fraco)':''}`,lmcSide:(l,w)=>`A bola sobra no seu pé ${l?'esquerdo':'direito'}${w?' (fraco)':''}`,twoFootTag:'Ambidestro',hpBySeason:'Temporada a temporada',hpNoHist:'Os gráficos por temporada ficam guardados para as carreiras encerradas daqui em diante.',colYr:'Ano',colAge:'Idade',colClub:'Clube',colFin:'Liga',colRt:'Nível',rtBySeason:'Nível por temporada',hpClose:'Fechar',gaT:'Gols e assistências por temporada',finT:'Posição na liga',growT:'Atributos: primeira temporada e agora',pathT:'Trajetória',startT:'Primeira temporada',nowT:'Agora',champT:'Campeão',upT:'Acesso',downT:'Rebaixado',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
+ statsT:'Números da carreira',roleT:'Status no clube',roleLv:['Excedente','Banco','Rodízio','Titular','Peça-chave','Estrela'],fameT:'Fama',fameLv:['Sem fama','Nome local','Nome nacional','Estrela continental','Estrela mundial','Ícone global'],footSide:(l,w)=>`Pé ${l?'esquerdo':'direito'}${w?' (fraco)':''}`,lmcSide:(l,w)=>`A bola sobra no seu pé ${l?'esquerdo':'direito'}${w?' (fraco)':''}`,twoFootTag:'Ambidestro',hpBySeason:'Temporada a temporada',hpNoHist:'Os gráficos por temporada ficam guardados para as carreiras encerradas daqui em diante.',colYr:'Ano',colAge:'Idade',colClub:'Clube',colFin:'Liga',colRt:'Nível',rtBySeason:'Nível por temporada',hpClose:'Fechar',gaT:'Gols e assistências por temporada',finT:'Posição na liga',growT:'Atributos: primeira temporada e agora',pathT:'Trajetória',startT:'Primeira temporada',nowT:'Agora',champT:'Campeão',upT:'Acesso',downT:'Rebaixado',peakT:'Nível máximo',byClub:'Por clube',seasonsN:n=>`${n} temporada${n>1?'s':''}`,titlesN:n=>`${n} título${n>1?'s':''}`,
  awayT:'Enquanto você estava fora',awaySub:n=>`Você perdeu ${n} fase${n>1?'s':''}. Veja como o time foi:`,awayBack:'Voltar ao jogo',
  leaveT:'Sair',stayT:'Ficar',simShort:'Simular',gpg:'G/J',
  genderL:'Futebol',genderM:'Masculino',genderW:'Feminino',hofAll:'Todos',moneyTag:'Proposta milionária',
@@ -2244,6 +2252,7 @@ function buildSeason(){
   s.cs=0; s.quest=makeQuest(); s.obj=makeObjective();
   {const h=S.history[S.history.length-1];if(h&&h.club===S.club.name&&!(S.contract&&S.contract.loan)&&!S.lockedIn&&Math.random()<bossChance(h))s.boss=1}
   if(S.benchNext){s.bench=2;s.benchStart=1;S.benchNext=0}
+  roleSeasonStart(s);
   if(S.restNext){s.rested=1;S.restNext=0}
   if(S.natNext){s.natCamp=1;S.natNext=0}
   if(hasFeat('inspiring'))gainInsp(1);
@@ -2724,7 +2733,7 @@ function bdoScore(s,pos,L){
   const tp={league:L.div===1?(L.lvl===0?6:12):0,cup:3,cont:-1,cont2:2,wc:30,cwc:8,intl:12};
   let tr=0;s.trophies.forEach(x=>{tr+=x.kind==='cont'?(contIsUCL(x.lg)?28:10):(tp[x.kind]||0)});
   const p=myPos(), out=s.goals*0.8+s.assists*0.5+(s.cs||0)*0.25, rel=clamp(out/(POS_EXP[p]||12),0,2.2);
-  return rating(S.attrs)*4+22*rel+(POS_EDGE[p]||0)+(hasItem('docu')?3:0)+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
+  return rating(S.attrs)*4+22*rel+(S.fame||0)/40+(POS_EDGE[p]||0)+(hasItem('docu')?3:0)+tr+(L.div===1?[0,8,12][L.lvl]:-20)+(pos<=3&&L.div===1?4:0)+Math.random()*10;
 }
 const POS_EXP={ST:29,AM:16.5,W:19,CM:11.4,FB:8.6,DM:7.6,CB:7.6}, POS_EDGE={ST:6,AM:5,W:3,CM:2,DM:0,FB:0,CB:0};
 const BDO_T=[153,150,148,146,144.5,143,141,139,137.5,135.5];
@@ -2747,7 +2756,7 @@ function makeFiredOffers(h){
 function makeOffers(h){
   if(S.lockedIn)return reunionClubs();
   if(h.ext)return [];
-  const eff=rating(S.attrs)+(wfLv()>=4?0.25:0)+(wfLv()>=5?0.25:0)+(h.pos<=3?0.5:0)+Math.min(1,h.trophies.length*0.25)+(h.goals>=20?0.3:0)+(h.scout||S.wantOut?0.75:0);
+  const eff=rating(S.attrs)+(S.fame||0)/40+(wfLv()>=4?0.25:0)+(wfLv()>=5?0.25:0)+(h.pos<=3?0.5:0)+Math.min(1,h.trophies.length*0.25)+(h.goals>=20?0.3:0)+(h.scout||S.wantOut?0.75:0);
   const cur=clubAfterMove(h), curPr=tierOf(cur.league,cur.tier).pr;
   const cands=[];
   LEAGUES.forEach((L,Li)=>L.tiers.forEach((tr,ti)=>{
@@ -2766,7 +2775,7 @@ function makeOffers(h){
   const res=out.sort(()=>Math.random()-.5).map(o=>({name:pick(LEAGUES[o.league].tiers[o.tier].clubs.filter(n=>n!==S.club.name)),league:o.league,tier:o.tier,pr:o.pr}));
   if(Math.random()<.35){for(const o of res){const r=LEAGUES[o.league].tiers[o.tier].clubs.find(n=>isRival(S.club.name,n));if(r){o.name=r;break}}}
   // MLS and Saudi clubs come for decorated players who have started to fade
-  if(!isW()&&!isExotic(S.club.league)&&S.age>=30&&S.trophies.filter(x=>x.kind!=='bdo').length>=5&&rating(S.attrs)<Math.max(...S.history.map(x=>x.rating))-.6&&Math.random()<.7){
+  if(!isW()&&!isExotic(S.club.league)&&S.age>=30&&(S.trophies.filter(x=>x.kind!=='bdo').length>=5||(S.fame||0)>=50)&&rating(S.attrs)<Math.max(...S.history.map(x=>x.rating))-.6&&Math.random()<.7){
     const Li=Math.random()<.5?20:21, ti=Math.random()<.6?2:1, money={name:pick(LEAGUES[Li].tiers[ti].clubs),league:Li,tier:ti,pr:LEAGUES[Li].tiers[ti].pr,money:1};
     if(res.length>=3)res[res.length-1]=money; else res.push(money);
   }
@@ -2894,7 +2903,7 @@ function retire(){
   const goals=H.reduce((a,h)=>a+h.goals,0), assists=H.reduce((a,h)=>a+h.assists,0), apps=H.reduce((a,h)=>a+h.apps,0);
   const peak=Math.max(...H.map(h=>h.rating)), cs=H.reduce((a,h)=>a+(h.cs||0),0);
   const awPts=(S.awards||[]).reduce((a,x)=>a+awWeight(x),0);
-  const score=Math.round(awPts+outputScore(goals,assists,cs,myPos())+S.trophies.reduce((a,x)=>a+trophyWeight(x),0)+peak*4+Math.max(0,tierOf(top.league,top.tier).pr)*6+H.reduce((a,h)=>a+Math.max(0,tierOf(h.league,h.tier).pr-4.5)*5,0)+(S.milestones||[]).length*8+(S.legends||[]).length*25+(S.farewell?(S.farewell.v===20?20:10):0)+underdogs(H).reduce((a,u)=>a+[0,10,30,45,60][u.lv],0));
+  const score=Math.round(Math.round((S.famePeak||0)/5)+awPts+outputScore(goals,assists,cs,myPos())+S.trophies.reduce((a,x)=>a+trophyWeight(x),0)+peak*4+Math.max(0,tierOf(top.league,top.tier).pr)*6+H.reduce((a,h)=>a+Math.max(0,tierOf(h.league,h.tier).pr-4.5)*5,0)+(S.milestones||[]).length*8+(S.legends||[]).length*25+(S.farewell?(S.farewell.v===20?20:10):0)+underdogs(H).reduce((a,u)=>a+[0,10,30,45,60][u.lv],0));
   const hof=loadHof();
   const oneClub=clubs.length===1&&H.length>=3&&!(S.endReason&&S.age<30);
   const ud=underdogs(H);
@@ -2921,6 +2930,48 @@ const healCls=v=>v>=11?'crit':v===1?'fumble':'';
 function attrBars(a,before){
   return `<div class="abil">${AK.map(k=>{const diff=before?a[k]-before[k]:0;
     return `<div class="ab-cell"><span class="lbl" data-nm="${t.attrs[k]}">${aLbl(k)}</span><span class="ab-v num">${a[k]}${a===S.attrs&&S.phase!=='create'?`<span class="ab-cap" title="${t.capOf(attrCap(k))}">/${attrCap(k)}</span>`:''}${diff>0?`<span class="gain">+${diff}</span>`:diff<0?`<span class="loss">${diff}</span>`:''}</span><span class="ab-m num">${sg(keyBonus(a[k]))}</span></div>`}).join('')}</div>`;
+}
+
+/* ---- club status: where you stand in the squad (0–100). It decides how often you start and how hard the club fights to keep you ---- */
+const ROLE_B=[15,35,55,75,90];
+const roleTier=v=>{let i=0;while(i<ROLE_B.length&&v>=ROLE_B[i])i++;return i};   // 0 surplus · 1 bench · 2 rotation · 3 starter · 4 key player · 5 star
+function roleTarget(){if(!S.club)return 50;const d=rating(S.attrs)-(tierMinOf(S.club.league,S.club.tier)+1.5);return clamp(50+d*12-(S.age<=18?8:0),5,95)}
+function roleInit(){return clamp(Math.round(roleTarget()*.85+(S.roleBoost||0)+(S.fame||0)/10),8,88)}
+const roleNow=()=>S.club&&S.roleClub===S.club.name&&S.role!=null?S.role:roleInit();
+function roleSeasonStart(s){
+  if(!S.club)return; if(S.roleClub!==S.club.name){S.role=roleInit();S.roleClub=S.club.name;S.roleBoost=0}
+  const tr=roleTier(S.role), n=[6,4,2,0,0,0][tr]*(tr===2&&Math.random()<.5?0:1);
+  if(n&&!(S.contract&&S.contract.loan&&tr>=2)){s.bench=Math.max(s.bench||0,n);s.benchStart=1;s.roleBench=n}
+}
+const roleAdd=v=>{if(S.role==null)return;S.role=clamp(S.role+v,0,100)};
+function roleSeasonEnd(h,s){
+  if(S.role==null)return; const from=S.role, rolls=s.rolls||[], A=rolls.length?rolls.reduce((a,b)=>a+b,0)/rolls.length:10;
+  let v=(roleTarget()-S.role)*.3+(A-10.5)*2;
+  if(h.trophies.some(x=>x.kind!=='bdo'))v+=3; if((h.awards||[]).length)v+=3; if(s.seasonOut)v-=8; else if((s.injuries||0)>=3)v-=3;
+  S.role=clamp(Math.round(S.role+v),0,100); h.roleFrom=Math.round(from); h.roleTo=S.role;
+}
+function roleBar(){
+  if(!S.club||S.phase==='create')return''; const v=roleNow(), lv=roleTier(v);
+  return `<div class="fanbar teambar rolebar rl${lv}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v)}" aria-label="${t.roleT}: ${t.roleLv[lv]}"><div class="fb-head"><span class="lbl">${t.roleT}</span><span class="fb-state">${t.roleLv[lv]}</span></div>
+    <div class="fb-track"><span class="fb-fill" style="width:${clamp(v,3,100).toFixed(1)}%"></span></div></div>`;
+}
+/* ---- fame: how well the world knows you (0–100). Big stages raise it, small ones let it fade ---- */
+const FAME_B=[10,25,45,65,85];
+const fameTier=v=>{let i=0;while(i<FAME_B.length&&v>=FAME_B[i])i++;return i};
+function fameSeasonEnd(h,s){
+  const from=S.fame||0, L=LEAGUES[h.league]||LEAGUES[S.club.league], pr=Math.max(0,tierOf(h.league,h.tier).pr);
+  let g=pr*.35+Math.min(3,(h.goals+h.assists)/15);
+  h.trophies.forEach(x=>{const k=x.kind;g+=k==='league'?(LEAGUES[x.lg]&&LEAGUES[x.lg].div===1?2*lgFactor(x.lg):.5):k==='cup'?.7:k==='cont'?(contIsUCL(x.lg)||/Libertadores/.test(LEAGUES[x.lg].cont||'')?6:3):k==='cont2'?2:k==='cwc'?3:k==='wc'?10:k==='intl'?5:0});
+  if(h.bdo===1)g+=10;else if(h.bdo&&h.bdo<=3)g+=4;else if(h.bdo)g+=1.5;
+  g+=(h.awards||[]).length; if(h.wc!=null&&h.wc>=0)g+=1+h.wc*.5; if(h.intl!=null&&h.intl>=0)g+=.5+h.intl*.3;
+  if(L&&L.exotic)g*=.6;
+  let f=from-from*(pr<3?.22:.15)+g;
+  S.fame=clamp(Math.round(f*10)/10,0,100); S.famePeak=Math.max(S.famePeak||0,S.fame); h.fameFrom=Math.round(from); h.fameTo=Math.round(S.fame);
+}
+function fameBar(){
+  if(S.phase==='create'||!S.club)return''; const v=S.fame||0, lv=fameTier(v);
+  return `<div class="fanbar teambar famebar fm${lv}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v)}" aria-label="${t.fameT}: ${t.fameLv[lv]}"><div class="fb-head"><span class="lbl">${t.fameT}</span><span class="fb-state">${t.fameLv[lv]}</span></div>
+    <div class="fb-track"><span class="fb-fill" style="width:${clamp(v,3,100).toFixed(1)}%"></span></div></div>`;
 }
 function teamBar(){
   if(!S.club||S.phase==='create')return'';
@@ -2956,7 +3007,7 @@ function sheet(wide){
   const wcChip=S.phase==='season'&&isWCYear(S.year)?`<span class="chip gold">${t.wcYear}</span>`:S.phase==='season'&&isIntlYear(S.year)&&CONF[S.nat]?`<span class="chip gold">${t.intl[intlKey()]}</span>`:'';
   return `<section class="panel"><div class="who"><div class="stack" style="gap:6px"><span class="lbl agenat">${t.yrs(S.age)} · ${COUNTRY[lang][S.nat]}</span><span class="pos"><span class="ab">${t.pos[myPos()][0]}</span><span class="lbl" style="color:var(--ink)">${t.pos[myPos()][1]}${S.style&&t.styles[S.style]?` · ${t.styles[S.style]}`:''}</span></span>${S.foot?footTag():''}<h2>${esc(S.name||t.unnamed)}</h2><div class="muted clubline">${crest(kitOf(S.club.name),14)}<span>${esc(S.club.name)} · ${esc(LEAGUES[S.club.league].name)}</span></div><div class="row" style="gap:8px">${cond}${S.phase==='season'&&s&&s.hot>0?`<span class="chip hot">${t.onFire}</span>`:''}${S.phase==='season'&&S.season&&S.season.stages.some(x=>x.comp==='cont'||x.comp==='cont2')?`<span class="chip contq">${qualName(S.season.stages.some(x=>x.comp==='cont2')?'second':'main',S.club.league)}</span>`:''}${wcChip}${S.insp?`<span class="chip gold" title="${t.inspT}">✦ ${S.insp}</span>`:''}</div></div>
   <div class="rating"><div class="lbl"><span class="agebit">${t.yrs(S.age)} · </span>${t.rating}</div><div class="big num">${fmt(r)}</div><div class="lbl" style="color:var(--ink-3)">${t.of20(sg(pmod(r)))}</div></div></div>
-  <div class="bars">${fanBar()}${teamBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div>${wide?ccells():''}</section>`;
+  <div class="bars">${fanBar()}${teamBar()}${roleBar()}${fameBar()}</div><div class="attrs">${attrBars(S.attrs,S.phase==='offseason'&&S.growth?S.growth.before:null)}</div>${wide?ccells():''}</section>`;
 }
 /* ---------- iPad layouts: L (landscape, 3 columns) and P (portrait dashboard) ---------- */
 let ipMode='';
@@ -4923,6 +4974,7 @@ const itemName=i=>t.items[i.k][0]+(i.club?` · ${i.club}`:'');
 
 /* ---- everything that happens to the campaign when a season ends ---- */
 function afterSeason(h,s){
+  try{roleSeasonEnd(h,s);fameSeasonEnd(h,s)}catch(e){}
   objSettle(h,s); if(s.boss)h.boss=1; if(s.press&&s.press.r)h.press=1;
   if(hasItem('cover'))addLoy(1);
   seasonFans(h,s);
@@ -5083,6 +5135,7 @@ function wageFor(Li,ti,opts={}){
   let f=clamp(Math.pow(1.45,r-(tr.min+1.5)),.3,4)*(1+Math.min(.5,.15*S.trophies.filter(x=>x.kind==='bdo').length));
   if(S.age>=32)f*=.85;
   f*=1+.05*Math.max(0,wfLv()-2);   // a good weak foot is worth money
+  f*=1+(S.fame||0)/300;   // and so is a famous name
   return roundMoney(base*f*.75*(opts.mult||1));
 }
 const mvMult=a=>a<=24?8:a<=28?6.5:a<=31?4:2;
@@ -5109,8 +5162,8 @@ function decorateOffer(o,mid){
   if(!S.contract||yl<=0||(lastH&&(lastH.fired||lastH.released)&&!mid)){o.fee=0;o.feeKind='free';return o}
   const mv=marketValue(), L=LEAGUES[o.league], budget=(L.w?.15e6:1e6)*Math.pow(2.3,o.pr)*(L.exotic?20:1);
   const bid=mv*(.7+.5*Math.random())*(1+.15*(o.want-1));
-  const key=rating(S.attrs)>=tierMinOf(S.club.league,S.club.tier)+2.5, idol=fanTier()>=5;
-  const thr=mv*(1+(yl-1)*.15+(key?.3:0)+(idol?.4:0)-(rating(S.attrs)<tierMinOf(S.club.league,S.club.tier)?.3:0));
+  const rt=roleTier(roleNow()), idol=fanTier()>=5;   // stars are expensive to prise away; surplus players go cheap
+  const thr=mv*(1+(yl-1)*.15+[-.5,-.3,0,.1,.3,.5][rt]+(idol?.4:0));
   const I2=interestOf(o.name);
   if(budget>=S.contract.clause&&((up>=1.5&&o.want>=3&&Math.random()<.3)||(o.keen&&I2.ref>=2&&Math.random()<.25)||(up>=1&&S.contract.clause<=budget*.08&&Math.random()<.7))){o.fee=S.contract.clause;o.feeKind='clause'}
   else if(bid>=thr){o.fee=roundMoney(bid);o.feeKind='deal'}
@@ -5146,10 +5199,10 @@ function noteRefusals(chosen){
 /* when your deal runs out the club decides whether to keep you */
 function renewalFor(h){
   const r=rating(S.attrs), min=tierMinOf(S.club.league,S.club.tier);
-  const want=fanTier()>=5||(r>=min-.5&&!(S.age>=33&&r<min+1.5));
-  if(!want||h.fired)return{none:1};
+  const rt=roleTier(roleNow()), want=fanTier()>=5||rt>=3||(rt>=1&&r>=min-.5&&!(S.age>=33&&r<min+1.5));   // the club keeps the players it counts on
+  if(!want||h.fired||(rt===0&&fanTier()<5))return{none:1};
   const yrs=S.age<=26?pick([3,4]):S.age<=30?pick([2,3]):1;
-  return{wage:wageFor(S.club.league,S.club.tier,{mult:(fanTier()>=5?1.1:1)*(1+.05*Math.min(S.tenure||0,10))*(1+.04*(S.board||0))}),years:yrs,want:fanTier()>=4?3:2};
+  return{wage:wageFor(S.club.league,S.club.tier,{mult:(fanTier()>=5?1.1:1)*(1+.05*Math.min(S.tenure||0,10))*(1+.04*(S.board||0))*(1+.06*Math.max(0,rt-3))}),years:yrs,want:fanTier()>=4||rt>=4?3:2};
 }
 /* season end: pay day, the clause grows, deals end, loans come back */
 function contractSeasonEnd(h){
@@ -5196,7 +5249,7 @@ function joinClub(club,last,notes){
   if(S.parent&&(S.parent.idols||[]).includes(club.name)&&!back){L+=6;notes.push(['nHeir',club.name])}
   if(isRival(from,club.name)){L-=4+(hadL>=7?3:0);S.rivalMoves=(S.rivalMoves||0)+1;notes.push(['nRival',from,club.name])}
   // a decorated player arrives as a big signing; a framed unveiling shirt keeps the welcome warm
-  if(!back&&!club.loan&&!mode&&bigSignCred()){L+=3;S.bigSign=(S.bigSign||0)+1;notes.push(['nBigSign',club.name]);giveItem('unveil')}
+  if(!back&&!club.loan&&!mode&&bigSignCred()){L+=3;S.roleBoost=10;S.bigSign=(S.bigSign||0)+1;notes.push(['nBigSign',club.name]);giveItem('unveil')}
   if(hasItem('unveil')&&!back)L+=1;
   if(club.fee>0&&club.feeKind!=='free'&&club.feeKind!=='loan'){S.fees=(S.fees||[]).concat({fee:club.fee,year:S.year,from,to:club.name,kind:club.feeKind});S.feeMax=Math.max(S.feeMax||0,club.fee);if(club.feeKind==='clause')S.clausePaid=(S.clausePaid||0)+1;notes.push([club.feeKind==='clause'?'nClause':'nFee',club.name,money(club.fee)])}
   if(club.loan){S.loans=(S.loans||0)+1;notes.push(['nLoan',club.name,from])}
@@ -6023,6 +6076,7 @@ function lbFinish(st){
   const pts=w*3+dr, ppg=pts/Math.max(1,rs.length), missed=rs.every(x=>x.missed);
   const kind=ppg>=2.3?0:ppg>=1.8?1:ppg>=1.2?2:ppg>=.7?3:4, tone=kind<=1?'good':kind===2?'mid':'bad';
   st.res={tone,kind,w,d:dr,l,pts,missed:missed?1:0};
+  if(!missed)roleAdd([4,2,0,-2,-4][kind]); else roleAdd(-2);
   if(rs.some(x=>x.missed)){if(s.seasonOut&&s.out>0)s.out--;if(s.awaySkip!==s.idx)(s.away=s.away||[]).push(s.idx)}
   if(s.bench>0&&!missed)s.bench--;
   s.last={stage:s.idx,block:1,tone,kind,w,d:dr,l,pts,goals:rs.reduce((a,x)=>a+(x.g||0),0),assists:rs.reduce((a,x)=>a+(x.a||0),0),apps:rs.filter(x=>!x.missed).length,missed:missed?1:0};
@@ -6557,6 +6611,9 @@ function eosHTML(o){
   (h.awards||[]).forEach(a=>acc.push(['gold',awName(a)]));
   if(h.wc!=null&&h.wc>=0)acc.push([h.wc===5?'gold':'',`${t.wc}: ${t.wcRes[h.wc]}`]);
   if(h.intl!=null&&h.intl>=0)acc.push([h.intl===5?'gold':'',`${t.intl[h.intlT]}: ${t.wcRes[h.intl]}`]);
+  {const st2=[];if(h.roleFrom!=null&&roleTier(h.roleFrom)!==roleTier(h.roleTo))st2.push([roleTier(h.roleTo)>roleTier(h.roleFrom)?'up':'down',`${t.roleT}: ${t.roleLv[roleTier(h.roleFrom)]} → ${t.roleLv[roleTier(h.roleTo)]}`]);
+   if(h.fameFrom!=null&&fameTier(h.fameFrom)!==fameTier(h.fameTo))st2.push([fameTier(h.fameTo)>fameTier(h.fameFrom)?'up':'down',`${t.fameT}: ${t.fameLv[fameTier(h.fameFrom)]} → ${t.fameLv[fameTier(h.fameTo)]}`]);
+   st2.forEach(([c,x])=>acc.push([c==='up'?'blue':'red',x]))}
   if(acc.length)S2(t.eosAcc,`<div class="eos-chips">${acc.map(([c,x])=>`<span class="eos-chip ${c}">${x}</span>`).join('')}</div>`);
   const a0=h.a0||{}, a1=h.a1||S.attrs, ch=AK.filter(k=>a0[k]!=null&&a0[k]!==a1[k]);
   const r0=h.a0?rating(a0):null, r1=rating(a1);
