@@ -731,6 +731,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .bnc i{position:absolute;top:3px;right:5px;font-style:normal;font-size:10.5px;font-weight:700;color:#6ea8ff}
 .bnc.on{border-color:#8193ff}.bnc:disabled{cursor:default;opacity:.55}.bnc.on:disabled{opacity:1}
 .bnleft{color:#a9adb7}
+.prepb .bgfx{display:block;margin-top:4px;font-size:12px;font-weight:600;color:#9cb0ff}
 .drawgrp{width:100%;display:flex;flex-direction:column;gap:4px;text-align:left}
 .drow{display:grid;grid-template-columns:46px 26px minmax(0,1fr) auto;gap:9px;align-items:center;padding:6px 10px;border-radius:9px;background:#191c22;border:1px solid #2c3038;min-height:40px}
 .drow b{font-size:14px;color:#f3f4f6;line-height:1.2;min-width:0}
@@ -2203,9 +2204,34 @@ function makeStartOffersW(avg,nat){
   return out.slice(0,3);
 }
 
+
+/* ---- background: where you come from. Two strengths and a flaw, picked at creation ---- */
+const BG={
+ street:{fx:{ski:1,spd:1,def:-1},n:['Street footballer','Jogador de rua','Jogadora de rua'],d:['Learned the game on concrete, nobody taught you to track back.','Aprendeu no asfalto; ninguém te ensinou a voltar para marcar.']},
+ academy:{fx:{pas:1,dec:1,str:-1},n:['Academy product','Cria da base','Cria da base'],d:['Ten years of drills and tactics, but you never had to fight for the ball.','Dez anos de treinos e tática, mas nunca precisou brigar pela bola.']},
+ futsal:{fx:{ski:2,str:-1},n:['Futsal kid','Cria do futsal','Cria do futsal'],d:['Magic in tight spaces, lost on a big muddy pitch.','Mágica em espaço curto, perdido num campo grande e pesado.']},
+ farm:{fx:{str:2,ski:-1},n:['Late bloomer from the farm','Garoto da roça','Garota da roça'],d:['Strong as an ox from years of work, first touch still a bit heavy.','Forte de anos de trabalho no campo; o primeiro toque ainda é pesado.']},
+ track:{fx:{spd:2,pas:-1},n:['Former sprinter','Ex-velocista','Ex-velocista'],d:['Came from athletics. Nobody catches you, but you rarely look up.','Veio do atletismo. Ninguém te alcança, mas você quase não levanta a cabeça.']},
+ captain:{fx:{lead:2,spd:-1},n:['Born captain','Capitão nato','Capitã nata'],d:['Wore the armband at every age, never the quickest on the pitch.','Usou a braçadeira em todas as categorias, mas a velocidade nunca foi o forte.']},
+ beach:{fx:{fin:1,ski:1,def:-1},n:['Beach football','Futebol de areia','Futebol de areia'],d:['Volleys and bicycle kicks on the sand, defending was never part of it.','Voleios e bicicletas na areia; defender nunca fez parte do jogo.']},
+ grinder:{fx:{def:1,str:1,ski:-1},n:['Hard worker','Operário da bola','Operária da bola'],d:['Not the most gifted, so you outrun and outfight everyone.','Não é o mais talentoso, então corre e briga mais que todo mundo.']},
+ family:{fx:{dec:1,lead:1,fin:-1},n:['Football family','Família de boleiros','Família de boleiras'],d:['Grew up in the dressing room, still learning to finish your chances.','Cresceu no vestiário, ainda aprendendo a finalizar.']},
+ smalltown:{fx:{fin:1,lead:1,pas:-1},n:['Small-town hero','Herói da cidade pequena','Heroína da cidade pequena'],d:['Scored every goal back home, never needed to pass.','Fazia todos os gols na sua cidade, nunca precisou passar a bola.']}};
+const bgName=k=>{const b=BG[k];return b?(lang==='pt'?b.n[isW()?2:1]:b.n[0]):''};
+const bgFx=k=>{const b=BG[k];return b?Object.entries(b.fx).map(([a,v])=>`${v>0?'+':'−'}${Math.abs(v)} ${t.attrs[a]}`).join(' · '):''};
+function bgOpts(){if(!S.bgOpts){const ks=Object.keys(BG).sort(()=>Math.random()-.5);S.bgOpts=ks.slice(0,3)}return S.bgOpts}
+function bgHTML(){
+  return `<div class="ovcard move prepop"><span class="ov-kicker">${t.bgK}</span><h2 class="ov-title" style="font-size:24px">${t.bgT}</h2><div class="ov-sub2">${t.bgSub}</div>
+    <div class="prepg">${bgOpts().map(k=>`<button class="prepb" data-ov="bgpick" data-k="${k}"><b>${esc(bgName(k))}</b><span>${esc(BG[k].d[lang==='pt'?1:0])}</span><span class="bgfx">${bgFx(k)}</span></button>`).join('')}</div></div>`;
+}
+function bgClick(e){
+  const b=e.target.closest('[data-ov]'); if(!b)return;
+  if(b.dataset.ov==='bgpick'&&BG[b.dataset.k]){S.bg=b.dataset.k;sfx('pass');save();closeOv();ovQ.unshift({k:S.bonusDone?'offers':'bonus'});flushOv();render();return}
+  if(e.target===ovEl)closeOv();
+}
 /* ---- creation, last step: a d6 of bonus points to put wherever you like ---- */
 const BONUS_MAX=12;
-const bonusBase=k=>{const p=bestPos(S.roll),sty=styleOf(p,S.style);return S.roll[k]+(sty&&sty[1]===k?1:0)};
+const bonusBase=k=>{const p=bestPos(S.roll),sty=styleOf(p,S.style);return clamp(S.roll[k]+(sty&&sty[1]===k?1:0)+((BG[S.bg]||{fx:{}}).fx[k]||0),1,20)};
 const bonusLeft=()=>(S.bonusR||0)-AK.reduce((a,k)=>a+((S.bonus||{})[k]||0),0);
 const bonusAttrs=()=>Object.fromEntries(AK.map(k=>[k,bonusBase(k)+((S.bonus||{})[k]||0)]));
 function autoBonus(){const p=bestPos(S.roll),w=POS[p].w,ks=AK.slice().sort((x,y)=>(w[y]||0)-(w[x]||0));S.bonus={};let n=S.bonusR||0;
@@ -2260,6 +2286,7 @@ function startCareer(offer){
   delete S.mem; delete S.lgMv; applyMem();
   S.attrs={...S.roll}; if(S.parent&&S.parent.best&&S.attrs[S.parent.best]!=null)S.attrs[S.parent.best]=Math.min(20,S.attrs[S.parent.best]+1); S.pos=bestPos(S.roll); if(!S.footR)S.footR=d(20); S.foot=footOf(S.footR); S.wf=startWF(S.foot,S.attrs.ski); S.age=17; S.year=S.startYear||2027; S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
   const sty=styleOf(S.pos,S.style); if(sty)S.attrs[sty[1]]=Math.min(20,S.attrs[sty[1]]+1); else S.style=null;
+  if(BG[S.bg])Object.entries(BG[S.bg].fx).forEach(([k,v])=>{S.attrs[k]=clamp(S.attrs[k]+v,1,20)});
   if(S.bonus)AK.forEach(k=>{if(S.bonus[k])S.attrs[k]=Math.min(20,S.attrs[k]+S.bonus[k])});
   S.club={name:offer.name,league:offer.league,tier:offer.tier};
   S.qualified=offer.tier>=2&&!!LEAGUES[offer.league].cont&&LEAGUES[offer.league].div===1?'main':false; S.startOffers=null; S.hofSaved=false;   // a big first club is already in its continental cup
@@ -4431,6 +4458,7 @@ function ovHTML(o){
   if(o.k==='eos')return eosHTML(o);
   if(o.k==='offers')return offersHTML();
   if(o.k==='bonus')return bonusHTML();
+  if(o.k==='bg')return bgHTML();
   if(o.k==='chron')return `<div class="ovcard window"><span class="ov-kicker">${esc(S.name||t.unnamed)}</span><h2 class="ov-title" style="font-size:26px">${t.chronT}</h2><div class="chronlist">${S.history.map(h=>`<p>${chron(h)}</p>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
   if(o.k==='window')return windowHTML();
   if(o.k==='deal')return dealHTML(o);
@@ -4510,7 +4538,7 @@ function flushOv(){
   if(ovEl||!ovQ.length)return;
   const o=ovQ.shift(), html=ovHTML(o); if(!html){flushOv();return}
   ovKind=o.k;
-  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='final'?' big':'')+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='bonus'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
+  ovEl=document.createElement('div'); ovEl.className='ovl ovl-'+o.k+(o.k==='final'?' big':'')+(o.k==='retire'||o.k==='quit'||o.k==='foot'||o.k==='hofdel'||o.k==='howto'||o.k==='deal'||o.k==='mid'||o.k==='window'||o.k==='away'||o.k==='chron'||o.k==='heal'||o.k==='story'||o.k==='press'||o.k==='farewell'||o.k==='agechk'||o.k==='draw'||o.k==='bonus'||o.k==='bg'||o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='offers'||o.k==='pick'||o.k==='run'||o.k==='pens'||o.k==='lmc'||o.k==='eos'||o.k==='repos'||o.k==='lb'||o.k==='stage'?' ovl-move':''); ovEl.setAttribute('role','dialog'); ovEl.setAttribute('aria-modal','true');
   ovEl.innerHTML=html; document.body.appendChild(ovEl); holdImgs(ovEl); requestAnimationFrame(()=>fitIp());
   if(o.k==='pens'){pensTimer=setTimeout(pensStep,900);pensScroll()}
   if(o.k==='champ'||o.k==='league'||o.k==='bdo'){confetti(ovEl,o);sfx('title')}
@@ -4545,6 +4573,7 @@ function flushOv(){
     if(o.k==='feat'||o.k==='brk'||o.k==='camp'||o.k==='pick'){prepClick(e);return}
     if(o.k==='offers'){offersClick(e);return}
     if(o.k==='bonus'){bonusClick(e);return}
+    if(o.k==='bg'){bgClick(e);return}
     if(o.k==='away'||o.k==='chron'||o.k==='howto'){if(e.target===ovEl||e.target.closest('[data-ov="close"]'))closeOv();return}
     if(o.k==='deal'){dealClick(e,o);return}
     if(o.k==='mid'){midClick(e);return}
@@ -5017,7 +5046,7 @@ function onClick(e){
   else if(act==='pickov'){maybePick();flushOv()}
   else if(act==='ageov'||act==='prepov'){maybePrep();flushOv()}
   else if(act==='club'){if(ovEl)return;ovQ.unshift({k:'club',n:b.dataset.n});flushOv()}
-  else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:S.bonusDone||S.daily?'offers':'bonus'});flushOv()}
+  else if(act==='offersov'){if(!styleOf(bestPos(S.roll),S.style))return;ovQ.push({k:S.daily?'offers':!S.bg?'bg':S.bonusDone?'offers':'bonus'});flushOv()}
   else if(act==='healov'){healOpen=false;maybeHeal();flushOv()}
   else if(act==='inj4'){centerOn(app.querySelector('.stage'));const v=d(4);const el=app.querySelector('.inj4');rollDice(el?[el]:[],4,[v],x=>x>=3?'crit':'fumble',()=>{injD4(v);sfx(v>=3?'pass':'fail');commit()})}
   else if(act==='inj10'){centerOn(app.querySelector('.stage'));const a=d(12),c=d(12);const e1=app.querySelector('[data-die="inj100"]'),e2=app.querySelector('[data-die="inj101"]');rollDice(e1?[e1]:[],12,[a],()=>'',()=>{rollDice(e2?[e2]:[],12,[c],()=>'',()=>{injD10(a,c);const I=S.season.inj;sfx(I.career?'careerInj':I.season||I.out>0?'injury':'pass');commit()})})}
@@ -5865,6 +5894,7 @@ Object.assign(T.en,{clubLv:'Squad level',clubRk:(i,n)=>`${ord(i)} of ${n}`,clubP
 Object.assign(T.en,{poUp:'Promotion play-offs',poRel:'Relegation play-off',poR:{pre:'Preliminary round',sf:'Play-off semi-final',f:'Play-off final',po1:'Play-off 1',po2:'Play-off 2',br:'Promotion/relegation play-off'},introPo:'Promotion on the line',introRel:'Top-flight survival on the line',poUpT:'Promoted!',poUpD:'Through the play-offs and up to the top flight.',poMiss:'So close',poMissD:'The play-offs end your promotion push. Another season down here.',poStay:'Stayed up!',poStayD:'The play-off goes your way. Top-flight football again next season.',poDown:'Relegated',poDownD:'The play-off is lost. Next season is in the second division.'});
 Object.assign(T.en,{paradeK:'Trophy parade',paradeT:'The city is yours',paradeD:'Open-top bus, trophy held high, the streets packed in your colours.',paradeWc:'The whole country is out on the streets to welcome the team home.'});
 Object.assign(T.en,{introSub:'One match for the trophy',introGo:'Kick off'});
+Object.assign(T.en,{bgK:'Where you come from',bgT:'Your background',bgSub:'Pick one. Each brings two strengths and a flaw.',bgRow:'Background'});
 Object.assign(T.en,{bonusK:'Last roll',bonusT:'Bonus points',bonusSub:m=>`Roll a d6: that many extra points to add to any attributes you like, up to ${m} each.`,bonusLeft:n=>n===1?'1 point left':`${n} points left`,bonusReset:'Reset'});
 Object.assign(T.en,{drawT:'Group stage draw',drawLP:'League phase draw',drawK:['Forgiving group','Balanced group','Hard group'],drawRule:'Roll a d6 and add your seeding: 1–2 is a hard group, 3–4 balanced, 5 or more forgiving. A natural 6 is always forgiving, a natural 1 always hard.',potS:n=>`Pot ${n}`,drawYou:'You'});
 Object.assign(T.en,{wrT:'World record',wrTab:'World records',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Real all-time marks, last checked in October 2026 (after the 2026 World Cup). Beat one in a career and your name replaces it. Goals and games by competition count from this update on.'});
@@ -5872,6 +5902,7 @@ Object.assign(T.pt,{clubLv:'Nível do elenco',clubRk:(i,n)=>`${i}º de ${n}`,clu
 Object.assign(T.pt,{poUp:'Playoffs de acesso',poRel:'Playoff de rebaixamento',poR:{pre:'Fase preliminar',sf:'Semifinal dos playoffs',f:'Final dos playoffs',po1:'Playoff 1',po2:'Playoff 2',br:'Playoff de acesso e rebaixamento'},introPo:'Vale o acesso',introRel:'Vale a permanência na elite',poUpT:'Acesso!',poUpD:'Pelos playoffs, de volta à primeira divisão.',poMiss:'Foi por pouco',poMissD:'Os playoffs encerram a briga pelo acesso. Mais uma temporada aqui embaixo.',poStay:'Permanência!',poStayD:'O playoff sai do seu jeito. Primeira divisão de novo na próxima temporada.',poDown:'Rebaixado',poDownD:'O playoff está perdido. A próxima temporada é na segunda divisão.'});
 Object.assign(T.pt,{paradeK:'Festa do título',paradeT:'A cidade é sua',paradeD:'Ônibus aberto, taça levantada e as ruas tomadas pelas cores do clube.',paradeWc:'O país inteiro vai às ruas para receber a seleção.'});
 Object.assign(T.pt,{introSub:'Um jogo pela taça',introGo:'Bola rolando'});
+Object.assign(T.pt,{bgK:'De onde você vem',bgT:'Sua origem',bgSub:'Escolha uma. Cada uma traz dois pontos fortes e um defeito.',bgRow:'Origem'});
 Object.assign(T.pt,{bonusK:'Última rolagem',bonusT:'Pontos extras',bonusSub:m=>`Role um d6: esse é o número de pontos extras para pôr nos atributos que quiser, até ${m} em cada.`,bonusLeft:n=>n===1?'Falta 1 ponto':`Faltam ${n} pontos`,bonusReset:'Refazer'});
 Object.assign(T.pt,{drawT:'Sorteio da fase de grupos',drawLP:'Sorteio da fase de liga',drawK:['Grupo tranquilo','Grupo equilibrado','Grupo difícil'],drawRule:'Role um d6 e some o seu pote: 1–2 é grupo difícil, 3–4 equilibrado, 5 ou mais tranquilo. Um 6 natural é sempre tranquilo; um 1 natural, sempre difícil.',potS:n=>`Pote ${n}`,drawYou:'Você'});
 Object.assign(T.pt,{wrT:'Recorde mundial',wrTab:'Recordes mundiais',wrYou:(n,v)=>`${n}: ${v}`,wrNote:'Marcas históricas reais, conferidas em outubro de 2026 (depois da Copa de 2026). Supere uma numa carreira e seu nome toma o lugar. Gols e jogos por competição contam a partir desta atualização.'});
@@ -5911,7 +5942,7 @@ function startDaily(){
     S.style=pick(STYLES[bestPos(S.roll)]||[[null]])[0];
     S.startOffers=makeStartOffers(rating(S.roll),S.nat);
     S.footR=d(20);
-    S.bonusR=d(6); autoBonus();
+    S.bg=pick(Object.keys(BG)); S.bonusR=d(6); autoBonus();
   }finally{Math.random=orig}
 }
 
@@ -6055,7 +6086,7 @@ function campaignView(){
   const cap=S.history.length&&S.age>=21?t.capLv[capLv(potCap())]:'?';
   const feats=(S.feats||[]).map(k=>`<span class="chip tg blue" title="${esc(t.feats[k][1])}">${t.feats[k][0]}</span>`).join('');
   return `<div class="camp"><span class="lbl">${t.profT}</span><div class="sv-list">
-    <div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>
+    ${S.bg&&BG[S.bg]?`<div class="sv-row"><span>${t.bgRow}</span><span class="cv">${esc(bgName(S.bg))}</span></div>`:''}<div class="sv-row"><span>${t.ceilT}</span><span class="cv">${cap}</span></div>
     <div class="sv-row"><span>${t.inspT}</span><span class="cv">✦ ${S.insp||0}/${inspMax()}</span></div>
     <div class="sv-row"><span>${t.quests}</span><span class="cv">${S.quests||0}</span></div>
     <div class="sv-row"><span>${t.brkProf}</span><span class="cv">${S.capUp?Object.values(S.capUp).reduce((a,b)=>a+b,0):0}/${BRK_MAX}${S.capUp&&Object.keys(S.capUp).length?' · '+Object.keys(S.capUp).map(k=>t.attrs3[k]).join(', '):''}</span></div>
