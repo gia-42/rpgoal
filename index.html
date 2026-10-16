@@ -5036,7 +5036,10 @@ function onClick(e){
   else if(act==='wcall'){wcAll=true;fastRoll=true;doRoll();setTimeout(wcTick,allGap('wc'))}
   else if(act==='wcstop'){wcAll=false;playSync()}
   else if(act==='lbgo'){lbGo()}
-  else if(act==='play'){if(finishSeason()){commit();window.scrollTo({top:0});return}homeHold=false;if(S.season&&S.season.press&&!S.season.press.done){maybePress();flushOv();return}unstick();playSync()}
+  else if(act==='play'){if(finishSeason()){commit();window.scrollTo({top:0});return}homeHold=false;if(S.season&&S.season.press&&!S.season.press.done){maybePress();flushOv();return}
+    if(S.season&&S.season.mid&&!ovEl){if(!ovHas('mid'))ovQ.unshift({k:'mid'});flushOv();return}   // the mid-season window comes before anything else, even a pre-match story
+    unstick();playSync();
+    if(!ovEl&&!busy){maybeStory();maybeMid();maybeDraw();maybeRun();maybePress();flushOv();if(!ovEl)playSync()}}   // nothing opened: whatever is waiting gets its turn
   else if(act==='ssub'){seasonSub=b.dataset.v==='track'?'track':'table';render()}
   else if(act==='lbder'){const s=S.season,st=s&&s.stages[s.idx];if(!st||!lbDerbyDue(st))return;const v=d(DERBY_DIE),el=app.querySelector('[data-die="lb'+(st.mi||0)+'"]'),e=EVMAP.derby;
     rollDice(el?[el]:[],DERBY_DIE,[v],x=>x===DERBY_DIE?'crit':x===1?'fumble':x+evBonus(e)>=derbyTgt()?'win':'lose',()=>{lbDerbyRoll(st,v);sfx(st.ms[st.mi||0].dr.ok?'pass':'fail');commit()})}
@@ -5603,7 +5606,7 @@ function midMove(o){
 function ensureContract(){if(S&&S.club&&S.phase!=='create'&&S.phase!=='retired'&&!S.contract){signContract(S.club,wageFor(S.club.league,S.club.tier),2,S.year)}}
 function maybeMid(){
   if(view!=='game'||S.phase!=='season'||!S.season||!S.season.mid||ovHas('mid'))return;
-  const st=S.season.stages[S.season.idx]; if(S.season.last||(st&&st.ch&&!st.chr))return;
+  if(S.season.last)return;
   ovQ.push({k:'mid'});
 }
 /* ---- contract UI: offer terms, negotiating, asking to leave, loans ---- */
