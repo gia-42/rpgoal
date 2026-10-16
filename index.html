@@ -2408,13 +2408,30 @@ function contGroupStages(s,comp){
 const SUPERCUP={ENG:'Community Shield',ESP:'Supercopa de España',ITA:'Supercoppa Italiana',GER:'DFL-Supercup',FRA:'Trophée des Champions',POR:'Supertaça Cândido de Oliveira',NED:'Johan Cruijff Schaal',BRA:'Supercopa do Brasil',ARG:'Supercopa Argentina',URU:'Supercopa Uruguaya',KSA:'Saudi Super Cup',EGY:'Egyptian Super Cup',JPN:'Japanese Super Cup'};
 const SUPERCUP_W={ESP:'Supercopa de España Femenina',ITA:'Supercoppa Italiana Femminile',BRA:'Supercopa do Brasil Feminina'};
 const supName=(Li,w)=>{const L=LEAGUES[Li];if(!L)return'';return((w===undefined?!!L.w:w)?SUPERCUP_W:SUPERCUP)[L.c]||''};
+/* who won the country's league and cup this season: decides next summer's super cup */
+function supInfo(h,s){
+  const L=LEAGUES[S.club.league]; if(!L)return null; const d1=L.div===1?S.club.league:L.up; if(d1==null||!LEAGUES[d1])return null;
+  const o=d1===S.club.league?divOrder(d1,s):divOrder(d1,null), me=S.club.name;
+  let cup=null;
+  if(h.trophies.some(x=>x.kind==='cup'))cup=me;
+  else{const cs=s.stages.filter(x=>x.comp==='cup'&&x.res&&!x.res.skipped), lost=cs.find(x=>x.res.win===false), fin=lost&&lost.round===lastRound('cup');
+    if(fin)cup=lost.opp;
+    else{const D=LEAGUES[d1], pool=clubsWhere(X=>X.c===D.c&&X.div===1&&!!X.w===!!D.w).map(x=>x.n).filter(n=>n!==me), w=pool.map(n=>Math.exp(teamStr(n)/3)*(lost&&n===lost.opp?2:1));
+      let r=Math.random()*w.reduce((a,b)=>a+b,0);cup=pool[pool.length-1];for(let k=0;k<pool.length;k++){r-=w[k];if(r<=0){cup=pool[k];break}}}}
+  return{c:L.c,lg:o[0],lg2:o[1],cup};
+}
 function supStage(){
-  const h=S.history[S.history.length-1]; if(!h||!S.club||h.club!==S.club.name)return null;
-  const L=LEAGUES[S.club.league], Lh=LEAGUES[h.league]; if(!L||!Lh||L.c!==Lh.c||!supName(S.club.league))return null;
-  const won=h.trophies.some(x=>(x.kind==='league'&&Lh.div===1)||x.kind==='cup'); if(!won)return null;
-  const pool=clubsWhere(X=>X.c===L.c&&X.div===1&&!!X.w===!!L.w).filter(x=>x.n!==S.club.name).sort((a,b)=>b.pr-a.pr).slice(0,4);
-  if(!pool.length)return null;
-  return{comp:'sup',round:0,opp:pick(pool).n,key:focusKey(),res:null};
+  const h=S.history[S.history.length-1]; if(!h||!S.club)return null;
+  const L=LEAGUES[S.club.league]; if(!L||!supName(S.club.league))return null;
+  const me=S.club.name; let a,b;
+  if(h.sc){if(h.sc.c!==L.c)return null;a=h.sc.lg;b=h.sc.cup===h.sc.lg?h.sc.lg2:h.sc.cup}   // league champion against cup winner; a double winner meets the runner-up
+  else{   // seasons saved before this was tracked: only your own titles are known
+    const Lh=LEAGUES[h.league]; if(h.club!==me||!Lh||Lh.c!==L.c)return null;
+    const lg=h.trophies.some(x=>x.kind==='league'&&Lh.div===1), cp=h.trophies.some(x=>x.kind==='cup'); if(!lg&&!cp)return null;
+    const pool=clubsWhere(X=>X.c===L.c&&X.div===1&&!!X.w===!!L.w).filter(x=>x.n!==me).sort((x,y)=>y.pr-x.pr).slice(0,4); if(!pool.length)return null;
+    a=me;b=pick(pool).n}
+  if(!a||!b||(me!==a&&me!==b))return null;
+  return{comp:'sup',round:0,opp:me===a?b:a,key:focusKey(),res:null};
 }
 function buildSeason(){
   applyMem();
@@ -2936,6 +2953,7 @@ function endSeason(){
     wc:s.wc&&!s.wc.ret&&!s.wc.t?(s.wc.called?(s.wcRes==null?5:s.wcRes):-1):null,wcNeed:s.wc?s.wc.need:null,
     intl:s.wc&&!s.wc.ret&&s.wc.t?(s.wc.called?(s.wcRes==null?5:s.wcRes):-1):null,intlT:s.wc&&s.wc.t?s.wc.t:null};
   h.awards=seasonAwards(s,h); if(h.awards.length){S.awards=(S.awards||[]).concat(h.awards.map(a=>({...a,year:S.year})));ovPush({k:'awards',items:h.awards,year:S.year})}
+  try{h.sc=supInfo(h,s)}catch(e){console.error(e)}
   applyMem(); try{const mv=lgSwap(h,s);if(mv)h.lgMv=mv}catch(e){console.error(e)}
   S.history.push(h);
   afterSeason(h,s);
