@@ -2666,7 +2666,7 @@ function resolveStage(v1,v2){
     if(isCrit(nat)){r.crit=true;s.hot=2;if(S.age<=33&&!isCG(st)&&AK.some(canUp)&&rating(S.attrs)<critCap())s.pickAttr=true}
     if(injTrig(nat)){r.injury=true;s.pendingHeal=true;s.inj={chk:null,d4:null,d10:null,relapse:s.relapseHit?1:0}}
   }
-  r.dc=dcFor(st);
+  r.dc=dcFor(st); if(lgRun&&!r.missed)r.dc=Math.min(r.dc,r.total-nat+LG_NEED_MAX);
   const margin=r.total-r.dc; r.margin=margin;
   if(!r.missed){const c=st.comp==='run'?'league':st.comp;(s.mg=s.mg||{})[c]=(s.mg[c]||[]).concat(clamp(margin+(st.lha&&s.v>=6?LB_OFF:0),-10,10))}
   if(st.comp==='league'){
@@ -5174,7 +5174,7 @@ function stageOdds(st){
   const s=S.season, lgRun=st.comp==='run'&&st.lha&&s.v>=6, cm=lgRun?0:teamMod(st), pm=pmod(rating(S.attrs)), kb=keyBonus(S.attrs[st.key]), fx=st.fx||{buff:0};
   const raw=pm+cm+kb+(fx.buff||0)+(st.comp==='wc'?0:loyBonus())+extraSum(st), mods=(lgRun?Math.max(LG_FLOOR,capMods(raw,st)):capMods(raw,st))+(s.hot>0?2:0)+(lgRun?(st.lha==='H'?1:0)+lgMom(s)+squadLg():0), dc=dcFor(st), mode=effMode(st);
   if(st.comp==='league'){const need=dc+3-mods;return{need,p:chanceOf(need,mode,false),league:1}}
-  const need=dc-mods;return{need,p:chanceOf(need,mode,true)};
+  const need=lgRun?Math.min(dc-mods,LG_NEED_MAX):dc-mods;return{need,p:chanceOf(need,mode,true)};
 }
 
 /* ---- story choices: pick how you handle it, then roll ---- */
@@ -6545,12 +6545,12 @@ function lbResolveOne(st,v1,v2){
   const fx=lbBlockFx(st,i,m), sq=squadLg();
   let mode=fx.mode||null; if(st.red&&i===0)mode=mode==='adv'?null:'dis'; if(m.insp)mode=mode==='dis'?null:'adv';
   let nat=v1; if(mode&&v2!=null)nat=mode==='adv'?Math.max(v1,v2):Math.min(v1,v2);
-  const home=m.ha==='H'?1:0, mom=lgMom(s), dc=lbDC(m), r={nat,dc,home,mom,mode,pair:mode?[v1,v2]:null};
+  const home=m.ha==='H'?1:0, mom=lgMom(s); let dc=lbDC(m); const r={nat,dc,home,mom,mode,pair:mode?[v1,v2]:null};
   if(s.out>0){r.missed=1;r.team=squadMod();r.total=nat+sq+5+r.team+home+mom;if(!s.seasonOut)s.out--}
   else{
     const raw=pmod(rating(S.attrs))+keyBonus(S.attrs[st.key])+(fx.buff||0)+loyBonus()+extraSum(st);
     r.hot=s.hot>0?2:0; if(s.hot>0)s.hot--;
-    r.sq=sq; r.total=nat+Math.max(LG_FLOOR,capMods(raw))+sq+r.hot+home+mom;
+    r.sq=sq; r.total=nat+Math.max(LG_FLOOR,capMods(raw))+sq+r.hot+home+mom; r.dc=dc=Math.min(dc,r.total-nat+LG_NEED_MAX);
     if(isCrit(nat)&&s.bench>0){s.bench=0;r.benchWon=1;S.flag_benchback=1;S.benchBackN=(S.benchBackN||0)+1}
     s.rolls.push(nat);
     {const c=S.rs=S.rs||{n:0,sum:0,n20:0,n1:0};c.n++;c.sum+=nat;if(nat===20)c.n20++;if(nat===1)c.n1++}
@@ -6631,8 +6631,9 @@ const lbMods=(st,i,m)=>{const s=S.season, fx=lbBlockFx(st,i,m), raw=pmod(rating(
 let SQ_DIV=1.8;
 // in the league anyone can lose: a natural 1 or 2 is a defeat however good you and your team are
 const LG_UPSET=2;
-const LG_FLOOR=5;   // in the league the team never plays worse than it would without you: a teenager is one of eleven
-function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-3,2)}catch(e){return 0}}   // a big squad helps, but a weak one hurts a little more
+const LG_FLOOR=5, LG_NEED_MAX=15;   // a league win never needs more than 16 on the d20 (25%, plus the draws): even the smallest club can take points off anyone
+   // in the league the team never plays worse than it would without you: a teenager is one of eleven
+function squadLg(){try{const Li=S.club.league,l=leagueClubs(Li).map(teamStr),m=l.reduce((a,b)=>a+b,0)/l.length;return clamp(Math.round((teamStr(S.club.name)-m)/SQ_DIV),-2,2)}catch(e){return 0}}   // a big squad helps, but a weak one hurts a little more
 function lbNear(s){
   const tb=lgTable(s), me=tb.find(x=>x.me); if(!me)return'';
   const lo=Math.max(1,Math.min(me.pos-1,tb.length-2)); const rows=tb.filter(x=>x.pos>=lo&&x.pos<=lo+2);
@@ -6665,7 +6666,7 @@ function lbHTML(){
     info=`<div class="ov-sub2 lbtxt">${t.ev[e.id][1]}</div><div class="mods" style="justify-content:center">${e.id==='pen'?`<span class="chip yel">${t.pkPickInfo}</span>`:`<span class="chip yel">${evChip(e)}</span>${footChip(m,e)}<span class="chip">${t.target} ${evTarget(e)}</span>`}</div>`;
     btn=`<button class="btn" data-ov="lbmom">${e.id==='pen'?t.pensTake:t.roll(e.die)}</button>`;
   }else{
-    const mm=lbMods(st,i,m), dc=lbDC(m), need=dc-mm.tot, md=mm.mode;
+    const mm=lbMods(st,i,m), dc=Math.min(lbDC(m),mm.tot+LG_NEED_MAX), need=dc-mm.tot, md=mm.mode;
     const vals=shown?(shown.r.pair||[shown.r.nat]):[], kept=shown&&shown.r.pair?(shown.r.mode==='adv'?(vals[0]>=vals[1]?0:1):(vals[0]<=vals[1]?0:1)):0;
     const oc=v=>!shown?'':v===20?'crit':v===1?'fumble':shown.r.w==='W'?'win':shown.r.w==='D'?'mid':'lose';
     const two=shown?!!shown.r.pair:!!md;
