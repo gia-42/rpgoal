@@ -327,7 +327,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .eos-h{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8b919c;margin:0 0 5px}
 .eos-chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
 .eos-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#1b1e25;border:1px solid #2c3038;font-size:12.5px;line-height:1.3}
-.eos-chip.gold{border-color:#f2c14e;color:#f2c14e}.eos-chip svg{width:15px;height:15px;flex:none}
+.eos-chip.gold{border-color:#f2c14e;color:#f2c14e}.eos-chip svg,.eos-chip img.tri{width:15px;height:15px;flex:none}
 .eos-ovr{display:flex;align-items:baseline;justify-content:center;gap:7px;font-size:13px;color:#aeb3bd;margin-bottom:4px}.eos-ovr b{font-size:18px;color:#f3f4f6}.eos-ovr b.up{color:var(--good)}.eos-ovr b.down{color:var(--bad)}
 .eos-attrs{display:grid;grid-template-columns:1fr 1fr;gap:3px 14px;font-size:12.5px;text-align:left}
 .eos-attr{display:flex;justify-content:space-between;gap:6px;opacity:0;animation:eosIn .35s ease-out forwards;animation-delay:calc(var(--d) * 220ms + 400ms + var(--i) * 90ms)}
@@ -628,7 +628,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .offs .offh{display:flex;flex-direction:column;gap:2px;flex:none}
 .offs .offh h2{font-size:24px;line-height:1.1}
 .offs .champline{font-size:22px}
-.offs .champline svg{width:26px;height:26px}
+.offs .champline svg,.champline img.tri{width:26px;height:26px}
 .statline.sm{flex:none;gap:6px}
 .statline.sm .stat .n{font-size:22px}
 .statline.sm .stat .lbl{font-size:9.5px}
@@ -1042,7 +1042,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .fanline.up{color:var(--good)}.fanline.down{color:var(--bad)}
 .cgrec .wd{flex-direction:column;height:28px;line-height:1;gap:1px}.cgrec .wd i{font-style:normal;font-size:8.5px;opacity:.75;font-weight:500}
 .champline{font-size:30px;color:var(--warn);display:flex;align-items:center;gap:10px}
-.champline svg{width:40px;height:40px;flex:none}
+.champline svg,.champline img.tri{width:40px;height:40px;flex:none}
 .banner.goldb{border-left-color:var(--warn);background:var(--warn-soft);color:var(--warn);font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px}
 .banner.goldb svg{width:34px;height:34px;flex:none}
 /* overlays: finals, titles, Ballon d'Or, career recap */
@@ -1097,7 +1097,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .ov-sub{font-size:20px;font-weight:600}
 .ov-sub2{color:#a9adb7;font-size:14.5px}
 .ov-tap{margin-top:8px;font-size:12px;color:#7c818d}
-.ov-icon{width:88px;height:88px;animation:pop .6s .15s cubic-bezier(.2,.9,.3,1.4) both}
+img.tri{object-fit:contain}img.tri.ti{width:18px;height:18px;margin:-3px 2px -3px 0;vertical-align:middle}.ov-icon{width:88px;height:88px;animation:pop .6s .15s cubic-bezier(.2,.9,.3,1.4) both}
 .ov-vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;width:100%;margin-top:6px}
 .ov-team{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
 .ov-team b{font-size:15px;line-height:1.2;overflow-wrap:anywhere}
@@ -1254,7 +1254,7 @@ input[type=text]{flex:1 1 200px;min-width:0;max-width:340px}
 .wcbox.w{border-color:color-mix(in srgb,var(--good) 60%,transparent)}.wcbox.l{border-color:color-mix(in srgb,var(--bad) 60%,transparent);opacity:.8}
 .wct{display:flex;align-items:center;gap:6px;font-size:13.5px}.wct b{flex:1}.wcr{font-weight:700}.wcbox.w .wcr{color:var(--good)}.wcbox.l .wcr{color:var(--bad)}
 .wcln{display:block;width:2px;height:12px;background:#7a5c1c;margin:0 auto}
-.wccup{display:flex;justify-content:center;margin-top:4px}.wccup svg{width:44px;height:44px;opacity:.9}
+.wccup{display:flex;justify-content:center;margin-top:4px}.wccup svg,.wccup img.tri{width:44px;height:44px;opacity:.9}
 .ovcard>.ovx{position:absolute;top:10px;right:10px;z-index:3;width:30px;height:30px;border-radius:50%;border:1px solid #3a3e47;background:#191c22;color:#a9adb7;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .lbpop .lbx{display:none!important}
 @media (max-height:680px){.ovcard.pushpop{gap:3px;padding:12px 14px 8px}.pushpop .ov-kicker{font-size:10px}.pushpop .ov-title{font-size:18px!important}.pushpop .ov-sub2{font-size:11.5px;line-height:1.25}.pushpop .ltmini{font-size:11px}.pushpop .ltmini .ltr{padding-block:0;line-height:1.2}.pushpop .fixd{height:72px}.pushpop .fixd .die{max-width:64px}.pushpop .fixinfo{min-height:64px!important}.pushpop .fixbtn{height:88px}.pushpop .fixins{min-height:18px}}
@@ -1363,7 +1363,7 @@ polyline.pga-a{stroke:var(--ink-3)}polyline.pga-g{stroke:var(--accent)}polyline.
 .ab-cap{font-size:.55em;color:var(--ink-3);margin-left:1px;font-weight:500;letter-spacing:0}
 .crimg{object-fit:contain;display:inline-block;flex:none;vertical-align:middle}
 .cflag{height:.95em;width:auto;max-width:1.6em;object-fit:contain;vertical-align:-.12em;margin-right:.35em;display:inline-block;border-radius:2px}
-.cup{display:inline-flex;align-items:center;gap:4px}.cup .ti,.eos-chip svg{width:1.25em;height:1.25em;flex:none;margin:-2px 0 -2px -2px}
+.cup{display:inline-flex;align-items:center;gap:4px}.cup .ti,.eos-chip svg,.eos-chip img.tri{width:1.25em;height:1.25em;flex:none;margin:-2px 0 -2px -2px}
 /* iPad / computer: each column tightens step by step until it fits the screen */
 .ipcol.tg{gap:calc(14px - var(--tg)*1.4px)}
 .ipcol.tg>section{padding-top:calc(14px - var(--tg)*1.4px);padding-bottom:calc(14px - var(--tg)*1.4px)}
@@ -4399,7 +4399,24 @@ function troKey(x){
   if(x.kind==='league')return L.c==='BRA'&&!L.w&&L.div===1?'bra':null;
   return null;
 }
-const troSVG=(x,cls='ov-icon')=>{const k=troKey(x);return k?`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true">${TRO_SVG[k]}</svg>`:trophySVG(cls)};
+/*TROIMGS*/const TROIMG={"L0": "logos/tro/trophy_league-br1-brasileirao.png", "L1": "logos/tro/trophy_league-ita1-serie-a.png", "L2": "logos/tro/trophy_league-fra1-ligue-1.png", "L3": "logos/tro/trophy_league-ger1-bundesliga.png", "L4": "logos/tro/trophy_league-spa1-laliga.png", "L5": "logos/tro/trophy_league-eng1-premier-league.png", "bdo": "logos/tro/trophy_ballon-d-or.png", "bdow": "logos/tro/trophy_ballon-d-or-feminin.png", "cont:Champions League": "logos/tro/trophy_cont-champions-league.png", "cont:Copa Libertadores": "logos/tro/trophy_cont-copa-libertadores.png", "cont:Copa Libertadores Femenina": "logos/tro/trophy_cont-copa-libertadores-femenina.png", "cont:Copa Sudamericana": "logos/tro/trophy_cont-copa-sudamericana.png", "cont:Europa League": "logos/tro/trophy_cont-europa-league.png", "cup:Copa do Brasil": "logos/tro/trophy_cup-copa-do-brasil.png", "cwc": "logos/tro/trophy_club-world-cup.png", "cwcw": "logos/tro/trophy_womens-club-world-cup.png", "generic": "logos/tro/trophy_default-trophy.png", "intl:Copa América": "logos/tro/trophy_intl-copa-america.png", "intl:Euro": "logos/tro/trophy_intl-euro.png", "u20": "logos/tro/trophy_u20-world-cup.png", "wc": "logos/tro/trophy_world-cup.png", "wu20": "logos/tro/trophy_womens-u20-world-cup.png", "wwc": "logos/tro/trophy_womens-world-cup.png"};/*/TROIMGS*/
+/*AWIMGS*/const AWIMG={"boot": "logos/award/award_golden-boot.png", "generic": "logos/award/award_default-award.png", "puskas": "logos/award/award_puskas-award.png", "shoe": "logos/award/award_european-golden-shoe.png"};/*/AWIMGS*/
+const INTL_EN={euro:'Euro',copa:'Copa América',gold:'Gold Cup',afcon:'Africa Cup of Nations',asian:'Asian Cup',weuro:'Women’s Euro',wcopa:'Copa América Femenina',wgold:'W Gold Cup'};
+function troImgKey(x){
+  if(!x)return null;const k=x.kind;
+  if(k==='wc')return x.w?'wwc':'wc'; if(k==='bdo')return x.w?'bdow':'bdo'; if(k==='cwc')return x.w?'cwcw':'cwc';
+  if(k==='u20'||(k==='intl'&&/u20$/.test(x.t||'')))return x.t==='wu20'||(!x.t&&x.w)?'wu20':'u20';
+  if(k==='intl')return 'intl:'+(INTL_EN[x.t]||x.t);
+  const L=LEAGUES[x.lg]; if(!L)return null;
+  if(k==='league'||k==='run')return 'L'+x.lg; if(k==='cup')return 'cup:'+L.cup; if(k==='cont')return 'cont:'+L.cont;
+  if(k==='cont2'){const n=cont2Name(x.lg);return 'cont:'+(n==='Copa Sul-Americana'?'Copa Sudamericana':n)}
+  if(k==='sup')return 'sup:'+L.c+(L.w?'W':'');
+  return null;
+}
+const troImg=(x,cls)=>{const k=troImgKey(x),src=(k&&TROIMG[k])||(x&&x.kind!=='bdo'&&x.kind!=='po'?TROIMG.generic:null);return src?`<img class="tri ${cls}" src="${src}" alt="" decoding="sync" draggable="false">`:null};
+function awImgKey(a){if(!a)return'generic';const k=a.k;return k==='pos'?'pos:'+a.p:k==='grp'?'grp:'+a.g:k==='puskas'?(isW()?'marta':'puskas'):k==='mvp'?'mvp:'+a.c:k}
+const awImg=(a,cls='ov-icon')=>{const src=AWIMG[awImgKey(a)]||AWIMG.generic;return src?`<img class="tri ${cls}" src="${src}" alt="" decoding="sync" draggable="false">`:null};
+const troSVG=(x,cls='ov-icon')=>{const im=troImg(x,cls);if(im)return im;const k=troKey(x);return k?`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true">${TRO_SVG[k]}</svg>`:trophySVG(cls)};
 const trophySVG=(cls='ov-icon')=>`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true"><path d="M19 9h26v11c0 10-6 17-13 17s-13-7-13-17z" fill="#f2c14e"/><path d="M19 13h-8c0 8 4 13 10 14M45 13h8c0 8-4 13-10 14" fill="none" stroke="#e0ad3c" stroke-width="3.5" stroke-linecap="round"/><path d="M27 36h10l-1.5 9h-7z" fill="#d9a43a"/><rect x="20" y="45" width="24" height="9" rx="2" fill="#c9962b"/><path d="M24 13c0 7 2 12 5 15" fill="none" stroke="#fff3c4" stroke-width="2.5" stroke-linecap="round" opacity=".7"/></svg>`;
 const goldBall=(cls='ov-icon')=>`<svg class="${cls}" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="gbg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#f2c14e"/><stop offset="1" stop-color="#9a6d15"/></radialGradient></defs><circle cx="32" cy="32" r="27" fill="url(#gbg)"/><polygon points="32,22 41.5,29 38,40.5 26,40.5 22.5,29" fill="#9a6d15" opacity=".55"/><path d="M32 22V9M41.5 29l12-4M38 40.5l7 11M26 40.5l-7 11M22.5 29l-12-4" stroke="#9a6d15" stroke-width="2" opacity=".45"/></svg>`;
 const oppName=st=>!st||!st.opp?'':st.comp==='wc'?(COUNTRY[lang][st.opp]||st.opp):st.opp;
@@ -4449,7 +4466,7 @@ function ovHTML(o){
   }
   if(o.k==='mtag')return `<div class="ovcard lite"><span class="ov-kicker">${t.mtagT}</span><div class="mtagx"><div>${crest(kitOf(S.club.name),30)}<b>${esc(S.club.name)}</b><span class="num">${o.me}</span></div><span class="ov-x">${t.vs}</span><div>${crest(kitOf(o.opp),30)}<b>${esc(o.opp)}</b><span class="num">${o.op}</span></div></div><div class="ov-sub2">${t.mtagD(o.dc)}</div>${tap}</div>`;
   if(o.k==='howto')return `<div class="ovcard window howto"><span class="ov-kicker">RPGoal</span><h2 class="ov-title" style="font-size:26px">${t.howT}</h2><div class="howlist">${t.howTo.map(([h,x])=>`<div><b>${h}</b><span>${x}</span></div>`).join('')}</div><button class="btn" data-ov="close">${t.recapBtn}</button></div>`;
-  if(o.k==='awards')return `<div class="ovcard awardsov"><svg class="ov-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="26" r="17" fill="#f2c14e"/><circle cx="32" cy="26" r="11" fill="none" stroke="#9a6d15" stroke-width="2.5"/><path d="M32 18l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#9a6d15"/><path d="M22 40l-5 16 8-3 4 7 4-14M42 40l5 16-8-3-4 7-4-14" fill="#d9a43a"/></svg><span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.items.length>1?t.awardsT2(o.items.length):t.awardsT}</h2><div class="awlist">${o.items.map(a=>`<div class="aw">${esc(awName(a))}</div>`).join('')}</div>${tap}</div>`;
+  if(o.k==='awards')return `<div class="ovcard awardsov">${awImg(o.items[0])||'<svg class="ov-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="26" r="17" fill="#f2c14e"/><circle cx="32" cy="26" r="11" fill="none" stroke="#9a6d15" stroke-width="2.5"/><path d="M32 18l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#9a6d15"/><path d="M22 40l-5 16 8-3 4 7 4-14M42 40l5 16-8-3-4 7-4-14" fill="#d9a43a"/></svg>'}<span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.items.length>1?t.awardsT2(o.items.length):t.awardsT}</h2><div class="awlist">${o.items.map(a=>`<div class="aw">${esc(awName(a))}</div>`).join('')}</div>${tap}</div>`;
   if(o.k==='champ'||o.k==='league'){
     const wc=o.comp==='wc', who=wc?COUNTRY[lang][S.nat]:S.club.name, title=o.k==='league'?LEAGUES[o.lg].name:compName(o.comp,o.lg);
     return `<div class="ovcard champ ${wc?'gold':''}" style="${kitVars(myKit({comp:o.comp}))}">${troSVG(o.k==='league'?{kind:'league',lg:o.lg}:{kind:o.comp,lg:o.lg,w:isW()?1:undefined})}<span class="ov-kicker">${o.year}</span><h2 class="ov-title">${o.k==='league'?t.ovLeague:t.ovChamps}</h2><div class="ov-sub">${esc(who)}</div><div class="ov-sub2">${esc(title)}</div>${tap}</div>`;
